@@ -1,0 +1,11 @@
+# gitignore
+
+*.[doa]
+*.so
+*~
+bin/*
+include/*
+src/analyzer/dict/*
+src/main/dict/*
+Makefile
+common.mk

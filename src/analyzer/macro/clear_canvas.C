@@ -1,0 +1,20 @@
+// Updater belongs to the namespace hddaq::gui
+using namespace hddaq::gui;
+
+void clear_canvas()
+{
+  // You must write these lines for the thread safe
+  // ----------------------------------
+  if(Updater::isUpdating()){return;}
+  Updater::setUpdating(true);
+  // ----------------------------------
+
+  TCanvas *c = (TCanvas*)gROOT->FindObject(gPad->GetName());
+  c->Clear();
+  c->cd(0);
+
+  // You must write these lines for the thread safe
+  // ----------------------------------
+  Updater::setUpdating(false);
+  // ----------------------------------
+}

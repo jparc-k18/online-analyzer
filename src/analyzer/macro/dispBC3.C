@@ -44,7 +44,12 @@ void dispBC3()
   int base_id = HistMaker::getUniqueID(kBC3, 0, kMulti);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
-    GHist::get(base_id + i)->Draw();
+    TH1 *h_wot = GHist::get(base_id + i);
+    TH1 *h_wt  = GHist::get(base_id + i + n_layer);
+    h_wot->SetMaximum(h_wt->GetMaximum()*1.1);
+    h_wot->Draw();
+    h_wt->SetLineColor(2);
+    h_wt->Draw("same");
   }
 
   c->Update();

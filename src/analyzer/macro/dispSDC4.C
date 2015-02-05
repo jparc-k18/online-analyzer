@@ -1,7 +1,7 @@
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
-void dispBC4()
+void dispSDC4()
 {
   // You must write these lines for the thread safe
   // ----------------------------------
@@ -15,11 +15,11 @@ void dispBC4()
   TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
   c->Clear();
   c->Divide(3,2);
-  int base_id = HistMaker::getUniqueID(kBC4, 0, kTDC);
+  int base_id = HistMaker::getUniqueID(kSDC4, 0, kTDC);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
     TH1 *h = GHist::get(base_id + i);
-    h->GetXaxis()->SetRangeUser(256,1000);
+    h->GetXaxis()->SetRangeUser(700,1600);
     h->Draw();
   }
 
@@ -29,7 +29,7 @@ void dispBC4()
   c = (TCanvas*)gROOT->FindObject("c2");
   c->Clear();
   c->Divide(3,2);
-  int base_id = HistMaker::getUniqueID(kBC4, 0, kHitPat);
+  int base_id = HistMaker::getUniqueID(kSDC4, 0, kHitPat);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
     GHist::get(base_id + i)->Draw();
@@ -41,7 +41,7 @@ void dispBC4()
   c = (TCanvas*)gROOT->FindObject("c3");
   c->Clear();
   c->Divide(3,2);
-  int base_id = HistMaker::getUniqueID(kBC4, 0, kMulti);
+  int base_id = HistMaker::getUniqueID(kSDC4, 0, kMulti);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
     TH1 *h_wot = GHist::get(base_id + i);

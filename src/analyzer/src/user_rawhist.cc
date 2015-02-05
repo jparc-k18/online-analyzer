@@ -61,7 +61,15 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(split33());
   tab_macro->Add(dispBH1());
   tab_macro->Add(dispBH2());
+  tab_macro->Add(dispACs_SFV());
+  tab_macro->Add(dispTOF());
+  tab_macro->Add(dispLC());
   tab_macro->Add(dispBC3());
+  tab_macro->Add(dispBC4());
+  tab_macro->Add(dispSDC2());
+  tab_macro->Add(dispHDC());
+  tab_macro->Add(dispSDC3());
+  tab_macro->Add(dispSDC4());
   tab_macro->Add(dispHitPat());
 
   // Add histograms to the Hist tab

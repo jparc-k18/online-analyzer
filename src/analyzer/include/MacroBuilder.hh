@@ -9,7 +9,15 @@ TObject* split32();
 TObject* split33();
 TObject* dispBH1();
 TObject* dispBH2();
+TObject* dispACs_SFV();
+TObject* dispTOF();
+TObject* dispLC();
 TObject* dispBC3();
+TObject* dispBC4();
+TObject* dispSDC2();
+TObject* dispHDC();
+TObject* dispSDC3();
+TObject* dispSDC4();
 TObject* dispHitPat();
 
 #endif

@@ -1,0 +1,40 @@
+subdir := main analyzer
+
+#_______________________________________________________________________________
+all:
+	@ for dir in $(subdir); \
+	do \
+		cd $$dir; \
+		make; \
+		cd ..; \
+	done;
+
+#_______________________________________________________________________________
+show:
+	@ echo "Package List = $(subdir)"
+	@ for dir in $(subdir); \
+	do \
+		cd $$dir; \
+		make show; \
+		cd ..; \
+	done;
+
+#_______________________________________________________________________________
+clean::
+	@ rm -fv *~
+	@ for dir in $(subdir); \
+	do \
+		cd $$dir; \
+		make clean; \
+		cd ..; \
+	done;
+
+#_______________________________________________________________________________
+distclean::
+	@ rm -fv ../lib/* ../include/* ../bin/*
+	@ for dir in $(subdir); \
+	do \
+		cd $$dir; \
+		make distclean; \
+		cd ..; \
+	done;

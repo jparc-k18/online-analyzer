@@ -1,0 +1,272 @@
+#### configuration ####
+arch        := $(shell uname)
+SHELL       := /bin/sh
+GCC         := gcc
+CC          := gcc
+CXX         := g++
+OUT_PUT_OPT := -o
+LD          := g++
+#LDFLAGS     := -export-dynamic
+#CXXFLAGS    := -O0 -Wall -fPIC
+CXXFLAGS    := -O3 -Wall -fPIC
+#DEBUGFLAGS  := -pg -g
+CXXFLAGS    += -pg -p
+SOFLAGS     := -shared
+#SOFLAGS     := -shared -Wl,-soname,
+CPPFLAGS    += $(addprefix -I,\
+                $(include_top_dir) \
+                $(root_include_dir) \
+                $(unpacker_include_dir)) \
+		$(clhep_include)
+
+#AR   := ar
+CP   := cp -vf
+ECHO := echo
+MV   := mv -vf
+RM   := rm -vf
+SED  := sed
+MAKE := gmake
+
+QUIET := @
+
+
+#### external libraries ####
+#ext_libs := -lz -lbz2
+# -lpthread
+
+#### CLHEP ####
+clhep_config  := clhep-config
+# clhep_cpp     := $(shell $(clhep_config) --cpp)
+# clhep_cxx     := $(shell $(clhep_config) --cxx)
+clhep_include := $(shell $(clhep_config) --include)
+clhep_libs    := $(shell $(clhep_config) --libs)
+clhep_ldflags := $(shell $(clhep_config) --ldflags)
+
+#### ROOT Libraries ####
+root_config      := root-config
+root_include_dir := $(shell $(root_config) --incdir)
+root_cflags      := $(shell $(root_config) --cflags)
+root_ld_flags    := $(shell $(root_config) --ldflags)
+root_libs        := $(shell $(root_config) --libs)
+root_glibs       := $(shell $(root_config) --glibs)
+#root_libs        := $(shell $(root_config) --new --libs)
+#root_glibs       := $(shell $(root_config) --new --glibs)
+
+# for TEveBrowser
+root_glibs += \
+ -lEG \
+ -lGeom \
+ -lGed \
+ -lTreePlayer
+
+# -lEve 
+# -lRGL 
+
+#### HD DAQ Unpacker ####
+unpacker_install      := $(HOME)/software/unpacker/devel
+unpacker_include_dir  := $(unpacker_install)/include
+unpacker_cflags       := -I$(unpacker_include_dir)
+unpacker_lib_dir      := $(unpacker_install)/lib
+unpacker_libs         := \
+ -Wl,-rpath,$(unpacker_lib_dir) -L$(unpacker_lib_dir) -lHDDAQUnpacker
+
+#### analyzer ####
+top_dir         := $(HOME)/Work/honda/online-v9-git
+src_top_dir     := $(top_dir)/src
+bin_dir         := $(top_dir)/bin
+include_top_dir := $(top_dir)/include
+lib_dir         := $(top_dir)/lib
+link_opt        := -Wl,-rpath,$(lib_dir) -L$(lib_dir)
+
+#my_name      :=
+headers      := $(filter %.hh,$(wildcard $(PWD)/include/*))
+top_headers  := $(addprefix $(include_top_dir)/,$(notdir $(headers)))
+sources      := $(filter %.cc,$(wildcard $(PWD)/src/*))
+objects      := $(subst .cc,.o,$(sources))
+linkdefs     :=
+#libraries    =
+# granlibs     = \
+#  $(addprefix $(lib_dir)/lib,$(notdir $(subst .o,.so,$(objects))))
+#need_dict    :=
+dictionaries = \
+  $(patsubst %.cc,%_Dict.cc,\
+   $(filter-out %/,$(addprefix \
+    $(patsubst %src/,%dict/,$(dir $(need_dict))),$(notdir $(need_dict)))))
+dict_objs = $(subst .cc,.o, $(dictionaries))
+dependencies += $(subst .o,.d,$(objects) $(dict_objs))
+
+
+#_______________________________________________________________________________
+.PHONY: all lib show clean distclean 
+
+#all:: $(top_headers) $(dict_objs) $(objects) lib $(target) 
+#all:: lib $(target) 
+
+all:: $(top_headers)
+#_______________________________________________________________________________
+define copy-headers
+ $(foreach filename,$(headers),$(eval $(call copy-each-header,$(filename))))
+endef
+
+# usage $(call copy-header,original)
+define copy-each-header
+ $(addprefix $(include_top_dir)/,$(notdir $1)): $1
+	$(CP) $$< $$@;
+endef
+
+$(eval $(call copy-headers))
+
+#_______________________________________________________________________________
+%.o: %.cc
+	$(call make-depend,$<,$@,$(subst .o,.d,$@))
+	$(QUIET) $(ECHO) "=== compiling $@"
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OUT_PUT_OPT) $@ -c $<
+
+#_______________________________________________________________________________
+# usage $(call make-depend,source-file,object-file,depend-file)
+define make-depend
+ $(QUIET) $(ECHO) "==== make dependency"
+ $(GCC) -MM         \
+	-MF $3      \
+	-MP         \
+	-MT $2      \
+	$(CFLAGS)   \
+	$(CPPFLAGS) \
+	$1
+endef
+
+#_______________________________________________________________________________
+#lib:: #$(libraries) $(granlibs)
+
+# usage $(call make-granular-libs)
+define make-granular-libs
+ $(foreach filename,$(objects), $(eval $(call obj-to-lib, $(filename))))
+endef
+
+
+#usage $(call obj-to-lib,object-to-be-converted-to-lib)
+define obj-to-lib
+ $(addprefix $(lib_dir)/lib,$(subst .o,.so,$(notdir $1)))::\
+ $(strip $1)
+	$(QUIET) $(ECHO) "===== create granular library";
+	$(QUIET) $(ECHO) "      $$^";
+	$(QUIET) $(ECHO) "      ->    $$@";
+	$(LD) $(SOFLAGS) $(LDFLAGS) $$^ $(OUT_PUT_OPT) $$@;
+endef
+
+define make-lib
+ $(addprefix $(lib_dir)/,$(strip $1)):: $(strip $2)
+	$(QUIET) $(ECHO) "==== create library ====";
+	$(QUIET) $(ECHO) "    $$^";
+	$(QUIET) $(ECHO) "    ->     $$@";
+	$(LD) $(SOFLAGS) $(LDFLAGS) $$^ $(OUT_PUT_OPT) $$@;
+
+endef
+
+#$(eval $(call make-granular-libs))
+
+#_______________________________________________________________________________
+# usage $(call make-dict)
+define make-dict
+ $(foreach filename,$(dictionaries), $(eval $(call to-dict, $(filename))))
+endef
+
+define to-dict
+$1:: \
+ $(subst dict,include,$(subst _Dict.cc,.hh,$1)) \
+ $(subst dict,linkdef,$(subst _Dict.cc,_LinkDef.hh,$1))
+	$(QUIET) $(ECHO) "==== Generating dictionary $$@ from $$^";
+	rootcint -f $$@ -c -p $$^;
+endef
+
+$(eval $(call make-dict))
+
+#_______________________________________________________________________________
+
+define make-program
+$(strip $1):: \
+  $(src_top_dir)/main/src/main.o \
+  $(lib_dir)/$(strip $2) \
+  $(lib_dir)/libMain.so \
+  $(lib_dir)/libHistHelper.so
+	$(QUIET) $(ECHO) " ==== create program $$@: $$^ "
+	$(LD) $(OUT_PUT_OPT) $$@ \
+	$(LDFLAGS) $(ext_libs) $(unpacker_libs) $(root_glibs) \
+	$(link_opt) \
+         -lMain -lHistHelper \
+	$(addprefix -l,$(subst .so,,$(subst lib,,$(strip $2)))) \
+	$$<
+endef
+
+define make-nogui-target
+$(strip $1):: \
+  $(src_top_dir)/main/src/nogui_main.o \
+  $(lib_dir)/$(strip $2) \
+  $(lib_dir)/libNoGuiMain.so \
+  $(lib_dir)/libHistHelper.so 
+	$(QUIET) $(ECHO) " ==== create program $$@: $$^ "
+	$(LD) $(OUT_PUT_OPT) $$@ \
+	$(LDFLAGS) $(ext_libs) $(unpacker_libs) $(root_glibs) \
+	$(link_opt) \
+         -lNoGuiMain -lHistHelper \
+	$(addprefix -l,$(subst .so,,$(subst lib,,$(strip $2)))) \
+	$$<
+endef
+
+define make-gui-target
+ $(strip $1):: \
+  $(src_top_dir)/main/src/gui_main.o \
+  $(lib_dir)/$(strip $2) \
+  $(lib_dir)/libGuiMain.so \
+  $(lib_dir)/libHistHelper.so
+	$(QUIET) $(ECHO) " ==== create program $$@: $$^"
+	$(LD) $(OUT_PUT_OPT) $$@ \
+	$(LDFLAGS) $(ext_libs) $(unpacker_libs) $(root_glibs) \
+	$(link_opt) \
+         -lGuiMain -lHistHelper \
+         $(addprefix -l,$(subst .so,,$(subst lib,,$(strip $2)))) \
+	$(clhep_libs) \
+	$$<
+endef
+#_______________________________________________________________________________
+clean::
+	$(RM) *~ ./include/*~ ./linkdef/*~ ./src/*~ ./src/*.o ./src/*.d
+
+#_______________________________________________________________________________
+distclean::
+	$(RM) *~ ./include/*~ ./linkdef/*~ ./src/*~ ./src/*.o ./src/*.d ./dict/*
+
+#_______________________________________________________________________________
+show::
+	$(QUIET) $(ECHO) "____________________________________________________"
+	$(QUIET) $(ECHO) $(my_name)
+	$(QUIET) $(ECHO) $(my_dir)
+	$(QUIET) $(ECHO) "target :"
+	$(QUIET) for f in $(target); do $(ECHO) "  $$f"; done;
+	$(QUIET) $(ECHO) "headers :"
+	$(QUIET) for f in $(headers); do $(ECHO) "  $$f"; done;
+	$(QUIET) $(ECHO) "top_headers :"
+	$(QUIET) for f in $(top_headers); do $(ECHO) "  $$f"; done;
+	$(QUIET) $(ECHO) "sources :"
+	$(QUIET) for f in $(sources); do $(ECHO) "  $$f"; done;
+	$(QUIET) $(ECHO) "objects :"
+	$(QUIET) for f in $(objects); do $(ECHO) "  $$f"; done;
+	$(QUIET) $(ECHO) "linkdefs :"
+	$(QUIET) for f in $(linkdefs); do $(ECHO) "  $$f"; done;
+	$(QUIET) $(ECHO) "dictionaries :"
+	$(QUIET) for f in $(dictionaries); do $(ECHO) "  $$f"; done;
+	$(QUIET) $(ECHO) "dict_objs :"
+	$(QUIET) for f in $(dict_objs); do $(ECHO) "  $$f"; done;
+	$(QUIET) $(ECHO) "granular libraries :"
+	$(QUIET) for f in $(granlibs); do $(ECHO) "  $$f"; done;
+	$(QUIET) $(ECHO) "libraries :"
+	$(QUIET) for f in $(libraries); do $(ECHO) "  $$f"; done;
+	$(QUIET) $(ECHO) "need_dict :"
+	$(QUIET) for f in $(need_dict); do $(ECHO) "  $$f"; done;
+
+#_______________________________________________________________________________
+ifneq "$(MAKECMDGOALS)" "clean"
+ ifneq "$(MAKECMDGOALS)" "distclean"
+  -include $(dependencies)
+ endif
+endif

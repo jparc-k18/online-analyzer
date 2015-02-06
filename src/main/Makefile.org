@@ -1,0 +1,59 @@
+
+my_name = main
+my_dir  = $(src_top_dir)/$(my_name)
+
+need_dict = \
+ $(my_dir)/src/Controller.cc \
+ $(my_dir)/src/Updater.cc \
+ $(my_dir)/src/Main.cc \
+ $(my_dir)/src/LexicalCast.cc \
+ $(my_dir)/src/HistHelper.cc
+
+granlibs =
+
+libraries = \
+ $(lib_dir)/libLexicalCast.so \
+ $(lib_dir)/libHistHelper.so \
+ $(lib_dir)/libMain.so \
+ $(lib_dir)/libNoGuiMain.so \
+ $(lib_dir)/libGuiMain.so
+
+
+include ../common.mk
+
+all:: $(libraries)
+
+$(lib_dir)/libLexicalCast.so: \
+ $(my_dir)/src/LexicalCast.o $(my_dir)/dict/LexicalCast_Dict.o
+	$(QUIET) $(ECHO) "=== create library with dict ($^ -> $@) ==="
+	$(LD) $(SOFLAGS) $(LDFLAGS) $^ $(OUT_PUT_OPT) $@
+
+$(lib_dir)/libHistHelper.so: \
+ $(my_dir)/src/HistHelper.o $(my_dir)/dict/HistHelper_Dict.o
+	$(QUIET) $(ECHO) "=== create library with dict ($^ -> $@) ==="
+	$(LD) $(SOFLAGS) $(LDFLAGS) $^ $(OUT_PUT_OPT) $@
+
+$(lib_dir)/libMain.so: \
+ $(my_dir)/src/Main.o $(my_dir)/dict/Main_Dict.o \
+ $(my_dir)/src/Sigwait.o \
+ $(my_dir)/src/Controller.o $(my_dir)/dict/Controller_Dict.o \
+ $(my_dir)/src/Updater.o $(my_dir)/dict/Updater_Dict.o \
+ $(my_dir)/src/user_analyzer.o
+	$(QUIET) $(ECHO) "=== create library with dict ($^ -> $@) ==="
+	$(LD) $(SOFLAGS) $(LDFLAGS) $^ $(OUT_PUT_OPT) $@
+
+$(lib_dir)/libNoGuiMain.so: \
+ $(my_dir)/src/Main.o $(my_dir)/dict/Main_Dict.o \
+ $(my_dir)/src/Sigwait.o \
+ $(my_dir)/src/user_analyzer.o
+	$(QUIET) $(ECHO) "=== create library with dict ($^ -> $@) ==="
+	$(LD) $(SOFLAGS) $(LDFLAGS) $^ $(OUT_PUT_OPT) $@
+
+$(lib_dir)/libGuiMain.so: \
+ $(my_dir)/src/Controller.o $(my_dir)/dict/Controller_Dict.o \
+ $(my_dir)/src/Updater.o $(my_dir)/dict/Updater_Dict.o \
+ $(my_dir)/src/Main.o $(my_dir)/dict/Main_Dict.o \
+ $(my_dir)/src/user_analyzer.o
+	$(QUIET) $(ECHO) "=== create library with dict ($^ -> $@) ==="
+	$(LD) $(SOFLAGS) $(LDFLAGS) $^ $(OUT_PUT_OPT) $@
+

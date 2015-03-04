@@ -1636,17 +1636,17 @@ TList* HistMaker::createGe(bool flag_ps)
 			     "ADC [ch]", ""));
     }
 
+    // Sum histogram
+    sub_dir->Add(createTH1(++target_id + NumOfSegGe, "Ge_ADC_Sum", // 1 origin
+			   0x2000, 0, 0x2000,
+			   "ADC [ch]", ""));
+
     // 2D histogram
-    target_id += NumOfSegGe;
+    target_id = getUniqueID(kGe, 0, kADC2D, 0);
     sub_dir->Add(createTH2(++target_id, "Ge_ADC_2D", // 1 origin
 			   NumOfSegGe, 0, NumOfSegGe,
 			   0x2000, 0, 0x2000,
 			   "Ge segment", "ADC [ch]"));
-
-    // Sum histogram
-    sub_dir->Add(createTH1(++target_id, "Ge_ADC_Sum", // 1 origin
-			   0x2000, 0, 0x2000,
-			   "ADC [ch]", ""));
 
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -1672,7 +1672,7 @@ TList* HistMaker::createGe(bool flag_ps)
     }
 
     // 2D histogram
-    target_id += NumOfSegGe;
+    target_id = getUniqueID(kGe, 0, kCRM2D, 0);
     sub_dir->Add(createTH2(++target_id, "Ge_CRM_2D", // 1 origin
 			   NumOfSegGe, 0, NumOfSegGe,
 			   2000, 0, 10000,
@@ -1702,7 +1702,7 @@ TList* HistMaker::createGe(bool flag_ps)
     }
 
     // 2D histogram
-    target_id += NumOfSegGe;
+    target_id = getUniqueID(kGe, 0, kTFA2D, 0);
     sub_dir->Add(createTH2(++target_id, "Ge_TFA_2D", // 1 origin
 			   NumOfSegGe, 0, NumOfSegGe,
 			   2000, 0, 10000,
@@ -1732,7 +1732,7 @@ TList* HistMaker::createGe(bool flag_ps)
     }
 
     // 2D histogram
-    target_id += NumOfSegGe;
+    target_id = getUniqueID(kGe, 0, kPUR2D, 0);
     sub_dir->Add(createTH2(++target_id, "Ge_PUR_2D", // 1 origin
 			   NumOfSegGe, 0, NumOfSegGe,
 			   2000, 0, 10000,
@@ -1762,7 +1762,7 @@ TList* HistMaker::createGe(bool flag_ps)
     }
 
     // 2D histogram
-    target_id += NumOfSegGe;
+    target_id = getUniqueID(kGe, 0, kRST2D, 0);
     sub_dir->Add(createTH2(++target_id, "Ge_RST_2D", // 1 origin
 			   NumOfSegGe, 0, NumOfSegGe,
 			   100, 0, 10000,

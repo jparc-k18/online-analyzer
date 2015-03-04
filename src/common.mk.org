@@ -210,6 +210,7 @@ $(strip $1):: \
 	$(link_opt) \
          -lNoGuiMain -lHistHelper \
 	$(addprefix -l,$(subst .so,,$(subst lib,,$(strip $2)))) \
+	$(clhep_libs) \
 	$$<
 endef
 

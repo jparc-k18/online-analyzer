@@ -5,6 +5,7 @@
 *~
 bin/*
 include/*
+param/*
 src/analyzer/dict/*
 src/main/dict/*
 Makefile

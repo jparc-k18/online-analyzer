@@ -36,9 +36,11 @@ enum SubDetectorType{
 enum DataType{
   kDataTypeZero,
   // Usual data type
-  kADC, kTDC, kHitPat, k2DPlot, kMulti, 
+  kADC,   kTDC,   kHitPat,   kMulti, 
+  kADC2D, kTDC2D, kHitPat2D, kMulti2D, 
   // Extra data type for Ge detector
-  kCRM, kTFA, kPUR, kRST, 
+  kCRM,   kTFA,   kPUR,   kRST, 
+  kCRM2D, kTFA2D, kPUR2D, kRST2D,
   sizeDataType,
   factorDataType = 1000
 };

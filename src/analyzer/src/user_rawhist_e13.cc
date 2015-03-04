@@ -139,26 +139,27 @@ process_event()
   // BH1 -----------------------------------------------------------
   {
     // data type
-    static const int k_u   = 0; // up
-    static const int k_d   = 1; // down
-    static const int k_adc = 0;
-    static const int k_tdc = 1;
+    static const int k_device = gUnpacker.get_device_id("BH1");
+    static const int k_u      = 0; // up
+    static const int k_d      = 1; // down
+    static const int k_adc    = gUnpacker.get_data_id("BH1", "adc");
+    static const int k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
 
     // Up PMT
     int bh1a_id = gHist.getSequentialID(kBH1, 0, kADC);
     int bh1t_id = gHist.getSequentialID(kBH1, 0, kTDC);
     for(int seg=0; seg<NumOfSegBH1; ++seg){
       // ADC
-      int nhit = gUnpacker.get_entries(DetIdBH1, 0, seg, k_u, k_adc);
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
       if(nhit!=0){
-	unsigned int adc = gUnpacker.get(DetIdBH1, 0, seg, k_u, k_adc);
+	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
 	hptr_array[bh1a_id + seg]->Fill(adc);
       }
 
       // TDC
-      nhit = gUnpacker.get_entries(DetIdBH1, 0, seg, k_u, k_tdc);
+      nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       if(nhit!=0){
-	unsigned int tdc = gUnpacker.get(DetIdBH1, 0, seg, k_u, k_tdc);
+	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
 	if(tdc!=0){ hptr_array[bh1t_id + seg]->Fill(tdc); }
       }
     }
@@ -168,16 +169,16 @@ process_event()
     bh1t_id = gHist.getSequentialID(kBH1, 0, kTDC, NumOfSegBH1+1);
     for(int seg=0; seg<NumOfSegBH1; ++seg){
       // ADC
-      int nhit = gUnpacker.get_entries(DetIdBH1, 0, seg, k_d, k_adc);
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
       if(nhit!=0){
-	unsigned int adc = gUnpacker.get(DetIdBH1, 0, seg, k_d, k_adc);
+	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
 	hptr_array[bh1a_id + seg]->Fill(adc);
       }
 
       // TDC
-      nhit = gUnpacker.get_entries(DetIdBH1, 0, seg, k_d, k_tdc);
+      nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
       if(nhit!=0){
-	unsigned int tdc = gUnpacker.get(DetIdBH1, 0, seg, k_d, k_tdc);
+	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
 	if(tdc!=0){ hptr_array[bh1t_id + seg]->Fill(tdc); }
       }
     }
@@ -187,12 +188,12 @@ process_event()
     static const int bh1mul_id = gHist.getSequentialID(kBH1, 0, kMulti);
     int multiplicity = 0;
     for(int seg=0; seg<NumOfSegBH1; ++seg){
-      int nhit_bh1u = gUnpacker.get_entries(DetIdBH1, 0, seg, k_u, k_tdc);
-      int nhit_bh1d = gUnpacker.get_entries(DetIdBH1, 0, seg, k_d, k_tdc);
+      int nhit_bh1u = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      int nhit_bh1d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
       // AND
       if(nhit_bh1u!=0 && nhit_bh1d!=0){
-	unsigned int tdc_u = gUnpacker.get(DetIdBH1, 0, seg, k_u, k_tdc);
-	unsigned int tdc_d = gUnpacker.get(DetIdBH1, 0, seg, k_d, k_tdc);
+	unsigned int tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
+	unsigned int tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
 	// TDC AND
 	if(tdc_u != 0 && tdc_d != 0){
 	  hptr_array[bh1hit_id]->Fill(seg);
@@ -202,6 +203,11 @@ process_event()
     }
 
     hptr_array[bh1mul_id]->Fill(multiplicity);
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
   }
 
 #if DEBUG

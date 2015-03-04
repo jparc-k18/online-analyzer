@@ -18,8 +18,6 @@ TROOT theROOT("noGui", "analysis without GUI controller");
 
 int main(int argc, char* argv[])
 {
-  gROOT->Reset();
-
   std::vector<std::string> argV(argv, argv+argc);
 
   Sigwait& g_sigwait = Sigwait::getInstance();

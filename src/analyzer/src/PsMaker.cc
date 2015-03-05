@@ -679,6 +679,44 @@ void PsMaker::create(std::string& name)
     }
   }
 
+  // PWO ---------------------------------------------------------------
+  if(name == CONV_STRING(kPWO)){
+    int base_id = 0;
+    int index   = 0;
+    
+    // TDC
+    par_list[kXdiv] = 4; par_list[kYdiv] = 3;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x1000;
+    flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
+    flag_log   = false;
+
+    base_id = HistMaker::getUniqueID(kPWO, 0, kTDC);
+    for(int i = 0; i<2; ++i){
+      for(int j = 0; j<NumOfBoxPWO/2; ++j){id_list.push_back(base_id + index++);}
+      drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+    }
+
+    // HitPat
+    flag_xaxis = false;
+    flag_log   = false;
+
+    index = 0;
+    base_id = HistMaker::getUniqueID(kPWO, 0, kHitPat);
+    for(int i = 0; i<2; ++i){
+      for(int j = 0; j<NumOfBoxPWO/2; ++j){id_list.push_back(base_id + index++);}
+      drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+    }
+
+    // Multiplicity
+    index = 0;
+    base_id = HistMaker::getUniqueID(kPWO, 0, kMulti);
+    for(int i = 0; i<2; ++i){
+      for(int j = 0; j<NumOfBoxPWO/2; ++j){id_list.push_back(base_id + index++);}
+      drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+    }
+
+  }
+  
 }
 
 

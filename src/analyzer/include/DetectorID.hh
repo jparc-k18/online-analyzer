@@ -49,52 +49,34 @@ const int NumOfSegSFV = 18;
 const int NumOfSegMisc = 18;
 
 const int NumOfSegGe   = 32;
-//const int NumOfSegPWO  = 256; // tekitou
-const int NumOfSegPWO_B= 21;
-const int NumOfSegPWO_E= 14;
-const int NumOfSegPWO_C= 9;
-const int NumOfSegPWO_L= 6;
-const int NumOfSegPWOADC = 32;
 
-const int NumOfUnitPWO_B= 2;
-const int NumOfUnitPWO_E= 8;
-const int NumOfUnitPWO_C= 4;
-const int NumOfUnitPWO_L= 8;
+const int NumOfSegPWO  = 238;
+const int NumOfBoxPWO  = 22;
+const int NumOfUnitPWO[NumOfBoxPWO] =
+  {
+    6, 9, 6, 14, 14, 21, 14, 14, 6, 9, 6,
+    6, 9, 6, 14, 14, 21, 14, 14, 6, 9, 6
+  };
 
-const int NumOfSegPWO[4]={NumOfSegPWO_B, NumOfSegPWO_E,
-			  NumOfSegPWO_C, NumOfSegPWO_L};
-const int NumOfUnitPWO[4]={NumOfUnitPWO_B, NumOfUnitPWO_E,
-			   NumOfUnitPWO_C, NumOfUnitPWO_L};
-const char pwo_type[4]={'B', 'E', 'C', 'L'};
+const int SegIdPWO[NumOfBoxPWO] =
+  {
+    4, 0, 0, 4, 0, 0, 1, 5, 2, 1, 6,
+    1, 2, 5, 6, 2, 1, 3, 7, 7, 3, 3,
+  };
 
 const int NumOfLayersSP0 = 8;
 const int NumOfSegSP0    = 5;
 
-
-//const int DetIdBcIn   = 10;
+const int DetIdBcIn   = 10;
 const int DetIdBcOut  = 20;
 const int DetIdSdcIn  = 30;
 const int DetIdSdcOut = 40;
 const int NumOfSegBH1 = 11;
 const int NumOfSegBH2 =  5;
 const int NumOfSegTOF = 32;
-//const int NumOfSegAC  = 19;
-const int NumOfSegAC1  = 18;
-const int NumOfSegBVH  = 4;
-//const int NumOfSegAC2  = 20;
-const int NumOfSegAC  = 30;
 const int NumOfSegLC  = 28;
-//const int NumOfSegBAC = 7;
-//const int NumOfSegBAC = 10;
-const int NumOfSegRC = 42;//ichikawa_mod
-const int NumOfSegNRC = 8;//ichikawa_mod
-const int NumOfSegYOON = 4;
-const int NumOfSegBFT = 160; // miwa_mod
-const int NumOfSegSFTX = 256;
-const int NumOfSegSFTVU = 320;
+const int NumOfSegBFT = 160;
 
-const int PlaneId = 0;
-const int PlaneId_RC = 6;
 const int UorD = 2;
 const int AorT = 2;
 
@@ -112,17 +94,11 @@ const int NumOfLayersSDC2 =6;
 const int NumOfLayersHDC  =4;
 const int NumOfLayersSDC3 =6;
 const int NumOfLayersSDC4 =6;
-const int NumOfLayersSSD  =2;
 
-const int NumOfLayersAc = 2;
-//const int NumOfLayersAc1 = 2;
-const int NumOfLayersRC = 7;
-const int NumOfLayersMisc =2;
 const int NumOfWireBC1 = 256;
 const int NumOfWireBC2 = 256;
 const int NumOfWireBC3 = 64;
 const int NumOfWireBC4 = 64;
-const int NumOfWireK6BDC = 48;
 const int NumOfWireSDC1 = 64;
 const int NumOfWireSDC2 = 96;
 const int NumOfWireHDC  = 112;
@@ -130,7 +106,6 @@ const int NumOfWireSDC3x = 108;
 const int NumOfWireSDC4x = 108;
 const int NumOfWireSDC3uv = 120;
 const int NumOfWireSDC4uv = 120;
-const int NumOfWireSSD = 768;
 const int PlMinBdcIn = 1;
 const int PlMaxBdcIn = 12;
 const int PlMinBdcOut =13;
@@ -140,16 +115,5 @@ const int PlMinSdcIn = 1;
 const int PlMaxSdcIn =10;
 const int PlMinSdcOut=11;
 const int PlMaxSdcOut=22;
-
-const int PlOffsBdc = 100;
-
-const int PlMinAc =  1;
-const int PlMaxAc =  2;
-const int PlMinRC =  1;
-const int PlMaxRC = 10;
-const int PlMinMisc = 1;
-const int PlMaxMisc = 4;
-
-const int PlIdK6Target = 130;
 
 #endif

@@ -1796,137 +1796,105 @@ TList* HistMaker::createPWO(bool flag_ps)
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  // PWO configuration
-  std::vector<std::string> strSubDet;
-  strSubDet.push_back(CONV_STRING(kPWO_B));
-  strSubDet.push_back(CONV_STRING(kPWO_E));
-  strSubDet.push_back(CONV_STRING(kPWO_C));
-  strSubDet.push_back(CONV_STRING(kPWO_L));
+  // ADC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
 
-  std::vector<int> n_unit;
-  n_unit.push_back(NumOfUnitPWO_B);
-  n_unit.push_back(NumOfUnitPWO_E);
-  n_unit.push_back(NumOfUnitPWO_C);
-  n_unit.push_back(NumOfUnitPWO_L);
-
-  std::vector<int> n_seg;
-  n_seg.push_back(NumOfSegPWO_B);
-  n_seg.push_back(NumOfSegPWO_E);
-  n_seg.push_back(NumOfSegPWO_C);
-  n_seg.push_back(NumOfSegPWO_L);
-
-  int NofLoop = kPWO_L - kPWO_B + 1;
-  // Declaration of sub-detector directory
-  for(int type = 0; type<NofLoop; ++type){
-    const char* nameSubDetector = strSubDet[type].c_str();
-    TList *subdet_dir = new TList;
-    subdet_dir->SetName(nameSubDetector);
-
-    // ADC---------------------------------------------------------
-    {
-      // Declaration of the sub-directory
-      std::string strSubDir  = CONV_STRING(kADC);
-      const char* nameSubDir = strSubDir.c_str();
-      TList *sub_dir = new TList;
-      sub_dir->SetName(nameSubDir);
-
-      // Make histogram and add it
-      int target_id = getUniqueID(kPWO, kPWO_B+type, kADC, 0);
-      // 2D histogram
-      for(int i = 0; i<n_unit[type]; ++i){
-	const char* title = NULL;
-	title = Form("%s_%s_unit%d_2d", nameSubDetector, nameSubDir, i+1);
-	sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
-			       n_seg[type], 0, n_seg[type],
-			       0x1000, 0, 0x1000,
-			       "PWO_B segment", "ADC [ch]"));
-      }
-
-      // insert sub directory
-      subdet_dir->Add(sub_dir);
+    int target_id = getUniqueID(kPWO, 0, kADC2D, 0);
+    for(int i = 0; i<NumOfBoxPWO; ++i){
+      const char* title = NULL;
+      int box = i+1; // 1 origin 
+      title = Form("%s_%s2d_Box%d", nameDetector, nameSubDir, box);
+      sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
+			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
+			     0x1000, 0, 0x1000,
+			     "PWO segment", "ADC [ch]"));
     }
 
-    // TDC---------------------------------------------------------
-    {
-      // Declaration of the sub-directory
-      std::string strSubDir  = CONV_STRING(kTDC);
-      const char* nameSubDir = strSubDir.c_str();
-      TList *sub_dir = new TList;
-      sub_dir->SetName(nameSubDir);
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
 
-      // Make histogram and add it
-      int target_id = getUniqueID(kPWO, kPWO_B+type, kTDC, 0);
-      // Sum histogram
-      for(int i = 0; i<n_unit[type]; ++i){
-	const char* title = NULL;
-	title = Form("%s_%s_unit%d", nameSubDetector, nameSubDir, i+1);
-	sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			       0x1000, 0, 0x1000,
-			       "TDC [ch]", ""));
-      }
-
-      target_id += n_unit[type];
-      // 2D histogram
-      for(int i = 0; i<n_unit[type]; ++i){
-	const char* title = NULL;
-	title = Form("%s_%s_unit%d_2d", nameSubDetector, nameSubDir, i+1);
-	sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
-			       n_seg[type], 0, n_seg[type],
-			       0x1000, 0, 0x1000,
-			       "PWO_B segment", "TDC [ch]"));
-      }
-
-      // insert sub directory
-      subdet_dir->Add(sub_dir);
+  // TDC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    
+    // sum hist
+    int target_id = getUniqueID(kPWO, 0, kTDC, 0);
+    for(int i = 0; i<NumOfBoxPWO; ++i){
+      const char* title = NULL;
+      int box = i+1; // 1 origin 
+      title = Form("%s_%ssum_Box%d", nameDetector, nameSubDir, box);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+  			     0x1000, 0, 0x1000,
+  			     "TDC [ch]", ""));
     }
 
-    // HitPat---------------------------------------------------------
-    {
-      // Declaration of the sub-directory
-      std::string strSubDir  = CONV_STRING(kHitPat);
-      const char* nameSubDir = strSubDir.c_str();
-      TList *sub_dir = new TList;
-      sub_dir->SetName(nameSubDir);
-
-      // Make histogram and add it
-      int target_id = getUniqueID(kPWO, kPWO_B+type, kHitPat, 0);
-      // Sum histogram
-      for(int i = 0; i<n_unit[type]; ++i){
-	const char* title = NULL;
-	title = Form("%s_%s_unit%d", nameSubDetector, nameSubDir, i+1);
-	sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			       n_seg[type], 0, n_seg[type],
-			       "PWO_B segment", ""));
-      }
-      
-      // insert sub directory
-      subdet_dir->Add(sub_dir);
+    target_id = getUniqueID(kPWO, 0, kTDC2D, 0);
+    for(int i = 0; i<NumOfBoxPWO; ++i){
+      const char* title = NULL;
+      int box = i+1; // 1 origin 
+      title = Form("%s_%s2d_Box%d", nameDetector, nameSubDir, box);
+      sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
+  			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
+  			     0x1000, 0, 0x1000,
+  			     "PWO segment", "TDC [ch]"));
     }
 
-    // Multi---------------------------------------------------------
-    {
-      // Declaration of the sub-directory
-      std::string strSubDir  = CONV_STRING(kMulti);
-      const char* nameSubDir = strSubDir.c_str();
-      TList *sub_dir = new TList;
-      sub_dir->SetName(nameSubDir);
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
 
-      // Make histogram and add it
-      int target_id = getUniqueID(kPWO, kPWO_B+type, kMulti, 0);
-      // Sum histogram
-      for(int i = 0; i<n_unit[type]; ++i){
-	const char* title = NULL;
-	title = Form("%s_%s_unit%d", nameSubDetector, nameSubDir, i+1);
-	sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			       n_seg[type], 0, n_seg[type],
-			       "Multiplicity", ""));
-      }
-      
-      // insert sub directory
-      subdet_dir->Add(sub_dir);
+  // HitPat---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    
+    int target_id = getUniqueID(kPWO, 0, kHitPat, 0);
+    for(int i = 0; i<NumOfBoxPWO; ++i){
+      const char* title = NULL;
+      int box = i+1; // 1 origin 
+      title = Form("%s_%s_Box%d", nameDetector, nameSubDir, box);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+  			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
+  			     "PWO segment", ""));
     }
 
-    top_dir->Add(subdet_dir);
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // Multiplicity---------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    
+    int target_id = getUniqueID(kPWO, 0, kMulti, 0);
+    for(int i = 0; i<NumOfBoxPWO; ++i){
+      const char* title = NULL;
+      int box = i+1; // 1 origin 
+      title = Form("%s_%s_Box%d", nameDetector, nameSubDir, box);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+  			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
+  			     "Multiplicity", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
   }
   
   // Return the TList pointer which is added into TGFileBrowser

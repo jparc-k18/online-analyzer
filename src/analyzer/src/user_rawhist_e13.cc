@@ -136,6 +136,34 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
   
+  // TriggerFlag ---------------------------------------------------
+  {
+    static const int k_device = gUnpacker.get_device_id("Misc");
+    static const int k_tdc    = gUnpacker.get_data_id("Misc", "tdc");
+
+    static const int tf_tdc_id = gHist.getSequentialID(kTriggerFlag, 0, kTDC);
+    static const int tf_hit_id = gHist.getSequentialID(kTriggerFlag, 0, kHitPat);
+    for(int seg = 0; seg<NumOfSegMisc; ++seg){
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      if(nhit != 0){
+	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
+	if(tdc != 0){
+	  hptr_array[tf_tdc_id+seg]->Fill(tdc);
+	  hptr_array[tf_hit_id]->Fill(seg);
+	}
+      }
+    }// for(seg)
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
   // BH1 -----------------------------------------------------------
   {
     // data type
@@ -1249,6 +1277,68 @@ process_event()
 	}
       }
     }
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+  // PWO -------------------------------------------------------------
+  {
+    // data typep
+    static const int k_device = gUnpacker.get_device_id("PWO");
+    static const int k_adc    = gUnpacker.get_data_id("PWO","adc");
+    static const int k_tdc    = gUnpacker.get_data_id("PWO","tdc");
+
+    // sequential id
+    // sequential hist
+    static const int pwo_adc2d_id  = gHist.getSequentialID(kPWO, 0, kADC2D);
+    static const int pwo_tdcsum_id = gHist.getSequentialID(kPWO, 0, kTDC);
+    static const int pwo_tdc2d_id  = gHist.getSequentialID(kPWO, 0, kTDC2D);
+    static const int pwo_hit_id    = gHist.getSequentialID(kPWO, 0, kHitPat);
+    static const int pwo_mul_id    = gHist.getSequentialID(kPWO, 0, kMulti);
+
+    int plane=0;
+    for(int box = 0; box<NumOfBoxPWO; ++box){
+      switch(NumOfUnitPWO[box]){
+      case 21: plane = 0; break;
+      case 14: plane = 1; break;
+      case  9: plane = 2; break;
+      case  6: plane = 3; break;
+      default: std::cerr << "#E unknown PWO box type" << std::endl;
+      }
+
+      TH2* hadc2d = dynamic_cast<TH2*>(hptr_array[pwo_adc2d_id + box]);
+      TH2* htdc2d = dynamic_cast<TH2*>(hptr_array[pwo_tdc2d_id + box]);
+
+      int Multiplicity = 0;
+      for(int unit = 0; unit<NumOfUnitPWO[box]; ++unit){
+	// ADC
+	int nhit_adc = gUnpacker.get_entries(k_device, plane, SegIdPWO[box], unit, k_adc);
+	if(nhit_adc != 0){
+	  int adc = gUnpacker.get(k_device, plane, SegIdPWO[box], unit, k_adc);
+	  hadc2d->Fill(unit, adc);
+	}
+
+	// TDC
+	int nhit_tdc = gUnpacker.get_entries(k_device, plane, SegIdPWO[box], unit, k_tdc);
+	for(int m = 0; m<nhit_tdc; ++m){
+	  int tdc = gUnpacker.get(k_device, plane, SegIdPWO[box], unit, k_tdc, m);
+	  hptr_array[pwo_tdcsum_id+box]->Fill(tdc);
+	  htdc2d->Fill(unit, tdc);
+	}
+
+	// HitPat
+	if(nhit_tdc != 0){
+	  hptr_array[pwo_hit_id+box]->Fill(unit);
+	  ++Multiplicity;
+	}
+	
+      }// for(unit)
+
+      hptr_array[pwo_mul_id+box]->Fill(Multiplicity);
+    }// for(box)
 
 #if 0
     // Debug, dump data relating this detector

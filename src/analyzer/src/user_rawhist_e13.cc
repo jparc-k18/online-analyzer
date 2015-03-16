@@ -662,7 +662,7 @@ process_event()
 
 #if 0
     // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
+    gUnpacker.dump_data_device(k_device, 1);
 #endif
   }
 
@@ -685,16 +685,16 @@ process_event()
 
       for(int seg=0; seg<NumOfSegSP0; ++seg){
 	// ADC
-	int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
+	int nhit = gUnpacker.get_entries(k_device, l, seg, k_u, k_adc);
 	if(nhit != 0){
-	  unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+	  unsigned int adc = gUnpacker.get(k_device, l, seg, k_u, k_adc);
 	  hptr_array[sp0a_id + seg]->Fill(adc);
 	}
 
 	// TDC
-	nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+	nhit = gUnpacker.get_entries(k_device, l, seg, k_u, k_tdc);
 	if(nhit != 0){
-	  unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
+	  unsigned int tdc = gUnpacker.get(k_device, l, seg, k_u, k_tdc);
 	  if(tdc != 0){ hptr_array[sp0t_id + seg]->Fill(tdc); }
 	}
       }
@@ -705,16 +705,16 @@ process_event()
     
       for(int seg=0; seg<NumOfSegSP0; ++seg){
 	// ADC
-	int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
+	int nhit = gUnpacker.get_entries(k_device, l, seg, k_d, k_adc);
 	if(nhit != 0){
-	  unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+	  unsigned int adc = gUnpacker.get(k_device, l, seg, k_d, k_adc);
 	  hptr_array[sp0a_id + seg]->Fill(adc);
 	}
 
 	// TDC
-	nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+	nhit = gUnpacker.get_entries(k_device, l, seg, k_d, k_tdc);
 	if(nhit != 0){
-	  unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
+	  unsigned int tdc = gUnpacker.get(k_device, l, seg, k_d, k_tdc);
 	  if(tdc != 0){ hptr_array[sp0t_id + seg]->Fill(tdc); }
 	}
       }

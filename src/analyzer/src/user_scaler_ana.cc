@@ -20,12 +20,18 @@ namespace analyzer
 
   enum dispColumn{
     left, right,
+    Ge_left, Ge_right,
     size_dispColumn
   };
 
   enum idModule{
     id_v830, id_v820,
     size_idModule
+  };
+
+  enum idGeType{
+    id_CRM, id_Reset,
+    size_idGeType
   };
 
   struct scaler_info{
@@ -52,6 +58,14 @@ process_begin(const std::vector<std::string>& argv)
   for(int i = 0; i<32; ++i){
     cont_info[left].push_back(  scaler_info("NULL", id_v820, i, false) );
     cont_info[right].push_back( scaler_info("NULL", id_v830, i, false) );
+
+    char name_crm[128];
+    sprintf(name_crm, "CRM%d", i);
+    cont_info[Ge_left].push_back(  scaler_info(name_crm, id_CRM,   i, true) );
+
+    char name_reset[128];
+    sprintf(name_reset, "RST%d", i);
+    cont_info[Ge_right].push_back( scaler_info(name_reset, id_Reset, i, true) );
   }
 
   // left column (counter info)
@@ -136,9 +150,9 @@ process_event()
   static UnpackerManager& g_unpacker = GUnpacker::get_instance();
   
   static int run_number = g_unpacker.get_root()->get_run_number();
-  static unsigned int prev[size_dispColumn][NofCh] = {{0}, {0}};
-  static unsigned int curr[size_dispColumn][NofCh] = {{0}, {0}};
-  static unsigned int val[size_dispColumn][NofCh]  = {{0}, {0}};
+  static unsigned int prev[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}};
+  static unsigned int curr[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}};
+  static unsigned int val[size_dispColumn][NofCh]  = {{0}, {0}, {0}, {0}};
   
   static int event_count = 0;
   static bool en_disp = false;
@@ -161,17 +175,20 @@ process_event()
 
   {
     // scaler
-    static int device_id = g_unpacker.get_device_id("scaler");
+    static int scaler_id    = g_unpacker.get_device_id("scaler");
+    static int ge_scaler_id = g_unpacker.get_device_id("GeScaler");
 
     for(int i = 0; i<NofCh; ++i){
       scaler_info info[size_dispColumn];
-
+      
+      // Counter & DAQ info
       info[left]  = cont_info[left][i];
       info[right] = cont_info[right][i];
 
+      // Left column
       if(info[left].flag_disp){
 	prev[left][i] = curr[left][i];
-	curr[left][i] = g_unpacker.get(device_id, info[left].module_id, 0, info[left].ch, 0);
+	curr[left][i] = g_unpacker.get(scaler_id, info[left].module_id, 0, info[left].ch, 0);
 
 	if(curr[left][i] < prev[left][i]){
 	  prev[left][i] = 0;
@@ -180,9 +197,10 @@ process_event()
 	val[left][i] += curr[left][i] - prev[left][i];
       }
 
+      // Right column
       if(info[right].flag_disp){
 	prev[right][i] = curr[right][i];
-	curr[right][i] = g_unpacker.get(device_id, info[right].module_id, 0, info[right].ch, 0);
+	curr[right][i] = g_unpacker.get(scaler_id, info[right].module_id, 0, info[right].ch, 0);
 
 	if(curr[right][i] < prev[right][i]){
 	  prev[right][i] = 0;
@@ -191,10 +209,41 @@ process_event()
 	val[right][i] += curr[right][i] - prev[right][i];
       }
 
+      // Ge info
+      info[Ge_left]  = cont_info[Ge_left][i];
+      info[Ge_right] = cont_info[Ge_right][i];
+
+      // Ge CRM
+      if(info[Ge_left].flag_disp){
+	prev[Ge_left][i] = curr[Ge_left][i];
+	curr[Ge_left][i] = g_unpacker.get(ge_scaler_id, info[Ge_left].module_id, 0, info[Ge_left].ch, 0);
+
+	if(curr[Ge_left][i] < prev[Ge_left][i]){
+	  prev[Ge_left][i] = 0;
+	}
+
+	val[Ge_left][i] += curr[Ge_left][i] - prev[Ge_left][i];
+      }
+
+      // Ge Reset
+      if(info[Ge_right].flag_disp){
+	prev[Ge_right][i] = curr[Ge_right][i];
+	curr[Ge_right][i] = g_unpacker.get(ge_scaler_id, info[Ge_right].module_id, 0, info[Ge_right].ch, 0);
+
+	if(curr[Ge_right][i] < prev[Ge_right][i]){
+	  prev[Ge_right][i] = 0;
+	}
+
+	val[Ge_right][i] += curr[Ge_right][i] - prev[Ge_right][i];
+      }
+
+      // display
       if(en_disp){
-	printf("%-10s %10u : %-15s %10u\n",
+	printf("%-10s %10u : %-15s %10u : %-6s %12u : %-6s %12u\n",
 	       info[left].name.c_str(),  val[left][i],
-	       info[right].name.c_str(), val[right][i]
+	       info[right].name.c_str(), val[right][i],
+	       info[Ge_left].name.c_str(),  val[Ge_left][i],
+	       info[Ge_right].name.c_str(), val[Ge_right][i]
 	       );
       }
     }

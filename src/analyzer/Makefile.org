@@ -19,13 +19,23 @@ core_obj = UserParamMan.o HodoParamMan.o HodoPHCMan.o DCGeomMan.o DCTdcCalibMan.
 my_obj_skeleton := $(core_obj) user_skeleton.o
 my_tgt_skeleton := $(bin_dir)/skeleton
 
+my_obj_udebug := $(core_obj) user_unpacker_debug.o
+my_tgt_udebug := $(bin_dir)/unpacker_debug
+
+my_obj_tag := $(core_obj) user_tag_checker.o
+my_tgt_tag := $(bin_dir)/tag_checker
+
+my_obj_scaler := $(core_obj) user_scaler_ana.o
+my_tgt_scaler := $(bin_dir)/scaler_ana
+
 my_obj_rawhist_e13  := $(core_obj) user_rawhist_e13.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o
 my_tgt_rawhist_e13  := $(bin_dir)/raw_hist_e13
 
 my_obj_pwo  := $(core_obj) user_pwo.o HistMaker.o MacroBuilder.o
 my_tgt_pwo  := $(bin_dir)/pwo_hist
 
-all:: $(my_tgt_skeleton) $(my_tgt_rawhist_e13) $(my_tgt_pwo)
+all:: $(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_rawhist_e13) $(my_tgt_pwo) $(my_tgt_tag)\
+      $(my_tgt_scaler)
 
  $(my_dir)/dict/GuiPs_Dict.cc: \
  $(my_dir)/include/GuiPs.hh \
@@ -43,6 +53,24 @@ my_obj_skeleton := $(addprefix $(my_dir)/src/,$(my_obj_skeleton))
 my_lib_skeleton := libmyskeleton.so
 $(eval $(call make-lib,$(my_lib_skeleton),$(my_obj_skeleton)))
 $(eval $(call make-gui-target,$(my_tgt_skeleton),$(my_lib_skeleton)))
+
+#_____________________________________________________________________________
+my_obj_udebug := $(addprefix $(my_dir)/src/,$(my_obj_udebug))
+my_lib_udebug := libmyudebug.so
+$(eval $(call make-lib,$(my_lib_udebug),$(my_obj_udebug)))
+$(eval $(call make-nogui-target,$(my_tgt_udebug),$(my_lib_udebug)))
+
+#_____________________________________________________________________________
+my_obj_tag := $(addprefix $(my_dir)/src/,$(my_obj_tag))
+my_lib_tag := libmytag.so
+$(eval $(call make-lib,$(my_lib_tag),$(my_obj_tag)))
+$(eval $(call make-nogui-target,$(my_tgt_tag),$(my_lib_tag)))
+
+#_____________________________________________________________________________
+my_obj_scaler := $(addprefix $(my_dir)/src/,$(my_obj_scaler))
+my_lib_scaler := libmyscaler.so
+$(eval $(call make-lib,$(my_lib_scaler),$(my_obj_scaler)))
+$(eval $(call make-nogui-target,$(my_tgt_scaler),$(my_lib_scaler)))
 
 #_____________________________________________________________________________
 my_obj_rawhist_e13 := $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e13))

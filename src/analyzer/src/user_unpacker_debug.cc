@@ -49,6 +49,19 @@ process_event()
   std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_number_of_blocks) << std::dec <<std::endl;
   std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_unix_time) << std::dec <<std::endl;
 
+  node_id = g_unpacker.get_fe_id("skseb"); // Event builder
+  std::cout << std::hex;
+  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_magic) << std::dec << std::endl;
+  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_data_size) << std::endl;
+  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_event_number) << std::endl;
+  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_run_number) << std::hex <<std::endl;
+  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_node_id) << std::endl;
+  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_node_type) << std::dec <<std::endl;
+  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_number_of_blocks) << std::dec <<std::endl;
+  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_unix_time) << std::dec <<std::endl;
+
+  //  g_unpacker.dump_data_fe(node_id);
+
   return 0;
 }
 

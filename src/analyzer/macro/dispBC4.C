@@ -18,7 +18,7 @@ void dispBC4()
   int base_id = HistMaker::getUniqueID(kBC4, 0, kTDC);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
-    TH1 *h = GHist::get(base_id + i);
+    TH1 *h = (TH1*)GHist::get(base_id + i)->Clone();
     h->GetXaxis()->SetRangeUser(256,1000);
     h->Draw();
   }
@@ -44,8 +44,8 @@ void dispBC4()
   int base_id = HistMaker::getUniqueID(kBC4, 0, kMulti);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
-    TH1 *h_wot = GHist::get(base_id + i);
-    TH1 *h_wt  = GHist::get(base_id + i + n_layer);
+    TH1 *h_wot = (TH1*)GHist::get(base_id + i)->Clone();
+    TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer)->Clone();
     h_wot->SetMaximum(h_wt->GetMaximum()*1.1);
     h_wot->Draw();
     h_wt->SetLineColor(2);

@@ -71,6 +71,9 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispSDC3());
   tab_macro->Add(dispSDC4());
   tab_macro->Add(dispHitPat());
+  tab_macro->Add(effBcOut());
+  tab_macro->Add(effSdcIn());
+  tab_macro->Add(effSdcOut());
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();

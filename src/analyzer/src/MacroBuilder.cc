@@ -170,3 +170,30 @@ TObject* dispHitPat()
   m->SetName("dispHitPat");
   return m;
 }
+
+// efficiency BcOut -----------------------------------------------
+TObject* effBcOut()
+{
+  std::string path = getMacroPath() + "effBcOut.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("effBcOut");
+  return m;
+}
+
+// efficiency SdcIn -----------------------------------------------
+TObject* effSdcIn()
+{
+  std::string path = getMacroPath() + "effSdcIn.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("effSdcIn");
+  return m;
+}
+
+// efficiency SdcOut ----------------------------------------------
+TObject* effSdcOut()
+{
+  std::string path = getMacroPath() + "effSdcOut.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("effSdcOut");
+  return m;
+}

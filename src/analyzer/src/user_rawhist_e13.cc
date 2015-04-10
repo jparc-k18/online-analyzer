@@ -113,7 +113,7 @@ process_begin(const std::vector<std::string>& argv)
   gPsMaker.getListOfOption(optList);
   
   hddaq::gui::GuiPs& gPsTab = hddaq::gui::GuiPs::getInstance();
-  gPsTab.setFilename("/home/sks/PSFile/tmp/default.ps");
+  gPsTab.setFilename("/home/sks/PSFile/e13_2015/default.ps");
   gPsTab.initialize(optList, detList);
   // ----------------------------------------------------------
   

@@ -19,7 +19,7 @@ void dispTOF()
   for(int i = 0; i<n_seg; ++i){
     c->cd(i+1);
     gPad->SetLogy();
-    TH1 *h = (TH1*)GHist::get(base_id + i)->Clone();
+    TH1 *h = (TH1*)GHist::get(base_id + i);
     h->GetXaxis()->SetRangeUser(0,3000);
     h->Draw();
   }
@@ -34,7 +34,7 @@ void dispTOF()
   for(int i = 0; i<n_seg; ++i){
     c->cd(i+1);
     gPad->SetLogy();
-    TH1 *h = (TH1*)GHist::get(base_id + i)->Clone();
+    TH1 *h = (TH1*)GHist::get(base_id + i);
     h->GetXaxis()->SetRangeUser(0,3000);
     h->Draw();
   }

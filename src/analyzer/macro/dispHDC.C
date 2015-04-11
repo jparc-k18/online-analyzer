@@ -18,7 +18,7 @@ void dispHDC()
   int base_id = HistMaker::getUniqueID(kHDC, 0, kTDC);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
-    TH1 *h = (TH1*)GHist::get(base_id + i)->Clone();
+    TH1 *h = (TH1*)GHist::get(base_id + i);
     h->GetXaxis()->SetRangeUser(256,1000);
     h->Draw();
   }
@@ -44,8 +44,8 @@ void dispHDC()
   int base_id = HistMaker::getUniqueID(kHDC, 0, kMulti);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
-    TH1 *h_wot = (TH1*)GHist::get(base_id + i)->Clone();
-    TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer)->Clone();
+    TH1 *h_wot = (TH1*)GHist::get(base_id + i);
+    TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer);
     h_wot->SetMaximum(h_wt->GetMaximum()*1.1);
     h_wot->Draw();
     h_wt->SetLineColor(2);

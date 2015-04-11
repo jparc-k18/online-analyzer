@@ -1250,6 +1250,7 @@ process_event()
 
       for(int smp = 0; smp<6; ++smp){
 	TH2* h = dynamic_cast<TH2*>(hptr_array[tko_id+smp]);
+	if(smp == 4 ){continue;}
 	for(int ma = 0; ma<24; ++ma){
 	  int nhit = gUnpacker.get_fe_info(k_vme, addr[smp], ma);
 	  h->Fill(ma, nhit);

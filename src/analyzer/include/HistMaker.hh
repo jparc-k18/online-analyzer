@@ -17,7 +17,7 @@ enum DetectorType{
   // Detector unique ID in Hyperball
   kGe, kPWO,
   // Others
-  kTriggerFlag, kCorrelation, kMisc,
+  kTriggerFlag, kDAQ, kCorrelation, kMisc,
   sizeDetectorType,
   factorDetectorType = 10000000
 };
@@ -27,12 +27,8 @@ enum SubDetectorType{
   // Detector unique sub ID in Counters
   kSP0_L1, kSP0_L2, kSP0_L3, kSP0_L4,
   kSP0_L5, kSP0_L6, kSP0_L7, kSP0_L8,
-  // Detector unique sub ID in Hyperball
-  kPWO_Box1, kPWO_Box2, kPWO_Box3, kPWO_Box4, kPWO_Box5,
-  kPWO_Box6, kPWO_Box7, kPWO_Box8, kPWO_Box9, kPWO_Box10,
-  kPWO_Box11, kPWO_Box12, kPWO_Box13, kPWO_Box14, kPWO_Box15,
-  kPWO_Box16, kPWO_Box17, kPWO_Box18, kPWO_Box19, kPWO_Box20,
-  kPWO_Box21, kPWO_Box22,
+  // DAQ unique sub ID
+  kEB, kTKO, kVME, kCopper, kEASIROC, kCAMAC,
   sizeSubDetectorType,
   factorSubDetectorType = 100000
 };
@@ -117,6 +113,7 @@ public:
   TList* createPWO(bool flag_ps=true);
   TList* createTriggerFlag(bool flag_ps=true);
   TList* createCorrelation(bool flag_ps=true);
+  TList* createDAQ(bool flag_ps=true);
 
 private:
   HistMaker();

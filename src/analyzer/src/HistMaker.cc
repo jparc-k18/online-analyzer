@@ -1997,3 +1997,82 @@ TList* HistMaker::createCorrelation(bool flag_ps)
 
   return top_dir;
 }
+
+// -------------------------------------------------------------------------
+// createDAQ
+// -------------------------------------------------------------------------
+TList* HistMaker::createDAQ(bool flag_ps)
+{
+  // Determine the detector name
+  std::string strDet = CONV_STRING(kDAQ);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet); 
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet); 
+  }
+
+  // Declaration of the directory
+  // Just type conversion from std::string to char*
+  const char* nameDetector = strDet.c_str(); 
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);    
+
+
+  // DAQ infomation --------------------------------------------------
+  {
+    // Event builder infomation
+    int target_id = getUniqueID(kDAQ, kEB, kHitPat, 0);
+    top_dir->Add(createTH1(target_id + 1, "Data size EB", // 1 origin
+			   5000, 0, 5000,
+			   "Data size [words]", ""));
+
+    // Node information
+    target_id = getUniqueID(kDAQ, kVME, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id + 1, "Data size VME nodes", // 1 origin
+			   7, 0, 7,
+			   500, 0, 1000,
+			   "VME node ID", "Data size [words]"));
+
+    target_id = getUniqueID(kDAQ, kCopper, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id + 1, "Data size Copper nodes", // 1 origin
+			   15, 0, 15,
+			   100, 0, 200,
+			   "Copper node ID", "Data size [words]"));
+
+    target_id = getUniqueID(kDAQ, kEASIROC, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id + 1, "Data size EASIROC nodes", // 1 origin
+			   11, 0, 11,
+			   50, 0, 100,
+			   "EASIROC node ID", "Data size [words]"));
+
+    target_id = getUniqueID(kDAQ, kCAMAC, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id + 1, "Data size CAMAC nodes", // 1 origin
+			   3, 0, 3,
+			   50, 0, 100,
+			   "CAMAC node ID", "Data size [words]"));
+  }
+  
+  {
+    // TKO box information
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kTKO);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    int target_id = getUniqueID(kDAQ, kTKO, kHitPat2D, 0);
+    for(int box = 0; box<6; ++box){
+      const char* title = NULL;
+      title = Form("TKO box%d", box);
+      sub_dir->Add(createTH2(target_id + box+1, title, // 1 origin
+			     24, 0, 24, 
+			     40, 0, 40,
+			     "TKO MA", "N of decoded hits"));
+      
+      top_dir->Add(sub_dir);
+    }
+  }
+
+  return top_dir;  
+}

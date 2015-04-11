@@ -15,6 +15,7 @@
 
 #include "user_analyzer.hh"
 #include "UnpackerManager.hh"
+#include "DAQNode.hh"
 #include "filesystem_util.hh"
 #include "ConfMan.hh"
 #include "UserParamMan.hh"
@@ -97,6 +98,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createPWO());
   tab_hist->Add(gHist.createTriggerFlag(false));
   tab_hist->Add(gHist.createCorrelation());
+  tab_hist->Add(gHist.createDAQ(false));
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -1186,6 +1188,76 @@ process_event()
 	hcor_sdc2hdc->Fill(wire1, wire2);
       }
     }
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+  // DAQ -------------------------------------------------------------
+  {
+    // node id
+    static const int k_eb      = gUnpacker.get_fe_id("skseb");
+    static const int k_vme     = gUnpacker.get_fe_id("vme01");
+    static const int k_copper  = gUnpacker.get_fe_id("clite1");
+    static const int k_easiroc = gUnpacker.get_fe_id("easiroc0");
+    
+    // sequential id
+    static const int eb_id      = gHist.getSequentialID(kDAQ, kEB, kHitPat);
+    static const int vme_id     = gHist.getSequentialID(kDAQ, kVME, kHitPat2D);
+    static const int copper_id  = gHist.getSequentialID(kDAQ, kCopper, kHitPat2D);
+    static const int easiroc_id = gHist.getSequentialID(kDAQ, kEASIROC, kHitPat2D);
+    static const int tko_id     = gHist.getSequentialID(kDAQ, kTKO, kHitPat2D);
+
+    {
+      // EB
+      int data_size = gUnpacker.get_node_header(k_eb, DAQNode::k_data_size);
+      hptr_array[eb_id]->Fill(data_size);
+    }
+
+    {
+      // VME node
+      TH2* h = dynamic_cast<TH2*>(hptr_array[vme_id]);
+      for(int i = 0; i<6; ++i){
+	if(i == 1){continue;}
+	int data_size = gUnpacker.get_node_header(k_vme+i, DAQNode::k_data_size);
+	h->Fill(i+1, data_size);
+      }
+    }
+
+    {
+      // Copper node
+      TH2* h = dynamic_cast<TH2*>(hptr_array[copper_id]);
+      for(int i = 0; i<14; ++i){
+	int data_size = gUnpacker.get_node_header(k_copper+i, DAQNode::k_data_size);
+	h->Fill(i+1, data_size);
+      }
+    }
+
+    {
+      // EASIROC node
+      TH2* h = dynamic_cast<TH2*>(hptr_array[easiroc_id]);
+      for(int i = 0; i<10; ++i){
+	int data_size = gUnpacker.get_node_header(k_easiroc+i, DAQNode::k_data_size);
+	h->Fill(i+1, data_size);
+      }
+    }
+
+    {
+      // TKO box
+      static const int addr[] = {0x10000000, 0x10200000, 0x10400000, 0x10600000,
+				 0x10800000, 0x10a00000};
+
+      for(int smp = 0; smp<6; ++smp){
+	TH2* h = dynamic_cast<TH2*>(hptr_array[tko_id+smp]);
+	if(smp == 4 ){continue;}
+	for(int ma = 0; ma<24; ++ma){
+	  int nhit = gUnpacker.get_fe_info(k_vme, addr[smp], ma);
+	  h->Fill(ma, nhit);
+	}
+      }
+    }
+
   }
 
 #if DEBUG

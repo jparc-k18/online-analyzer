@@ -1727,7 +1727,7 @@ TList* HistMaker::createGe(bool flag_ps)
       int seg = i+1; // 1 origin 
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     2000, 0, 10000,
+			     2000, 0, 130000,
 			     "PUR [ch]", ""));
     }
 
@@ -1735,7 +1735,7 @@ TList* HistMaker::createGe(bool flag_ps)
     target_id = getUniqueID(kGe, 0, kPUR2D, 0);
     sub_dir->Add(createTH2(++target_id, "Ge_PUR_2D", // 1 origin
 			   NumOfSegGe, 0, NumOfSegGe,
-			   2000, 0, 10000,
+			   2000, 0, 130000,
 			   "Ge segment", "PUR [ch]"));
 
     // insert sub directory
@@ -1757,7 +1757,7 @@ TList* HistMaker::createGe(bool flag_ps)
       int seg = i+1; // 1 origin 
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     100, 0, 010000,
+			     100, 0, 130000,
 			     "RST [ch]", ""));
     }
 
@@ -1765,7 +1765,7 @@ TList* HistMaker::createGe(bool flag_ps)
     target_id = getUniqueID(kGe, 0, kRST2D, 0);
     sub_dir->Add(createTH2(++target_id, "Ge_RST_2D", // 1 origin
 			   NumOfSegGe, 0, NumOfSegGe,
-			   100, 0, 10000,
+			   100, 0, 130000,
 			   "Ge segment", "RST [ch]"));
 
     // insert sub directory

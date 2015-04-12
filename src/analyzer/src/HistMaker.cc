@@ -1020,6 +1020,25 @@ TList* HistMaker::createSP0(bool flag_ps)
       // insert sub directory
       subdet_dir->Add(sub_dir);
     }
+
+    // HitPat-------------------------------------------------------
+    {
+      // Make histogram and add it
+      int target_id = getUniqueID(kSP0, kSP0_L1+sd, kHitPat, 0);
+      for(int i = 0; i<2; ++i){
+	const char* title = NULL;
+	if(i == 0){
+	  title = Form("%s_HitPat_%dU", nameSubDetector, sd);
+	}else{
+	  title = Form("%s_HitPat_%dD", nameSubDetector, sd);
+	}
+
+	subdet_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+				  NumOfSegSP0, 0, NumOfSegSP0,
+				  "Segment", ""));
+      }
+    }
+
     top_dir->Add(subdet_dir);
   }
   

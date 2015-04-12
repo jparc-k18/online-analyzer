@@ -197,3 +197,12 @@ TObject* effSdcOut()
   m->SetName("effSdcOut");
   return m;
 }
+
+// Beam profile ---------------------------------------------------
+TObject* dispBeamProfile()
+{
+  std::string path = getMacroPath() + "dispBeamProfile.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispBeamProfile");
+  return m;
+}

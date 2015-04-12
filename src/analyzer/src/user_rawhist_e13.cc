@@ -1297,6 +1297,10 @@ process_event()
     static const
       int ge_adcsum_id = gHist.getSequentialID(kGe, 0, kADC, NumOfSegGe +1);
 
+    // hitpat hist id
+    static const
+      int ge_hitpat_id = gHist.getSequentialID(kGe, 0, kHitPat);
+
     // 2d hist id
     static const
       int ge_adc2d_id = gHist.getSequentialID(kGe, 0, kADC2D);
@@ -1317,6 +1321,10 @@ process_event()
 	hptr_array[ge_adc_id + seg]->Fill(adc);
 	hptr_array[ge_adc2d_id]->Fill(seg, adc);
 	hptr_array[ge_adcsum_id]->Fill(adc);
+
+	if(115 < adc && adc < 7500){
+	  hptr_array[ge_hitpat_id]->Fill(seg);
+	}
       }
 
       // CRM

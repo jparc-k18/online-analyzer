@@ -18,12 +18,14 @@
 #include "DAQNode.hh"
 #include "filesystem_util.hh"
 #include "ConfMan.hh"
-#include "UserParamMan.hh"
 #include "HistMaker.hh"
 #include "DetectorID.hh"
 #include "PsMaker.hh"
 #include "GuiPs.hh"
 #include "MacroBuilder.hh"
+
+#include "UserParamMan.hh"
+#include "HodoParamMan.hh"
 
 #define DEBUG 0
 
@@ -53,6 +55,7 @@ process_begin(const std::vector<std::string>& argv)
   hddaq::gui::Controller& gCon = hddaq::gui::Controller::getInstance();
   TGFileBrowser *tab_hist  = gCon.makeFileBrowser("Hist");
   TGFileBrowser *tab_macro = gCon.makeFileBrowser("Macro");
+  TGFileBrowser *tab_btof  = gCon.makeFileBrowser("BTOF");
 
   // Add macros to the Macro tab
   tab_macro->Add(hoge());
@@ -99,6 +102,13 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createTriggerFlag(false));
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createDAQ(false));
+
+  // Add extra histogram
+  int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
+  tab_btof->Add(gHist.createTH1(btof_id, "BTOF",
+				300, -10, 5,
+				"BTOF [ns]", ""
+				));
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -1265,6 +1275,69 @@ process_event()
       }
     }
 
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+  //------------------------------------------------------------------
+  // BTOF
+  //------------------------------------------------------------------
+  {
+    // Unpacker
+    static const int k_d_bh1  = gUnpacker.get_device_id("BH1");
+    static const int k_d_bh2  = gUnpacker.get_device_id("BH2");
+    static const int k_u      = 0; // up
+    static const int k_d      = 1; // down
+    static const int k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
+
+    // HodoParam
+    static const int cid_bh1  = 3;
+    static const int cid_bh2  = 4;
+    static const int plid     = 0;
+
+    // Sequential ID
+    static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
+
+    // BH2
+    double t0  = -999;
+    double ofs = 0;
+    for(int seg = 0; seg<NumOfSegBH2; ++seg){
+      int nhit = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
+      if(nhit != 0){
+	int tdc = gUnpacker.get(k_d_bh2, 0, seg, k_u, k_tdc);
+	if(tdc != 0){
+	  HodoParamMan& hodoMan = HodoParamMan::GetInstance();
+	  double bh2t=-999;
+	  hodoMan.GetTime(cid_bh2, plid, seg, k_u, tdc, bh2t);
+	  if(fabs(t0) > fabs(bh2t)){
+	    hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
+	    t0 = bh2t;
+	  }
+	}//if(tdc)
+      }// if(nhit)
+    }// for(seg)
+
+    // BH1
+    for(int seg = 0; seg<NumOfSegBH1; ++seg){
+      int nhitu = gUnpacker.get_entries(k_d_bh1, 0, seg, k_u, k_tdc);
+      int nhitd = gUnpacker.get_entries(k_d_bh1, 0, seg, k_d, k_tdc);
+      if(nhitu != 0 &&  nhitd != 0){
+	int tdcu = gUnpacker.get(k_d_bh1, 0, seg, k_u, k_tdc);
+	int tdcd = gUnpacker.get(k_d_bh1, 0, seg, k_d, k_tdc);
+	if(tdcu != 0 && tdcd != 0){
+	  HodoParamMan& hodoMan = HodoParamMan::GetInstance();
+	  double bh1tu, bh1td;
+	  hodoMan.GetTime(cid_bh1, plid, seg, k_u, tdcu, bh1tu);
+	  hodoMan.GetTime(cid_bh1, plid, seg, k_d, tdcd, bh1td);
+	  double mt = (bh1tu+bh1td)/2.;
+	  double btof = mt-(t0+ofs);
+	  std::cout << btof << std::endl;
+	  hptr_array[btof_id]->Fill(btof);
+	}// if(tdc)
+      }// if(nhit)
+    }// for(seg)
   }
 
 #if DEBUG

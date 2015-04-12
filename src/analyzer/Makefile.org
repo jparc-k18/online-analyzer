@@ -31,11 +31,14 @@ my_tgt_scaler := $(bin_dir)/scaler_ana
 my_obj_rawhist_e13  := $(core_obj) user_rawhist_e13.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o
 my_tgt_rawhist_e13  := $(bin_dir)/raw_hist_e13
 
+my_obj_beamprofile_e13  := $(core_obj) user_beamprofile_e13.o HistMaker.o MacroBuilder.o DCAnalyzer.o
+my_tgt_beamprofile_e13  := $(bin_dir)/beamprofile_e13
+
 my_obj_pwo  := $(core_obj) user_pwo.o HistMaker.o MacroBuilder.o
 my_tgt_pwo  := $(bin_dir)/pwo_hist
 
 all:: $(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_rawhist_e13) $(my_tgt_pwo) $(my_tgt_tag)\
-      $(my_tgt_scaler)
+      $(my_tgt_scaler) $(my_tgt_beamprofile_e13)
 
  $(my_dir)/dict/GuiPs_Dict.cc: \
  $(my_dir)/include/GuiPs.hh \
@@ -80,6 +83,14 @@ my_obj_rawhist_e13 := $(my_obj_rawhist_e13) \
 my_lib_rawhist_e13 := libmyrawhist_e13.so
 $(eval $(call make-lib,$(my_lib_rawhist_e13),$(my_obj_rawhist_e13)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e13),$(my_lib_rawhist_e13)))
+
+#_____________________________________________________________________________
+my_obj_beamprofile_e13 := $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e13))
+my_obj_beamprofile_e13 := $(my_obj_beamprofile_e13) \
+		  $(my_dir)/dict/HistMaker_Dict.o
+my_lib_beamprofile_e13 := libmybeamprofile_e13.so
+$(eval $(call make-lib,$(my_lib_beamprofile_e13),$(my_obj_beamprofile_e13)))
+$(eval $(call make-gui-target,$(my_tgt_beamprofile_e13),$(my_lib_beamprofile_e13)))
 
 #_____________________________________________________________________________
 my_obj_pwo := $(addprefix $(my_dir)/src/,$(my_obj_pwo))

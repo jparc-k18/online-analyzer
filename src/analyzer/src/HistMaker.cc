@@ -1667,6 +1667,12 @@ TList* HistMaker::createGe(bool flag_ps)
 			   0x2000, 0, 0x2000,
 			   "Ge segment", "ADC [ch]"));
 
+    // HitPat
+    target_id = getUniqueID(kGe, 0, kHitPat, 0);
+    sub_dir->Add(createTH1(++target_id, "Ge_HitPat (using ADC)", // 1 origin
+			   NumOfSegGe, 0, NumOfSegGe,
+			   "Ge segment", ""));
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }

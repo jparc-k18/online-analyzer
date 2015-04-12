@@ -23,4 +23,6 @@ TObject* effBcOut();
 TObject* effSdcIn();
 TObject* effSdcOut();
 
+TObject* dispBeamProfile();
+
 #endif

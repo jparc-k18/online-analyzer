@@ -685,8 +685,10 @@ process_event()
     static const int k_tdc    = gUnpacker.get_data_id("SP0","tdc");
 
     for(int l = 0; l<NumOfLayersSP0; ++l){
-      int sp0a_id = gHist.getSequentialID(kSP0, kSP0_L1+l, kADC);
-      int sp0t_id = gHist.getSequentialID(kSP0, kSP0_L1+l, kTDC);
+      int sp0a_id  = gHist.getSequentialID(kSP0, kSP0_L1+l, kADC);
+      int sp0t_id  = gHist.getSequentialID(kSP0, kSP0_L1+l, kTDC);
+      int sp0hu_id = gHist.getSequentialID(kSP0, kSP0_L1+l, kHitPat, 1);
+      int sp0hd_id = gHist.getSequentialID(kSP0, kSP0_L1+l, kHitPat, 2);
 
       for(int seg=0; seg<NumOfSegSP0; ++seg){
 	// ADC
@@ -700,7 +702,10 @@ process_event()
 	nhit = gUnpacker.get_entries(k_device, l, seg, k_u, k_tdc);
 	if(nhit != 0){
 	  unsigned int tdc = gUnpacker.get(k_device, l, seg, k_u, k_tdc);
-	  if(tdc != 0){ hptr_array[sp0t_id + seg]->Fill(tdc); }
+	  if(tdc != 0){
+	    hptr_array[sp0t_id + seg]->Fill(tdc);
+	    hptr_array[sp0hu_id]->Fill(seg);
+	  }
 	}
       }
 
@@ -720,7 +725,10 @@ process_event()
 	nhit = gUnpacker.get_entries(k_device, l, seg, k_d, k_tdc);
 	if(nhit != 0){
 	  unsigned int tdc = gUnpacker.get(k_device, l, seg, k_d, k_tdc);
-	  if(tdc != 0){ hptr_array[sp0t_id + seg]->Fill(tdc); }
+	  if(tdc != 0){
+	    hptr_array[sp0t_id + seg]->Fill(tdc);
+	    hptr_array[sp0hd_id]->Fill(seg);
+	  }
 	}
       }
     }

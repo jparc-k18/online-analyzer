@@ -8,9 +8,7 @@
 #include <cmath>
 
 #include "UnpackerManager.hh"
-#include "tilt_angle.hh"
 #include "DetectorID.hh"
-#include "InvMatrix.hh"
 #include "DCTdcCalibMan.hh"
 #include "DCGeomMan.hh"
 #include "DCDriftParamMan.hh"

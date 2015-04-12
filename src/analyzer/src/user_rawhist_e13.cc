@@ -1333,7 +1333,6 @@ process_event()
 	  hodoMan.GetTime(cid_bh1, plid, seg, k_d, tdcd, bh1td);
 	  double mt = (bh1tu+bh1td)/2.;
 	  double btof = mt-(t0+ofs);
-	  std::cout << btof << std::endl;
 	  hptr_array[btof_id]->Fill(btof);
 	}// if(tdc)
       }// if(nhit)

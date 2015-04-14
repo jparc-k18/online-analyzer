@@ -40,6 +40,8 @@ public:
   void initializeDCDriftParamMan();
 
   void initializeUserParamMan();
+
+  void initializeGeAdcCalibMan();
   
 private:
   ConfMan();

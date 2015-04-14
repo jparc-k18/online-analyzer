@@ -1660,6 +1660,11 @@ TList* HistMaker::createGe(bool flag_ps)
 			   0x2000, 0, 0x2000,
 			   "ADC [ch]", ""));
 
+    // Sum histogram (Energy calibrated)
+    sub_dir->Add(createTH1(++target_id + NumOfSegGe, "Ge_ADC_Sum_EnergyCalibrated", // 1 origin
+			   8000, 0, 8000,
+			   "Ge energy [keV]", ""));
+
     // 2D histogram
     target_id = getUniqueID(kGe, 0, kADC2D, 0);
     sub_dir->Add(createTH2(++target_id, "Ge_ADC_2D", // 1 origin

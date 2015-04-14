@@ -27,6 +27,8 @@
 #include "UserParamMan.hh"
 #include "HodoParamMan.hh"
 
+#include "GeAdcCalibMan.hh"
+
 #define DEBUG 0
 
 namespace analyzer
@@ -48,6 +50,7 @@ process_begin(const std::vector<std::string>& argv)
   gConfMan.initializeDCTdcCalibMan();
   gConfMan.initializeDCDriftParamMan();
   gConfMan.initializeUserParamMan();
+  gConfMan.initializeGeAdcCalibMan();
   if(!gConfMan.isGood()){return -1;}
   // unpacker and all the parameter managers are initialized at this stage
 
@@ -1372,6 +1375,8 @@ process_event()
     // sum hist id
     static const
       int ge_adcsum_id = gHist.getSequentialID(kGe, 0, kADC, NumOfSegGe +1);
+    static const
+      int ge_adcsum_calib_id = gHist.getSequentialID(kGe, 0, kADC, NumOfSegGe +2);
 
     // hitpat hist id
     static const
@@ -1401,6 +1406,11 @@ process_event()
 	if(115 < adc && adc < 7500){
 	  hptr_array[ge_hitpat_id]->Fill(seg);
 	}
+
+	GeAdcCalibMan& gGeAMan = GeAdcCalibMan::GetInstance();
+	double energy;
+	gGeAMan.CalibAdc(seg, adc, energy);
+	if(energy > 100) hptr_array[ge_adcsum_calib_id]->Fill(energy);
       }
 
       // CRM

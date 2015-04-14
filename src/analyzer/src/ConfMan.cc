@@ -9,6 +9,7 @@
 #include"DCTdcCalibMan.hh"
 #include"DCDriftParamMan.hh"
 #include"UserParamMan.hh"
+#include"GeAdcCalibMan.hh"
 
 #include<iostream>
 #include<fstream>
@@ -182,6 +183,20 @@ void ConfMan::initializeUserParamMan()
   }else{
     std::cout << "#E " << MyName
 	      << " File path does not exist in " << name_file_["USER:"] 
+	      << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+
+// initialize GeAdcCalibMan
+void ConfMan::initializeGeAdcCalibMan()
+{
+  if(name_file_["GEADC:"] != ""){
+    GeAdcCalibMan& gGeAdcCalib = GeAdcCalibMan::GetInstance();
+    flag_[kIsGood] = gGeAdcCalib.Initialize(name_file_["GEADC:"]);
+  }else{
+    std::cout << "#E " << MyName
+	      << " File path does not exist in " << name_file_["GEADC:"] 
 	      << std::endl;
     flag_.reset(kIsGood);
   }

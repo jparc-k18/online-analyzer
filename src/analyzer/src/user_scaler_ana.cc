@@ -48,6 +48,10 @@ namespace analyzer
 
   std::vector<scaler_info> cont_info[size_dispColumn];
   
+  static unsigned int prev[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}};
+  static unsigned int curr[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}};
+  static unsigned int val[size_dispColumn][NofCh]  = {{0}, {0}, {0}, {0}};
+
 //____________________________________________________________________________
 int
 process_begin(const std::vector<std::string>& argv)
@@ -141,6 +145,48 @@ process_begin(const std::vector<std::string>& argv)
 int
 process_end()
 {
+  std::cout << "\n#D : End of scaler, summarize this run" << std::endl;
+  printf("%-10s %10s : %-15s %10s : %-6s %12s : %-6s %12s\n",
+	 "", "Integral",
+	 "", "Integral",
+	 "", "kHz",
+	 "", "Hz");
+	     
+  for(int i = 0; i<NofCh; ++i){
+    scaler_info info[size_dispColumn];
+      
+    // Counter & DAQ info
+    info[left]  = cont_info[left][i];
+    info[right] = cont_info[right][i];
+
+    // Ge info
+    info[Ge_left]  = cont_info[Ge_left][i];
+    info[Ge_right] = cont_info[Ge_right][i];
+      
+    // display
+    printf("%-10s %10u : %-15s %10u : %-6s %12f : %-6s %12f\n",
+	   info[left].name.c_str(),  val[left][i],
+	   info[right].name.c_str(), val[right][i],
+	   info[Ge_left].name.c_str(),  (double)(val[Ge_left][i]*10000./val[Ge_left][31]),
+	   info[Ge_right].name.c_str(), (double)(val[Ge_right][i]*10000000./val[Ge_left][31])
+	   );
+  }
+
+  std::cout << "\n#D : For the scaler check sheet" << std::endl;
+  double kbeam  = (double)val[left][24];
+  double TM     = (double)val[right][2];
+  double bh1bh2 = (double)val[right][28];
+  double kpi    = (double)val[right][12];
+  double l1_acc = (double)val[right][4];
+  double l1_req = (double)val[right][3];
+  double l2_acc = (double)val[right][11];
+  double l2_req = (double)val[right][10];
+  printf("%-20s %10.4f\n", "K-beam/TM", kbeam/TM);
+  printf("%-20s %10.4f\n", "K-beam/BH1xBH2", kbeam/bh1bh2);
+  printf("%-20s %10.4f\n", "(K,pi)/K-beam", kpi/kbeam);
+  printf("%-20s %10.4f\n", "L1 acc/L1 req", l1_acc/l1_req);
+  printf("%-20s %10.4f\n", "L2 acc/L2 req", l2_acc/l2_req);
+  
   return 0;
 }
 
@@ -151,10 +197,6 @@ process_event()
   static UnpackerManager& g_unpacker = GUnpacker::get_instance();
   
   static int run_number = g_unpacker.get_root()->get_run_number();
-  static unsigned int prev[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}};
-  static unsigned int curr[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}};
-  static unsigned int val[size_dispColumn][NofCh]  = {{0}, {0}, {0}, {0}};
-  
   static int event_count = 0;
   static bool en_disp = false;
   if(event_count%100 == 0){
@@ -174,11 +216,12 @@ process_event()
     run_number = g_unpacker.get_root()->get_run_number();
   }
 
+  bool inclement_spill = false;
   {
     // scaler
     static int scaler_id    = g_unpacker.get_device_id("scaler");
     static int ge_scaler_id = g_unpacker.get_device_id("GeScaler");
-
+    
     for(int i = 0; i<NofCh; ++i){
       scaler_info info[size_dispColumn];
       
@@ -193,6 +236,7 @@ process_event()
 
 	if(curr[left][i] < prev[left][i]){
 	  prev[left][i] = 0;
+	  inclement_spill = true;
 	}
 
 	val[left][i] += curr[left][i] - prev[left][i];
@@ -206,8 +250,13 @@ process_event()
 	if(curr[right][i] < prev[right][i]){
 	  prev[right][i] = 0;
 	}
-
-	val[right][i] += curr[right][i] - prev[right][i];
+	
+	if(i == 0){
+	  // spill
+	  if(inclement_spill) ++val[right][0];
+	}else{
+	  val[right][i] += curr[right][i] - prev[right][i];
+	}
       }
 
       // Ge info
@@ -238,18 +287,37 @@ process_event()
 	val[Ge_right][i] += curr[Ge_right][i] - prev[Ge_right][i];
       }
 
-      // display
-      if(en_disp){
-	printf("%-10s %10u : %-15s %10u : %-6s %12u : %-6s %12u\n",
+    }
+    
+    if(en_disp){
+      printf("%-10s %10s : %-15s %10s : %-6s %12s : %-6s %12s\n",
+	     "", "Integral",
+	     "", "Integral",
+	     "", "kHz",
+	     "", "Hz");
+	     
+      for(int i = 0; i<NofCh; ++i){
+	scaler_info info[size_dispColumn];
+      
+	// Counter & DAQ info
+	info[left]  = cont_info[left][i];
+	info[right] = cont_info[right][i];
+
+	// Ge info
+	info[Ge_left]  = cont_info[Ge_left][i];
+	info[Ge_right] = cont_info[Ge_right][i];
+      
+	// display
+	printf("%-10s %10u : %-15s %10u : %-6s %12f : %-6s %12f\n",
 	       info[left].name.c_str(),  val[left][i],
 	       info[right].name.c_str(), val[right][i],
-	       info[Ge_left].name.c_str(),  val[Ge_left][i],
-	       info[Ge_right].name.c_str(), val[Ge_right][i]
+	       info[Ge_left].name.c_str(),  (double)(val[Ge_left][i]*10000./val[Ge_left][31]),
+	       info[Ge_right].name.c_str(), (double)(val[Ge_right][i]*10000000./val[Ge_left][31])
 	       );
       }
     }
   }
-
+  
   ++event_count;
   en_disp = false;
 

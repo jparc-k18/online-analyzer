@@ -14,7 +14,7 @@ my_dir  = $(src_top_dir)/$(my_name)
 
 include ../common.mk
 
-core_obj = UserParamMan.o HodoParamMan.o HodoPHCMan.o DCGeomMan.o DCTdcCalibMan.o DCDriftParamMan.o DCGeomRecord.o ConfMan.o
+core_obj = UserParamMan.o HodoParamMan.o HodoPHCMan.o DCGeomMan.o DCTdcCalibMan.o DCDriftParamMan.o DCGeomRecord.o ConfMan.o GeAdcCalibMan.o
 
 my_obj_skeleton := $(core_obj) user_skeleton.o
 my_tgt_skeleton := $(bin_dir)/skeleton

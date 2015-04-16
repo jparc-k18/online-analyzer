@@ -132,6 +132,7 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("TOFxSMF",      id_v830, 29, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("BH1xBH2",      id_v830, 10, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("BH2xTOF",      id_v830, 30, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("10M Clock",    id_v830, 31, true); cont_info[right][index++] = tmp;}
 
   return 0;
 }

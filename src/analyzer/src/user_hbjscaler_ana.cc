@@ -217,26 +217,14 @@ process_event()
 
       // Ge CRM
       if(info[Ge_left].flag_disp){
-	prev[Ge_left][i] = curr[Ge_left][i];
 	curr[Ge_left][i] = g_unpacker.get(ge_scaler_id, info[Ge_left].module_id, 0, info[Ge_left].ch, 0);
-
-	if(curr[Ge_left][i] < prev[Ge_left][i]){
-	  prev[Ge_left][i] = 0;
-	}
-
-	val[Ge_left][i] += curr[Ge_left][i] - prev[Ge_left][i];
+	val[Ge_left][i] = curr[Ge_left][i];
       }
 
       // Ge Reset
       if(info[Ge_right].flag_disp){
-	prev[Ge_right][i] = curr[Ge_right][i];
 	curr[Ge_right][i] = g_unpacker.get(ge_scaler_id, info[Ge_right].module_id, 0, info[Ge_right].ch, 0);
-
-	if(curr[Ge_right][i] < prev[Ge_right][i]){
-	  prev[Ge_right][i] = 0;
-	}
-
-	val[Ge_right][i] += curr[Ge_right][i] - prev[Ge_right][i];
+	val[Ge_right][i] = curr[Ge_right][i];
       }
 
     }

@@ -1,8 +1,10 @@
 // Author: Tomonori Takahashi
 
+#include <iomanip>
 #include <iostream>
 #include <cstdio>
 #include <string>
+#include <sstream>
 #include <vector>
 
 #include "user_analyzer.hh"
@@ -51,6 +53,28 @@ namespace analyzer
   static unsigned int prev[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}};
   static unsigned int curr[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}};
   static unsigned int val[size_dispColumn][NofCh]  = {{0}, {0}, {0}, {0}};
+
+//____________________________________________________________________________
+std::string
+separate_comma(int number)
+{
+  std::vector<int> sep_num;
+  int abs_number = abs(number);
+  int sign       = number >= 0 ? 1 : -1;
+  
+  while(abs_number/1000){
+    sep_num.push_back(abs_number%1000);
+    abs_number /= 1000;
+  }
+
+  std::stringstream ss;
+  ss<<abs_number*sign;
+  for(std::vector<int>::reverse_iterator i=sep_num.rbegin();
+      i<sep_num.rend();i++){
+    ss<<","<<std::setfill('0')<<std::setw(3)<<*i;
+  }
+  return ss.str();
+}
 
 //____________________________________________________________________________
 int
@@ -173,20 +197,37 @@ process_end()
   }
 
   std::cout << "\n#D : For the scaler check sheet" << std::endl;
+  int    spill  = val[right][0];
   double kbeam  = (double)val[left][24];
+  double kpi    = (double)val[right][12];
+  double l1_req = (double)val[right][3];
+  double l1_acc = (double)val[right][4];
+  int    clear  = val[right][9];
+  double l2_req = (double)val[right][10];
+  double l2_acc = (double)val[right][11];
+  int    bh2    = val[left][13];
+  int    pibeam = val[left][25];
   double TM     = (double)val[right][2];
   double bh1bh2 = (double)val[right][28];
-  double kpi    = (double)val[right][12];
-  double l1_acc = (double)val[right][4];
-  double l1_req = (double)val[right][3];
-  double l2_acc = (double)val[right][11];
-  double l2_req = (double)val[right][10];
-  printf("%-20s %10.4f\n", "K-beam/TM", kbeam/TM);
-  printf("%-20s %10.4f\n", "K-beam/BH1xBH2", kbeam/bh1bh2);
-  printf("%-20s %10.4f\n", "(K,pi)/K-beam", kpi/kbeam);
-  printf("%-20s %10.4f\n", "L1 acc/L1 req", l1_acc/l1_req);
-  printf("%-20s %10.4f\n", "L2 acc/L2 req", l2_acc/l2_req);
-  
+
+  printf("%-20s %15s\t",   "Spill",          separate_comma(spill).c_str());
+  printf("%-20s %15s\n",   "Ge OR",          NULL);
+  printf("%-20s %15s\t",   "K-beam",         separate_comma((int)kbeam).c_str());
+  printf("%-20s %15s\n",   "BH2 OR",         separate_comma(bh2).c_str());
+  printf("%-20s %15s\t",   "(K,pi)",         separate_comma((int)kpi).c_str());
+  printf("%-20s %15s\n",   "Pi-beam",        separate_comma(pibeam).c_str());
+  printf("%-20s %15s\t",   "Trig1 Req.",     separate_comma((int)l1_req).c_str());
+  printf("%-20s %15.4f\n", "K-beam/TM",      kbeam/TM);
+  printf("%-20s %15s\t",   "Trig1 Acc.",     separate_comma((int)l1_acc).c_str());
+  printf("%-20s %15.4f\n", "K-beam/BH1xBH2", kbeam/bh1bh2);
+  printf("%-20s %15s\t",   "Clear",          separate_comma(clear).c_str());
+  printf("%-20s %15.4f\n", "(K,pi)/K-beam",  kpi/kbeam);
+  printf("%-20s %15s\t",   "Trig2 Acc.",     separate_comma((int)l2_acc).c_str());
+  printf("%-20s %15.4f\n", "L1 acc/L1 req",  l1_acc/l1_req);
+  printf("%-20s %15s\t",   "", "");
+  printf("%-20s %15.4f\n", "L2 acc/L2 req", l2_acc/l2_req);
+  printf("\n");
+
   return 0;
 }
 

@@ -60,11 +60,11 @@ process_begin(const std::vector<std::string>& argv)
     cont_info[right].push_back( scaler_info("NULL", id_v830, i, false) );
 
     char name_crm[128];
-    sprintf(name_crm, "CRM%d", i);
+    sprintf(name_crm, "CRM%d", i+1);
     cont_info[Ge_left].push_back(  scaler_info(name_crm, id_CRM,   i, true) );
 
     char name_reset[128];
-    sprintf(name_reset, "RST%d", i);
+    sprintf(name_reset, "RST%d", i+1);
     cont_info[Ge_right].push_back( scaler_info(name_reset, id_Reset, i, true) );
   }
 

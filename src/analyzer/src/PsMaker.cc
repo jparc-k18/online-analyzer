@@ -637,7 +637,7 @@ void PsMaker::create(std::string& name)
     }
 
     // CRM
-    //    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x2000;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 8000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
 
@@ -649,7 +649,7 @@ void PsMaker::create(std::string& name)
     }
 
     // TFA
-    //    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x2000;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 8000;
 
     index = 0;
     base_id = HistMaker::getUniqueID(kGe, 0, kTFA);
@@ -659,7 +659,7 @@ void PsMaker::create(std::string& name)
     }
 
     // PUR
-    //    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x2000;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 120000;
 
     index = 0;
     base_id = HistMaker::getUniqueID(kGe, 0, kPUR);
@@ -669,7 +669,7 @@ void PsMaker::create(std::string& name)
     }
 
     // RST
-    //    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x2000;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 120000;
 
     index = 0;
     base_id = HistMaker::getUniqueID(kGe, 0, kRST);
@@ -677,6 +677,15 @@ void PsMaker::create(std::string& name)
       for(int j = 0; j<8; ++j){id_list.push_back(base_id + index++);}
       drawOneCanvas(id_list, par_list, false, flag_log);
     }
+
+    // HitPat
+    par_list[kXdiv] = 1; par_list[kYdiv] = 1;
+    flag_xaxis = false;
+    flag_log   = false;
+
+    base_id = HistMaker::getUniqueID(kGe, 0, kHitPat);
+    id_list.push_back(base_id);
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
 
   // PWO ---------------------------------------------------------------

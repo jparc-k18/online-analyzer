@@ -102,7 +102,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createLC());
   tab_hist->Add(gHist.createGe());
   tab_hist->Add(gHist.createPWO());
-  tab_hist->Add(gHist.createTriggerFlag(false));
+  tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createDAQ(false));
 

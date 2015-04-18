@@ -19,7 +19,7 @@ void dispBC3()
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
     TH1 *h = (TH1*)GHist::get(base_id + i);
-    h->GetXaxis()->SetRangeUser(256,1000);
+    //    h->GetXaxis()->SetRangeUser(256,1000);
     h->Draw();
   }
 

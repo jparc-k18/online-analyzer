@@ -30,7 +30,7 @@ void auto_monitor_all()
     }
 
     ++loop;
-    if(loop == 20){
+    if(loop == 6){
       Updater::getInstance().resetAll();
       loop = 0;
       sleep(10);
@@ -266,6 +266,6 @@ void draw(TCanvas* c, std::vector<int>& id)
   c->cd(0);
   c->Modified();
   c->Update();
-  sleep(5);
+  sleep(10);
 }
 

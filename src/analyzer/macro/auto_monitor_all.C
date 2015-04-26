@@ -129,6 +129,38 @@ void initialize(std::vector<std::vector<int > >& parent)
   }
   parent.push_back(id);
   id.clear();
+  
+  // SP0 1
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L1, kHitPat));  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L1, kHitPat)+1);  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L2, kHitPat));  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L2, kHitPat)+1);  
+  parent.push_back(id);
+  id.clear();
+
+  // SP0 2
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L3, kHitPat));  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L3, kHitPat)+1);  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L4, kHitPat));  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L4, kHitPat)+1);  
+  parent.push_back(id);
+  id.clear();
+
+  // SP0 3
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L5, kHitPat));  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L5, kHitPat)+1);  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L6, kHitPat));  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L6, kHitPat)+1);  
+  parent.push_back(id);
+  id.clear();
+
+  // SP0 4
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L7, kHitPat));  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L7, kHitPat)+1);  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L8, kHitPat));  
+  id.push_back(HistMaker::getUniqueID(kPWO, kSP0_L8, kHitPat)+1);  
+  parent.push_back(id);
+  id.clear();
 
   // SDC2 HitPat
   for(int i = 0; i<6; ++i){

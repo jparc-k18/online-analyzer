@@ -14,6 +14,7 @@
 
 // gui test
 #include "Main.hh"
+#include "Sigwait.hh"
 #include "Updater.hh"
 #include "Controller.hh"
 
@@ -30,6 +31,9 @@ int main(int argc, char* argv[])
 
   // It is safe to call constructor of singleton object
   // (getInstance() method) before creating threads.
+
+  Sigwait& g_sigwait = Sigwait::getInstance();
+  g_sigwait.run(); 
 
   Main& g_main = Main::getInstance();
 

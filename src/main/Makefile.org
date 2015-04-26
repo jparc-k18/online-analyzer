@@ -53,6 +53,7 @@ $(lib_dir)/libGuiMain.so: \
  $(my_dir)/src/Controller.o $(my_dir)/dict/Controller_Dict.o \
  $(my_dir)/src/Updater.o $(my_dir)/dict/Updater_Dict.o \
  $(my_dir)/src/Main.o $(my_dir)/dict/Main_Dict.o \
+ $(my_dir)/src/Sigwait.o \
  $(my_dir)/src/user_analyzer.o
 	$(QUIET) $(ECHO) "=== create library with dict ($^ -> $@) ==="
 	$(LD) $(SOFLAGS) $(LDFLAGS) $^ $(OUT_PUT_OPT) $@

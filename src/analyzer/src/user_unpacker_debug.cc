@@ -52,6 +52,7 @@ process_event()
   std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_unix_time) << std::dec <<std::endl;
 
   std::cout << "EEE" << std::endl;
+  std::cout << g_unpacker.get_root()->get_run_number() << std::endl;
   return 0;
 }
 

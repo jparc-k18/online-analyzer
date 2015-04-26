@@ -206,3 +206,12 @@ TObject* dispBeamProfile()
   m->SetName("dispBeamProfile");
   return m;
 }
+
+// auto_monitor_all -----------------------------------------------
+TObject* auto_monitor_all()
+{
+  std::string path = getMacroPath() + "auto_monitor_all.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("auto_monitor_all");
+  return m;
+}

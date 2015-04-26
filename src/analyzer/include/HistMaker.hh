@@ -70,7 +70,9 @@ public:
   static HistMaker& getInstance();
   static void getListOfDetectors(std::vector<std::string>& vec);
   static void getListOfPsFiles(std::vector<std::string>& vec);
-
+  
+  static int  getNofHist();
+  
   static int  getUniqueID(int detector_type, int subdetector_type,
 			 int data_type, int channel=1 );
   static int  getUniqueID(int sequential_id);
@@ -128,6 +130,13 @@ inline HistMaker& HistMaker::getInstance()
 {
   static HistMaker object;
   return object;
+}
+
+// getNofHist ------------------------------------------------------------    
+inline int HistMaker::getNofHist()
+{
+  HistMaker& g= HistMaker::getInstance();
+  return g.idmap_unique_from_seq_.size();
 }
 
 // getUniqueID -----------------------------------------------------------    

@@ -81,6 +81,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(effBcOut());
   tab_macro->Add(effSdcIn());
   tab_macro->Add(effSdcOut());
+  tab_macro->Add(auto_monitor_all());
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();

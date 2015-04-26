@@ -25,4 +25,6 @@ TObject* effSdcOut();
 
 TObject* dispBeamProfile();
 
+TObject* auto_monitor_all();
+
 #endif

@@ -207,6 +207,15 @@ TObject* dispBeamProfile()
   return m;
 }
 
+// Beam profile for E07 study -------------------------------------
+TObject* dispBeamProfile_e07()
+{
+  std::string path = getMacroPath() + "dispBeamProfile_e07.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispBeamProfile_e07");
+  return m;
+}
+
 // auto_monitor_all -----------------------------------------------
 TObject* auto_monitor_all()
 {

@@ -3,6 +3,7 @@
 class TObject;
 
 TObject* hoge();
+TObject* clear_all_canvas();
 TObject* clear_canvas();
 TObject* split22();
 TObject* split32();
@@ -25,6 +26,12 @@ TObject* effSdcOut();
 
 TObject* dispBeamProfile();
 TObject* dispBeamProfile_e07();
+
+TObject* dispGeAdc();
+TObject* dispGeAdc_60Co_1170();
+TObject* dispGeAdc_60Co_1330();
+TObject* dispGeTdc();
+TObject* dispPWOTdc();
 
 TObject* auto_monitor_all();
 

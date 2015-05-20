@@ -27,6 +27,15 @@ TObject* hoge()
   return m;
 }
 
+// clear_all_canvas --------------------------------------------------
+TObject* clear_all_canvas()
+{
+  std::string path = getMacroPath() + "clear_all_canvas.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("clear_all_canvas");
+  return m;
+}
+
 // clear_canvas --------------------------------------------------
 TObject* clear_canvas()
 {
@@ -213,6 +222,51 @@ TObject* dispBeamProfile_e07()
   std::string path = getMacroPath() + "dispBeamProfile_e07.C";
   TMacro* m = new TMacro(path.c_str());
   m->SetName("dispBeamProfile_e07");
+  return m;
+}
+
+// dispGeAdc -------------------------------------------------------
+TObject* dispGeAdc()
+{
+  std::string path = getMacroPath() + "dispGeAdc.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispGeAdc");
+  return m;
+}
+
+// dispGeAdc_60Co_1170 -------------------------------------------------------
+TObject* dispGeAdc_60Co_1170()
+{
+  std::string path = getMacroPath() + "dispGeAdc_60Co_1170.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispGeAdc_60Co_1170");
+  return m;
+}
+
+// dispGeAdc_60Co_1330 -------------------------------------------------------
+TObject* dispGeAdc_60Co_1330()
+{
+  std::string path = getMacroPath() + "dispGeAdc_60Co_1330.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispGeAdc_60Co_1330");
+  return m;
+}
+
+// dispGeTdc -------------------------------------------------------
+TObject* dispGeTdc()
+{
+  std::string path = getMacroPath() + "dispGeTdc.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispGeTdc");
+  return m;
+}
+
+// dispPWOTdc -------------------------------------------------------
+TObject* dispPWOTdc()
+{
+  std::string path = getMacroPath() + "dispPWOTdc.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispPWOTdc");
   return m;
 }
 

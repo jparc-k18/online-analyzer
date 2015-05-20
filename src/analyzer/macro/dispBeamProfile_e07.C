@@ -35,8 +35,8 @@ void dispBeamProfile_e07()
 	h->GetXaxis()->SetRangeUser(-200,200);
 	rms[xy][i] = h->GetRMS();
 	h->Draw();
-      tex.DrawLatex( xpos, ypos, Form("%.2lf", rms[xy][i]));
-      }    
+	tex.DrawLatex(xpos, ypos, Form("%.2lf", rms[xy][i]));
+      }
     }
     c->Update();
   }
@@ -57,7 +57,7 @@ void dispBeamProfile_e07()
 	h->Fit("f", "Q", "", max-fit_width[xy], max+fit_width[xy]);
 	sigma[xy][i] = f->GetParameter("Sigma");
 	h->Draw();
-	tex.DrawLatex( xpos, ypos, Form("%.2lf", sigma[xy][i]));
+	tex.DrawLatex(xpos, ypos, Form("%.2lf", sigma[xy][i]));
       }    
     }
     c->Update();

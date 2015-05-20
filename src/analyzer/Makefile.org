@@ -40,13 +40,16 @@ my_tgt_scaler := $(bin_dir)/scaler_ana
 my_obj_hbjscaler := $(core_obj) user_hbjscaler_ana.o
 my_tgt_hbjscaler := $(bin_dir)/HBJscalerAna
 
+my_obj_hbj_ana := $(core_obj) user_hbj_ana.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o
+my_tgt_hbj_ana := $(bin_dir)/hbj_ana
+
 my_obj_pwo  := $(core_obj) user_pwo.o HistMaker.o MacroBuilder.o
 my_tgt_pwo  := $(bin_dir)/pwo_hist
 
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_rawhist_e13) \
 	$(my_tgt_beamprofile_e13) $(my_tgt_beamprofile_e07) \
-	$(my_tgt_scaler) $(my_tgt_hbjscaler) $(my_tgt_pwo)
+	$(my_tgt_scaler) $(my_tgt_hbjscaler) $(my_tgt_hbj_ana) $(my_tgt_pwo)
 
  $(my_dir)/dict/GuiPs_Dict.cc: \
  $(my_dir)/include/GuiPs.hh \
@@ -113,6 +116,15 @@ my_obj_hbjscaler := $(addprefix $(my_dir)/src/,$(my_obj_hbjscaler))
 my_lib_hbjscaler := libmyhbjscaler.so
 $(eval $(call make-lib,$(my_lib_hbjscaler),$(my_obj_hbjscaler)))
 $(eval $(call make-nogui-target,$(my_tgt_hbjscaler),$(my_lib_hbjscaler)))
+
+#_____________________________________________________________________________
+my_obj_hbj_ana := $(addprefix $(my_dir)/src/,$(my_obj_hbj_ana))
+my_obj_hbj_ana := $(my_obj_hbj_ana) \
+		  $(my_dir)/dict/HistMaker_Dict.o \
+		  $(my_dir)/dict/GuiPs_Dict.o
+my_lib_hbj_ana := libmyhbj_ana.so
+$(eval $(call make-lib,$(my_lib_hbj_ana),$(my_obj_hbj_ana)))
+$(eval $(call make-gui-target,$(my_tgt_hbj_ana),$(my_lib_hbj_ana)))
 
 #_____________________________________________________________________________
 my_obj_pwo := $(addprefix $(my_dir)/src/,$(my_obj_pwo))

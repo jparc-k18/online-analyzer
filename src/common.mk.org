@@ -63,7 +63,7 @@ root_glibs += \
 # -lRGL 
 
 #### HD DAQ Unpacker ####
-unpacker_install      := $(HOME)/software/unpacker/devel
+unpacker_install      := $(HOME)/software/unpacker/pro
 unpacker_include_dir  := $(unpacker_install)/include
 unpacker_cflags       := -I$(unpacker_include_dir)
 unpacker_lib_dir      := $(unpacker_install)/lib
@@ -71,7 +71,7 @@ unpacker_libs         := \
  -Wl,-rpath,$(unpacker_lib_dir) -L$(unpacker_lib_dir) -lHDDAQUnpacker
 
 #### analyzer ####
-top_dir         := $(HOME)/Work/honda/online-v9-git
+top_dir         := $(HOME)/workgit
 src_top_dir     := $(top_dir)/src
 bin_dir         := $(top_dir)/bin
 include_top_dir := $(top_dir)/include

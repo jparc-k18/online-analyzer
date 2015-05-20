@@ -5,7 +5,7 @@ all:
 	@ for dir in $(subdir); \
 	do \
 		cd $$dir; \
-		make; \
+		$(MAKE); \
 		cd ..; \
 	done;
 
@@ -15,7 +15,7 @@ show:
 	@ for dir in $(subdir); \
 	do \
 		cd $$dir; \
-		make show; \
+		$(MAKE) show; \
 		cd ..; \
 	done;
 
@@ -25,7 +25,7 @@ clean::
 	@ for dir in $(subdir); \
 	do \
 		cd $$dir; \
-		make clean; \
+		$(MAKE) clean; \
 		cd ..; \
 	done;
 
@@ -35,6 +35,6 @@ distclean::
 	@ for dir in $(subdir); \
 	do \
 		cd $$dir; \
-		make distclean; \
+		$(MAKE) distclean; \
 		cd ..; \
 	done;

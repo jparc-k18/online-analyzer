@@ -69,8 +69,9 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispGeAdc());
   tab_macro->Add(dispGeTdc());
   tab_macro->Add(dispPWOTdc());
-  tab_macro->Add(dispGeAdc_60Co_1170());
-  tab_macro->Add(dispGeAdc_60Co_1330());
+  tab_macro->Add(dispGeAdc_60Co());
+  // tab_macro->Add(dispGeAdc_60Co_1170());
+  // tab_macro->Add(dispGeAdc_60Co_1330());
   
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();

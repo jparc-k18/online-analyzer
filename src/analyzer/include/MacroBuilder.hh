@@ -28,6 +28,7 @@ TObject* dispBeamProfile();
 TObject* dispBeamProfile_e07();
 
 TObject* dispGeAdc();
+TObject* dispGeAdc_60Co();
 TObject* dispGeAdc_60Co_1170();
 TObject* dispGeAdc_60Co_1330();
 TObject* dispGeTdc();

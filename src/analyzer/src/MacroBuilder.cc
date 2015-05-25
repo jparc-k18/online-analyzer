@@ -234,6 +234,15 @@ TObject* dispGeAdc()
   return m;
 }
 
+// dispGeAdc_60Co -------------------------------------------------------
+TObject* dispGeAdc_60Co()
+{
+  std::string path = getMacroPath() + "dispGeAdc_60Co.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispGeAdc_60Co");
+  return m;
+}
+
 // dispGeAdc_60Co_1170 -------------------------------------------------------
 TObject* dispGeAdc_60Co_1170()
 {

@@ -30,6 +30,7 @@
 #include "GeAdcCalibMan.hh"
 
 #define DEBUG 0
+#define FLAG_DAQ 0
 
 namespace analyzer
 {
@@ -185,6 +186,7 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+#if FLAG_DAQ
   // DAQ -------------------------------------------------------------
   {
     // node id
@@ -249,6 +251,8 @@ process_event()
     }
 
   }
+
+#endif
 
   if(scaler_flag) return 0;
 
@@ -955,7 +959,7 @@ process_event()
       hptr_array[sdc4mulwt_id + l]->Fill(multiplicity_wt);
     }
 
-#if 0
+#if 1
     // Debug, dump data relating this detector
     gUnpacker.dump_data_device(k_device);
 #endif

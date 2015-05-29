@@ -959,7 +959,7 @@ process_event()
       hptr_array[sdc4mulwt_id + l]->Fill(multiplicity_wt);
     }
 
-#if 1
+#if 0
     // Debug, dump data relating this detector
     gUnpacker.dump_data_device(k_device);
 #endif

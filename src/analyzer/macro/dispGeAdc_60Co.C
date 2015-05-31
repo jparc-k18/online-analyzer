@@ -80,7 +80,7 @@ void dispGeAdc_60Co()
 	h->SetTitle(Form("Ge ADC %d @%.2fMeV", seg+1, energy[i]));
 	t_name.DrawLatex(0.55, 0.56, "FWHM [ch]");
 	t_val.DrawLatex(0.54, 0.44, Form("%.2lf#pm %.2lf",
-					 Sigma[i][seg], eSigma[i][seg]));
+					 Sigma[i][seg]*2.35482, eSigma[i][seg]*2.35482));
       }
       c->Update();
     }

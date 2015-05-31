@@ -20,6 +20,7 @@
 #include<TH2.h>
 #include<TText.h>
 #include<TString.h>
+#include<TStyle.h>
 
 #define CONV_STRING(x) getStr_FromEnum(#x)
 
@@ -66,6 +67,11 @@ void PsMaker::getListOfOption(std::vector<std::string>& vec)
 void PsMaker::makePs()
 {
   gROOT->SetStyle("Plain");
+  gStyle->SetOptStat(1110);
+  gStyle->SetTitleW(.4);
+  gStyle->SetTitleH(.1);
+  gStyle->SetStatW(.42);
+  gStyle->SetStatH(.35);
   
   // make ps file instance
   const std::string& filename = GuiPs::getFilename();

@@ -10,6 +10,7 @@
 #include <TGFileBrowser.h>
 #include <TH1.h>
 #include <TH2.h>
+#include <TStyle.h>
 
 #include "Controller.hh"
 
@@ -134,6 +135,12 @@ process_begin(const std::vector<std::string>& argv)
   gPsTab.initialize(optList, detList);
   // ----------------------------------------------------------
   
+  gStyle->SetOptStat(1110);
+  gStyle->SetTitleW(.4);
+  gStyle->SetTitleH(.1);
+  gStyle->SetStatW(.42);
+  gStyle->SetStatH(.35);
+
   return 0;
 }
 
@@ -151,7 +158,7 @@ process_event()
 {
   static UnpackerManager& gUnpacker = GUnpacker::get_instance();
   static HistMaker&       gHist     = HistMaker::getInstance();
-
+  
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
@@ -161,7 +168,7 @@ process_event()
   {
     static const int k_device = gUnpacker.get_device_id("Misc");
     static const int k_tdc    = gUnpacker.get_data_id("Misc", "tdc");
-
+    
     static const int tf_tdc_id = gHist.getSequentialID(kTriggerFlag, 0, kTDC);
     static const int tf_hit_id = gHist.getSequentialID(kTriggerFlag, 0, kHitPat);
     for(int seg = 0; seg<NumOfSegMisc; ++seg){

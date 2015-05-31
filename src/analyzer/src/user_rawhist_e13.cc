@@ -352,7 +352,7 @@ process_event()
     static const int k_uplane  = gUnpacker.get_plane_id("BFT", "upstream");
     static const int k_dplane  = gUnpacker.get_plane_id("BFT", "downstream");
     static const int k_leading = gUnpacker.get_data_id("BFT", "leading");
-    //    static const int k_trailing = gUnpacker.get_data_id("BFT", "trailing");
+    static const int k_trailing = gUnpacker.get_data_id("BFT", "trailing");
 
     // TDC gate range
     UserParamMan& gPar = UserParamMan::getInstance();
@@ -362,6 +362,8 @@ process_event()
     // sequential id
     static const int bft_tu_id = gHist.getSequentialID(kBFT, 0, kTDC, 1);
     static const int bft_td_id = gHist.getSequentialID(kBFT, 0, kTDC, 2);
+    static const int bft_totu_id = gHist.getSequentialID(kBFT, 0, kADC, 1);
+    static const int bft_totd_id = gHist.getSequentialID(kBFT, 0, kADC, 2);
     static const int bft_hitu_id = gHist.getSequentialID(kBFT, 0, kHitPat, 1);
     static const int bft_hitd_id = gHist.getSequentialID(kBFT, 0, kHitPat, 2);
     static const int bft_mul_id  = gHist.getSequentialID(kBFT, 0, kMulti, 1);
@@ -374,7 +376,10 @@ process_event()
       // u plane
       for(int m = 0; m<nhit_u; ++m){
 	int tdc = gUnpacker.get(k_device, k_uplane, 0, i, k_leading, m);
+	int tdc_t = gUnpacker.get(k_device, k_uplane, 0, i, k_trailing, m);
+	int tot = tdc - tdc_t;
 	hptr_array[bft_tu_id]->Fill(tdc);
+	hptr_array[bft_totu_id]->Fill(tot);
 	if(tdc_min < tdc && tdc < tdc_max){
 	  ++multiplicity;
 	  hptr_array[bft_hitu_id]->Fill(i);
@@ -384,7 +389,10 @@ process_event()
       // d plane
       for(int m = 0; m<nhit_d; ++m){
 	int tdc = gUnpacker.get(k_device, k_dplane, 0, i, k_leading, m);
+	int tdc_t = gUnpacker.get(k_device, k_dplane, 0, i, k_trailing, m);
+	int tot = tdc - tdc_t;
 	hptr_array[bft_td_id]->Fill(tdc);
+	hptr_array[bft_totd_id]->Fill(tot);
 	if(tdc_min < tdc && tdc < tdc_max){
 	  ++multiplicity;
 	  hptr_array[bft_hitd_id]->Fill(i);

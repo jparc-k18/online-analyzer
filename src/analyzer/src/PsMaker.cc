@@ -170,6 +170,7 @@ void PsMaker::create(std::string& name)
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat, 1));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat, 2));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kMulti, 1));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC, 1));
     drawOneCanvas(id_list, par_list, flag_xaxis, false);
   }
 

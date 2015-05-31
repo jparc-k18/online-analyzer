@@ -291,6 +291,19 @@ TList* HistMaker::createBFT(bool flag_ps)
 			   "TDC [ch]", ""));
   }
 
+  // TOT---------------------------------------------------------
+  {
+    int target_id = getUniqueID(kBFT, 0, kADC, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(++target_id, "BFT_TOT_U", // 1 origin
+			   200, -50, 150,
+			   "TOT [ch]", ""));
+
+    top_dir->Add(createTH1(++target_id, "BFT_TOT_D", // 1 origin
+			   200, -50, 150,
+			   "TOT [ch]", ""));
+  }
+
   // Hit parttern -----------------------------------------------
   {
     int target_id = getUniqueID(kBFT, 0, kHitPat, 0);

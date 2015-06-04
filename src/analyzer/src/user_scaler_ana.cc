@@ -260,7 +260,7 @@ process_event()
   static int run_number = g_unpacker.get_root()->get_run_number();
   static int event_count = 0;
   static bool en_disp = false;
-  if(event_count%500 == 0){
+  if(event_count%100 == 0){
     en_disp = true;
   }
 

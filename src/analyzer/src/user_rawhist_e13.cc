@@ -142,7 +142,9 @@ process_begin(const std::vector<std::string>& argv)
   gStyle->SetOptStat(1110);
   gStyle->SetTitleW(.4);
   gStyle->SetTitleH(.1);
-  gStyle->SetStatW(.42);
+  //  gStyle->SetStatW(.42);
+  //  gStyle->SetStatH(.35);
+  gStyle->SetStatW(.32);
   gStyle->SetStatH(.35);
 
   return 0;

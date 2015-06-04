@@ -63,7 +63,8 @@ process_begin(const std::vector<std::string>& argv)
   TGFileBrowser *tab_btof  = gCon.makeFileBrowser("BTOF");
 
   // Add macros to the Macro tab
-  tab_macro->Add(hoge());
+  //tab_macro->Add(hoge());
+  tab_macro->Add(clear_all_canvas());
   tab_macro->Add(clear_canvas());
   tab_macro->Add(split22());
   tab_macro->Add(split32());
@@ -73,6 +74,9 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispACs_SFV());
   tab_macro->Add(dispTOF());
   tab_macro->Add(dispLC());
+  tab_macro->Add(dispGeAdc());
+  tab_macro->Add(dispGeTdc());
+  tab_macro->Add(dispPWOTdc());
   tab_macro->Add(dispBC3());
   tab_macro->Add(dispBC4());
   tab_macro->Add(dispSDC2());

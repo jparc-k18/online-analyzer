@@ -31,7 +31,7 @@
 #include "GeAdcCalibMan.hh"
 
 #define DEBUG 0
-#define FLAG_DAQ 0
+#define FLAG_DAQ 1
 
 namespace analyzer
 {

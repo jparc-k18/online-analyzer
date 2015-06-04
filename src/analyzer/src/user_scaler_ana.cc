@@ -133,6 +133,8 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("/p beam",       id_vme03_1, 30, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("Real time",     id_vme03_1, 14, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("Live time",     id_vme03_1, 15, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BTOF Go",       id_vme03_2,  5, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BTOF clear",    id_vme03_2,  6, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("CRM-OR",        id_vme03_2,  1, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("/p beam (e07)", id_vme03_2,  7, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("TOFxSMFx/MTX",  id_vme03_2,  8, true); cont_info[center][index++] = tmp;}

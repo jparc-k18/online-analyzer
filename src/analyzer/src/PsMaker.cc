@@ -70,7 +70,7 @@ void PsMaker::makePs()
   gStyle->SetOptStat(1110);
   gStyle->SetTitleW(.4);
   gStyle->SetTitleH(.1);
-  gStyle->SetStatW(.42);
+  gStyle->SetStatW(.32);
   gStyle->SetStatH(.35);
   
   // make ps file instance
@@ -680,6 +680,26 @@ void PsMaker::create(std::string& name)
 
     index = 0;
     base_id = HistMaker::getUniqueID(kGe, 0, kRST);
+    for(int i = 0; i<4; ++i){
+      for(int j = 0; j<8; ++j){id_list.push_back(base_id + index++);}
+      drawOneCanvas(id_list, par_list, false, flag_log);
+    }
+
+    // Multi CRM
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 16;
+
+    index = 0;
+    base_id = HistMaker::getUniqueID(kGe, 0, kMulti);
+    for(int i = 0; i<4; ++i){
+      for(int j = 0; j<8; ++j){id_list.push_back(base_id + index++);}
+      drawOneCanvas(id_list, par_list, false, flag_log);
+    }
+
+    // Multi TFA
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 16;
+
+    index = 0;
+    base_id = HistMaker::getUniqueID(kGe, 0, kMulti) + NumOfSegGe;
     for(int i = 0; i<4; ++i){
       for(int j = 0; j<8; ++j){id_list.push_back(base_id + index++);}
       drawOneCanvas(id_list, par_list, false, flag_log);

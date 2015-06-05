@@ -145,7 +145,7 @@ process_begin(const std::vector<std::string>& argv)
   //  gStyle->SetStatW(.42);
   //  gStyle->SetStatH(.35);
   gStyle->SetStatW(.32);
-  gStyle->SetStatH(.35);
+  gStyle->SetStatH(.25);
 
   return 0;
 }
@@ -1397,6 +1397,9 @@ process_event()
     static const int ge_tfa_id = gHist.getSequentialID(kGe, 0, kTFA);
     static const int ge_pur_id = gHist.getSequentialID(kGe, 0, kPUR);
     static const int ge_rst_id = gHist.getSequentialID(kGe, 0, kRST);
+    
+    static const int ge_multi_crm_id = gHist.getSequentialID(kGe, 0, kMulti);
+    static const int ge_multi_tfa_id = gHist.getSequentialID(kGe, 0, kMulti) + NumOfSegGe;
 
     // sum hist id
     static const
@@ -1429,7 +1432,7 @@ process_event()
 	hptr_array[ge_adc2d_id]->Fill(seg, adc);
 	hptr_array[ge_adcsum_id]->Fill(adc);
 
-	if(115 < adc && adc < 7500){
+	if(115 < adc && adc < 7500 && seg != 13){
 	  hptr_array[ge_hitpat_id]->Fill(seg);
 	}
 
@@ -1442,6 +1445,7 @@ process_event()
       // CRM
       int nhit_crm = gUnpacker.get_entries(k_device, 0, seg, 0, k_crm);
       if(nhit_crm != 0){
+	hptr_array[ge_multi_crm_id + seg]->Fill(nhit_crm);
 	for(int m = 0; m<nhit_crm; ++m){
 	  int crm = gUnpacker.get(k_device, 0, seg, 0, k_crm, m);
 	  hptr_array[ge_crm_id + seg]->Fill(crm);
@@ -1452,6 +1456,7 @@ process_event()
       // TFA
       int nhit_tfa = gUnpacker.get_entries(k_device, 0, seg, 0, k_tfa);
       if(nhit_tfa != 0){
+	hptr_array[ge_multi_tfa_id + seg]->Fill(nhit_tfa);
 	for(int m = 0; m<nhit_tfa; ++m){
 	  int tfa = gUnpacker.get(k_device, 0, seg, 0, k_tfa, m);
 	  hptr_array[ge_tfa_id + seg]->Fill(tfa);

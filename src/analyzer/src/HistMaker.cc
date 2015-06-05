@@ -1814,6 +1814,39 @@ TList* HistMaker::createGe(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
+
+  // Multi -------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    int target_id = getUniqueID(kGe, 0, kMulti, 0);
+    for(int i = 0; i<NumOfSegGe; ++i){
+      const char* title = NULL;
+      int seg = i+1; // 1 origin 
+      title = Form("%s_MultiCRM_%d", nameDetector, seg);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     16, 0, 16,
+			     "Multi CRM [ch]", ""));
+    }
+
+    target_id = getUniqueID(kGe, 0, kMulti, 0) + NumOfSegGe;
+    for(int i = 0; i<NumOfSegGe; ++i){
+      const char* title = NULL;
+      int seg = i+1; // 1 origin 
+      title = Form("%s_MultiTFA_%d", nameDetector, seg);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     16, 0, 16,
+			     "Multi TFA [ch]", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
   
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;

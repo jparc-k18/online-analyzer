@@ -1444,8 +1444,8 @@ process_event()
 
       // CRM
       int nhit_crm = gUnpacker.get_entries(k_device, 0, seg, 0, k_crm);
+      hptr_array[ge_multi_crm_id + seg]->Fill(nhit_crm);
       if(nhit_crm != 0){
-	hptr_array[ge_multi_crm_id + seg]->Fill(nhit_crm);
 	for(int m = 0; m<nhit_crm; ++m){
 	  int crm = gUnpacker.get(k_device, 0, seg, 0, k_crm, m);
 	  hptr_array[ge_crm_id + seg]->Fill(crm);
@@ -1455,8 +1455,8 @@ process_event()
 
       // TFA
       int nhit_tfa = gUnpacker.get_entries(k_device, 0, seg, 0, k_tfa);
+      hptr_array[ge_multi_tfa_id + seg]->Fill(nhit_tfa);
       if(nhit_tfa != 0){
-	hptr_array[ge_multi_tfa_id + seg]->Fill(nhit_tfa);
 	for(int m = 0; m<nhit_tfa; ++m){
 	  int tfa = gUnpacker.get(k_device, 0, seg, 0, k_tfa, m);
 	  hptr_array[ge_tfa_id + seg]->Fill(tfa);

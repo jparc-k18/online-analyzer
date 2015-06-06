@@ -212,40 +212,45 @@ process_end()
   }
 
   std::cout << "\n#D : For the scaler check sheet" << std::endl;
-  int    spill     = val[right][0];
-  int    ge_or     = val[center][5];
-  double kbeam     = (double)val[center][0];
-  double kpi       = (double)val[right][13];
-  double real_time = (double)val[center][3];
-  double live_time = (double)val[center][4];
-  double l1_req    = (double)val[right][3];
-  double l1_acc    = (double)val[right][4];
-  int    clear     = val[right][10];
-  double l2_req    = (double)val[right][11];
-  double l2_acc    = (double)val[right][12];
-  int    bh2       = val[left][13];
-  int    pibeam    = val[center][1];
-  double TM        = (double)val[right][2];
-  double bh1bh2    = (double)val[right][29];
+  int    spill      = val[right][0];
+  int    ge_or      = val[center][5];
+  double kbeam      = (double)val[center][0];
+  double kpi        = (double)val[right][13];
+  double real_time  = (double)val[center][3];
+  double live_time  = (double)val[center][4];
+  double l1_req     = (double)val[right][3];
+  double l1_acc     = (double)val[right][4];
+  int    ge_coin_go    = val[right][5];
+  int    ge_coin_clear = val[right][6];
+  int    ge_over_go    = val[right][7];
+  int    ge_over_clear = val[right][8];
+  int    clear      = val[right][10];
+  double l2_req     = (double)val[right][11];
+  double l2_acc     = (double)val[right][12];
+  int    bh2        = val[left][13];
+  int    pibeam     = val[center][1];
+  double TM         = (double)val[right][2];
+  double bh1bh2     = (double)val[right][29];
 
-  printf("%-20s %15s\t",   "Spill",          separate_comma(spill).c_str());
-  printf("%-20s %15s\n",   "Ge OR",          separate_comma(ge_or).c_str());
-  printf("%-20s %15s\t",   "K-beam",         separate_comma((int)kbeam).c_str());
+  printf("%-20s %15s\t",   "",               "");
   printf("%-20s %15s\n",   "BH2 OR",         separate_comma(bh2).c_str());
-  printf("%-20s %15s\t",   "(K,pi)",         separate_comma((int)kpi).c_str());
-  printf("%-20s %15s\n",   "Pi-beam",        separate_comma(pibeam).c_str());
-  printf("%-20s %15s\t",   "Trig1 Req.",     separate_comma((int)l1_req).c_str());
+  printf("%-20s %15s\t",   "Spill",          separate_comma(spill).c_str());
+  printf("%-20s %15s\n",   "Ge Coin Go",     separate_comma(ge_coin_go).c_str());
+  //printf("%-20s %15s\n",   "Ge OR",          separate_comma(ge_or).c_str());
+  printf("%-20s %15s\t",   "K-beam",         separate_comma((int)kbeam).c_str());
+  printf("%-20s %15s\n",   "Ge Overflow Go", separate_comma(ge_over_go).c_str());
+  printf("%-20s %15s\t",   "Pi-beam",        separate_comma(pibeam).c_str());
   printf("%-20s %15.4f\n", "K-beam/TM",      kbeam/TM);
-  printf("%-20s %15s\t",   "Trig1 Acc.",     separate_comma((int)l1_acc).c_str());
+  printf("%-20s %15s\t",   "(K,pi)",         separate_comma((int)kpi).c_str());
   printf("%-20s %15.4f\n", "K-beam/BH1xBH2", kbeam/bh1bh2);
-  printf("%-20s %15s\t",   "Total Clear",    separate_comma(clear).c_str());
+  printf("%-20s %15s\t",   "Trig1 Req.",     separate_comma((int)l1_req).c_str());
   printf("%-20s %15.4f\n", "(K,pi)/K-beam",  kpi/kbeam);
-  printf("%-20s %15s\t",   "Trig2 Acc.",     separate_comma((int)l2_acc).c_str());
+  printf("%-20s %15s\t",   "Trig1 Acc.",     separate_comma((int)l1_acc).c_str());
   printf("%-20s %15.4f\n", "Live time/Real time", live_time/real_time);  
-  printf("%-20s %15s\t",   "", "");
+  printf("%-20s %15s\t",   "Total Clear",    separate_comma(clear).c_str());
   printf("%-20s %15.4f\n", "L1 acc/L1 req",  l1_acc/l1_req);
-  printf("%-20s %15s\t",   "", "");
-  printf("%-20s %15.4f\n", "L2 acc/L2 req", l2_acc/l2_req);
+  printf("%-20s %15s\t",   "Trig2 Acc.",     separate_comma((int)l2_acc).c_str());
+  printf("%-20s %15.4f\n", "L2 acc/L1 acc", l2_acc/l1_acc);
   printf("\n");
 
   return 0;
@@ -260,7 +265,7 @@ process_event()
   static int run_number = g_unpacker.get_root()->get_run_number();
   static int event_count = 0;
   static bool en_disp = false;
-  if(event_count%100 == 0){
+  if(event_count%400 == 0){
     en_disp = true;
   }
 

@@ -171,8 +171,8 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("TOFx/SFV",       id_vme03_0, 27, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("TOFxSMF",        id_vme03_0, 29, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("BH1xBH2",        id_vme03_0, 10, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("BH2xTOF",        id_vme03_0, 30, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("10M Clock",      id_vme03_0, 31, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("BH2xTOF",        id_vme03_0, 31, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("10M Clock",      id_vme03_1, 31, true); cont_info[right][index++] = tmp;}
 
   return 0;
 }

@@ -56,6 +56,7 @@ void initialize(std::vector<std::vector<int > >& parent)
   // BFT
   id.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat));
   id.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat)+1);
+  id.push_back(HistMaker::getUniqueID(kBFT, 0, kADC));
   id.push_back(HistMaker::getUniqueID(kBFT, 0, kMulti));
   parent.push_back(id);
   id.clear();
@@ -260,7 +261,7 @@ void draw(TCanvas* c, std::vector<int>& id)
     c->cd(i+1);
     TH1* tmp = GHist::get(id[i]);
     tmp->SetMinimum(0);
-    tmp->Draw();
+    tmp->Draw("colz");
   }
 
   c->cd(0);

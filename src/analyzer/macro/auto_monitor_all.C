@@ -309,6 +309,6 @@ void draw(TCanvas* c, std::vector<int>& id)
   c->cd(0);
   c->Modified();
   c->Update();
-  sleep(7);
+  sleep(6);
 }
 

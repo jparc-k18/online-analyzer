@@ -55,9 +55,16 @@ void initialize(std::vector<std::vector<int > >& parent)
 
   // BFT
   id.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat));
-  id.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat)+1);
+  id.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC));
   id.push_back(HistMaker::getUniqueID(kBFT, 0, kADC));
   id.push_back(HistMaker::getUniqueID(kBFT, 0, kMulti));
+  parent.push_back(id);
+  id.clear();
+
+  // BC3 TDC
+  for(int i = 0; i<6; ++i){
+    id.push_back(HistMaker::getUniqueID(kBC3, 0, kTDC)+i);
+  }
   parent.push_back(id);
   id.clear();
 
@@ -71,6 +78,13 @@ void initialize(std::vector<std::vector<int > >& parent)
   // BC3 Multi
   for(int i = 0; i<6; ++i){
     id.push_back(HistMaker::getUniqueID(kBC3, 0, kMulti)+i);
+  }
+  parent.push_back(id);
+  id.clear();
+
+  // BC4 TDC
+  for(int i = 0; i<6; ++i){
+    id.push_back(HistMaker::getUniqueID(kBC4, 0, kTDC)+i);
   }
   parent.push_back(id);
   id.clear();
@@ -171,6 +185,13 @@ void initialize(std::vector<std::vector<int > >& parent)
   parent.push_back(id);
   id.clear();
 
+  // SDC2 TDC
+  for(int i = 0; i<6; ++i){
+    id.push_back(HistMaker::getUniqueID(kSDC2, 0, kTDC)+i);
+  }
+  parent.push_back(id);
+  id.clear();
+
   // SDC2 HitPat
   for(int i = 0; i<6; ++i){
     id.push_back(HistMaker::getUniqueID(kSDC2, 0, kHitPat)+i);
@@ -181,6 +202,13 @@ void initialize(std::vector<std::vector<int > >& parent)
   // SDC2 Multi
   for(int i = 0; i<6; ++i){
     id.push_back(HistMaker::getUniqueID(kSDC2, 0, kMulti)+i);
+  }
+  parent.push_back(id);
+  id.clear();
+
+  // HDC TDC
+  for(int i = 0; i<4; ++i){
+    id.push_back(HistMaker::getUniqueID(kHDC, 0, kTDC)+i);
   }
   parent.push_back(id);
   id.clear();
@@ -199,6 +227,13 @@ void initialize(std::vector<std::vector<int > >& parent)
   parent.push_back(id);
   id.clear();
 
+  // SDC3 TDC
+  for(int i = 0; i<6; ++i){
+    id.push_back(HistMaker::getUniqueID(kSDC3, 0, kTDC)+i);
+  }
+  parent.push_back(id);
+  id.clear();
+
   // SDC3 HitPat
   for(int i = 0; i<6; ++i){
     id.push_back(HistMaker::getUniqueID(kSDC3, 0, kHitPat)+i);
@@ -209,6 +244,13 @@ void initialize(std::vector<std::vector<int > >& parent)
   // SDC3 Multi
   for(int i = 0; i<6; ++i){
     id.push_back(HistMaker::getUniqueID(kSDC3, 0, kMulti)+i);
+  }
+  parent.push_back(id);
+  id.clear();
+
+  // SDC4 TDC
+  for(int i = 0; i<6; ++i){
+    id.push_back(HistMaker::getUniqueID(kSDC4, 0, kTDC)+i);
   }
   parent.push_back(id);
   id.clear();
@@ -267,6 +309,6 @@ void draw(TCanvas* c, std::vector<int>& id)
   c->cd(0);
   c->Modified();
   c->Update();
-  sleep(10);
+  sleep(7);
 }
 

@@ -18,6 +18,8 @@ namespace analyzer
   using namespace hddaq::unpacker;
   using namespace hddaq;
 
+  bool flag_spill_by_spill = false;
+
   static const int NofCh = 32;
 
   enum dispColumn{
@@ -82,6 +84,11 @@ process_begin(const std::vector<std::string>& argv)
 {
   ConfMan& gConfMan = ConfMan::getInstance();
   gConfMan.initialize(argv);
+  
+  // spill by spill flag
+  if(4 == argv.size()){
+    flag_spill_by_spill = true;
+  }
 
   for(int i = 0; i<32; ++i){
     cont_info[left].push_back(   scaler_info("N/A", id_vme03_1, i, false) );
@@ -265,10 +272,12 @@ process_event()
   static int run_number = g_unpacker.get_root()->get_run_number();
   static int event_count = 0;
   static bool en_disp = false;
-  if(event_count%400 == 0){
-    en_disp = true;
+  if(flag_spill_by_spill){
+    if(event_count%3 == 0)   en_disp = true;
+  }else{
+    if(event_count%400 == 0) en_disp = true;
   }
-
+  
   // clear console
   if(en_disp) printf("\033[2J");
 
@@ -306,7 +315,12 @@ process_event()
 	  inclement_spill = true;
 	}
 
-	val[left][i] += curr[left][i] - prev[left][i];
+	if(flag_spill_by_spill){
+	  val[left][i]  = curr[left][i];
+	}else{
+	  val[left][i] += curr[left][i] - prev[left][i];
+	}
+
       }
 
       // Center column
@@ -317,7 +331,12 @@ process_event()
 	if(curr[center][i] < prev[center][i]){
 	  prev[center][i] = 0;
 	}
-	val[center][i] += curr[center][i] - prev[center][i];
+
+	if(flag_spill_by_spill){
+	  val[center][i]  = curr[center][i];
+	}else{
+	  val[center][i] += curr[center][i] - prev[center][i];
+	}
       }
 
       // Right column
@@ -333,7 +352,11 @@ process_event()
 	  // spill
 	  if(inclement_spill) ++val[right][0];
 	}else{
-	  val[right][i] += curr[right][i] - prev[right][i];
+	  if(flag_spill_by_spill){
+	    val[right][i]  = curr[right][i];
+	  }else{
+	    val[right][i] += curr[right][i] - prev[right][i];
+	  }
 	}
       }
 

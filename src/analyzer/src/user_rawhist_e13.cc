@@ -366,20 +366,27 @@ process_event()
     static const int tdc_max = gPar.getParameter("BFT_TDC", 1);
 
     // sequential id
-    static const int bft_tu_id = gHist.getSequentialID(kBFT, 0, kTDC, 1);
-    static const int bft_td_id = gHist.getSequentialID(kBFT, 0, kTDC, 2);
-    static const int bft_totu_id = gHist.getSequentialID(kBFT, 0, kADC, 1);
-    static const int bft_totd_id = gHist.getSequentialID(kBFT, 0, kADC, 2);
-    static const int bft_hitu_id = gHist.getSequentialID(kBFT, 0, kHitPat, 1);
-    static const int bft_hitd_id = gHist.getSequentialID(kBFT, 0, kHitPat, 2);
-    static const int bft_mul_id  = gHist.getSequentialID(kBFT, 0, kMulti, 1);
+    static const int bft_tu_id    = gHist.getSequentialID(kBFT, 0, kTDC, 1);
+    static const int bft_td_id    = gHist.getSequentialID(kBFT, 0, kTDC, 2);
+    static const int bft_totu_id  = gHist.getSequentialID(kBFT, 0, kADC, 1);
+    static const int bft_totd_id  = gHist.getSequentialID(kBFT, 0, kADC, 2);
+    static const int bft_ctotu_id = gHist.getSequentialID(kBFT, 0, kADC2D, 1);
+    static const int bft_ctotd_id = gHist.getSequentialID(kBFT, 0, kADC2D, 2);
+    static const int bft_hitu_id  = gHist.getSequentialID(kBFT, 0, kHitPat, 1);
+    static const int bft_hitd_id  = gHist.getSequentialID(kBFT, 0, kHitPat, 2);
+    static const int bft_chitu_id = gHist.getSequentialID(kBFT, 0, kHitPat2D, 1);
+    static const int bft_chitd_id = gHist.getSequentialID(kBFT, 0, kHitPat2D, 2);
+    static const int bft_mul_id   = gHist.getSequentialID(kBFT, 0, kMulti, 1);
+    static const int bft_cmul_id  = gHist.getSequentialID(kBFT, 0, kMulti2D, 1);
 
-    int multiplicity = 0; // includes both u and d planes.
+    int multiplicity  = 0; // includes both u and d planes.
+    int cmultiplicity = 0; // includes both u and d planes.
     for(int i = 0; i<NumOfSegBFT; ++i){
       int nhit_u = gUnpacker.get_entries(k_device, k_uplane, 0, i, k_leading);
       int nhit_d = gUnpacker.get_entries(k_device, k_dplane, 0, i, k_leading);
 
       // u plane
+      int tdc_prev = 0;
       for(int m = 0; m<nhit_u; ++m){
 	int tdc = gUnpacker.get(k_device, k_uplane, 0, i, k_leading, m);
 	int tdc_t = gUnpacker.get(k_device, k_uplane, 0, i, k_trailing, m);
@@ -390,9 +397,18 @@ process_event()
 	  ++multiplicity;
 	  hptr_array[bft_hitu_id]->Fill(i);
 	}
+	if(tdc_prev==tdc) continue;
+	tdc_prev = tdc;
+	if(tot==0) continue;
+	hptr_array[bft_ctotu_id]->Fill(tot);
+	if(tdc_min < tdc && tdc < tdc_max){
+	  ++cmultiplicity;
+	  hptr_array[bft_chitu_id]->Fill(i);
+	}
       }
 
       // d plane
+      tdc_prev = 0;
       for(int m = 0; m<nhit_d; ++m){
 	int tdc = gUnpacker.get(k_device, k_dplane, 0, i, k_leading, m);
 	int tdc_t = gUnpacker.get(k_device, k_dplane, 0, i, k_trailing, m);
@@ -403,10 +419,18 @@ process_event()
 	  ++multiplicity;
 	  hptr_array[bft_hitd_id]->Fill(i);
 	}
+	if(tdc_prev==tdc) continue;
+	tdc_prev = tdc;
+	if(tot==0) continue;
+	hptr_array[bft_ctotd_id]->Fill(tot);
+	if(tdc_min < tdc && tdc < tdc_max){
+	  ++cmultiplicity;
+	  hptr_array[bft_chitd_id]->Fill(i);
+	}
       }
     }
-
     hptr_array[bft_mul_id]->Fill(multiplicity);
+    hptr_array[bft_cmul_id]->Fill(cmultiplicity);
 
 #if 0
     // Debug, dump data relating this detector

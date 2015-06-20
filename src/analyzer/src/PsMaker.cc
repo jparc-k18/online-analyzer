@@ -144,7 +144,7 @@ void PsMaker::create(std::string& name)
     base_id = HistMaker::getUniqueID(kBH1, 0, kTDC);
     for(int i = 0; i<NumOfSegBH1; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
-
+    
     // TDC D
     base_id = HistMaker::getUniqueID(kBH1, 0, kTDC, NumOfSegBH1+1);
     for(int i = 0; i<NumOfSegBH1; ++i){id_list.push_back(base_id + i);}
@@ -166,11 +166,20 @@ void PsMaker::create(std::string& name)
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
 
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC, 1));
-    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC, 2));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat, 1));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat2D, 1));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC, 2));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat, 2));
-    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kMulti, 1));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat2D, 2));
+    drawOneCanvas(id_list, par_list, flag_xaxis, false);
+
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC, 1));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC2D, 1));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kMulti, 1));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC, 2));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC2D, 2));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kMulti2D, 1));
+
     drawOneCanvas(id_list, par_list, flag_xaxis, false);
   }
 

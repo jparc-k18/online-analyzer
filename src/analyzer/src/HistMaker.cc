@@ -304,6 +304,19 @@ TList* HistMaker::createBFT(bool flag_ps)
 			   "TOT [ch]", ""));
   }
 
+  // TOT (after cut) --------------------------------------------
+  {
+    int target_id = getUniqueID(kBFT, 0, kADC2D, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(++target_id, "BFT_CTOT_U", // 1 origin
+			   200, -50, 150,
+			   "TOT [ch]", ""));
+
+    top_dir->Add(createTH1(++target_id, "BFT_CTOT_D", // 1 origin
+			   200, -50, 150,
+			   "TOT [ch]", ""));
+  }
+
   // Hit parttern -----------------------------------------------
   {
     int target_id = getUniqueID(kBFT, 0, kHitPat, 0);
@@ -317,10 +330,33 @@ TList* HistMaker::createBFT(bool flag_ps)
 			   "Segment", ""));
   }
 
+  // Hit parttern (after cut) -----------------------------------
+  {
+    int target_id = getUniqueID(kBFT, 0, kHitPat2D, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(++target_id, "BFT_CHitPat_U", // 1 origin
+			   NumOfSegBFT, 0, NumOfSegBFT,
+			   "Segment", ""));
+
+    top_dir->Add(createTH1(++target_id, "BFT_CHitPat_D", // 1 origin
+			   NumOfSegBFT, 0, NumOfSegBFT,
+			   "Segment", ""));
+  }
+
   // Multiplicity -----------------------------------------------
   {
     const char* title = "BFT_multiplicity";
     int target_id = getUniqueID(kBFT, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(++target_id, title, // 1 origin
+			   30, 0, 30,
+			   "Multiplicity", ""));
+  }
+
+  // Multiplicity (after cut)------------------------------------
+  {
+    const char* title = "BFT_CMulti";
+    int target_id = getUniqueID(kBFT, 0, kMulti2D, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   30, 0, 30,

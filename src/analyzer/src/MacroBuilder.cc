@@ -81,6 +81,15 @@ TObject* dispBH1()
   return m;
 }
 
+// dispBFT -------------------------------------------------------
+TObject* dispBFT()
+{
+  std::string path = getMacroPath() + "dispBFT.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispBFT");
+  return m;
+}
+
 // dispBH2 -------------------------------------------------------
 TObject* dispBH2()
 {
@@ -96,6 +105,24 @@ TObject* dispACs_SFV()
   std::string path = getMacroPath() + "dispACs_SFV.C";
   TMacro* m = new TMacro(path.c_str());
   m->SetName("dispACs_SFV");
+  return m;
+}
+
+// dispSP0Adc ----------------------------------------------------
+TObject* dispSP0Adc()
+{
+  std::string path = getMacroPath() + "dispSP0Adc.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispSP0Adc");
+  return m;
+}
+
+// dispSP0Tdc ----------------------------------------------------
+TObject* dispSP0Tdc()
+{
+  std::string path = getMacroPath() + "dispSP0Tdc.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispSP0Tdc");
   return m;
 }
 

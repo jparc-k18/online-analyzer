@@ -9,7 +9,7 @@ void dispGeTdc()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  const int n_seg = 32;
+  const int NumOfSegGe = 32;
   ////////// Ge TDC
   {
     const int n_type = 4;
@@ -20,7 +20,7 @@ void dispGeTdc()
       c->Clear();
       c->Divide(8,4);
       int base_id = HistMaker::getUniqueID(kGe, 0, tdc_type[t], 1);
-      for(int i=0; i<n_seg; i++){
+      for(int i=0; i<NumOfSegGe; i++){
 	c->cd(i+1);
 	gPad->SetLogy();
 	TH1 *h = (TH1*)GHist::get(base_id + i);

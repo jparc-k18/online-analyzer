@@ -275,7 +275,7 @@ process_event()
   if(flag_spill_by_spill){
     if(event_count%3 == 0)   en_disp = true;
   }else{
-    if(event_count%10 == 0) en_disp = true;
+    if(event_count%400 == 0) en_disp = true;
   }
   
   // clear console

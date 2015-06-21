@@ -291,6 +291,19 @@ TList* HistMaker::createBFT(bool flag_ps)
 			   "TDC [ch]", ""));
   }
 
+  // TDC (after cut) --------------------------------------------
+  {
+    int target_id = getUniqueID(kBFT, 0, kTDC2D, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(++target_id, "BFT_CTDC_U", // 1 origin
+			   1024, 0, 1024,
+			   "TDC [ch]", ""));
+
+    top_dir->Add(createTH1(++target_id, "BFT_CTDC_D", // 1 origin
+			   1024, 0, 1024,
+			   "TDC [ch]", ""));
+  }
+
   // TOT---------------------------------------------------------
   {
     int target_id = getUniqueID(kBFT, 0, kADC, 0);
@@ -1077,9 +1090,9 @@ TList* HistMaker::createSP0(bool flag_ps)
       for(int i = 0; i<2; ++i){
 	const char* title = NULL;
 	if(i == 0){
-	  title = Form("%s_HitPat_%dU", nameSubDetector, sd);
+	  title = Form("%s_HitPat_U", nameSubDetector);
 	}else{
-	  title = Form("%s_HitPat_%dD", nameSubDetector, sd);
+	  title = Form("%s_HitPat_D", nameSubDetector);
 	}
 
 	subdet_dir->Add(createTH1(target_id + i+1, title, // 1 origin

@@ -70,9 +70,12 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(split32());
   tab_macro->Add(split33());
   tab_macro->Add(dispBH1());
+  tab_macro->Add(dispBFT());
   tab_macro->Add(dispBH2());
   tab_macro->Add(dispACs_SFV());
-  tab_macro->Add(dispTOF());
+  tab_macro->Add(dispSP0Adc());
+  tab_macro->Add(dispSP0Tdc());
+  tab_macro->Add(dispTOF());  
   tab_macro->Add(dispLC());
   tab_macro->Add(dispGeAdc());
   tab_macro->Add(dispGeTdc());
@@ -366,27 +369,30 @@ process_event()
     static const int tdc_max = gPar.getParameter("BFT_TDC", 1);
 
     // sequential id
-    static const int bft_tu_id    = gHist.getSequentialID(kBFT, 0, kTDC, 1);
-    static const int bft_td_id    = gHist.getSequentialID(kBFT, 0, kTDC, 2);
-    static const int bft_totu_id  = gHist.getSequentialID(kBFT, 0, kADC, 1);
-    static const int bft_totd_id  = gHist.getSequentialID(kBFT, 0, kADC, 2);
-    static const int bft_ctotu_id = gHist.getSequentialID(kBFT, 0, kADC2D, 1);
-    static const int bft_ctotd_id = gHist.getSequentialID(kBFT, 0, kADC2D, 2);
-    static const int bft_hitu_id  = gHist.getSequentialID(kBFT, 0, kHitPat, 1);
-    static const int bft_hitd_id  = gHist.getSequentialID(kBFT, 0, kHitPat, 2);
+    static const int bft_tu_id    = gHist.getSequentialID(kBFT, 0, kTDC,      1);
+    static const int bft_td_id    = gHist.getSequentialID(kBFT, 0, kTDC,      2);
+    static const int bft_ctu_id   = gHist.getSequentialID(kBFT, 0, kTDC2D,    1);
+    static const int bft_ctd_id   = gHist.getSequentialID(kBFT, 0, kTDC2D,    2);
+    static const int bft_totu_id  = gHist.getSequentialID(kBFT, 0, kADC,      1);
+    static const int bft_totd_id  = gHist.getSequentialID(kBFT, 0, kADC,      2);
+    static const int bft_ctotu_id = gHist.getSequentialID(kBFT, 0, kADC2D,    1);
+    static const int bft_ctotd_id = gHist.getSequentialID(kBFT, 0, kADC2D,    2);
+    static const int bft_hitu_id  = gHist.getSequentialID(kBFT, 0, kHitPat,   1);
+    static const int bft_hitd_id  = gHist.getSequentialID(kBFT, 0, kHitPat,   2);
     static const int bft_chitu_id = gHist.getSequentialID(kBFT, 0, kHitPat2D, 1);
     static const int bft_chitd_id = gHist.getSequentialID(kBFT, 0, kHitPat2D, 2);
-    static const int bft_mul_id   = gHist.getSequentialID(kBFT, 0, kMulti, 1);
-    static const int bft_cmul_id  = gHist.getSequentialID(kBFT, 0, kMulti2D, 1);
+    static const int bft_mul_id   = gHist.getSequentialID(kBFT, 0, kMulti,    1);
+    static const int bft_cmul_id  = gHist.getSequentialID(kBFT, 0, kMulti2D,  1);
 
     int multiplicity  = 0; // includes both u and d planes.
     int cmultiplicity = 0; // includes both u and d planes.
+    int tdc_prev      = 0;
     for(int i = 0; i<NumOfSegBFT; ++i){
       int nhit_u = gUnpacker.get_entries(k_device, k_uplane, 0, i, k_leading);
       int nhit_d = gUnpacker.get_entries(k_device, k_dplane, 0, i, k_leading);
 
       // u plane
-      int tdc_prev = 0;
+      tdc_prev = 0;
       for(int m = 0; m<nhit_u; ++m){
 	int tdc = gUnpacker.get(k_device, k_uplane, 0, i, k_leading, m);
 	int tdc_t = gUnpacker.get(k_device, k_uplane, 0, i, k_trailing, m);
@@ -400,6 +406,7 @@ process_event()
 	if(tdc_prev==tdc) continue;
 	tdc_prev = tdc;
 	if(tot==0) continue;
+	hptr_array[bft_ctu_id]->Fill(tdc);
 	hptr_array[bft_ctotu_id]->Fill(tot);
 	if(tdc_min < tdc && tdc < tdc_max){
 	  ++cmultiplicity;
@@ -422,6 +429,7 @@ process_event()
 	if(tdc_prev==tdc) continue;
 	tdc_prev = tdc;
 	if(tot==0) continue;
+	hptr_array[bft_ctd_id]->Fill(tdc);
 	hptr_array[bft_ctotd_id]->Fill(tot);
 	if(tdc_min < tdc && tdc < tdc_max){
 	  ++cmultiplicity;

@@ -169,22 +169,27 @@ void PsMaker::create(std::string& name)
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,      2));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,      1));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,      2));
-    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC2D,    1));
-    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC2D,    2));
-    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC2D,    1));
-    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC2D,    2));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,     11));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,     12));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,     11));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,     12));
     drawOneCanvas(id_list, par_list, flag_xaxis, false);
 
     par_list[kXdiv] = 3; par_list[kYdiv] = 2;
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat,   1));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat,   2));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kMulti,    1));
-    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat2D, 1));
-    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat2D, 2));
-    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kMulti2D,  1));
-    // id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kMulti,    2));
-    // id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kMulti2D,  2));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat,  11));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat,  12));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kMulti,   11));
     drawOneCanvas(id_list, par_list, flag_xaxis, false);
+
+    // par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    // id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC2D,    1));
+    // id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC2D,    2));
+    // id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC2D,    1));
+    // id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC2D,    2));
+    // drawOneCanvas(id_list, par_list, flag_xaxis, false, "box");
   }
 
   // BC3 ----------------------------------------------------------------

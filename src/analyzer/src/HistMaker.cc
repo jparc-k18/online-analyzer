@@ -293,7 +293,7 @@ TList* HistMaker::createBFT(bool flag_ps)
 
   // TDC (after cut) --------------------------------------------
   {
-    int target_id = getUniqueID(kBFT, 0, kTDC2D, 0);
+    int target_id = getUniqueID(kBFT, 0, kTDC, 10);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BFT_CTDC_U", // 1 origin
 			   1024, 0, 1024,
@@ -319,7 +319,7 @@ TList* HistMaker::createBFT(bool flag_ps)
 
   // TOT (after cut) --------------------------------------------
   {
-    int target_id = getUniqueID(kBFT, 0, kADC2D, 0);
+    int target_id = getUniqueID(kBFT, 0, kADC, 10);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BFT_CTOT_U", // 1 origin
 			   200, -50, 150,
@@ -345,7 +345,7 @@ TList* HistMaker::createBFT(bool flag_ps)
 
   // Hit parttern (after cut) -----------------------------------
   {
-    int target_id = getUniqueID(kBFT, 0, kHitPat2D, 0);
+    int target_id = getUniqueID(kBFT, 0, kHitPat, 10);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BFT_CHitPat_U", // 1 origin
 			   NumOfSegBFT, 0, NumOfSegBFT,
@@ -369,13 +369,43 @@ TList* HistMaker::createBFT(bool flag_ps)
   // Multiplicity (after cut)------------------------------------
   {
     const char* title = "BFT_CMulti";
-    int target_id = getUniqueID(kBFT, 0, kMulti2D, 0);
+    int target_id = getUniqueID(kBFT, 0, kMulti, 10);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   30, 0, 30,
 			   "Multiplicity", ""));
   }
   
+  // TDC-2D (after cut) --------------------------------------------
+  {
+    int target_id = getUniqueID(kBFT, 0, kTDC2D, 0);
+    // Add to the top directory
+    top_dir->Add(createTH2(++target_id, "BFT_CTDC_U_2D", // 1 origin
+			   NumOfSegBFT, 0, NumOfSegBFT,
+			   1024, 0, 1024,
+			   "TDC [ch]", ""));
+
+    top_dir->Add(createTH2(++target_id, "BFT_CTDC_D_2D", // 1 origin
+			   NumOfSegBFT, 0, NumOfSegBFT,
+			   1024, 0, 1024,
+			   "TDC [ch]", ""));
+  }
+
+  // TOT-2D (after cut) --------------------------------------------
+  {
+    int target_id = getUniqueID(kBFT, 0, kADC2D, 0);
+    // Add to the top directory
+    top_dir->Add(createTH2(++target_id, "BFT_CTOT_U_2D", // 1 origin
+			   NumOfSegBFT, 0, NumOfSegBFT,
+			   200, -50, 150,
+			   "TOT [ch]", ""));
+
+    top_dir->Add(createTH2(++target_id, "BFT_CTOT_D_2D", // 1 origin
+			   NumOfSegBFT, 0, NumOfSegBFT,
+			   200, -50, 150,
+			   "TOT [ch]", ""));
+  }
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }

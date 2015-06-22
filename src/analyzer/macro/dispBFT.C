@@ -13,24 +13,32 @@ void dispBFT()
   {
     const int n_hist_c1 = 8;
     const int n_hist_c2 = 6;
+    const int n_hist_c3 = 4;
 
     int bft_id_c1[n_hist_c1] = {
-      HistMaker::getUniqueID(kBFT, 0, kTDC,      1),
-      HistMaker::getUniqueID(kBFT, 0, kTDC,      2),
-      HistMaker::getUniqueID(kBFT, 0, kADC,      1),
-      HistMaker::getUniqueID(kBFT, 0, kADC,      2),
-      HistMaker::getUniqueID(kBFT, 0, kTDC2D,    1),
-      HistMaker::getUniqueID(kBFT, 0, kTDC2D,    2),
-      HistMaker::getUniqueID(kBFT, 0, kADC2D,    1),
-      HistMaker::getUniqueID(kBFT, 0, kADC2D,    2),
+      HistMaker::getUniqueID(kBFT, 0, kTDC,     1),
+      HistMaker::getUniqueID(kBFT, 0, kTDC,     2),
+      HistMaker::getUniqueID(kBFT, 0, kADC,     1),
+      HistMaker::getUniqueID(kBFT, 0, kADC,     2),
+      HistMaker::getUniqueID(kBFT, 0, kTDC,    11),
+      HistMaker::getUniqueID(kBFT, 0, kTDC,    12),
+      HistMaker::getUniqueID(kBFT, 0, kADC,    11),
+      HistMaker::getUniqueID(kBFT, 0, kADC,    12),
     };
     int bft_id_c2[n_hist_c2] = {
-      HistMaker::getUniqueID(kBFT, 0, kHitPat,   1),
-      HistMaker::getUniqueID(kBFT, 0, kHitPat,   2),
-      HistMaker::getUniqueID(kBFT, 0, kMulti,    1),
-      HistMaker::getUniqueID(kBFT, 0, kHitPat2D, 1),
-      HistMaker::getUniqueID(kBFT, 0, kHitPat2D, 2),
-      HistMaker::getUniqueID(kBFT, 0, kMulti2D,  1),
+      HistMaker::getUniqueID(kBFT, 0, kHitPat,  1),
+      HistMaker::getUniqueID(kBFT, 0, kHitPat,  2),
+      HistMaker::getUniqueID(kBFT, 0, kMulti,   1),
+      HistMaker::getUniqueID(kBFT, 0, kHitPat, 11),
+      HistMaker::getUniqueID(kBFT, 0, kHitPat, 12),
+      HistMaker::getUniqueID(kBFT, 0, kMulti,  11),
+    };
+
+    int bft_id_c3[n_hist_c3] = {
+      HistMaker::getUniqueID(kBFT, 0, kTDC2D,   1),
+      HistMaker::getUniqueID(kBFT, 0, kTDC2D,   2),
+      HistMaker::getUniqueID(kBFT, 0, kADC2D,   1),
+      HistMaker::getUniqueID(kBFT, 0, kADC2D,   2),
     };
 
     // draw TDC/TOT
@@ -55,6 +63,19 @@ void dispBFT()
 	c->cd(i+1)->SetGrid();
 	TH1 *h = (TH1*)GHist::get(bft_id_c2[i]);
 	h->Draw();
+      }
+    }
+    c->Update();
+
+    // draw TDC/TOT 2D
+    {
+      TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
+      c->Clear();
+      c->Divide(2,2);
+      for(int i=0; i<n_hist_c3; i++){
+	c->cd(i+1)->SetGrid();
+	TH1 *h = (TH1*)GHist::get(bft_id_c3[i]);
+	h->Draw("colz");
       }
     }
     c->Update();

@@ -1,0 +1,51 @@
+## ------------------------------------------------------------------------
+1. How to launch.
+   1.1 Launch analyzer by using shell script in the sksterm4.
+   $ analyzer
+     The program is launched with the online mode. It connects to DAQ.
+   $ analyzer 08100
+     The program is launched with the semi-online mode. The raw data file, which is already stored in HDD, are loaded.
+   These shell script files are in sks@sksterm4:~/bin.
+
+   1.2 Launch analyzer manually.
+   Go to analyzer directory in the sksterm4.
+   $ ./bin/raw_hist_e13 /param/conf/analyzer_20150611 eb0:8901
+     The program is launched with the online mode.
+   $ ./bin/raw_hist_e13 /param/conf/analyzer_20150611 /***/run08100.dat.gz
+     The program is launched with the semi-online mode.
+
+   If you want to launch analyzer in your computer, you should prepare the parameter fils, and connect your computer to the private network in which the DAQ machine exists.
+
+   *** Note ***
+   If you give the 4th argument to the scaler_ana like this,
+   $ ./bin/scaler_ana /param/conf/analyzer_20150611 eb0:8901 hoge
+   the scaler_ana is launched with the spill by spill mode.
+
+## ------------------------------------------------------------------------
+2. The list of excutable files.
+   raw_hist_e13
+     This is the excutable file launched by the analyzer command.
+
+   beamprofile_e13
+   beamprofile_e07
+     Reconstruct the BcOut tracks. DCDrift.param and DCTdc.calib.param are necessary.
+
+  scaler_ana
+     Analyze scaler. There are 2 modes.
+     -Integral mode (default)
+     Integral all the scaler counts in one run and display them.
+     -Spill by Spill mode (Optional)
+      Scaler values are reset at the end of spill. By giving the 4th argument when you launch this (any word is OK), scaler_ana runs with this mode.
+
+  tag_checker
+     Check the event slip. This program is usually launched by the shell script (tag_checker).
+
+  HBJScalerAna, hbj_ana, pwo_hist
+     Analyzer dedicated to the analyzsis of the Hyperball-J.
+
+  unpacker_debug
+     For the developer.
+
+  skeleton
+     Skeleton.
+

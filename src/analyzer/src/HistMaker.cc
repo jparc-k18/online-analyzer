@@ -383,12 +383,12 @@ TList* HistMaker::createBFT(bool flag_ps)
     top_dir->Add(createTH2(++target_id, "BFT_CTDC_U_2D", // 1 origin
 			   NumOfSegBFT, 0, NumOfSegBFT,
 			   1024, 0, 1024,
-			   "TDC [ch]", ""));
+			   "Segment", "TDC [ch]"));
 
     top_dir->Add(createTH2(++target_id, "BFT_CTDC_D_2D", // 1 origin
 			   NumOfSegBFT, 0, NumOfSegBFT,
 			   1024, 0, 1024,
-			   "TDC [ch]", ""));
+			   "Segment", "TDC [ch]"));
   }
 
   // TOT-2D (after cut) --------------------------------------------
@@ -398,12 +398,12 @@ TList* HistMaker::createBFT(bool flag_ps)
     top_dir->Add(createTH2(++target_id, "BFT_CTOT_U_2D", // 1 origin
 			   NumOfSegBFT, 0, NumOfSegBFT,
 			   200, -50, 150,
-			   "TOT [ch]", ""));
+			   "Segment", "TOT [ch]"));
 
     top_dir->Add(createTH2(++target_id, "BFT_CTOT_D_2D", // 1 origin
 			   NumOfSegBFT, 0, NumOfSegBFT,
 			   200, -50, 150,
-			   "TOT [ch]", ""));
+			   "Segment", "TOT [ch]"));
   }
 
   // Return the TList pointer which is added into TGFileBrowser

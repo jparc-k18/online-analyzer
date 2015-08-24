@@ -16,17 +16,20 @@ include ../common.mk
 
 core_obj = UserParamMan.o HodoParamMan.o HodoPHCMan.o DCGeomMan.o DCTdcCalibMan.o DCDriftParamMan.o DCGeomRecord.o ConfMan.o GeAdcCalibMan.o
 
-my_obj_skeleton := $(core_obj) user_skeleton.o
-my_tgt_skeleton := $(bin_dir)/skeleton
+my_obj_skeleton	:= $(core_obj) user_skeleton.o
+my_tgt_skeleton	:= $(bin_dir)/skeleton
 
-my_obj_udebug := $(core_obj) user_unpacker_debug.o
-my_tgt_udebug := $(bin_dir)/unpacker_debug
+my_obj_udebug	:= $(core_obj) user_unpacker_debug.o
+my_tgt_udebug	:= $(bin_dir)/unpacker_debug
 
-my_obj_tag := $(core_obj) user_tag_checker.o
-my_tgt_tag := $(bin_dir)/tag_checker
+my_obj_tag	:= $(core_obj) user_tag_checker.o
+my_tgt_tag	:= $(bin_dir)/tag_checker
 
-my_obj_rawhist_e13  := $(core_obj) user_rawhist_e13.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o
-my_tgt_rawhist_e13  := $(bin_dir)/raw_hist_e13
+my_obj_rawhist_e13	:= $(core_obj) user_rawhist_e13.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o
+my_tgt_rawhist_e13	:= $(bin_dir)/raw_hist_e13
+
+my_obj_rawhist_e0705	:= $(core_obj) user_rawhist_e0705.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o
+my_tgt_rawhist_e0705	:= $(bin_dir)/raw_hist_e0705
 
 my_obj_beamprofile_e13  := $(core_obj) user_beamprofile_e13.o HistMaker.o MacroBuilder.o DCAnalyzer.o
 my_tgt_beamprofile_e13  := $(bin_dir)/beamprofile_e13
@@ -34,22 +37,30 @@ my_tgt_beamprofile_e13  := $(bin_dir)/beamprofile_e13
 my_obj_beamprofile_e07  := $(core_obj) user_beamprofile_e07.o HistMaker.o MacroBuilder.o DCAnalyzer.o
 my_tgt_beamprofile_e07  := $(bin_dir)/beamprofile_e07
 
-my_obj_scaler := $(core_obj) user_scaler_ana.o
-my_tgt_scaler := $(bin_dir)/scaler_ana
+my_obj_scaler_e13	:= $(core_obj) user_scaler_e13.o
+my_tgt_scaler_e13	:= $(bin_dir)/scaler_e13
 
-my_obj_hbjscaler := $(core_obj) user_hbjscaler_ana.o
-my_tgt_hbjscaler := $(bin_dir)/HBJscalerAna
+my_obj_scaler_e0705	:= $(core_obj) user_scaler_e0705.o
+my_tgt_scaler_e0705	:= $(bin_dir)/scaler_e0705
 
-my_obj_hbj_ana := $(core_obj) user_hbj_ana.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o
-my_tgt_hbj_ana := $(bin_dir)/hbj_ana
+my_obj_hbjscaler	:= $(core_obj) user_hbjscaler_ana.o
+my_tgt_hbjscaler	:= $(bin_dir)/HBJscalerAna
 
-my_obj_pwo  := $(core_obj) user_pwo.o HistMaker.o MacroBuilder.o
-my_tgt_pwo  := $(bin_dir)/pwo_hist
+my_obj_hbj_ana	:= $(core_obj) user_hbj_ana.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o
+my_tgt_hbj_ana	:= $(bin_dir)/hbj_ana
+
+my_obj_pwo	:= $(core_obj) user_pwo.o HistMaker.o MacroBuilder.o
+my_tgt_pwo	:= $(bin_dir)/pwo_hist
+
+my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
+	$(my_tgt_scaler_e13) $(my_tgt_hbjscaler) \
+	$(my_tgt_hbj_ana) $(my_tgt_pwo)
 
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
-	$(my_tgt_rawhist_e13) \
-	$(my_tgt_beamprofile_e13) $(my_tgt_beamprofile_e07) \
-	$(my_tgt_scaler) $(my_tgt_hbjscaler) $(my_tgt_hbj_ana) $(my_tgt_pwo)
+	$(my_tgt_rawhist_e0705)	\
+	$(my_tgt_beamprofile_e07) \
+	$(my_tgt_scaler_e13) $(my_tgt_scaler_e0705) \
+#	$(my_old_tgt)
 
  $(my_dir)/dict/GuiPs_Dict.cc: \
  $(my_dir)/include/GuiPs.hh \
@@ -63,26 +74,26 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(QUIET) $(ECHO) "=== Generating dictionary $^ - > $@"
 	rootcint -f $@ -c -p $^
 #_____________________________________________________________________________
-my_obj_skeleton := $(addprefix $(my_dir)/src/,$(my_obj_skeleton))
-my_lib_skeleton := libmyskeleton.so
+my_obj_skeleton	:= $(addprefix $(my_dir)/src/,$(my_obj_skeleton))
+my_lib_skeleton	:= libmyskeleton.so
 $(eval $(call make-lib,$(my_lib_skeleton),$(my_obj_skeleton)))
 $(eval $(call make-gui-target,$(my_tgt_skeleton),$(my_lib_skeleton)))
 
 #_____________________________________________________________________________
-my_obj_udebug := $(addprefix $(my_dir)/src/,$(my_obj_udebug))
-my_lib_udebug := libmyudebug.so
+my_obj_udebug	:= $(addprefix $(my_dir)/src/,$(my_obj_udebug))
+my_lib_udebug	:= libmyudebug.so
 $(eval $(call make-lib,$(my_lib_udebug),$(my_obj_udebug)))
 $(eval $(call make-nogui-target,$(my_tgt_udebug),$(my_lib_udebug)))
 
 #_____________________________________________________________________________
-my_obj_tag := $(addprefix $(my_dir)/src/,$(my_obj_tag))
-my_lib_tag := libmytag.so
+my_obj_tag	:= $(addprefix $(my_dir)/src/,$(my_obj_tag))
+my_lib_tag	:= libmytag.so
 $(eval $(call make-lib,$(my_lib_tag),$(my_obj_tag)))
 $(eval $(call make-nogui-target,$(my_tgt_tag),$(my_lib_tag)))
 
 #_____________________________________________________________________________
-my_obj_rawhist_e13 := $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e13))
-my_obj_rawhist_e13 := $(my_obj_rawhist_e13) \
+my_obj_rawhist_e13	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e13))
+my_obj_rawhist_e13	:= $(my_obj_rawhist_e13) \
 		  $(my_dir)/dict/HistMaker_Dict.o \
 		  $(my_dir)/dict/GuiPs_Dict.o
 my_lib_rawhist_e13 := libmyrawhist_e13.so
@@ -90,46 +101,61 @@ $(eval $(call make-lib,$(my_lib_rawhist_e13),$(my_obj_rawhist_e13)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e13),$(my_lib_rawhist_e13)))
 
 #_____________________________________________________________________________
-my_obj_beamprofile_e13 := $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e13))
-my_obj_beamprofile_e13 := $(my_obj_beamprofile_e13) \
+my_obj_rawhist_e0705	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e0705))
+my_obj_rawhist_e0705	:= $(my_obj_rawhist_e0705) \
+		$(my_dir)/dict/HistMaker_Dict.o \
+		$(my_dir)/dict/GuiPs_Dict.o
+my_lib_rawhist_e0705	:= libmyrawhist_e0705.so
+$(eval $(call make-lib,$(my_lib_rawhist_e0705),$(my_obj_rawhist_e0705)))
+$(eval $(call make-gui-target,$(my_tgt_rawhist_e0705),$(my_lib_rawhist_e0705)))
+
+#_____________________________________________________________________________
+my_obj_beamprofile_e13	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e13))
+my_obj_beamprofile_e13	:= $(my_obj_beamprofile_e13) \
 		  $(my_dir)/dict/HistMaker_Dict.o
 my_lib_beamprofile_e13 := libmybeamprofile_e13.so
 $(eval $(call make-lib,$(my_lib_beamprofile_e13),$(my_obj_beamprofile_e13)))
 $(eval $(call make-gui-target,$(my_tgt_beamprofile_e13),$(my_lib_beamprofile_e13)))
 
 #_____________________________________________________________________________
-my_obj_beamprofile_e07 := $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e07))
-my_obj_beamprofile_e07 := $(my_obj_beamprofile_e07) \
+my_obj_beamprofile_e07	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e07))
+my_obj_beamprofile_e07	:= $(my_obj_beamprofile_e07) \
 		  $(my_dir)/dict/HistMaker_Dict.o
 my_lib_beamprofile_e07 := libmybeamprofile_e07.so
 $(eval $(call make-lib,$(my_lib_beamprofile_e07),$(my_obj_beamprofile_e07)))
 $(eval $(call make-gui-target,$(my_tgt_beamprofile_e07),$(my_lib_beamprofile_e07)))
 
 #_____________________________________________________________________________
-my_obj_scaler := $(addprefix $(my_dir)/src/,$(my_obj_scaler))
-my_lib_scaler := libmyscaler.so
-$(eval $(call make-lib,$(my_lib_scaler),$(my_obj_scaler)))
-$(eval $(call make-nogui-target,$(my_tgt_scaler),$(my_lib_scaler)))
+my_obj_scaler_e13 := $(addprefix $(my_dir)/src/,$(my_obj_scaler_e13))
+my_lib_scaler_e13 := libmyscaler_e13.so
+$(eval $(call make-lib,$(my_lib_scaler_e13),$(my_obj_scaler_e13)))
+$(eval $(call make-nogui-target,$(my_tgt_scaler_e13),$(my_lib_scaler_e13)))
 
 #_____________________________________________________________________________
-my_obj_hbjscaler := $(addprefix $(my_dir)/src/,$(my_obj_hbjscaler))
-my_lib_hbjscaler := libmyhbjscaler.so
+my_obj_scaler_e0705	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e0705))
+my_lib_scaler_e0705	:= libmyscaler_e0705.so
+$(eval $(call make-lib,$(my_lib_scaler_e0705),$(my_obj_scaler_e0705)))
+$(eval $(call make-nogui-target,$(my_tgt_scaler_e0705),$(my_lib_scaler_e0705)))
+
+#_____________________________________________________________________________
+my_obj_hbjscaler	:= $(addprefix $(my_dir)/src/,$(my_obj_hbjscaler))
+my_lib_hbjscaler	:= libmyhbjscaler.so
 $(eval $(call make-lib,$(my_lib_hbjscaler),$(my_obj_hbjscaler)))
 $(eval $(call make-nogui-target,$(my_tgt_hbjscaler),$(my_lib_hbjscaler)))
 
 #_____________________________________________________________________________
-my_obj_hbj_ana := $(addprefix $(my_dir)/src/,$(my_obj_hbj_ana))
-my_obj_hbj_ana := $(my_obj_hbj_ana) \
+my_obj_hbj_ana	:= $(addprefix $(my_dir)/src/,$(my_obj_hbj_ana))
+my_obj_hbj_ana	:= $(my_obj_hbj_ana) \
 		  $(my_dir)/dict/HistMaker_Dict.o \
 		  $(my_dir)/dict/GuiPs_Dict.o
-my_lib_hbj_ana := libmyhbj_ana.so
+my_lib_hbj_ana	:= libmyhbj_ana.so
 $(eval $(call make-lib,$(my_lib_hbj_ana),$(my_obj_hbj_ana)))
 $(eval $(call make-gui-target,$(my_tgt_hbj_ana),$(my_lib_hbj_ana)))
 
 #_____________________________________________________________________________
-my_obj_pwo := $(addprefix $(my_dir)/src/,$(my_obj_pwo))
-my_obj_pwo := $(my_obj_pwo) \
+my_obj_pwo	:= $(addprefix $(my_dir)/src/,$(my_obj_pwo))
+my_obj_pwo	:= $(my_obj_pwo) \
 	      $(my_dir)/dict/HistMaker_Dict.o
-my_lib_pwo := libmypwo.so
+my_lib_pwo	:= libmypwo.so
 $(eval $(call make-lib,$(my_lib_pwo),$(my_obj_pwo)))
 $(eval $(call make-gui-target,$(my_tgt_pwo),$(my_lib_pwo)))

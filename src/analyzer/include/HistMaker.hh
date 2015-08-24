@@ -11,11 +11,13 @@
 enum DetectorType{
   kDetectorZero,
   // Detector unique ID in the beam line
-  kBH1, kBFT, kBC3, kBC4, kBMW, kBH2, kBAC_SAC,
+  kBH1, kBFT, kBC3, kBC4, kBMW, kBH2, kBAC,
+  kBH2_E07, kBAC_E07, kPVAC, kFAC, kCH,
+  kIC,
   // Detector unique ID in the SKS system
-  kSDC2, kHDC, kSP0, kSDC3, kSDC4, kTOF, kTOFMT, kSFV_SAC3, kLC,
-  // Detector unique ID in Hyperball
-  kGe, kPWO,
+  kSDC2, kHDC, kSP0, kSDC3, kSDC4, kTOF, kTOFMT, kLAC, kLC,
+  // Old detectors
+  kBAC_SAC, kSFV_SAC3, kGe, kPWO,
   // Others
   kTriggerFlag, kDAQ, kCorrelation, kMisc,
   sizeDetectorType,
@@ -101,7 +103,12 @@ public:
   TList* createBC4(bool flag_ps=true);
   TList* createBMW(bool flag_ps=true);
   TList* createBH2(bool flag_ps=true);
-  TList* createBAC_SAC(bool flag_ps=true);
+  TList* createBAC(bool flag_ps=true);
+  TList* createBH2_E07(bool flag_ps=true);
+  TList* createBAC_E07(bool flag_ps=true);
+  TList* createPVAC(bool flag_ps=true);
+  TList* createFAC(bool flag_ps=true);
+  TList* createCH(bool flag_ps=true);
   TList* createSDC2(bool flag_ps=true);
   TList* createHDC(bool flag_ps=true);
   TList* createSP0(bool flag_ps=true);
@@ -109,13 +116,17 @@ public:
   TList* createSDC4(bool flag_ps=true);
   TList* createTOF(bool flag_ps=true);
   TList* createTOFMT(bool flag_ps=true);
-  TList* createSFV_SAC3(bool flag_ps=true);
+  TList* createLAC(bool flag_ps=true);
   TList* createLC(bool flag_ps=true);
-  TList* createGe(bool flag_ps=true);
-  TList* createPWO(bool flag_ps=true);
   TList* createTriggerFlag(bool flag_ps=true);
   TList* createCorrelation(bool flag_ps=true);
   TList* createDAQ(bool flag_ps=true);
+  
+  // Old functions
+  TList* createBAC_SAC(bool flag_ps=true);
+  TList* createSFV_SAC3(bool flag_ps=true);
+  TList* createGe(bool flag_ps=true);
+  TList* createPWO(bool flag_ps=true);
 
 private:
   HistMaker();

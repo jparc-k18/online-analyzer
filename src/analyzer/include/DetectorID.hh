@@ -21,29 +21,43 @@ const int DetIdSSD  =112;
 const int DetIdBH1  =  3;
 const int DetIdBH2  =  4;
 const int DetIdTOF  =  5;
-const int DetIdAC   =  6;
+const int DetIdLAC  =  6;
 const int DetIdLC   =  7;
 const int DetIdGC   =  8;
 //const int DetIdBAC  =  9;
-const int DetIdYOON  =  9;
-const int DetIdRC  = 21;
+const int DetIdYOON =  9;
+const int DetIdRC   = 21;
 const int DetIdAC1  = 22;
 const int DetIdBVH  = 23;
 const int DetIdNRC  = 24;
 
-// E13 ID
-const int DetIdBAC     =  9;
-const int DetIdBMW     =  10;
-const int DetIdMisc    =  11;
-const int DetIdMatrix  =  12;
-const int DetIdSFV     =  24;
-const int DetIdTOFMT   =  25;
-const int DetIdSP0     =  26;
-const int DetIdGe      =  27;
-const int DetIdPWO     =  28;
-const int DetIdPWOADC  =  29;
+// E07 Detectors
+const int DetIdBH2_E07 = 33;
+const int DetIdBAC_E07 = 34;
+const int DetIdPVAC    = 35;
+const int DetIdFAC     = 36;
+const int DetIdCH      = 37;
+const int NumOfSegBH2_E07 = 2;
+const int NumOfSegBAC_E07 = 4 + 2;
+const int NumOfSegPVAC    = 6 + 1;
+const int NumOfSegFAC     = 6 + 1;
+const int NumOfSegCH      = 64;
 
-// E13 seg
+// E05 Detectors
+const int DetIdIC      = 38;
+
+// E13 Detectors
+const int DetIdBAC     =  9;
+const int DetIdBMW     = 10;
+const int DetIdMisc    = 11;
+const int DetIdMatrix  = 12;
+const int DetIdSFV     = 24;
+const int DetIdTOFMT   = 25;
+const int DetIdSP0     = 26;
+const int DetIdGe      = 27;
+const int DetIdPWO     = 28;
+const int DetIdPWOADC  = 29;
+
 const int NumOfSegBAC = 6;
 const int NumOfSegSFV = 18;
 const int NumOfSegMisc = 18;
@@ -67,6 +81,7 @@ const int SegIdPWO[NumOfBoxPWO] =
 
 const int NumOfLayersSP0 = 8;
 const int NumOfSegSP0    = 5;
+//
 
 const int DetIdBcIn   = 10;
 const int DetIdBcOut  = 20;
@@ -75,6 +90,7 @@ const int DetIdSdcOut = 40;
 const int NumOfSegBH1 = 11;
 const int NumOfSegBH2 =  5;
 const int NumOfSegTOF = 32;
+const int NumOfSegLAC = 30;
 const int NumOfSegLC  = 28;
 const int NumOfSegBFT = 160;
 

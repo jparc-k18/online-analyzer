@@ -2358,7 +2358,7 @@ TList* HistMaker::createBAC_SAC(bool flag_ps)
 
     // Make histogram and add it
     int target_id = getUniqueID(kBAC_SAC, 0, kADC, 0);
-    for(int i = 0; i<6; ++i){
+    for(int i = 0; i<NumOfSegBAC_SAC; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2380,7 +2380,7 @@ TList* HistMaker::createBAC_SAC(bool flag_ps)
 
     // Make histogram and add it
     int target_id = getUniqueID(kBAC_SAC, 0, kTDC, 0);
-    for(int i = 0; i<6; ++i){
+    for(int i = 0; i<NumOfSegBAC_SAC; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin

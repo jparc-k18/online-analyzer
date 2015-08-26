@@ -96,6 +96,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createBH2());
   tab_hist->Add(gHist.createBH2_E07());
   tab_hist->Add(gHist.createBAC_E07());
+  tab_hist->Add(gHist.createBAC());
   tab_hist->Add(gHist.createSDC2());
   tab_hist->Add(gHist.createHDC());
   tab_hist->Add(gHist.createSP0());

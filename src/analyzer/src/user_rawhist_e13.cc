@@ -682,7 +682,7 @@ process_event()
     static const int baca_id = gHist.getSequentialID(kBAC_SAC, 0, kADC, 1);
     static const int bact_id = gHist.getSequentialID(kBAC_SAC, 0, kTDC, 1);
 
-    for(int seg = 0; seg<NumOfSegBAC; ++seg){
+    for(int seg = 0; seg<NumOfSegBAC_SAC; ++seg){
       // ADC
       int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
       if(nhit_a != 0){

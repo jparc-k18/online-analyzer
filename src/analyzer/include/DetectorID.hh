@@ -58,7 +58,8 @@ const int DetIdGe      = 27;
 const int DetIdPWO     = 28;
 const int DetIdPWOADC  = 29;
 
-const int NumOfSegBAC = 6;
+const int NumOfSegBAC = 2;
+const int NumOfSegBAC_SAC = 6;
 const int NumOfSegSFV = 18;
 const int NumOfSegMisc = 18;
 const int SegIdScalerTrigger = 15;

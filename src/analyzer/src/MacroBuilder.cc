@@ -135,6 +135,15 @@ TObject* dispTOF()
   return m;
 }
 
+// dispLAC -------------------------------------------------------
+TObject* dispLAC()
+{
+  std::string path = getMacroPath() + "dispLAC.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispLAC");
+  return m;
+}
+
 // dispLC -------------------------------------------------------
 TObject* dispLC()
 {

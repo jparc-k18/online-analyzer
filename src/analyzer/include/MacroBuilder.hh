@@ -15,6 +15,7 @@ TObject* dispACs_SFV();
 TObject* dispSP0Adc();
 TObject* dispSP0Tdc();
 TObject* dispTOF();
+TObject* dispLAC();
 TObject* dispLC();
 TObject* dispBC3();
 TObject* dispBC4();

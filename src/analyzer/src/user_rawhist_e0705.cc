@@ -848,11 +848,11 @@ process_event()
 
     int multiplicity  = 0;
     for(int i = 0; i<NumOfSegSCH; ++i){
-      int nhit = gUnpacker.get_entries(k_device, 0, 0, i, k_leading);
+      int nhit = gUnpacker.get_entries(k_device, 0, i, 0, k_leading);
       
       for(int m = 0; m<nhit; ++m){
-	int tdc      = gUnpacker.get(k_device, 0, 0, i, k_leading,  m);
-	int trailing = gUnpacker.get(k_device, 0, 0, i, k_trailing, m);
+	int tdc      = gUnpacker.get(k_device, 0, i, 0, k_leading,  m);
+	int trailing = gUnpacker.get(k_device, 0, i, 0, k_trailing, m);
 	int tot      = tdc - trailing;
 	hptr_array[sch_t_id]->Fill(tdc);
 	hptr_array[sch_tot_id]->Fill(tot);

@@ -36,15 +36,16 @@ const int DetIdBH2_E07 = 33;
 const int DetIdBAC_E07 = 34;
 const int DetIdPVAC    = 35;
 const int DetIdFAC     = 36;
-const int DetIdCH      = 37;
+const int DetIdSCH     = 37;
 const int NumOfSegBH2_E07 = 2;
 const int NumOfSegBAC_E07 = 4 + 2;
 const int NumOfSegPVAC    = 6 + 1;
 const int NumOfSegFAC     = 6 + 1;
-const int NumOfSegCH      = 64;
+const int NumOfSegSCH     = 64;
 
 // E05 Detectors
-const int DetIdIC      = 38;
+const int DetIdKIC     = 38;
+const int NumOfSegKIC  =  4;
 
 // E13 Detectors
 const int DetIdBAC     =  9;

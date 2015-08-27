@@ -99,12 +99,48 @@ TObject* dispBH2()
   return m;
 }
 
-// dispACs_SFV -------------------------------------------------------
-TObject* dispACs_SFV()
+// dispBAC -------------------------------------------------------
+TObject* dispBAC()
 {
-  std::string path = getMacroPath() + "dispACs_SFV.C";
+  std::string path = getMacroPath() + "dispBAC.C";
   TMacro* m = new TMacro(path.c_str());
-  m->SetName("dispACs_SFV");
+  m->SetName("dispBAC");
+  return m;
+}
+
+// dispBH2_E07 -------------------------------------------------------
+TObject* dispBH2_E07()
+{
+  std::string path = getMacroPath() + "dispBH2_E07.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispBH2_E07");
+  return m;
+}
+
+// dispACs_E07 -------------------------------------------------------
+TObject* dispACs_E07()
+{
+  std::string path = getMacroPath() + "dispACs_E07.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispACs_E07");
+  return m;
+}
+
+// dispSCH -------------------------------------------------------
+TObject* dispSCH()
+{
+  std::string path = getMacroPath() + "dispSCH.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispSCH");
+  return m;
+}
+
+// dispKIC -------------------------------------------------------
+TObject* dispKIC()
+{
+  std::string path = getMacroPath() + "dispKIC.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispKIC");
   return m;
 }
 
@@ -258,6 +294,15 @@ TObject* dispBeamProfile_e07()
   std::string path = getMacroPath() + "dispBeamProfile_e07.C";
   TMacro* m = new TMacro(path.c_str());
   m->SetName("dispBeamProfile_e07");
+  return m;
+}
+
+// dispACs_SFV -------------------------------------------------------
+TObject* dispACs_SFV()
+{
+  std::string path = getMacroPath() + "dispACs_SFV.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispACs_SFV");
   return m;
 }
 

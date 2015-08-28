@@ -751,34 +751,24 @@ TList* HistMaker::createBH2(bool flag_ps)
 }
 
 // -------------------------------------------------------------------------
-// createBH2 (E07)
+// createBH2_E07
 // -------------------------------------------------------------------------
 TList* HistMaker::createBH2_E07(bool flag_ps)
 {
-  // Determine the detector name
-  std::string strDet = CONV_STRING(kBH2_E07);
-  // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
-  if(flag_ps){
-    // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
-  }
+  std::string strDet = CONV_STRING(kBH2_E07);   // Determine the detector name
+  name_created_detectors_.push_back(strDet);    // name list of crearted detector
+  if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
   
-  // Declaration of the directory
-  // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  // ADC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
+  { // ADC---------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-
-    // Make histogram and add it
+    
     int target_id = getUniqueID(kBH2_E07, 0, kADC, 0);
     for(int i = 0; i<NumOfSegBH2_E07*2; ++i){
       const char* title = NULL;
@@ -793,20 +783,15 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
 
-  // TDC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
+  { // TDC---------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
     int target_id = getUniqueID(kBH2_E07, 0, kTDC, 0);
     for(int i = 0; i<NumOfSegBH2_E07*2; ++i){
       const char* title = NULL;
@@ -821,32 +806,25 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
 			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
-
-  // Hit parttern -----------------------------------------------
-  {
+  
+  { // Hit parttern -----------------------------------------------
     const char* title = "BH2_E07_hit_pattern";
     int target_id = getUniqueID(kBH2_E07, 0, kHitPat, 0);
-    // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegBH2_E07, 0, NumOfSegBH2_E07,
 			   "Segment", ""));
   }
-
-  // Multiplicity -----------------------------------------------
-  {
+  
+  { // Multiplicity -----------------------------------------------
     const char* title = "BH2_E07_multiplicity";
     int target_id = getUniqueID(kBH2_E07, 0, kMulti, 0);
-    // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegBH2_E07, 0, NumOfSegBH2_E07,
 			   "Multiplicity", ""));
   }
   
-  // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
 
@@ -855,33 +833,22 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
 // -------------------------------------------------------------------------
 TList* HistMaker::createBAC(bool flag_ps)
 {
-  // Determine the detector name
-  std::string strDet = CONV_STRING(kBAC);
-  // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
-  if(flag_ps){
-    // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
-  }
+  std::string strDet = CONV_STRING(kBAC);       // Determine the detector name
+  name_created_detectors_.push_back(strDet);    // name list of crearted detector
+  if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
   
-  // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  const char* nameDetector = strDet.c_str(); // Declaration of the directory
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  // ACs configuration
-  const char* name_acs[] = {"BAC1", "BAC2"};
+  const char* name_acs[] = { "BAC1", "BAC2" };
 
-  // ADC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
+  { // ADC---------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
     int target_id = getUniqueID(kBAC, 0, kADC, 0);
     for(int i = 0; i<NumOfSegBAC; ++i){
       const char* title = NULL;
@@ -890,20 +857,15 @@ TList* HistMaker::createBAC(bool flag_ps)
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
 
-  // TDC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
+  { // TDC---------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
     int target_id = getUniqueID(kBAC, 0, kTDC, 0);
     for(int i = 0; i<NumOfSegBAC; ++i){
       const char* title = NULL;
@@ -912,47 +874,49 @@ TList* HistMaker::createBAC(bool flag_ps)
 			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
   
-  // Return the TList pointer which is added into TGFileBrowser
+  { // Hit parttern -----------------------------------------------
+    int target_id = getUniqueID(kBAC, 0, kHitPat, 0);
+    top_dir->Add(createTH1(++target_id, "BAC_hit_pattern",
+			   NumOfSegBAC, 0, NumOfSegBAC,
+			   "Segment", ""));
+  }
+
+  { // Multiplicity -----------------------------------------------
+    int target_id = getUniqueID(kBAC, 0, kMulti, 0);
+    top_dir->Add(createTH1(++target_id, "BAC_multiplicity",
+			   NumOfSegBAC+1, 0, NumOfSegBAC+1,
+			   "Multiplicity", ""));
+  }
+
   return top_dir;
 }
 
 // -------------------------------------------------------------------------
-// createBAC (E07)
+// createBAC_E07
 // -------------------------------------------------------------------------
 TList* HistMaker::createBAC_E07(bool flag_ps)
 {
-  // Determine the detector name
-  std::string strDet = CONV_STRING(kBAC_E07);
-  // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
-  if(flag_ps){
-    // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
-  }
+  std::string strDet = CONV_STRING(kBAC_E07);   // Determine the detector name
+  name_created_detectors_.push_back(strDet);    // name list of crearted detector
+  if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
   
-  // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  const char* nameDetector = strDet.c_str(); // Declaration of the directory
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  // ACs configuration
-  const char* name_acs[] = {"BAC1-1", "BAC1-2", "BAC1-SUM", "BAC2-1", "BAC2-2", "BAC2-SUM"};
-
-  // ADC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
+  const char* name_acs[] = {
+    "BAC1-1", "BAC1-2", "BAC1-SUM", "BAC2-1", "BAC2-2", "BAC2-SUM"
+  };
+  
+  { // ADC---------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
     int target_id = getUniqueID(kBAC_E07, 0, kADC, 0);
     for(int i = 0; i<NumOfSegBAC_E07; ++i){
       const char* title = NULL;
@@ -961,20 +925,15 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
-
-  // TDC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
+  
+  { // TDC---------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
     int target_id = getUniqueID(kBAC_E07, 0, kTDC, 0);
     for(int i = 0; i<NumOfSegBAC_E07; ++i){
       const char* title = NULL;
@@ -983,12 +942,23 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
 			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
   
-  // Return the TList pointer which is added into TGFileBrowser
+  { // Hit parttern -----------------------------------------------
+    int target_id = getUniqueID(kBAC_E07, 0, kHitPat, 0);
+    top_dir->Add(createTH1(++target_id, "BAC_E07_hit_pattern",
+			   NumOfSegBAC_E07, 0, NumOfSegBAC_E07,
+			   "Segment", ""));
+  }
+
+  { // Multiplicity -----------------------------------------------
+    int target_id = getUniqueID(kBAC_E07, 0, kMulti, 0);
+    top_dir->Add(createTH1(++target_id, "BAC_E07_multiplicity",
+			   NumOfSegBAC_E07+1, 0, NumOfSegBAC_E07+1,
+			   "Multiplicity", ""));
+  }
+
   return top_dir;
 }
 
@@ -997,55 +967,40 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
 // -------------------------------------------------------------------------
 TList* HistMaker::createPVAC(bool flag_ps)
 {
-  // Determine the detector name
   std::string strDet = CONV_STRING(kPVAC);
-  // name list of crearted detector
   name_created_detectors_.push_back(strDet); 
-  if(flag_ps){
-    // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
-  }
+  if(flag_ps) name_ps_files_.push_back(strDet); 
   
-  // Declaration of the directory
-  // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  // ACs configuration
-  const char* name_acs[NumOfSegPVAC] = {"PVAC-1", "PVAC-2", "PVAC-3", "PVAC-4", "PVAC-5", "PVAC-6", "PVAC-SUM"};
+  const char* name_acs[NumOfSegPVAC] = {
+    "PVAC-1", "PVAC-2", "PVAC-3", "PVAC-4", "PVAC-5", "PVAC-6", "PVAC-SUM"
+  };
 
-  // ADC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
+  { // ADC---------------------------------------------------------
     std::string strSubDir  = CONV_STRING(kADC);
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
     int target_id = getUniqueID(kPVAC, 0, kADC, 0);
     for(int i = 0; i<NumOfSegPVAC; ++i){
-      const char* title = NULL;
-      title = Form("%s_%s", name_acs[i], nameSubDir);
-      sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			     0x1000, 0, 0x1000,
-			     "ADC [ch]", ""));
+      sub_dir->Add(createTH1( ++target_id,
+			      Form("%s_%s", name_acs[i], nameSubDir),
+			      0x1000, 0, 0x1000,
+			      "ADC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
 
-  // TDC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
+  { // TDC---------------------------------------------------------
     std::string strSubDir  = CONV_STRING(kTDC);
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
     int target_id = getUniqueID(kPVAC, 0, kTDC, 0);
     for(int i = 0; i<NumOfSegPVAC; ++i){
       const char* title = NULL;
@@ -1054,12 +1009,23 @@ TList* HistMaker::createPVAC(bool flag_ps)
 			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
   
-  // Return the TList pointer which is added into TGFileBrowser
+  { // Hit parttern -----------------------------------------------
+    int target_id = getUniqueID(kPVAC, 0, kHitPat, 0);
+    top_dir->Add(createTH1(++target_id, "PVAC_hit_pattern",
+			   NumOfSegPVAC, 0, NumOfSegPVAC,
+			   "Segment", ""));
+  }
+
+  { // Multiplicity -----------------------------------------------
+    int target_id = getUniqueID(kPVAC, 0, kMulti, 0);
+    top_dir->Add(createTH1(++target_id, "PVAC_multiplicity",
+			   NumOfSegPVAC+1, 0, NumOfSegPVAC+1,
+			   "Multiplicity", ""));
+  }
+
   return top_dir;
 }
 
@@ -1068,55 +1034,41 @@ TList* HistMaker::createPVAC(bool flag_ps)
 // -------------------------------------------------------------------------
 TList* HistMaker::createFAC(bool flag_ps)
 {
-  // Determine the detector name
   std::string strDet = CONV_STRING(kFAC);
-  // name list of crearted detector
   name_created_detectors_.push_back(strDet); 
-  if(flag_ps){
-    // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
-  }
-  
-  // Declaration of the directory
-  // Just type conversion from std::string to char*
+  if(flag_ps) name_ps_files_.push_back(strDet); 
+
   const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  // ACs configuration
-  const char* name_acs[NumOfSegFAC] = {"FAC-1", "FAC-2", "FAC-3", "FAC-4", "FAC-5", "FAC-6", "FAC-SUM"};
+  const char* name_acs[NumOfSegFAC] = {
+    "FAC-1", "FAC-2", "FAC-3", "FAC-4", "FAC-5", "FAC-6", "FAC-SUM"
+  };
 
-  // ADC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
+  { // ADC---------------------------------------------------------
     std::string strSubDir  = CONV_STRING(kADC);
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
     int target_id = getUniqueID(kFAC, 0, kADC, 0);
     for(int i = 0; i<NumOfSegFAC; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
-      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
 
-  // TDC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
+  { // TDC---------------------------------------------------------
     std::string strSubDir  = CONV_STRING(kTDC);
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
     int target_id = getUniqueID(kFAC, 0, kTDC, 0);
     for(int i = 0; i<NumOfSegFAC; ++i){
       const char* title = NULL;
@@ -1125,12 +1077,23 @@ TList* HistMaker::createFAC(bool flag_ps)
 			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
-  // Return the TList pointer which is added into TGFileBrowser
+
+  { // Hit parttern -----------------------------------------------
+    int target_id = getUniqueID(kFAC, 0, kHitPat, 0);
+    top_dir->Add(createTH1(++target_id, "FAC_hit_pattern",
+			   NumOfSegFAC, 0, NumOfSegFAC,
+			   "Segment", ""));
+  }
+
+  { // Multiplicity -----------------------------------------------
+    int target_id = getUniqueID(kFAC, 0, kMulti, 0);
+    top_dir->Add(createTH1(++target_id, "FAC_multiplicity",
+			   NumOfSegFAC+1, 0, NumOfSegFAC+1,
+			   "Multiplicity", ""));
+  }
+
   return top_dir;
 }
 
@@ -1147,71 +1110,72 @@ TList* HistMaker::createSCH(bool flag_ps)
     // name list which are displayed in Ps tab
     name_ps_files_.push_back(strDet); 
   }
-  
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
-
+  
   // TDC---------------------------------------------------------
   {
+    std::string strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
     int target_id = getUniqueID(kSCH, 0, kTDC, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, "SCH_TDC", // 1 origin
-			   1024, 0, 1024,
-			   "TDC [ch]", ""));
+    for(int i=0; i<NumOfSegSCH; ++i){
+      sub_dir->Add(createTH1(++target_id, Form("%s_%s_%d", // 1 origin
+					       nameDetector, nameSubDir, i+1),
+			     1024, 0, 1024,
+			     "TDC [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
   }
-
   // TOT---------------------------------------------------------
   {
+    const char* nameSubDir = "TOT";
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
     int target_id = getUniqueID(kSCH, 0, kADC, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, "SCH_TOT", // 1 origin
-			   200, -50, 150,
-			   "TOT [ch]", ""));
+    for(int i=0; i<NumOfSegSCH; ++i){
+      sub_dir->Add(createTH1(++target_id, Form("%s_%s_%d", // 1 origin
+					       nameDetector, nameSubDir, i+1),
+			     200, -50, 150,
+			     "TOT [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
   }
-
-  // Hit parttern -----------------------------------------------
-  {
-    int target_id = getUniqueID(kSCH, 0, kHitPat, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, "SCH_HitPat", // 1 origin
-			   NumOfSegSCH, 0, NumOfSegSCH,
-			   "Segment", ""));
-  }
-
-  // Multiplicity -----------------------------------------------
-  {
-    const char* title = "SCH_multiplicity";
-    int target_id = getUniqueID(kSCH, 0, kMulti, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, title, // 1 origin
-			   30, 0, 30,
-			   "Multiplicity", ""));
-  }
-
   // TDC-2D --------------------------------------------
   {
     int target_id = getUniqueID(kSCH, 0, kTDC2D, 0);
-    // Add to the top directory
     top_dir->Add(createTH2(++target_id, "SCH_TDC_2D", // 1 origin
 			   NumOfSegSCH, 0, NumOfSegSCH,
 			   1024, 0, 1024,
 			   "Segment", "TDC [ch]"));
   }
-
   // TOT-2D --------------------------------------------
   {
     int target_id = getUniqueID(kSCH, 0, kADC2D, 0);
-    // Add to the top directory
     top_dir->Add(createTH2(++target_id, "SCH_TOT_2D", // 1 origin
 			   NumOfSegSCH, 0, NumOfSegSCH,
 			   200, -50, 150,
 			   "Segment", "TOT [ch]"));
   }
-
-  // Return the TList pointer which is added into TGFileBrowser
+  // Hit parttern -----------------------------------------------
+  {
+    int target_id = getUniqueID(kSCH, 0, kHitPat, 0);
+    top_dir->Add(createTH1(++target_id, "SCH_HitPat", // 1 origin
+			   NumOfSegSCH, 0, NumOfSegSCH,
+			   "Segment", ""));
+  }
+  // Multiplicity -----------------------------------------------
+  {
+    const char* title = "SCH_multiplicity";
+    int target_id = getUniqueID(kSCH, 0, kMulti, 0);
+    top_dir->Add(createTH1(++target_id, title, // 1 origin
+			   30, 0, 30,
+			   "Multiplicity", ""));
+  }
   return top_dir;
 }
 

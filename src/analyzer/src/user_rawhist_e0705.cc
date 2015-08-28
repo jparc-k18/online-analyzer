@@ -146,10 +146,10 @@ process_begin(const std::vector<std::string>& argv)
   // ----------------------------------------------------------
   
   gStyle->SetOptStat(1110);
-  // gStyle->SetTitleW(.4);
-  // gStyle->SetTitleH(.1);
-  gStyle->SetStatW(.42);
-  gStyle->SetStatH(.35);
+  gStyle->SetTitleW(.4);
+  gStyle->SetTitleH(.1);
+  // gStyle->SetStatW(.42);
+  // gStyle->SetStatH(.35);
   gStyle->SetStatW(.32);
   gStyle->SetStatH(.25);
 
@@ -854,8 +854,8 @@ process_event()
 	int tdc      = gUnpacker.get(k_device, 0, i, 0, k_leading,  m);
 	int trailing = gUnpacker.get(k_device, 0, i, 0, k_trailing, m);
 	int tot      = tdc - trailing;
-	hptr_array[sch_t_id]->Fill(tdc);
-	hptr_array[sch_tot_id]->Fill(tot);
+	hptr_array[sch_t_id +i]->Fill(tdc);
+	hptr_array[sch_tot_id +i]->Fill(tot);
 	hptr_array[sch_t_2d_id]->Fill(i, tdc);
 	hptr_array[sch_tot_2d_id]->Fill(i, tot);
 	if( tdc_min<tdc && tdc<tdc_max ){

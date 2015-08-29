@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <unistd.h>
 #include <vector>
 
 #include "user_analyzer.hh"

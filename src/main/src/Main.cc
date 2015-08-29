@@ -29,7 +29,7 @@ namespace analyzer
     }
   }
 //______________________________________________________________________________
-Main::Main& 
+Main& 
 Main::getInstance()
 {
   static Main g_main;

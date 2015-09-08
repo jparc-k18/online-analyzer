@@ -1199,6 +1199,8 @@ TList* HistMaker::createKIC(bool flag_ps)
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
+  const char* name_kics[] = { "U", "D", "L", "R" };
+
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -1211,8 +1213,7 @@ TList* HistMaker::createKIC(bool flag_ps)
     int target_id = getUniqueID(kKIC, 0, kADC, 0);
     for(int i = 0; i<NumOfSegKIC; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
-      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+      title = Form("%s_%s_%s", nameDetector, nameSubDir, name_kics[i]);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
@@ -1234,8 +1235,7 @@ TList* HistMaker::createKIC(bool flag_ps)
     int target_id = getUniqueID(kKIC, 0, kTDC, 0);
     for(int i = 0; i<NumOfSegKIC; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
-      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+      title = Form("%s_%s_%s", nameDetector, nameSubDir, name_kics[i]);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));

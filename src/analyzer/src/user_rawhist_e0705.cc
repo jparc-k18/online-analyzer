@@ -35,9 +35,9 @@ namespace analyzer
 {
   using namespace hddaq::unpacker;
   using namespace hddaq;
-
-  std::vector<TH1*> hptr_array;
   
+  std::vector<TH1*> hptr_array;
+
 //____________________________________________________________________________
 int
 process_begin(const std::vector<std::string>& argv)
@@ -117,6 +117,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createLC());
   tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createCorrelation());
+  tab_hist->Add(gHist.createEMC());
   tab_hist->Add(gHist.createDAQ(false));
 
   // Add extra histogram
@@ -886,27 +887,27 @@ process_event()
     static const int k_tdc    = gUnpacker.get_data_id("KIC", "tdc");
 
     // sequential id
-    static const int ica_id = gHist.getSequentialID(kKIC, 0, kADC);
-    static const int ict_id = gHist.getSequentialID(kKIC, 0, kTDC);    
+    static const int kica_id = gHist.getSequentialID(kKIC, 0, kADC);
+    static const int kict_id = gHist.getSequentialID(kKIC, 0, kTDC);
     for(int seg=0; seg<NumOfSegKIC; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
       if(nhit != 0){
 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-	hptr_array[ica_id + seg]->Fill(adc);
+	hptr_array[kica_id + seg]->Fill(adc);
       }
       
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       if(nhit != 0){
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-	if(tdc != 0){ hptr_array[ict_id + seg]->Fill(tdc); }
+	if(tdc != 0){ hptr_array[kict_id + seg]->Fill(tdc); }
       }
     }
 
     // Hit pattern &&  Multiplicity
-    static const int ichit_id = gHist.getSequentialID(kKIC, 0, kHitPat);
-    static const int icmul_id = gHist.getSequentialID(kKIC, 0, kMulti);
+    static const int kichit_id = gHist.getSequentialID(kKIC, 0, kHitPat);
+    static const int kicmul_id = gHist.getSequentialID(kKIC, 0, kMulti);
     int multiplicity = 0;
     for(int seg=0; seg<NumOfSegKIC; ++seg){
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
@@ -915,13 +916,13 @@ process_event()
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
 	// TDC
 	if(tdc != 0){
-	  hptr_array[ichit_id]->Fill(seg);
+	  hptr_array[kichit_id]->Fill(seg);
 	  ++multiplicity;
 	}
       }
     }
 
-    hptr_array[icmul_id]->Fill(multiplicity);    
+    hptr_array[kicmul_id]->Fill(multiplicity);
 
 #if 0
     // Debug, dump data relating this detector
@@ -1639,6 +1640,52 @@ process_event()
 	}// if(tdc)
       }// if(nhit)
     }// for(seg)
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+  // EMC -----------------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("EMC");
+    //static const int k_serial = gUnpacker.get_data_id("EMC", "serial");
+    static const int k_xpos   = gUnpacker.get_data_id("EMC", "xpos");
+    static const int k_ypos   = gUnpacker.get_data_id("EMC", "ypos");
+    //static const int k_utime   = gUnpacker.get_data_id("EMC", "utime");
+    //static const int k_ltime   = gUnpacker.get_data_id("EMC", "ltime");
+
+    // sequential id
+    static const int xpos_id  = gHist.getSequentialID(kEMC, 0, kXpos);
+    static const int ypos_id  = gHist.getSequentialID(kEMC, 0, kYpos);
+    static const int xypos_id = gHist.getSequentialID(kEMC, 0, kXYpos);
+
+    for(int seg=0; seg<NumOfSegEMC; ++seg){
+      unsigned int xpos = 0;
+      unsigned int ypos = 0;
+      // Xpos
+      int xpos_nhit = gUnpacker.get_entries(k_device, 0, 0, 0, k_xpos);
+      if(xpos_nhit != 0){
+	xpos = gUnpacker.get(k_device, 0, 0, 0, k_xpos);
+	hptr_array[xpos_id + seg]->Fill(xpos);
+      }
+      // Ypos
+      int ypos_nhit = gUnpacker.get_entries(k_device, 0, 0, 0, k_ypos);
+      if(ypos_nhit != 0){
+	ypos = gUnpacker.get(k_device, 0, 0, 0, k_ypos);
+	hptr_array[ypos_id + seg]->Fill(ypos);
+      }
+      // XYpos
+      if(xpos_nhit !=0 && ypos_nhit != 0){
+	hptr_array[xypos_id + seg]->Fill(xpos, ypos);
+      }
+    }
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
   }
 
 #if DEBUG

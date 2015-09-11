@@ -1180,6 +1180,45 @@ TList* HistMaker::createSCH(bool flag_ps)
 }
 
 // -------------------------------------------------------------------------
+// createEMC
+// -------------------------------------------------------------------------
+TList* HistMaker::createEMC(bool flag_ps)
+{
+  std::string strDet = CONV_STRING(kEMC);
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps) name_ps_files_.push_back(strDet);
+
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  { // XY ---------------------------------------------------------
+    //int serial_id = getUniqueID(kEMC, 0, kSerial, 0);
+    int xpos_id   = getUniqueID(kEMC, 0, kXpos,   0);
+    int ypos_id   = getUniqueID(kEMC, 0, kYpos,   0);
+    int xypos_id  = getUniqueID(kEMC, 0, kXYpos,  0);
+    //int time_id   = getUniqueID(kEMC, 0, kTime,   0);
+
+    for(int i = 0; i<NumOfSegEMC; ++i){
+      top_dir->Add(createTH1( ++xpos_id,
+			      Form("%s_Xpos", strDet.c_str()),
+			      0x200, 0, 0x200,
+			      "Xpos [mm]", ""));
+      top_dir->Add(createTH1( ++ypos_id,
+			      Form("%s_Ypos", strDet.c_str()),
+			      0x200, 0, 0x200,
+			      "Ypos [mm]", ""));
+      top_dir->Add(createTH2( ++xypos_id,
+			      Form("%s_XYpos", strDet.c_str()),
+			      0x200, 0, 0x200, 0x200, 0, 0x200,
+			      "Xpos [mm]", "Ypos [mm]"));
+    }
+  }
+
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
 // createKIC
 // -------------------------------------------------------------------------
 TList* HistMaker::createKIC(bool flag_ps)

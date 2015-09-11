@@ -71,7 +71,7 @@ void PsMaker::makePs()
   gStyle->SetTitleW(.4);
   gStyle->SetTitleH(.1);
   gStyle->SetStatW(.32);
-  gStyle->SetStatH(.35);
+  gStyle->SetStatH(.25);
   
   // make ps file instance
   const std::string& filename = GuiPs::getFilename();
@@ -821,6 +821,15 @@ void PsMaker::create(std::string& name)
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
   
+  // EMC ----------------------------------------------------------------
+  if(name == CONV_STRING(kEMC)){
+    int base_id = 0;
+    // XYpos
+    par_list[kXdiv] = 1; par_list[kYdiv] = 1;
+    base_id = HistMaker::getUniqueID(kEMC, 0, kXYpos);
+    for(int i = 0; i<NumOfSegEMC; ++i){ id_list.push_back( base_id ); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+  }
 }
 
 

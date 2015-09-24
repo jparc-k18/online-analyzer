@@ -12,7 +12,7 @@ enum DetectorType{
   kDetectorZero,
   // Detector unique ID in the beam line
   kBH1, kBFT, kBC3, kBC4, kBMW, kBH2, kBAC,
-  kBH2_E07, kBAC_E07, kPVAC, kFAC, kSCH, kEMC,
+  kBH2_E07, kBAC_E07, kPVAC, kFAC, kSAC1, kSCH, kEMC,
   kKIC,
   // Detector unique ID in the SKS system
   kSDC2, kHDC, kSP0, kSDC3, kSDC4, kTOF, kTOFMT, kLAC, kLC,
@@ -110,6 +110,7 @@ public:
   TList* createBAC_E07(bool flag_ps=true);
   TList* createPVAC(bool flag_ps=true);
   TList* createFAC(bool flag_ps=true);
+  TList* createSAC1(bool flag_ps=true);
   TList* createSCH(bool flag_ps=true);
   TList* createEMC(bool flag_ps=true);
   TList* createKIC(bool flag_ps=true);

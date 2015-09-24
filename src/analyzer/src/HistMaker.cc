@@ -742,7 +742,7 @@ TList* HistMaker::createBH2(bool flag_ps)
     int target_id = getUniqueID(kBH2, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-			   NumOfSegBH2, 0, NumOfSegBH2,
+			   NumOfSegBH2+1, 0, NumOfSegBH2+1,
 			   "Multiplicity", ""));
   }
   
@@ -821,7 +821,7 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
     const char* title = "BH2_E07_multiplicity";
     int target_id = getUniqueID(kBH2_E07, 0, kMulti, 0);
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-			   NumOfSegBH2_E07, 0, NumOfSegBH2_E07,
+			   NumOfSegBH2_E07+1, 0, NumOfSegBH2_E07+1,
 			   "Multiplicity", ""));
   }
   
@@ -907,8 +907,8 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  const char* name_acs[] = {
-    "BAC1-1", "BAC1-2", "BAC1-SUM", "BAC2-1", "BAC2-2", "BAC2-SUM"
+  const char* name_acs[NumOfSegBAC_E07] = {
+    "BAC1-SUM", "BAC2-SUM", "BAC1-1", "BAC1-2", "BAC2-1", "BAC2-2"
   };
   
   { // ADC---------------------------------------------------------
@@ -921,9 +921,9 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
     for(int i = 0; i<NumOfSegBAC_E07; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
-      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     0x1000, 0, 0x1000,
-			     "ADC [ch]", ""));
+      sub_dir->Add(createTH1( ++target_id, title, // 1 origin
+			      0x1000, 0, 0x1000,
+			      "ADC [ch]", ""));
     }
     top_dir->Add(sub_dir);
   }
@@ -976,7 +976,7 @@ TList* HistMaker::createPVAC(bool flag_ps)
   top_dir->SetName(nameDetector);
 
   const char* name_acs[NumOfSegPVAC] = {
-    "PVAC-1", "PVAC-2", "PVAC-3", "PVAC-4", "PVAC-5", "PVAC-6", "PVAC-SUM"
+    "PVAC-SUM", "PVAC-1", "PVAC-2", "PVAC-3", "PVAC-4",
   };
 
   { // ADC---------------------------------------------------------
@@ -1043,7 +1043,7 @@ TList* HistMaker::createFAC(bool flag_ps)
   top_dir->SetName(nameDetector);
 
   const char* name_acs[NumOfSegFAC] = {
-    "FAC-1", "FAC-2", "FAC-3", "FAC-4", "FAC-5", "FAC-6", "FAC-SUM"
+    "FAC-SUM", "FAC-1", "FAC-2", "FAC-3", "FAC-4", "FAC-5", "FAC-6"
   };
 
   { // ADC---------------------------------------------------------
@@ -1091,6 +1091,72 @@ TList* HistMaker::createFAC(bool flag_ps)
     int target_id = getUniqueID(kFAC, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, "FAC_multiplicity",
 			   NumOfSegFAC+1, 0, NumOfSegFAC+1,
+			   "Multiplicity", ""));
+  }
+
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
+// createSAC1
+// -------------------------------------------------------------------------
+TList* HistMaker::createSAC1(bool flag_ps)
+{
+  std::string strDet = CONV_STRING(kSAC1);
+  name_created_detectors_.push_back(strDet); 
+  if(flag_ps) name_ps_files_.push_back(strDet); 
+
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  const char* name_acs[NumOfSegSAC1] = { "SAC1" };
+
+  { // ADC---------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    int target_id = getUniqueID(kSAC1, 0, kADC, 0);
+    for(int i = 0; i<NumOfSegSAC1; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s", name_acs[i], nameSubDir);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  { // TDC---------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    int target_id = getUniqueID(kSAC1, 0, kTDC, 0);
+    for(int i = 0; i<NumOfSegSAC1; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s", name_acs[i], nameSubDir);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "TDC [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  { // Hit parttern -----------------------------------------------
+    int target_id = getUniqueID(kSAC1, 0, kHitPat, 0);
+    top_dir->Add(createTH1(++target_id, "SAC1_hit_pattern",
+			   NumOfSegSAC1, 0, NumOfSegSAC1,
+			   "Segment", ""));
+  }
+
+  { // Multiplicity -----------------------------------------------
+    int target_id = getUniqueID(kSAC1, 0, kMulti, 0);
+    top_dir->Add(createTH1(++target_id, "SAC1_multiplicity",
+			   NumOfSegSAC1+1, 0, NumOfSegSAC1+1,
 			   "Multiplicity", ""));
   }
 
@@ -1173,7 +1239,7 @@ TList* HistMaker::createSCH(bool flag_ps)
     const char* title = "SCH_multiplicity";
     int target_id = getUniqueID(kSCH, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, title, // 1 origin
-			   30, 0, 30,
+			   20, 0, 20,
 			   "Multiplicity", ""));
   }
   return top_dir;

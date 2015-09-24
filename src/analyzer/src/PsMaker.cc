@@ -347,9 +347,19 @@ void PsMaker::create(std::string& name)
     
     // ADC/TDC
     base_id = HistMaker::getUniqueID(kBAC_E07, 0, kADC);
-    for(int i = 0; i<NumOfSegBAC_E07; ++i){id_list.push_back(base_id + i);}
+    id_list.push_back(base_id + 0);
+    id_list.push_back(base_id + 2);
+    id_list.push_back(base_id + 3);
+    id_list.push_back(base_id + 1);
+    id_list.push_back(base_id + 4);
+    id_list.push_back(base_id + 5);
     base_id = HistMaker::getUniqueID(kBAC_E07, 0, kTDC);
-    for(int i = 0; i<NumOfSegBAC_E07; ++i){id_list.push_back(base_id + i);}
+    id_list.push_back(base_id + 0);
+    id_list.push_back(base_id + 2);
+    id_list.push_back(base_id + 3);
+    id_list.push_back(base_id + 1);
+    id_list.push_back(base_id + 4);
+    id_list.push_back(base_id + 5);
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 
     // HitPat/Multi
@@ -365,7 +375,7 @@ void PsMaker::create(std::string& name)
   if(name == CONV_STRING(kPVAC)){
     int base_id = 0;
     // ADC
-    par_list[kXdiv] = 4; par_list[kYdiv] = 4;
+    par_list[kXdiv] = 3; par_list[kYdiv] = 4;
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
@@ -410,6 +420,26 @@ void PsMaker::create(std::string& name)
     id_list.push_back(base_id);
     base_id = HistMaker::getUniqueID(kFAC, 0, kMulti);
     id_list.push_back(base_id);
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);    
+  }
+
+  // SAC1 ----------------------------------------------------------------
+  if(name == CONV_STRING(kSAC1)){
+    // ADC
+    par_list[kXdiv] = 2; par_list[kYdiv] = 1;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
+    flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
+    flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
+    
+    // ADC/TDC
+    id_list.push_back( HistMaker::getUniqueID(kSAC1, 0, kADC) );
+    id_list.push_back( HistMaker::getUniqueID(kSAC1, 0, kTDC) );
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+
+    // HitPat/Multi
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    id_list.push_back( HistMaker::getUniqueID(kSAC1, 0, kHitPat) );
+    id_list.push_back( HistMaker::getUniqueID(kSAC1, 0, kMulti) );
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);    
   }
 

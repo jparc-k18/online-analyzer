@@ -104,6 +104,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createBAC_E07());
   tab_hist->Add(gHist.createPVAC());
   tab_hist->Add(gHist.createFAC());
+  tab_hist->Add(gHist.createSAC1());
   tab_hist->Add(gHist.createSCH());
   tab_hist->Add(gHist.createKIC());
   tab_hist->Add(gHist.createSDC2());
@@ -130,7 +131,7 @@ process_begin(const std::vector<std::string>& argv)
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
   // Then you need to do down cast when you use TH2.
-  if(0 != gHist.setHistPtr(hptr_array)){return -1;}
+  if(0 != gHist.setHistPtr(hptr_array)){ return -1; }
 
   // Users don't have to touch this section (Make Ps tab),
   // but the file path should be changed.
@@ -731,7 +732,6 @@ process_event()
 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
 	hptr_array[bh2a_id + seg]->Fill(adc);
       }
-
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       if(nhit != 0){
@@ -749,7 +749,6 @@ process_event()
 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
 	hptr_array[bh2a_id + seg]->Fill(adc);
       }
-
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
       if(nhit != 0){
@@ -813,6 +812,114 @@ process_event()
       if(nhit_t != 0){
 	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
 	if(tdc != 0){ hptr_array[bact_id + seg]->Fill(tdc, nhit_t); }
+      }
+    }
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+  // PVAC ---------------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("PVAC");
+    static const int k_adc    = gUnpacker.get_data_id("PVAC","adc");
+    static const int k_tdc    = gUnpacker.get_data_id("PVAC","tdc");
+
+    // sequential id
+    static const int pvaca_id = gHist.getSequentialID(kPVAC, 0, kADC, 1);
+    static const int pvact_id = gHist.getSequentialID(kPVAC, 0, kTDC, 1);
+
+    for(int seg = 0; seg<NumOfSegPVAC; ++seg){
+      // ADC
+      int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      if(nhit_a != 0){
+	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	hptr_array[pvaca_id + seg]->Fill(adc, nhit_a);
+      }
+      // TDC
+      int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      if(nhit_t != 0){
+	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
+	if(tdc != 0){ hptr_array[pvact_id + seg]->Fill(tdc, nhit_t); }
+      }
+    }
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+  // FAC ---------------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("FAC");
+    static const int k_adc    = gUnpacker.get_data_id("FAC","adc");
+    static const int k_tdc    = gUnpacker.get_data_id("FAC","tdc");
+
+    // sequential id
+    static const int faca_id = gHist.getSequentialID(kFAC, 0, kADC, 1);
+    static const int fact_id = gHist.getSequentialID(kFAC, 0, kTDC, 1);
+
+    for(int seg = 0; seg<NumOfSegFAC; ++seg){
+      // ADC
+      int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      if(nhit_a != 0){
+	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	hptr_array[faca_id + seg]->Fill(adc, nhit_a);
+      }
+      // TDC
+      int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      if(nhit_t != 0){
+	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
+	if(tdc != 0){ hptr_array[fact_id + seg]->Fill(tdc, nhit_t); }
+      }
+    }
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+  // SAC1 ---------------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("SAC1");
+    static const int k_adc    = gUnpacker.get_data_id("SAC1","adc");
+    static const int k_tdc    = gUnpacker.get_data_id("SAC1","tdc");
+
+    // sequential id
+    static const int sac1a_id = gHist.getSequentialID(kSAC1, 0, kADC, 1);
+    static const int sac1t_id = gHist.getSequentialID(kSAC1, 0, kTDC, 1);
+
+    for(int seg = 0; seg<NumOfSegSAC1; ++seg){
+      // ADC
+      int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      if(nhit_a != 0){
+	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	hptr_array[sac1a_id + seg]->Fill(adc, nhit_a);
+      }
+      // TDC
+      int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      if(nhit_t != 0){
+	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
+	if(tdc != 0){ hptr_array[sac1t_id + seg]->Fill(tdc, nhit_t); }
       }
     }
 

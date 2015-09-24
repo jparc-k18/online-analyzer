@@ -1,5 +1,3 @@
-//Author:Hitoshi sugimura
-
 #ifndef DETECTOR_ID_H
 #define DETECTOR_ID_H
 
@@ -36,17 +34,19 @@ const int DetIdBH2_E07 = 33;
 const int DetIdBAC_E07 = 34;
 const int DetIdPVAC    = 35;
 const int DetIdFAC     = 36;
-const int DetIdSCH     = 37;
-const int DetIdEMC     = 38;
+const int DetIdSAC1    = 37;
+const int DetIdSCH     = 38;
+const int DetIdEMC     = 39;
 const int NumOfSegBH2_E07 = 2;
 const int NumOfSegBAC_E07 = 4 + 2;
-const int NumOfSegPVAC    = 6 + 1;
+const int NumOfSegPVAC    = 4 + 1;
 const int NumOfSegFAC     = 6 + 1;
+const int NumOfSegSAC1    = 1;
 const int NumOfSegSCH     = 64;
 const int NumOfSegEMC     = 1;
 
 // E05 Detectors
-const int DetIdKIC     = 39;
+const int DetIdKIC     = 40;
 const int NumOfSegKIC  =  4;
 
 // E13 Detectors
@@ -101,20 +101,20 @@ const int NumOfSegBFT = 160;
 const int UorD = 2;
 const int AorT = 2;
 
-const int NumOfLayersBcIn =12;
-const int NumOfLayersBcOut=12;
-const int NumOfLayersSdcIn =10;
-const int NumOfLayersSdcOut=12;
+const int NumOfLayersBcIn   = 12;
+const int NumOfLayersBcOut  = 12;
+const int NumOfLayersSdcIn  = 10;
+const int NumOfLayersSdcOut = 12;
 
-const int NumOfLayersBC1  =6;
-const int NumOfLayersBC2  =6;
-const int NumOfLayersBC3  =6;
-const int NumOfLayersBC4  =6;
-const int NumOfLayersSDC1 =4;
-const int NumOfLayersSDC2 =6;
-const int NumOfLayersHDC  =4;
-const int NumOfLayersSDC3 =6;
-const int NumOfLayersSDC4 =6;
+const int NumOfLayersBC1  = 6;
+const int NumOfLayersBC2  = 6;
+const int NumOfLayersBC3  = 6;
+const int NumOfLayersBC4  = 6;
+const int NumOfLayersSDC1 = 4;
+const int NumOfLayersSDC2 = 6;
+const int NumOfLayersHDC  = 4;
+const int NumOfLayersSDC3 = 6;
+const int NumOfLayersSDC4 = 6;
 
 const int NumOfWireBC1 = 256;
 const int NumOfWireBC2 = 256;

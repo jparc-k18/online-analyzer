@@ -827,6 +827,38 @@ void PsMaker::create(std::string& name)
     drawOneCanvas(id_list, par_list, false, false);
   }
 
+  // PWO ----------------------------------------------------------------
+  if(name == CONV_STRING(kPWO)){
+    const int box_id = 3;
+    int base_id = 0;
+    // ADC
+    par_list[kXdiv] = 4; par_list[kYdiv] = 4;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
+    flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
+    flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
+
+    base_id = HistMaker::getUniqueID(kPWO, 0, kADC);
+    for(int i=0; i<NumOfUnitPWO[box_id]; ++i){ id_list.push_back(base_id++);}
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+
+    // TDC
+    par_list[kXdiv] = 4; par_list[kYdiv] = 4;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 4000;
+    flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
+    flag_log   = GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
+
+    base_id = HistMaker::getUniqueID(kPWO, 0, kTDC);
+    for(int i=0; i<NumOfUnitPWO[box_id]; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+
+    // HitPat and multiplicity
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+
+    id_list.push_back(HistMaker::getUniqueID(kPWO, 0, kHitPat));
+    id_list.push_back(HistMaker::getUniqueID(kPWO, 0, kMulti));
+    drawOneCanvas(id_list, par_list, false, false);
+  }
+
   // Correlation ------------------------------------------------------------
   if(name == CONV_STRING(kCorrelation)){
     par_list[kXdiv] = 2; par_list[kYdiv] = 2;

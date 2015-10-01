@@ -2939,3 +2939,88 @@ TList* HistMaker::createPWO(bool flag_ps)
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
+
+TList* HistMaker::createPWO_E05(bool flag_ps)
+{
+  // Determine the detector name
+  std::string strDet = CONV_STRING(kPWO);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
+
+  // Declaration of the directory
+  // Just type conversion from std::string to char*
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  const int box_id = 3; // E-type 13
+
+  // ADC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    int target_id = getUniqueID(kPWO, 0, kADC, 0);
+    for(int i=0; i<NumOfUnitPWO[box_id]; ++i){
+      sub_dir->Add(createTH1(++target_id, Form("%s_%s_%d",
+					       nameDetector, nameSubDir, i+1),
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // TDC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    int target_id = getUniqueID(kPWO, 0, kTDC, 0);
+    for(int i=0; i<NumOfUnitPWO[box_id]; ++i){
+      sub_dir->Add(createTH1(++target_id, Form("%s_%s_%d",
+					       nameDetector, nameSubDir, i+1),
+			     0x1000, 0, 0x1000,
+			     "TDC [ch]", ""));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // HitPat---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.c_str();
+
+    int target_id = getUniqueID(kPWO, 0, kHitPat, 0);
+    top_dir->Add(createTH1(++target_id, Form("%s_%s", nameDetector, nameSubDir),
+			   NumOfUnitPWO[box_id], 0, NumOfUnitPWO[box_id],
+			   "Segment", ""));
+  }
+
+  // Multiplicity---------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.c_str();
+
+    int target_id = getUniqueID(kPWO, 0, kMulti, 0);
+    top_dir->Add(createTH1(++target_id, Form("%s_%s", nameDetector, nameSubDir),
+			   NumOfUnitPWO[box_id]+1, 0, NumOfUnitPWO[box_id]+1,
+			   "Multiplicity", ""));
+  }
+
+  // Return the TList pointer which is added into TGFileBrowser
+  return top_dir;
+}

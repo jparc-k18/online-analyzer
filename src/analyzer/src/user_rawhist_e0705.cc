@@ -28,7 +28,7 @@
 #include "UserParamMan.hh"
 #include "HodoParamMan.hh"
 
-#define DEBUG 0
+#define DEBUG    0
 #define FLAG_DAQ 1
 
 namespace analyzer
@@ -116,6 +116,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createTOFMT());
   tab_hist->Add(gHist.createLAC());
   tab_hist->Add(gHist.createLC());
+  tab_hist->Add(gHist.createPWO_E05());
   tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createEMC());

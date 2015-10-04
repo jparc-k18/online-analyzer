@@ -249,6 +249,7 @@ process_event()
     if(event_count%3 == 0)  en_disp = true;
   }else{
     if(event_count%10 == 0) en_disp = true;
+    en_disp = true;
   }
   
   // clear console

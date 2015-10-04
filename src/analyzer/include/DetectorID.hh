@@ -1,5 +1,5 @@
-#ifndef DETECTOR_ID_H
-#define DETECTOR_ID_H
+#ifndef DETECTOR_ID_HH
+#define DETECTOR_ID_HH
 
 const int DetIdBC1  =101;
 const int DetIdBC2  =102;
@@ -14,7 +14,7 @@ const int DetIdSDC4 =108;
 const int DetIdK6BDC=109;
 const int DetIdBFT  =110;
 const int DetIdSFT  =111;
-const int DetIdSSD  =112;
+//const int DetIdSSD  =112;
 
 const int DetIdBH1  =  3;
 const int DetIdBH2  =  4;
@@ -30,20 +30,29 @@ const int DetIdBVH  = 23;
 const int DetIdNRC  = 24;
 
 // E07 Detectors
-const int DetIdBH2_E07 = 33;
-const int DetIdBAC_E07 = 34;
-const int DetIdPVAC    = 35;
-const int DetIdFAC     = 36;
-const int DetIdSAC1    = 37;
-const int DetIdSCH     = 38;
-const int DetIdEMC     = 39;
-const int NumOfSegBH2_E07 = 2;
-const int NumOfSegBAC_E07 = 4 + 2;
-const int NumOfSegPVAC    = 4 + 1;
-const int NumOfSegFAC     = 6 + 1;
-const int NumOfSegSAC1    = 1;
+const int DetIdBH2_E07 =  33;
+const int DetIdBAC_E07 =  34;
+const int DetIdPVAC    =  35;
+const int DetIdFAC     =  36;
+const int DetIdSAC1    =  37;
+const int DetIdSCH     =  38;
+const int DetIdEMC     =  39;
+const int DetIdSSD0    = 120;
+const int DetIdSSD1    = 121;
+const int DetIdSSD2    = 122;
+const int NumOfSegBH2_E07 =  2;
+const int NumOfSegBAC_E07 =  4 + 2;
+const int NumOfSegPVAC    =  4 + 1;
+const int NumOfSegFAC     =  6 + 1;
+const int NumOfSegSAC1    =  1;
 const int NumOfSegSCH     = 64;
-const int NumOfSegEMC     = 1;
+const int NumOfSegEMC     =  1;
+const int NumOfLayersSSD0 =  2;
+const int NumOfLayersSSD1 =  4;
+const int NumOfLayersSSD2 =  4;
+const int NumOfSegSSD0    = 1536;
+const int NumOfSegSSD1    = 1536;
+const int NumOfSegSSD2    = 1536;
 
 // E05 Detectors
 const int DetIdKIC     = 40;

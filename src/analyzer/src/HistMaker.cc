@@ -963,6 +963,150 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
 }
 
 // -------------------------------------------------------------------------
+// createSSD0
+// -------------------------------------------------------------------------
+TList* HistMaker::createSSD0(bool flag_ps)
+{
+  std::string strDet = CONV_STRING(kSSD0);
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps) name_ps_files_.push_back(strDet);
+
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  const char* nameLayer[NumOfLayersSSD0] = { "x0", "y0" };
+
+  { // Hit parttern -----------------------------------------------
+    std::string strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD0, 0, kHitPat, 0);
+    for(int l=0; l<NumOfLayersSSD0; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD0, 0, NumOfSegSSD0,
+			     "Segment", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  { // Multiplicity -----------------------------------------------
+    std::string strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD0, 0, kMulti, 0);
+    for(int l=0; l<NumOfLayersSSD0; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD0+1, 0, NumOfSegSSD0+1,
+			     "Multiplicity", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
+// createSSD1
+// -------------------------------------------------------------------------
+TList* HistMaker::createSSD1(bool flag_ps)
+{
+  std::string strDet = CONV_STRING(kSSD1);
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps) name_ps_files_.push_back(strDet);
+
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  const char* nameLayer[NumOfLayersSSD1] = { "y0", "x0", "y1", "x1" };
+
+  { // Hit parttern -----------------------------------------------
+    std::string strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD1, 0, kHitPat, 0);
+    for(int l=0; l<NumOfLayersSSD1; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD1, 0, NumOfSegSSD1,
+			     "Segment", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  { // Multiplicity -----------------------------------------------
+    std::string strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD1, 0, kMulti, 0);
+    for(int l=0; l<NumOfLayersSSD1; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD1+1, 0, NumOfSegSSD1+1,
+			     "Multiplicity", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
+// createSSD2
+// -------------------------------------------------------------------------
+TList* HistMaker::createSSD2(bool flag_ps)
+{
+  std::string strDet = CONV_STRING(kSSD2);
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps) name_ps_files_.push_back(strDet);
+
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  const char* nameLayer[NumOfLayersSSD2] = { "x0", "y0", "x1", "y1" };
+
+  { // Hit parttern -----------------------------------------------
+    std::string strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD2, 0, kHitPat, 0);
+    for(int l=0; l<NumOfLayersSSD2; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD2, 0, NumOfSegSSD2,
+			     "Segment", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  { // Multiplicity -----------------------------------------------
+    std::string strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD2, 0, kMulti, 0);
+    for(int l=0; l<NumOfLayersSSD2; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD2+1, 0, NumOfSegSSD2+1,
+			     "Multiplicity", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
 // createPVAC
 // -------------------------------------------------------------------------
 TList* HistMaker::createPVAC(bool flag_ps)

@@ -1,4 +1,7 @@
 #!/bin/sh
+##
+#  shell script for online/semi online analyzer
+##
 
 ebhost=eb0
 
@@ -15,10 +18,10 @@ bin_dir=$ana_dir/bin
 exe_file=$bin_dir/scaler_e0705
 
 ##### data directory
-data_dir=/data1/bench_e07-05
+data_dir=$ana_dir/data
 
 ##### configure file
-conf_file=/param/conf/analyzer_scaler_e0705.conf
+conf_file=/param/conf/analyzer_scaler.conf
 
 #######################################################################
 if [ ! -f $exe_file ]; then

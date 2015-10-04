@@ -1,5 +1,5 @@
-#ifndef HISTMAKER_H
-#define HISTMAKER_H 1
+#ifndef HISTMAKER_HH
+#define HISTMAKER_HH
 
 #include<vector>
 #include<map>
@@ -12,7 +12,8 @@ enum DetectorType{
   kDetectorZero,
   // Detector unique ID in the beam line
   kBH1, kBFT, kBC3, kBC4, kBMW, kBH2, kBAC,
-  kBH2_E07, kBAC_E07, kPVAC, kFAC, kSAC1, kSCH, kEMC,
+  kBH2_E07, kBAC_E07, kSSD0, kSSD1, kSSD2,
+  kPVAC, kFAC, kSAC1, kSCH, kEMC,
   kKIC,
   // Detector unique ID in the SKS system
   kSDC2, kHDC, kSP0, kSDC3, kSDC4, kTOF, kTOFMT, kLAC, kLC,
@@ -40,6 +41,8 @@ enum DataType{
   // Usual data type
   kADC,   kTDC,   kHitPat,   kMulti, 
   kADC2D, kTDC2D, kHitPat2D, kMulti2D, 
+  // Extra data type for SSD
+  
   // Extra data type for EMC
   kSerial, kXpos, kYpos, kXYpos, kTime,
   // Extra data type for Ge detector
@@ -108,6 +111,9 @@ public:
   TList* createBAC(bool flag_ps=true);
   TList* createBH2_E07(bool flag_ps=true);
   TList* createBAC_E07(bool flag_ps=true);
+  TList* createSSD0(bool flag_ps=true);
+  TList* createSSD1(bool flag_ps=true);
+  TList* createSSD2(bool flag_ps=true);
   TList* createPVAC(bool flag_ps=true);
   TList* createFAC(bool flag_ps=true);
   TList* createSAC1(bool flag_ps=true);

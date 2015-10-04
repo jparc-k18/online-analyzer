@@ -1,3 +1,7 @@
+/*
+  ConfMan.cc
+*/
+
 #include"ConfMan.hh"
 #include"UnpackerManager.hh"
 #include"Unpacker.hh"
@@ -201,3 +205,4 @@ void ConfMan::initializeGeAdcCalibMan()
     flag_.reset(kIsGood);
   }
 }
+

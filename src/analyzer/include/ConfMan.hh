@@ -1,15 +1,19 @@
-#ifndef CONFMAN_H
-#define CONFMAN_H 1
+/*
+  ConfMan.hh
+*/
+
+#ifndef CONF_MAN_HH
+#define CONF_MAN_HH
 
 #include<string>
 #include<vector>
 #include<map>
 #include<bitset>
 
-class ConfMan{
+class ConfMan {
   // Private parameter declarations ----------------------------------------
   // Arguments of main function
-  enum ArgumentList{
+  enum ArgumentList {
     kProcess, kConfPath, kStreamPath,
     sizeArgumentList
   };
@@ -19,7 +23,7 @@ class ConfMan{
   std::map<std::string, std::string> name_file_;
 
   // Flags
-  enum Flag{
+  enum Flag {
     kIsGood,
     sizeFlag
   };

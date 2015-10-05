@@ -1672,6 +1672,47 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+  // PWO -------------------------------------------------------------
+  {
+    // data typep
+    static const int k_device = gUnpacker.get_device_id("PWO");
+    static const int k_adc    = gUnpacker.get_data_id("PWO","adc");
+    static const int k_tdc    = gUnpacker.get_data_id("PWO","tdc");
+
+    // sequential id
+    // sequential hist
+    static const int pwo_adc_id = gHist.getSequentialID(kPWO, 0, kADC);
+    static const int pwo_tdc_id = gHist.getSequentialID(kPWO, 0, kTDC);
+    static const int pwo_hit_id = gHist.getSequentialID(kPWO, 0, kHitPat);
+    static const int pwo_mul_id = gHist.getSequentialID(kPWO, 0, kMulti);
+
+    static const int plane = 1;
+    static const int box   = 7;
+
+    int Multiplicity = 0;
+    for(int unit = 0; unit<NumOfUnitPWO[box]; ++unit){
+      // ADC
+      int nhit_adc = gUnpacker.get_entries(k_device, plane, SegIdPWO[box], unit, k_adc);
+      if(nhit_adc != 0){
+	int adc = gUnpacker.get(k_device, plane, SegIdPWO[box], unit, k_adc);
+	hptr_array[pwo_adc_id +unit]->Fill(adc);
+      }
+
+      // TDC
+      int nhit_tdc = gUnpacker.get_entries(k_device, plane, SegIdPWO[box], unit, k_tdc);
+      for(int m = 0; m<nhit_tdc; ++m){
+	int tdc = gUnpacker.get(k_device, plane, SegIdPWO[box], unit, k_tdc, m);
+	hptr_array[pwo_tdc_id +unit]->Fill(tdc);
+      }
+
+      // HitPat
+      if(nhit_tdc != 0){
+	hptr_array[pwo_hit_id]->Fill(unit);
+	++Multiplicity;
+      }
+    }// for(unit)
+    hptr_array[pwo_mul_id]->Fill(Multiplicity);
+  }
   // Correlation (2D histograms) -------------------------------------
   {
     // data typep

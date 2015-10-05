@@ -3101,7 +3101,7 @@ TList* HistMaker::createPWO_E05(bool flag_ps)
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  const int box_id = 3; // E-type 13
+  const int box_id = 7; // PBox 8 (E-6)
 
   // ADC---------------------------------------------------------
   {

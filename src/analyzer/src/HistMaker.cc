@@ -977,6 +977,36 @@ TList* HistMaker::createSSD0(bool flag_ps)
 
   const char* nameLayer[NumOfLayersSSD0] = { "x0", "y0" };
 
+  { // ADC --------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD0, 0, kADC2D, 0);
+    for(int l=0; l<NumOfLayersSSD0; ++l){
+      sub_dir->Add(createTH2(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD0, 0, NumOfSegSSD0, 0x3ff, 0, 0x3ff,
+			     "Segment", "Peak Height  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  { // TDC --------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD0, 0, kTDC2D, 0);
+    for(int l=0; l<NumOfLayersSSD0; ++l){
+      sub_dir->Add(createTH2(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD0, 0, NumOfSegSSD0, NumOfSamplesSSD+1, 0, NumOfSamplesSSD+1,
+			     "Segment", "Peak Position  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
   { // Hit parttern -----------------------------------------------
     std::string strSubDir  = CONV_STRING(kHitPat);
     const char* nameSubDir = strSubDir.c_str();
@@ -1025,6 +1055,36 @@ TList* HistMaker::createSSD1(bool flag_ps)
 
   const char* nameLayer[NumOfLayersSSD1] = { "y0", "x0", "y1", "x1" };
 
+  { // ADC --------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD1, 0, kADC2D, 0);
+    for(int l=0; l<NumOfLayersSSD1; ++l){
+      sub_dir->Add(createTH2(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD1, 0, NumOfSegSSD1, 0x3ff, 0, 0x3ff,
+			     "Segment", "Peak Height  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  { // TDC --------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD1, 0, kTDC2D, 0);
+    for(int l=0; l<NumOfLayersSSD1; ++l){
+      sub_dir->Add(createTH2(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD1, 0, NumOfSegSSD1, NumOfSamplesSSD+1, 0, NumOfSamplesSSD+1,
+			     "Segment", "Peak Position  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
   { // Hit parttern -----------------------------------------------
     std::string strSubDir  = CONV_STRING(kHitPat);
     const char* nameSubDir = strSubDir.c_str();
@@ -1072,6 +1132,36 @@ TList* HistMaker::createSSD2(bool flag_ps)
   top_dir->SetName(nameDetector);
 
   const char* nameLayer[NumOfLayersSSD2] = { "x0", "y0", "x1", "y1" };
+
+  { // ADC --------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD2, 0, kADC2D, 0);
+    for(int l=0; l<NumOfLayersSSD2; ++l){
+      sub_dir->Add(createTH2(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD2, 0, NumOfSegSSD2, 0x3ff, 0, 0x3ff,
+			     "Segment", "Peak Height  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  { // TDC --------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD2, 0, kTDC2D, 0);
+    for(int l=0; l<NumOfLayersSSD2; ++l){
+      sub_dir->Add(createTH2(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD2, 0, NumOfSegSSD2, NumOfSamplesSSD+1, 0, NumOfSamplesSSD+1,
+			     "Segment", "Peak Position  "));
+    }
+    top_dir->Add(sub_dir);
+  }
 
   { // Hit parttern -----------------------------------------------
     std::string strSubDir  = CONV_STRING(kHitPat);

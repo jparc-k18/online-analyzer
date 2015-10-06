@@ -830,7 +830,38 @@ process_event()
     static const int k_device = gUnpacker.get_device_id("SSD0");
     static const int k_adc    = gUnpacker.get_data_id("SSD0","adc");
     // sequential id
-    static const int ssd0a_id  = gHist.getSequentialID(kSSD0, 0, kADC, 1);
+    static const int ssd0adc_id = gHist.getSequentialID(kSSD0, 0, kADC2D,  1);
+    static const int ssd0tdc_id = gHist.getSequentialID(kSSD0, 0, kTDC2D,  1);
+    static const int ssd0hit_id = gHist.getSequentialID(kSSD0, 0, kHitPat, 1);
+    static const int ssd0mul_id = gHist.getSequentialID(kSSD0, 0, kMulti,  1);
+
+    for(int l=0; l<NumOfLayersSSD0; ++l){
+      int multiplicity = 0;
+      for(int seg=0; seg<NumOfSegSSD0; ++seg){
+	// ADC
+	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
+	if(nhit_a>NumOfSamplesSSD){
+	  std::cerr<<"#W the number of samples is too much : ["
+		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
+	}
+	int peak_height   = -1;
+	int peak_position = -1;
+	for(int m=0; m<nhit_a; ++m){
+	  int adc = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
+	  if(adc>peak_height){
+	    peak_height   = adc;
+	    peak_position = m;
+	  }
+	}
+	if(peak_height>=0 && peak_position>=0){
+	  hptr_array[ssd0adc_id +l]->Fill( seg, peak_height );
+	  hptr_array[ssd0tdc_id +l]->Fill( seg, peak_position );
+	  hptr_array[ssd0hit_id +l]->Fill( seg );
+	  multiplicity++;
+	}
+      }//for(seg)
+      hptr_array[ssd0mul_id +l]->Fill( multiplicity );
+    }//for(l)
 
 #if 0
     // Debug, dump data relating this detector
@@ -848,7 +879,38 @@ process_event()
     static const int k_device = gUnpacker.get_device_id("SSD1");
     static const int k_adc    = gUnpacker.get_data_id("SSD1","adc");
     // sequential id
-    static const int ssd1a_id  = gHist.getSequentialID(kSSD1, 0, kADC, 1);
+    static const int ssd1adc_id = gHist.getSequentialID(kSSD1, 0, kADC2D,  1);
+    static const int ssd1tdc_id = gHist.getSequentialID(kSSD1, 0, kTDC2D,  1);
+    static const int ssd1hit_id = gHist.getSequentialID(kSSD1, 0, kHitPat, 1);
+    static const int ssd1mul_id = gHist.getSequentialID(kSSD1, 0, kMulti,  1);
+
+    for(int l=0; l<NumOfLayersSSD1; ++l){
+      int multiplicity = 0;
+      for(int seg=0; seg<NumOfSegSSD1; ++seg){
+	// ADC
+	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
+	if(nhit_a>NumOfSamplesSSD){
+	  std::cerr<<"#W the number of samples is too much : ["
+		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
+	}
+	int peak_height   = -1;
+	int peak_position = -1;
+	for(int m=0; m<nhit_a; ++m){
+	  int adc = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
+	  if(adc>peak_height){
+	    peak_height   = adc;
+	    peak_position = m;
+	  }
+	}
+	if(peak_height>=0 && peak_position>=0){
+	  hptr_array[ssd1adc_id +l]->Fill( seg, peak_height );
+	  hptr_array[ssd1tdc_id +l]->Fill( seg, peak_position );
+	  hptr_array[ssd1hit_id +l]->Fill( seg );
+	  multiplicity++;
+	}
+      }//for(seg)
+      hptr_array[ssd1mul_id +l]->Fill( multiplicity );
+    }//for(l)
 
 #if 0
     // Debug, dump data relating this detector
@@ -866,7 +928,38 @@ process_event()
     static const int k_device = gUnpacker.get_device_id("SSD2");
     static const int k_adc    = gUnpacker.get_data_id("SSD2","adc");
     // sequential id
-    static const int ssd2a_id  = gHist.getSequentialID(kSSD2, 0, kADC, 1);
+    static const int ssd2adc_id = gHist.getSequentialID(kSSD2, 0, kADC2D,  1);
+    static const int ssd2tdc_id = gHist.getSequentialID(kSSD2, 0, kTDC2D,  1);
+    static const int ssd2hit_id = gHist.getSequentialID(kSSD2, 0, kHitPat, 1);
+    static const int ssd2mul_id = gHist.getSequentialID(kSSD2, 0, kMulti,  1);
+
+    for(int l=0; l<NumOfLayersSSD2; ++l){
+      int multiplicity = 0;
+      for(int seg=0; seg<NumOfSegSSD2; ++seg){
+	// ADC
+	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
+	if(nhit_a>NumOfSamplesSSD){
+	  std::cerr<<"#W the number of samples is too much : ["
+		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
+	}
+	int peak_height   = -1;
+	int peak_position = -1;
+	for(int m=0; m<nhit_a; ++m){
+	  int adc = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
+	  if(adc>peak_height){
+	    peak_height   = adc;
+	    peak_position = m;
+	  }
+	}
+	if(peak_height>=0 && peak_position>=0){
+	  hptr_array[ssd2adc_id +l]->Fill( seg, peak_height );
+	  hptr_array[ssd2tdc_id +l]->Fill( seg, peak_position );
+	  hptr_array[ssd2hit_id +l]->Fill( seg );
+	  multiplicity++;
+	}
+      }//for(seg)
+      hptr_array[ssd2mul_id +l]->Fill( multiplicity );
+    }//for(l)
 
 #if 0
     // Debug, dump data relating this detector

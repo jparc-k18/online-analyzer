@@ -53,6 +53,7 @@ const int NumOfLayersSSD2 =  4;
 const int NumOfSegSSD0    = 1536;
 const int NumOfSegSSD1    = 1536;
 const int NumOfSegSSD2    = 1536;
+const int NumOfSamplesSSD =  8;
 
 // E05 Detectors
 const int DetIdKIC     = 40;

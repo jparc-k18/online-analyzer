@@ -57,7 +57,8 @@ process_begin(const std::vector<std::string>& argv)
   hddaq::gui::Controller& gCon = hddaq::gui::Controller::getInstance();
   TGFileBrowser *tab_hist  = gCon.makeFileBrowser("Hist");
   TGFileBrowser *tab_macro = gCon.makeFileBrowser("Macro");
-  TGFileBrowser *tab_btof  = gCon.makeFileBrowser("BTOF");
+  //TGFileBrowser *tab_btof  = gCon.makeFileBrowser("BTOF");
+  TGFileBrowser *tab_e07   = gCon.makeFileBrowser("E07");
 
   // Add macros to the Macro tab
   //tab_macro->Add(hoge());
@@ -98,39 +99,41 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createBC3());
   tab_hist->Add(gHist.createBC4());
   tab_hist->Add(gHist.createBMW());
-  tab_hist->Add(gHist.createBH2());
-  tab_hist->Add(gHist.createBAC());
+  tab_hist->Add(gHist.createBH2(false));
+  tab_hist->Add(gHist.createBAC(false));
   tab_hist->Add(gHist.createBH2_E07());
   tab_hist->Add(gHist.createBAC_E07());
-  tab_hist->Add(gHist.createSSD0());
-  tab_hist->Add(gHist.createSSD1());
-  tab_hist->Add(gHist.createSSD2());
   tab_hist->Add(gHist.createPVAC());
   tab_hist->Add(gHist.createFAC());
   tab_hist->Add(gHist.createSAC1());
   tab_hist->Add(gHist.createSCH());
-  tab_hist->Add(gHist.createKIC());
+  tab_hist->Add(gHist.createKIC(false));
   tab_hist->Add(gHist.createSDC2());
   tab_hist->Add(gHist.createHDC());
   tab_hist->Add(gHist.createSP0());
   tab_hist->Add(gHist.createSDC3());
   tab_hist->Add(gHist.createSDC4());
   tab_hist->Add(gHist.createTOF());
-  tab_hist->Add(gHist.createTOFMT());
   tab_hist->Add(gHist.createLAC());
   tab_hist->Add(gHist.createLC());
-  tab_hist->Add(gHist.createPWO_E05());
+  tab_hist->Add(gHist.createPWO_E05(false));
   tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createCorrelation());
-  tab_hist->Add(gHist.createEMC());
   tab_hist->Add(gHist.createDAQ(false));
 
   // Add extra histogram
   int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
-  tab_btof->Add(gHist.createTH1(btof_id, "BTOF",
-				300, -10, 5,
-				"BTOF [ns]", ""
-				));
+  tab_e07->Add(gHist.createTH1(btof_id, "BTOF",
+			       300, -10, 5,
+			       "BTOF [ns]", ""
+			       ));
+  tab_e07->Add(gHist.createEMC());
+  tab_e07->Add(gHist.createSSD0());
+  tab_e07->Add(gHist.createSSD1());
+  tab_e07->Add(gHist.createSSD2());
+  tab_e07->Add(dispSSD0());
+  tab_e07->Add(dispSSD1());
+  tab_e07->Add(dispSSD2());
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -147,7 +150,7 @@ process_begin(const std::vector<std::string>& argv)
   gPsMaker.getListOfOption(optList);
   
   hddaq::gui::GuiPs& gPsTab = hddaq::gui::GuiPs::getInstance();
-  gPsTab.setFilename("/home/sks/PSFile/pro/default.ps");
+  gPsTab.setFilename(Form("%s/PSFile/pro/default.ps", std::getenv("HOME")));
   gPsTab.initialize(optList, detList);
   // ----------------------------------------------------------
   
@@ -258,8 +261,8 @@ process_event()
     }
 
     { // TKO box
-      static const int addr[] = {0x10000000, 0x10200000, 0x10400000, 0x10600000,
-				 0x10800000, 0x10a00000};
+      static const int addr[] = { 0x10000000, 0x10200000, 0x10400000, 0x10600000,
+				  0x10800000, 0x10a00000 };
 
       for(int smp = 0; smp<6; ++smp){
 	TH2* h = dynamic_cast<TH2*>(hptr_array[tko_id+smp]);

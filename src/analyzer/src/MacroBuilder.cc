@@ -126,6 +126,33 @@ TObject* dispACs_E07()
   return m;
 }
 
+// dispSSD0 -------------------------------------------------------
+TObject* dispSSD0()
+{
+  std::string path = getMacroPath() + "dispSSD0.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispSSD0");
+  return m;
+}
+
+// dispSSD1 -------------------------------------------------------
+TObject* dispSSD1()
+{
+  std::string path = getMacroPath() + "dispSSD1.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispSSD1");
+  return m;
+}
+
+// dispSSD2 -------------------------------------------------------
+TObject* dispSSD2()
+{
+  std::string path = getMacroPath() + "dispSSD2.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispSSD2");
+  return m;
+}
+
 // dispSCH -------------------------------------------------------
 TObject* dispSCH()
 {

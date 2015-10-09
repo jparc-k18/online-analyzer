@@ -812,7 +812,7 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
   { // Hit parttern -----------------------------------------------
     const char* title = "BH2_E07_hit_pattern";
     int target_id = getUniqueID(kBH2_E07, 0, kHitPat, 0);
-    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+    top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   NumOfSegBH2_E07, 0, NumOfSegBH2_E07,
 			   "Segment", ""));
   }
@@ -820,7 +820,7 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
   { // Multiplicity -----------------------------------------------
     const char* title = "BH2_E07_multiplicity";
     int target_id = getUniqueID(kBH2_E07, 0, kMulti, 0);
-    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+    top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   NumOfSegBH2_E07+1, 0, NumOfSegBH2_E07+1,
 			   "Multiplicity", ""));
   }

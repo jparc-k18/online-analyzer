@@ -13,12 +13,12 @@ void dispBH2_E07()
 
   int bh2_id[n_seg*2] = {
     HistMaker::getUniqueID(kBH2_E07, 0, kADC, 1),
-    HistMaker::getUniqueID(kBH2_E07, 0, kADC, 2),
     HistMaker::getUniqueID(kBH2_E07, 0, kADC, 3),
+    HistMaker::getUniqueID(kBH2_E07, 0, kADC, 2),
     HistMaker::getUniqueID(kBH2_E07, 0, kADC, 4),
     HistMaker::getUniqueID(kBH2_E07, 0, kTDC, 1),
-    HistMaker::getUniqueID(kBH2_E07, 0, kTDC, 2),
     HistMaker::getUniqueID(kBH2_E07, 0, kTDC, 3),
+    HistMaker::getUniqueID(kBH2_E07, 0, kTDC, 2),
     HistMaker::getUniqueID(kBH2_E07, 0, kTDC, 4)
   };
   

@@ -143,7 +143,8 @@ Controller::Controller()
     = proc + " " + user + "@" + host + "(pid = " + i2a(pid) + ")";
 
 //   m_browser = new TRootBrowser(0, windowName.c_str(), 1024, 738, "CI");
-  m_browser = new TRootBrowser(0, windowName.c_str(), 1024, 738, "I");
+  //m_browser = new TRootBrowser(0, windowName.c_str(), 1024, 738, "I");
+  m_browser = new TRootBrowser(0, windowName.c_str(), 1200, 800, "I");
 
   m_browser->StartEmbedding(TRootBrowser::kBottom);
   m_frame = new TGMainFrame(gClient->GetRoot());

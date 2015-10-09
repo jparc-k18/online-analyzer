@@ -92,20 +92,22 @@ process_begin(const std::vector<std::string>& argv)
    
   // left column (counter info)
   int index = 0;
-  {scaler_info tmp("BH1OR",     id_vme03_1, 0,  true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("BH1-1",     id_vme03_1, 1,  true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("BH1-2",     id_vme03_1, 2,  true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("BH1-3",     id_vme03_1, 3,  true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("BH1-4",     id_vme03_1, 4,  true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("BH1-5",     id_vme03_1, 5,  true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("BH1-6",     id_vme03_1, 6,  true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("BH1-7",     id_vme03_1, 7,  true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("BH1-8",     id_vme03_1, 8,  true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("BH1-9",     id_vme03_1, 9,  true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("K beam ",   id_vme03_1, 28, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("pi beam",   id_vme03_1, 29, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("/p beam",   id_vme03_1, 30, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("BH1-OR",    id_vme03_1,  0, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("BH1-1",     id_vme03_1,  1, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("BH1-2",     id_vme03_1,  2, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("BH1-3",     id_vme03_1,  3, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("BH1-4",     id_vme03_1,  4, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("BH1-5",     id_vme03_1,  5, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("BH1-6",     id_vme03_1,  6, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("BH1-7",     id_vme03_1,  7, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("BH1-8",     id_vme03_1,  8, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("BH1-9",     id_vme03_1,  9, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BH1-10",    id_vme03_1, 10, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BH1-11",    id_vme03_1, 11, true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("BMW",       id_vme03_1, 12, true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("BH2OR",     id_vme03_1, 13, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("BH2-OR",    id_vme03_1, 13, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BH2-1",     id_vme03_2,  2, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BH2-2",     id_vme03_2,  3, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BH2-3",     id_vme03_1, 16, true); cont_info[left][index++] = tmp;}
@@ -113,59 +115,69 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("BH2-5",     id_vme03_1, 18, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BAC1",      id_vme03_1, 21, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BAC2",      id_vme03_1, 22, true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("SAC1",      id_vme03_1, 23, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("TOF",       id_vme03_1, 24, true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("SAC3",      id_vme03_1, 25, true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("SFV",       id_vme03_1, 26, true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("SMF",       id_vme03_1, 27, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("LAC-OR",    id_vme03_1, 25, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("LAC(a)",    id_vme03_0,  6, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("LAC(b)",    id_vme03_0,  7, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("LAC(c)",    id_vme03_0,  8, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("LC",        id_vme03_1, 27, true); cont_info[left][index++] = tmp;}
 
-  // center column (etc. info)
+  // center column (E07 info)
   index = 0;
-  {scaler_info tmp("K beam",        id_vme03_1, 28, true); cont_info[center][index++] = tmp;}
-  {scaler_info tmp("pi beam",       id_vme03_1, 29, true); cont_info[center][index++] = tmp;}
-  {scaler_info tmp("/p beam",       id_vme03_1, 30, true); cont_info[center][index++] = tmp;}
-  {scaler_info tmp("Real time",     id_vme03_1, 14, true); cont_info[center][index++] = tmp;}
-  {scaler_info tmp("Live time",     id_vme03_1, 15, true); cont_info[center][index++] = tmp;}
-  {scaler_info tmp("BTOF Go",       id_vme03_2,  5, true); cont_info[center][index++] = tmp;}
-  {scaler_info tmp("BTOF clear",    id_vme03_2,  6, true); cont_info[center][index++] = tmp;}
-  {scaler_info tmp("CRM-OR",        id_vme03_2,  1, true); cont_info[center][index++] = tmp;}
-  {scaler_info tmp("/p beam (e07)", id_vme03_2,  7, true); cont_info[center][index++] = tmp;}
-  {scaler_info tmp("TOFxSMFx/MTX",  id_vme03_2,  8, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("K beam",  id_vme03_2, 20, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("pi beam", id_vme03_2, 21, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("/p beam", id_vme03_2, 22, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BH2-1",   id_vme03_2,  8, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BH2-2",   id_vme03_2,  9, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BAC1",    id_vme03_2, 10, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BAC2",    id_vme03_2, 11, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("PVAC",    id_vme03_2, 12, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("FAC",     id_vme03_2, 13, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("SAC1",    id_vme03_2, 14, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BMW",     id_vme03_2, 15, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BH2-1U",  id_vme03_2, 16, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BH2-1D",  id_vme03_2, 17, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BH2-2U",  id_vme03_2, 18, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BH2-2D",  id_vme03_2, 19, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BH1xBH2", id_vme03_2, 23, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BH2-1xBH2-2", id_vme03_2, 24, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("PVACx/FAC",   id_vme03_2, 25, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("(K,K)",       id_vme03_2, 26, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("(ub)",        id_vme03_2, 27, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("(ub)PS",      id_vme03_2, 28, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("SCH-L",       id_vme03_2, 29, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("SCH-R",       id_vme03_2, 30, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("FBH",         id_vme03_2, 31, true); cont_info[center][index++] = tmp;}
 
   // right column (DAQ info)
   index = 0;
   {scaler_info tmp("spill",          id_vme03_0, 0,  true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("10M Clock",      id_vme03_1, 31, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("IM",             id_vme03_0, 1,  true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("TM",             id_vme03_0, 28, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("Real time",      id_vme03_1, 14, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("Live time",      id_vme03_1, 15, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("L1 req",         id_vme03_0, 3,  true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("L1 acc",         id_vme03_1, 19, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("Coin Go",        id_vme03_1, 20, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("Coin clear",     id_vme03_0,  6, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("Overflow Go",    id_vme03_0,  7, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("Overflow clear", id_vme03_0,  8, true); cont_info[right][index++] = tmp;} 
-  {scaler_info tmp("CoinxOver",      id_vme03_2,  4, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("Total clear",    id_vme03_0,  9, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("L2 req",         id_vme03_0, 11, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("MsT Go",         id_vme03_1, 14, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("MsT Clear",      id_vme03_1, 15, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("MsT SV Clear",   id_vme03_0, 26, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("MsT Final Clear",id_vme03_0, 27, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("L2 acc",         id_vme03_0, 12, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("(K, pi)",        id_vme03_0, 13, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("(ub, ub)",       id_vme03_0, 14, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("(pi, pi)",       id_vme03_0, 15, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("(K, pi)PS",      id_vme03_0, 16, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("(ub, ub)PS",     id_vme03_0, 17, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("(K,K)",          id_vme03_0, 13, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("(ub,ub)",        id_vme03_0, 14, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("(K,pi)",         id_vme03_0, 15, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("(K,K)PS",        id_vme03_0, 16, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("(ub,ub)PS",      id_vme03_0, 17, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(ub)PS",         id_vme03_0, 18, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("(pi, pi)PS",     id_vme03_0, 19, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("(K, pi)PS",      id_vme03_0, 19, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("K in",           id_vme03_0, 20, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("pi in",          id_vme03_0, 21, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("pi Tout",        id_vme03_0, 22, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("K Tout",         id_vme03_0, 23, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("SFVx/SAC3",      id_vme03_0, 24, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("pi Out",         id_vme03_0, 25, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("(K,pi) w/oSMF",  id_vme03_0, 26, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("TOFx/SFV",       id_vme03_0, 27, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("TOFxSMF",        id_vme03_0, 29, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("BH1xBH2",        id_vme03_0, 10, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("BH2xTOF",        id_vme03_0, 31, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("10M Clock",      id_vme03_1, 31, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("TOFxLC",         id_vme03_0, 29, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("TOFxLCx/LAC",    id_vme03_0, 23, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("LACx[TOF/LC]",   id_vme03_0, 24, true); cont_info[right][index++] = tmp;}
 
   return 0;
 }
@@ -337,8 +349,8 @@ process_event()
     
     if(en_disp){
       printf("%-10s %10s : %-15s %10s : %-15s %10s \n",
-	     "", "Integral",
-	     "", "Integral",
+	     "- E05 -", "Integral",
+	     "- E07 -", "Integral",
 	     "", "Integral");
 	     
       for(int i = 0; i<NofCh; ++i){

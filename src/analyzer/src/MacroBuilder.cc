@@ -153,6 +153,15 @@ TObject* dispSSD2()
   return m;
 }
 
+// dispProfileSSD -------------------------------------------------------
+TObject* dispProfileSSD()
+{
+  std::string path = getMacroPath() + "dispProfileSSD.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispProfileSSD");
+  return m;
+}
+
 // dispSCH -------------------------------------------------------
 TObject* dispSCH()
 {

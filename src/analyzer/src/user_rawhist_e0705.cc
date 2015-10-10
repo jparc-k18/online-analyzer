@@ -120,6 +120,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createPWO_E05(false));
   tab_hist->Add(gHist.createMsT());
   tab_hist->Add(gHist.createTriggerFlag());
+  tab_hist->Add(gHist.createTriggerFlag_E07());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createDAQ(false));
 
@@ -136,6 +137,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_e07->Add(dispSSD0());
   tab_e07->Add(dispSSD1());
   tab_e07->Add(dispSSD2());
+  //tab_e07->Add(dispProfileSSD());
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -202,6 +204,20 @@ process_event()
 	  hptr_array[tf_tdc_id+seg]->Fill(tdc);
 	  hptr_array[tf_hit_id]->Fill(seg);
 	  if(seg==SegIdScalerTrigger) scaler_flag = true;
+	}
+      }
+    }// for(seg)
+
+    // for E07
+    static const int tf_e07_tdc_id = gHist.getSequentialID(kTriggerFlag, 1, kTDC);
+    static const int tf_e07_hit_id = gHist.getSequentialID(kTriggerFlag, 1, kHitPat);
+    for(int seg = 0; seg<NumOfSegMisc; ++seg){
+      int nhit = gUnpacker.get_entries(k_device, 1, seg, 0, k_tdc);
+      if(nhit != 0){
+	int tdc = gUnpacker.get(k_device, 1, seg, 0, k_tdc);
+	if(tdc != 0){
+	  hptr_array[tf_e07_tdc_id+seg]->Fill(tdc);
+	  hptr_array[tf_e07_hit_id]->Fill(seg);
 	}
       }
     }// for(seg)
@@ -1845,7 +1861,7 @@ process_event()
 
   // PWO -------------------------------------------------------------
   {
-    // data typep
+    // data type
     static const int k_device = gUnpacker.get_device_id("PWO");
     static const int k_adc    = gUnpacker.get_data_id("PWO","adc");
     static const int k_tdc    = gUnpacker.get_data_id("PWO","tdc");
@@ -1896,17 +1912,19 @@ process_event()
 
   // MsT -----------------------------------------------------------
   {
-    // data typep
+    // data type
     static const int k_device = gUnpacker.get_device_id("MsT");
     // sequential id
-    int tdc_id  = gHist.getSequentialID(kMsT, 0, kTDC2D);
-    int flag_id = gHist.getSequentialID(kMsT, 0, kHitPat);
+    int tdc_id   = gHist.getSequentialID(kMsT, 0, kTDC);
+    int tdc2d_id = gHist.getSequentialID(kMsT, 0, kTDC2D);
+    int flag_id  = gHist.getSequentialID(kMsT, 0, kHitPat);
     for(int seg=0; seg<NumOfSegMsT; ++seg){
       // TDC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, 0);
       if(nhit != 0){
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, 0);
-	hptr_array[tdc_id]->Fill( seg, tdc );
+	hptr_array[tdc_id +seg]->Fill( tdc );
+	hptr_array[tdc2d_id]->Fill( seg, tdc );
       }
 
       // Flag

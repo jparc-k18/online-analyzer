@@ -130,6 +130,7 @@ public:
   TList* createLC(bool flag_ps=true);
   TList* createMsT(bool flag_ps=true);
   TList* createTriggerFlag(bool flag_ps=true);
+  TList* createTriggerFlag_E07(bool flag_ps=true);
   TList* createCorrelation(bool flag_ps=true);
   TList* createDAQ(bool flag_ps=true);
   TList* createPWO_E05(bool flag_ps=true);

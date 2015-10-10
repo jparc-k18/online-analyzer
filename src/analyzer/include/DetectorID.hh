@@ -29,6 +29,9 @@ const int DetIdAC1  = 22;
 const int DetIdBVH  = 23;
 const int DetIdNRC  = 24;
 
+const int DetIdMisc    = 11;
+const int NumOfSegMisc = 16;
+
 // E07 Detectors
 const int DetIdBH2_E07 =  33;
 const int DetIdBAC_E07 =  34;
@@ -66,7 +69,6 @@ const int NumOfSegKIC  =  4;
 // E13 Detectors
 const int DetIdBAC     =  9;
 const int DetIdBMW     = 10;
-const int DetIdMisc    = 11;
 const int DetIdMatrix  = 12;
 const int DetIdSFV     = 24;
 const int DetIdTOFMT   = 25;
@@ -74,13 +76,9 @@ const int DetIdSP0     = 26;
 const int DetIdGe      = 27;
 const int DetIdPWO     = 28;
 const int DetIdPWOADC  = 29;
-
 const int NumOfSegBAC = 2;
 const int NumOfSegBAC_SAC = 6;
 const int NumOfSegSFV = 18;
-const int NumOfSegMisc = 18;
-const int SegIdScalerTrigger = 15;
-
 const int NumOfSegGe   = 32;
 
 const int NumOfSegPWO  = 238;
@@ -99,7 +97,9 @@ const int SegIdPWO[NumOfBoxPWO] =
 
 const int NumOfLayersSP0 = 8;
 const int NumOfSegSP0    = 5;
+
 //
+const int SegIdScalerTrigger = 15;
 
 const int DetIdBcIn   = 10;
 const int DetIdBcOut  = 20;

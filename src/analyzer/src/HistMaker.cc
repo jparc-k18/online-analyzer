@@ -1115,6 +1115,11 @@ TList* HistMaker::createSSD0(bool flag_ps)
 			     NumOfSegSSD0, 0, NumOfSegSSD0,
 			     "Segment", ""));
     }
+    target_id = getUniqueID(kSSD0, 0, kHitPat2D, 0);
+    sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
+					     nameLayer[1], nameLayer[0]),
+			   NumOfSegSSD0, 0, NumOfSegSSD0, NumOfSegSSD0, 0, NumOfSegSSD0,
+			   nameLayer[0], nameLayer[1]));
     top_dir->Add(sub_dir);
   }
 
@@ -1193,6 +1198,15 @@ TList* HistMaker::createSSD1(bool flag_ps)
 			     NumOfSegSSD1, 0, NumOfSegSSD1,
 			     "Segment", ""));
     }
+    target_id = getUniqueID(kSSD1, 0, kHitPat2D, 0);
+    sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
+					     nameLayer[0], nameLayer[1]),
+			   NumOfSegSSD1, 0, NumOfSegSSD1, NumOfSegSSD1, 0, NumOfSegSSD1,
+			   nameLayer[1], nameLayer[0]));
+    sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
+					     nameLayer[2], nameLayer[3]),
+			   NumOfSegSSD1, 0, NumOfSegSSD1, NumOfSegSSD1, 0, NumOfSegSSD1,
+			   nameLayer[3], nameLayer[2]));
     top_dir->Add(sub_dir);
   }
 
@@ -1271,6 +1285,15 @@ TList* HistMaker::createSSD2(bool flag_ps)
 			     NumOfSegSSD2, 0, NumOfSegSSD2,
 			     "Segment", ""));
     }
+    target_id = getUniqueID(kSSD2, 0, kHitPat2D, 0);
+    sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
+					     nameLayer[1], nameLayer[0]),
+			   NumOfSegSSD2, 0, NumOfSegSSD2, NumOfSegSSD2, 0, NumOfSegSSD2,
+			   nameLayer[0], nameLayer[1]));
+    sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
+					     nameLayer[3], nameLayer[2]),
+			   NumOfSegSSD2, 0, NumOfSegSSD2, NumOfSegSSD2, 0, NumOfSegSSD2,
+			   nameLayer[2], nameLayer[3]));
     top_dir->Add(sub_dir);
   }
 
@@ -1541,7 +1564,7 @@ TList* HistMaker::createSCH(bool flag_ps)
     }
     top_dir->Add(sub_dir);
   }
-  // TDC/TOT ----------------------------------------------------------
+  // TDC/TOT SUM -----------------------------------------------------
   {
     // TDC
     top_dir->Add(createTH1(getUniqueID(kSCH, 0, kTDC, NumOfSegSCH+1),
@@ -2627,8 +2650,21 @@ TList* HistMaker::createMsT(bool flag_ps)
 
   // Timing Counter TDC ---------------------------------------------------------
   {
+    TList *sub_dir = new TList;
+    sub_dir->SetName("MsT_TOF_TDC");
+    int target_id = getUniqueID(kMsT, 0, kTDC, 0);
+    for(int seg=0; seg<NumOfSegTOF; ++seg){
+      sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d", nameDetector, seg+1),
+			     0x800, 0, 0x800,
+			     "Segment", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // Timing Counter TDC 2D -------------------------------------------------------
+  {
     int target_id = getUniqueID(kMsT, 0, kTDC2D, 0);
-    top_dir->Add(createTH2(++target_id, Form("%s_TOF_TDC", nameDetector),
+    top_dir->Add(createTH2(++target_id, Form("%s_TOF_TDC_2D", nameDetector),
 			   NumOfSegMsT, 0, NumOfSegMsT, 0x800, 0, 0x800,
 			   "Segment", ""));
   }
@@ -2671,7 +2707,7 @@ TList* HistMaker::createTriggerFlag(bool flag_ps)
     for(int i = 0; i<NumOfSegMisc; ++i){
       const char* title = NULL;
       title = Form("%s_%d", nameDetector, i+1);
-      top_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+      top_dir->Add(createTH1(++target_id, title, // 1 origin
 			     400, 0, 4000,
 			     "TDC [ch]", ""));
     }
@@ -2682,7 +2718,55 @@ TList* HistMaker::createTriggerFlag(bool flag_ps)
     const char* title = "Trigger_Entry";
     int target_id = getUniqueID(kTriggerFlag, 0, kHitPat, 0);
     // Add to the top directory
-    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+    top_dir->Add(createTH1(++target_id, title, // 1 origin
+			   20, 0, 20,
+			   "Trigger flag", ""));
+  }
+
+  // Return the TList pointer which is added into TGFileBrowser
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
+// createTriggerFlag_E07
+// -------------------------------------------------------------------------
+TList* HistMaker::createTriggerFlag_E07(bool flag_ps)
+{
+  // Determine the detector name
+  //std::string strDet = CONV_STRING(kTriggerFlag);
+  std::string strDet = "TriggerFlag_E07";
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
+
+  // Declaration of the directory
+  // Just type conversion from std::string to char*
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // TDC---------------------------------------------------------
+  {
+    // Make histogram and add it
+    int target_id = getUniqueID(kTriggerFlag, 1, kTDC, 0);
+    for(int i = 0; i<NumOfSegMisc; ++i){
+      const char* title = NULL;
+      title = Form("%s_%d", nameDetector, i+1);
+      top_dir->Add(createTH1(++target_id, title, // 1 origin
+			     400, 0, 4000,
+			     "TDC [ch]", ""));
+    }
+  }
+
+  // Hit parttern -----------------------------------------------
+  {
+    const char* title = "Trigger_Entry_E07";
+    int target_id = getUniqueID(kTriggerFlag, 1, kHitPat, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   20, 0, 20,
 			   "Trigger flag", ""));
   }

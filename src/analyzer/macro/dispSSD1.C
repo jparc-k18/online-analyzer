@@ -25,8 +25,8 @@ void dispSSD1()
     c->Clear();
     c->Divide(2,2);
     for(int l=0; l<n_layer; ++l){
-      c->cd(l+1);
-      TH1 *h = (TH1*)GHist::get(ssd1_id[i][l])->Clone();
+      c->cd(l+1)->SetGrid();
+      TH1 *h = (TH1*)GHist::get(ssd1_id[i][l]);
       h->Draw("colz");
     }
     c->Update();

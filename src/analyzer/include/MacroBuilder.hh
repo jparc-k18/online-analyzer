@@ -31,6 +31,7 @@ TObject* dispHDC();
 TObject* dispSDC3();
 TObject* dispSDC4();
 TObject* dispHitPat();
+TObject* dispProfileSSD();
 TObject* effBcOut();
 TObject* effSdcIn();
 TObject* effSdcOut();

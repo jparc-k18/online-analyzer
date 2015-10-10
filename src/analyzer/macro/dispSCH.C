@@ -10,10 +10,11 @@ void dispSCH()
   // ----------------------------------
 
   const int n_hist_c1 = 6;
+  const int n_seg     = 64;
     
   int sch_id_c1[n_hist_c1] = {
-    HistMaker::getUniqueID(kSCH, 0, kTDC,    1),
-    HistMaker::getUniqueID(kSCH, 0, kADC,    1),
+    HistMaker::getUniqueID(kSCH, 0, kTDC,    n_seg +1),
+    HistMaker::getUniqueID(kSCH, 0, kADC,    n_seg +1),
     HistMaker::getUniqueID(kSCH, 0, kHitPat, 1),
     HistMaker::getUniqueID(kSCH, 0, kTDC2D,  1),
     HistMaker::getUniqueID(kSCH, 0, kADC2D,  1),
@@ -28,7 +29,7 @@ void dispSCH()
     for(int i=0; i<n_hist_c1; i++){
       c->cd(i+1)->SetGrid();
       TH1 *h = (TH1*)GHist::get(sch_id_c1[i]);
-      h->Draw();
+      h->Draw("colz");
     }
   }
   c->Update();

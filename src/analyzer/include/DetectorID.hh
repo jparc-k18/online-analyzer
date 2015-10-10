@@ -37,6 +37,7 @@ const int DetIdFAC     =  36;
 const int DetIdSAC1    =  37;
 const int DetIdSCH     =  38;
 const int DetIdEMC     =  39;
+const int DetIdFBH     =  40;
 const int DetIdSSD0    = 120;
 const int DetIdSSD1    = 121;
 const int DetIdSSD2    = 122;
@@ -47,6 +48,7 @@ const int NumOfSegFAC     =  6 + 1;
 const int NumOfSegSAC1    =  1;
 const int NumOfSegSCH     = 64;
 const int NumOfSegEMC     =  1;
+const int NumOfSegFBH     = 16;
 const int NumOfLayersSSD0 =  2;
 const int NumOfLayersSSD1 =  4;
 const int NumOfLayersSSD2 =  4;
@@ -56,7 +58,9 @@ const int NumOfSegSSD2    = 1536;
 const int NumOfSamplesSSD =  8;
 
 // E05 Detectors
-const int DetIdKIC     = 40;
+const int DetIdMsT     = 32;
+const int DetIdKIC     = 41;
+const int NumOfSegMsT  = 32;
 const int NumOfSegKIC  =  4;
 
 // E13 Detectors

@@ -8,5 +8,6 @@ include/*
 param/*
 src/analyzer/dict/*
 src/main/dict/*
+data
 Makefile
 common.mk

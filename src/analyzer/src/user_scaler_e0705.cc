@@ -19,6 +19,7 @@ namespace analyzer
   using namespace hddaq;
 
   bool flag_spill_by_spill = false;
+  bool flag_semi_online    = false;
 
   static const int NofCh = 32;
 
@@ -46,9 +47,9 @@ namespace analyzer
   
   std::vector<scaler_info> cont_info[size_dispColumn];
   
-  static unsigned int prev[size_dispColumn][NofCh] = {{0}, {0}, {0}};
-  static unsigned int curr[size_dispColumn][NofCh] = {{0}, {0}, {0}};
-  static unsigned int val[size_dispColumn][NofCh]  = {{0}, {0}, {0}};
+  static long long unsigned int prev[size_dispColumn][NofCh] = {{0}, {0}, {0}};
+  static long long unsigned int curr[size_dispColumn][NofCh] = {{0}, {0}, {0}};
+  static long long unsigned int val[size_dispColumn][NofCh]  = {{0}, {0}, {0}};
 
 //____________________________________________________________________________
 std::string
@@ -80,14 +81,21 @@ process_begin(const std::vector<std::string>& argv)
   gConfMan.initialize(argv);
   
   // spill by spill flag
-  if(4 == argv.size()){
+  if( argv.size() == 4 ){
     flag_spill_by_spill = true;
   }
 
+  // semi online flag
+  if( argv.size() == 3 ){
+    if( argv[2].find(":",0) == std::string::npos ){
+      flag_semi_online = true;
+    }
+  }
+
   for(int i = 0; i<32; ++i){
-    cont_info[left].push_back(   scaler_info("N/A", id_vme03_1, i, false) );
-    cont_info[center].push_back( scaler_info("N/A", id_vme03_2, i, false) );
-    cont_info[right].push_back(  scaler_info("N/A", id_vme03_0, i, false) );
+    cont_info[left].push_back(   scaler_info("n/a", id_vme03_1, i, false) );
+    cont_info[center].push_back( scaler_info("n/a", id_vme03_2, i, false) );
+    cont_info[right].push_back(  scaler_info("n/a", id_vme03_0, i, false) );
   }
    
   // left column (counter info)
@@ -129,12 +137,12 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("/p beam", id_vme03_2, 22, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("BH2-1",   id_vme03_2,  8, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("BH2-2",   id_vme03_2,  9, true); cont_info[center][index++] = tmp;}
+  {scaler_info tmp("BMW",     id_vme03_2, 15, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("BAC1",    id_vme03_2, 10, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("BAC2",    id_vme03_2, 11, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("PVAC",    id_vme03_2, 12, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("FAC",     id_vme03_2, 13, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("SAC1",    id_vme03_2, 14, true); cont_info[center][index++] = tmp;}
-  {scaler_info tmp("BMW",     id_vme03_2, 15, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("BH2-1U",  id_vme03_2, 16, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("BH2-1D",  id_vme03_2, 17, true); cont_info[center][index++] = tmp;}
   {scaler_info tmp("BH2-2U",  id_vme03_2, 18, true); cont_info[center][index++] = tmp;}
@@ -155,8 +163,8 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("10M Clock",      id_vme03_1, 31, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("IM",             id_vme03_0, 1,  true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("TM",             id_vme03_0, 28, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("Real time",      id_vme03_1, 14, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("Live time",      id_vme03_1, 15, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("Real time",      id_vme03_0,  9, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("Live time",      id_vme03_0, 11, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("L1 req",         id_vme03_0, 3,  true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("L1 acc",         id_vme03_1, 19, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("MsT Go",         id_vme03_1, 14, true); cont_info[right][index++] = tmp;}
@@ -187,12 +195,10 @@ int
 process_end()
 {
   std::cout << "\n#D : End of scaler, summarize this run" << std::endl;
-  printf("%-10s %10s : %-15s %10s : %-15s %10s : %-6s %12s : %-6s %12s\n",
-	 "", "Integral",
-	 "", "Integral",
-	 "", "Integral",
-	 "", "kHz",
-	 "", "Hz");
+  printf("%-10s %10s : %-15s %10s : %-15s %15s\n",
+	 "- E05 -", "Integral",
+	 "- E07 -", "Integral",
+	 "", "Integral");
 	     
   for(int i = 0; i<NofCh; ++i){
     scaler_info info[size_dispColumn];
@@ -203,7 +209,7 @@ process_end()
     info[right]  = cont_info[right][i];
 
     // display
-    printf("%-10s %10u : %-15s %10u : %-15s %10u \n",
+    printf("%-10s %10llu : %-15s %10llu : %-15s %15llu \n",
 	   info[left].name.c_str(),   val[left][i],
 	   info[center].name.c_str(), val[center][i],
 	   info[right].name.c_str(),  val[right][i]
@@ -213,36 +219,40 @@ process_end()
   std::cout << "\n#D : For the scaler check sheet" << std::endl;
   int    spill      = val[right][0];
   double kbeam      = (double)val[center][0];
-  double kpi        = (double)val[right][13];
-  double real_time  = (double)val[center][3];
-  double live_time  = (double)val[center][4];
-  double l1_req     = (double)val[right][3];
-  double l1_acc     = (double)val[right][4];
-  int    clear      = val[right][10];
+  double pibeam     = (double)val[center][1];
+  double anti_pbeam = (double)val[center][2];
+  double kk         = (double)val[center][18];
+  double real_time  = (double)val[right][4];
+  double live_time  = (double)val[right][5];
+  double l1_req     = (double)val[right][6];
+  double l1_acc     = (double)val[right][7];
+  int    clear      = val[right][11];
   double l2_acc     = (double)val[right][12];
-  int    bh2        = val[left][13];
-  int    pibeam     = val[center][1];
+  int    bh2_1      = val[center][3];
+  int    bh2_2      = val[center][4];
+  int    bh1xbh2    = val[center][15];
   double TM         = (double)val[right][2];
   double bh1bh2     = (double)val[right][29];
 
-  printf("%-20s %15s\t",   "",               "");
-  printf("%-20s %15s\n",   "BH2 OR",         separate_comma(bh2).c_str());
+  printf("\n");
   printf("%-20s %15s\t",   "Spill",          separate_comma(spill).c_str());
-  printf("\n");
-  printf("%-20s %15s\t",   "K-beam",         separate_comma((int)kbeam).c_str());
-  printf("\n");
-  printf("%-20s %15s\t",   "Pi-beam",        separate_comma(pibeam).c_str());
-  printf("%-20s %15.4f\n", "K-beam/TM",      kbeam/TM);
-  printf("%-20s %15s\t",   "(K,pi)",         separate_comma((int)kpi).c_str());
-  printf("%-20s %15.4f\n", "K-beam/BH1xBH2", kbeam/bh1bh2);
-  printf("%-20s %15s\t",   "Trig1 Req.",     separate_comma((int)l1_req).c_str());
-  printf("%-20s %15.4f\n", "(K,pi)/K-beam",  kpi/kbeam);
-  printf("%-20s %15s\t",   "Trig1 Acc.",     separate_comma((int)l1_acc).c_str());
+  printf("%-20s %15s\n",   "BH2_1",          separate_comma(bh2_1).c_str());
+  printf("%-20s %15s\t",   "K beam",         separate_comma((int)kbeam).c_str());
+  printf("%-20s %15s\n",   "BH2_2",          separate_comma(bh2_2).c_str());
+  printf("%-20s %15s\t",   "pi beam",        separate_comma((int)pibeam).c_str());
+  printf("%-20s %15s\n",   "BH1xBH2",        separate_comma(bh1xbh2).c_str());
+  printf("%-20s %15s\t",   "/p beam",        separate_comma((int)anti_pbeam).c_str());
+  printf("%-20s %15.4f\n", "K beam/TM",      kbeam/TM);
+  printf("%-20s %15s\t",   "(K,K)",          separate_comma((int)kk).c_str());
+  printf("%-20s %15.4f\n", "K beam/BH1xBH2", kbeam/bh1bh2);
+  printf("%-20s %15s\t",   "L1 req",         separate_comma((int)l1_req).c_str());
+  printf("%-20s %15.4f\n", "(K,K)/K-beam",   kk/kbeam);
+  printf("%-20s %15s\t",   "L1 acc",     separate_comma((int)l1_acc).c_str());
   printf("%-20s %15.4f\n", "Live time/Real time", live_time/real_time);  
   printf("%-20s %15s\t",   "Total Clear",    separate_comma(clear).c_str());
   printf("%-20s %15.4f\n", "L1 acc/L1 req",  l1_acc/l1_req);
-  printf("%-20s %15s\t",   "Trig2 Acc.",     separate_comma((int)l2_acc).c_str());
-  printf("%-20s %15.4f\n", "L2 acc/L1 acc", l2_acc/l1_acc);
+  printf("%-20s %15s\t",   "L2 acc",     separate_comma((int)l2_acc).c_str());
+  printf("%-20s %15.4f\n", "L2 acc/L1 acc",  l2_acc/l1_acc);
   printf("\n");
 
   return 0;
@@ -257,11 +267,10 @@ process_event()
   static int run_number = g_unpacker.get_root()->get_run_number();
   static int event_count = 0;
   static bool en_disp = false;
-  if(flag_spill_by_spill){
-    if(event_count%3 == 0)  en_disp = true;
+  if(flag_semi_online){
+    if(event_count%300 == 0) en_disp = true;
   }else{
-    if(event_count%10 == 0) en_disp = true;
-    en_disp = true;
+    if(event_count%20 == 0)  en_disp = true;
   }
   
   // clear console
@@ -297,7 +306,6 @@ process_event()
 
 	if(curr[left][i] < prev[left][i]){
 	  prev[left][i] = 0;
-	  inclement_spill = true;
 	}
 
 	if(flag_spill_by_spill){
@@ -331,12 +339,10 @@ process_event()
 
 	if(curr[right][i] < prev[right][i]){
 	  prev[right][i] = 0;
+	  inclement_spill = true;
 	}
 	
-	if(i == 0){
-	  // spill
-	  if(inclement_spill) ++val[right][0];
-	}else{
+	if(i!=0){
 	  if(flag_spill_by_spill){
 	    val[right][i]  = curr[right][i];
 	  }else{
@@ -347,8 +353,20 @@ process_event()
 
     }
     
+    // inclement spill
+    if(inclement_spill)	++val[right][0];
+
     if(en_disp){
-      printf("%-10s %10s : %-15s %10s : %-15s %10s \n",
+      double real_time = (double)val[right][4];
+      double live_time = (double)val[right][5];
+      double l1_rec    = (double)val[right][6];
+      double l1_acc    = (double)val[right][7];
+      double l2_acc    = (double)val[right][12];
+      double real_live = live_time/real_time;
+      double daq_eff   = l1_acc/l1_rec;
+      double l2_eff    = l2_acc/l1_acc;
+
+      printf("%-10s %10s : %-15s %10s : %-15s %15s \n",
 	     "- E05 -", "Integral",
 	     "- E07 -", "Integral",
 	     "", "Integral");
@@ -362,12 +380,16 @@ process_event()
 	info[right]  = cont_info[right][i];
 
 	// display
-	printf("%-10s %10u : %-15s %10u : %-15s %10u \n",
+	printf("%-10s %10llu : %-15s %10llu : %-15s %15llu \n",
 	       info[left].name.c_str(),   val[left][i],
 	       info[center].name.c_str(), val[center][i],
 	       info[right].name.c_str(),  val[right][i]
 	       );
       }
+      printf("\n%-10s %9.4f%% : %-15s %9.4f%% : %-15s %14.4f%%\n",
+	     "Live/Real", real_live*100,
+	     "DAQ Eff.",  daq_eff*100,
+	     "L2 Eff",    l2_eff*100);
     }
   }
   

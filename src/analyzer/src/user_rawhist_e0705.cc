@@ -919,6 +919,7 @@ process_event()
     // data type
     static const int k_device = gUnpacker.get_device_id("SSD0");
     static const int k_adc    = gUnpacker.get_data_id("SSD0","adc");
+    static const int k_flag   = gUnpacker.get_data_id("SSD0","flag");
     // sequential id
     static const int ssd0adc_id = gHist.getSequentialID(kSSD0, 0, kADC2D,  1);
     static const int ssd0tdc_id = gHist.getSequentialID(kSSD0, 0, kTDC2D,  1);
@@ -943,11 +944,20 @@ process_event()
 	    peak_position = m;
 	  }
 	}
+	// Zero Suppression Flag
+	int nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
+	bool hit_flag = false;
+	if(nhit_flag != 0){
+	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
+	  if(flag==1) hit_flag = true;
+	}
 	if(peak_height>=0 && peak_position>=0){
 	  hptr_array[ssd0adc_id +l]->Fill( seg, peak_height );
 	  hptr_array[ssd0tdc_id +l]->Fill( seg, peak_position );
-	  hptr_array[ssd0hit_id +l]->Fill( seg );
-	  multiplicity++;
+	  if(hit_flag){
+	    hptr_array[ssd0hit_id +l]->Fill( seg );
+	    multiplicity++;
+	  }
 	}
       }//for(seg)
       hptr_array[ssd0mul_id +l]->Fill( multiplicity );
@@ -968,6 +978,7 @@ process_event()
     // data type
     static const int k_device = gUnpacker.get_device_id("SSD1");
     static const int k_adc    = gUnpacker.get_data_id("SSD1","adc");
+    static const int k_flag   = gUnpacker.get_data_id("SSD1","flag");
     // sequential id
     static const int ssd1adc_id = gHist.getSequentialID(kSSD1, 0, kADC2D,  1);
     static const int ssd1tdc_id = gHist.getSequentialID(kSSD1, 0, kTDC2D,  1);
@@ -992,11 +1003,20 @@ process_event()
 	    peak_position = m;
 	  }
 	}
+	// Zero Suppression Flag
+	int nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
+	bool hit_flag = false;
+	if(nhit_flag != 0){
+	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
+	  if(flag==1) hit_flag = true;
+	}
 	if(peak_height>=0 && peak_position>=0){
 	  hptr_array[ssd1adc_id +l]->Fill( seg, peak_height );
 	  hptr_array[ssd1tdc_id +l]->Fill( seg, peak_position );
-	  hptr_array[ssd1hit_id +l]->Fill( seg );
-	  multiplicity++;
+	  if(hit_flag){
+	    hptr_array[ssd1hit_id +l]->Fill( seg );
+	    multiplicity++;
+	  }
 	}
       }//for(seg)
       hptr_array[ssd1mul_id +l]->Fill( multiplicity );
@@ -1017,6 +1037,7 @@ process_event()
     // data type
     static const int k_device = gUnpacker.get_device_id("SSD2");
     static const int k_adc    = gUnpacker.get_data_id("SSD2","adc");
+    static const int k_flag   = gUnpacker.get_data_id("SSD2","flag");
     // sequential id
     static const int ssd2adc_id = gHist.getSequentialID(kSSD2, 0, kADC2D,  1);
     static const int ssd2tdc_id = gHist.getSequentialID(kSSD2, 0, kTDC2D,  1);
@@ -1041,11 +1062,20 @@ process_event()
 	    peak_position = m;
 	  }
 	}
+	// Zero Suppression Flag
+	int nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
+	bool hit_flag = false;
+	if(nhit_flag != 0){
+	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
+	  if(flag==1) hit_flag = true;
+	}
 	if(peak_height>=0 && peak_position>=0){
 	  hptr_array[ssd2adc_id +l]->Fill( seg, peak_height );
 	  hptr_array[ssd2tdc_id +l]->Fill( seg, peak_position );
-	  hptr_array[ssd2hit_id +l]->Fill( seg );
-	  multiplicity++;
+	  if(hit_flag){
+	    hptr_array[ssd2hit_id +l]->Fill( seg );
+	    multiplicity++;
+	  }
 	}
       }//for(seg)
       hptr_array[ssd2mul_id +l]->Fill( multiplicity );

@@ -497,9 +497,10 @@ process_event()
       = UserParamMan::getInstance().getParameter("BC3_TDC", 1);
 
     // sequential id
-    static const int bc3t_id   = gHist.getSequentialID(kBC3, 0, kTDC);
-    static const int bc3hit_id = gHist.getSequentialID(kBC3, 0, kHitPat);
-    static const int bc3mul_id = gHist.getSequentialID(kBC3, 0, kMulti);
+    static const int bc3t_id    = gHist.getSequentialID(kBC3, 0, kTDC);
+    static const int bc3t1st_id = gHist.getSequentialID(kBC3, 0, kTDC2D);
+    static const int bc3hit_id  = gHist.getSequentialID(kBC3, 0, kHitPat);
+    static const int bc3mul_id  = gHist.getSequentialID(kBC3, 0, kMulti);
     static const int bc3mulwt_id 
       = gHist.getSequentialID(kBC3, 0, kMulti, 1+NumOfLayersBC3);
 
@@ -517,16 +518,18 @@ process_event()
 	hptr_array[bc3hit_id + l]->Fill(w, nhit);
 
 	bool flag_hit_wt = false;
+	int  tdc1st = 0;
 	for(int m = 0; m<nhit; ++m){
 	  int tdc = gUnpacker.get(k_device, l, 0, w, k_tdc, m);
 	  hptr_array[bc3t_id + l]->Fill(tdc);
-	  
+	  if( tdc1st<tdc ) tdc1st = tdc;
 	  // Drift time check
 	  if(tdc_min < tdc && tdc < tdc_max){
 	    flag_hit_wt = true;
 	  }
 	}
 
+	if( tdc1st!=0 ) hptr_array[bc3t1st_id + l]->Fill(tdc1st);
 	if(flag_hit_wt){ ++multiplicity_wt; }
       }
       
@@ -557,9 +560,10 @@ process_event()
       = UserParamMan::getInstance().getParameter("BC4_TDC", 1);
 
     // sequential id
-    static const int bc4t_id   = gHist.getSequentialID(kBC4, 0, kTDC);
-    static const int bc4hit_id = gHist.getSequentialID(kBC4, 0, kHitPat);
-    static const int bc4mul_id = gHist.getSequentialID(kBC4, 0, kMulti);
+    static const int bc4t_id    = gHist.getSequentialID(kBC4, 0, kTDC);
+    static const int bc4t1st_id = gHist.getSequentialID(kBC4, 0, kTDC2D);
+    static const int bc4hit_id  = gHist.getSequentialID(kBC4, 0, kHitPat);
+    static const int bc4mul_id  = gHist.getSequentialID(kBC4, 0, kMulti);
     static const int bc4mulwt_id 
       = gHist.getSequentialID(kBC4, 0, kMulti, 1+NumOfLayersBC4);
     
@@ -577,16 +581,18 @@ process_event()
 	hptr_array[bc4hit_id + l]->Fill(w, nhit);
 
 	bool flag_hit_wt = false;
+	int  tdc1st = 0;
 	for(int m = 0; m<nhit; ++m){
 	  int tdc = gUnpacker.get(k_device, l, 0, w, k_tdc, m);
 	  hptr_array[bc4t_id + l]->Fill(tdc);
-	  
+	  if( tdc1st<tdc ) tdc1st = tdc;
 	  // Drift time check
 	  if(tdc_min < tdc && tdc < tdc_max){
 	    flag_hit_wt = true;
 	  }
 	}
 
+	if( tdc1st!=0 ) hptr_array[bc4t1st_id + l]->Fill(tdc1st);
 	if(flag_hit_wt){ ++multiplicity_wt; }
       }
       
@@ -1324,9 +1330,10 @@ process_event()
       = UserParamMan::getInstance().getParameter("SDC2_TDC", 1);
    
     // sequential id
-    static const int sdc2t_id   = gHist.getSequentialID(kSDC2, 0, kTDC, 1);
-    static const int sdc2hit_id = gHist.getSequentialID(kSDC2, 0, kHitPat, 1);
-    static const int sdc2mul_id = gHist.getSequentialID(kSDC2, 0, kMulti, 1);
+    static const int sdc2t_id    = gHist.getSequentialID(kSDC2, 0, kTDC, 1);
+    static const int sdc2t1st_id = gHist.getSequentialID(kSDC2, 0, kTDC2D, 1);
+    static const int sdc2hit_id  = gHist.getSequentialID(kSDC2, 0, kHitPat, 1);
+    static const int sdc2mul_id  = gHist.getSequentialID(kSDC2, 0, kMulti, 1);
     static const int sdc2mulwt_id 
       = gHist.getSequentialID(kSDC2, 0, kMulti, 1+NumOfLayersSDC2);
     
@@ -1344,9 +1351,11 @@ process_event()
 	hptr_array[sdc2hit_id + l]->Fill(w, nhit);
 
 	bool flag_hit_wt = false;
+	int  tdc1st = 0;
 	for(int m = 0; m<nhit; ++m){
 	  int tdc = gUnpacker.get(k_device, l, 0, w, k_tdc, m);
 	  hptr_array[sdc2t_id + l]->Fill(tdc);
+	  if( tdc1st<tdc ) tdc1st = tdc;
 	  
 	  // Drift time check
 	  if(tdc_min < tdc && tdc < tdc_max){
@@ -1354,6 +1363,7 @@ process_event()
 	  }
 	}
 
+	if( tdc1st!=0 ) hptr_array[sdc2t1st_id + l]->Fill(tdc1st);
 	if(flag_hit_wt){ ++multiplicity_wt; }
       }
       
@@ -1384,9 +1394,10 @@ process_event()
       = UserParamMan::getInstance().getParameter("HDC_TDC", 1);
     
     // sequential id
-    static const int hdct_id   = gHist.getSequentialID(kHDC, 0, kTDC, 1);
-    static const int hdchit_id = gHist.getSequentialID(kHDC, 0, kHitPat, 1);
-    static const int hdcmul_id = gHist.getSequentialID(kHDC, 0, kMulti, 1);
+    static const int hdct_id    = gHist.getSequentialID(kHDC, 0, kTDC, 1);
+    static const int hdct1st_id = gHist.getSequentialID(kHDC, 0, kTDC2D, 1);
+    static const int hdchit_id  = gHist.getSequentialID(kHDC, 0, kHitPat, 1);
+    static const int hdcmul_id  = gHist.getSequentialID(kHDC, 0, kMulti, 1);
     static const int hdcmulwt_id 
       = gHist.getSequentialID(kHDC, 0, kMulti, 1+NumOfLayersHDC);
     
@@ -1404,9 +1415,11 @@ process_event()
 	hptr_array[hdchit_id + l]->Fill(w, nhit);
 
 	bool flag_hit_wt = false;
+	int  tdc1st = 0;
 	for(int m = 0; m<nhit; ++m){
 	  int tdc = gUnpacker.get(k_device, l, 0, w, k_tdc, m);
 	  hptr_array[hdct_id + l]->Fill(tdc);
+	  if( tdc1st<tdc ) tdc1st = tdc;
 	  
 	  // Drift time check
 	  if(tdc_min < tdc && tdc < tdc_max){
@@ -1414,6 +1427,7 @@ process_event()
 	  }
 	}
 
+	if( tdc1st!=0 ) hptr_array[hdct1st_id + l]->Fill(tdc1st);
 	if(flag_hit_wt){ ++multiplicity_wt; }
       }
       

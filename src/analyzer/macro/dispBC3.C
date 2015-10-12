@@ -25,8 +25,22 @@ void dispBC3()
 
   c->Update();
 
-  // draw HitPat
+  // draw TDC1st
   c = (TCanvas*)gROOT->FindObject("c2");
+  c->Clear();
+  c->Divide(3,2);
+  int base_id = HistMaker::getUniqueID(kBC3, 0, kTDC2D);
+  for(int i = 0; i<n_layer; ++i){
+    c->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(base_id + i);
+    //    h->GetXaxis()->SetRangeUser(256,1000);
+    h->Draw();
+  }
+
+  c->Update();
+
+  // draw HitPat
+  c = (TCanvas*)gROOT->FindObject("c3");
   c->Clear();
   c->Divide(3,2);
   int base_id = HistMaker::getUniqueID(kBC3, 0, kHitPat);
@@ -38,7 +52,7 @@ void dispBC3()
   c->Update();
 
   // draw Multi
-  c = (TCanvas*)gROOT->FindObject("c3");
+  c = (TCanvas*)gROOT->FindObject("c4");
   c->Clear();
   c->Divide(3,2);
   int base_id = HistMaker::getUniqueID(kBC3, 0, kMulti);

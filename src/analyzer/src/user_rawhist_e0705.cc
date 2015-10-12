@@ -968,6 +968,21 @@ process_event()
       }//for(seg)
       hptr_array[ssd0mul_id +l]->Fill( multiplicity );
     }//for(l)
+    // Correlation XY
+    static const int ssd0hit2d_id = gHist.getSequentialID(kSSD0, 0, kHitPat2D, 1);
+    for(int x_seg=0; x_seg<NumOfSegSSD0; ++x_seg){
+      int x_flag_hit = gUnpacker.get_entries(k_device, 0, x_seg, 0, k_flag);
+      if(x_flag_hit==0) continue;
+      int x_flag = gUnpacker.get(k_device, 0, x_seg, 0, k_flag);
+      if(x_flag==0) continue;
+      for(int y_seg=0; y_seg<NumOfSegSSD0; ++y_seg){
+	int y_flag_hit = gUnpacker.get_entries(k_device, 1, y_seg, 0, k_flag);
+	if(y_flag_hit==0) continue;
+	int y_flag = gUnpacker.get(k_device, 1, y_seg, 0, k_flag);
+	if(y_flag==0) continue;
+	hptr_array[ssd0hit2d_id]->Fill( x_seg, y_seg );
+      }
+    }
 
 #if 0
     // Debug, dump data relating this detector
@@ -1027,6 +1042,34 @@ process_event()
       }//for(seg)
       hptr_array[ssd1mul_id +l]->Fill( multiplicity );
     }//for(l)
+    // Correlation XY
+    static const int ssd1hit2d_id = gHist.getSequentialID(kSSD1, 0, kHitPat2D, 1);
+    for(int x_seg=0; x_seg<NumOfSegSSD1; ++x_seg){
+      int x_flag_hit = gUnpacker.get_entries(k_device, 1, x_seg, 0, k_flag);
+      if(x_flag_hit==0) continue;
+      int x_flag = gUnpacker.get(k_device, 1, x_seg, 0, k_flag);
+      if(x_flag==0) continue;
+      for(int y_seg=0; y_seg<NumOfSegSSD1; ++y_seg){
+	int y_flag_hit = gUnpacker.get_entries(k_device, 0, y_seg, 0, k_flag);
+	if(y_flag_hit==0) continue;
+	int y_flag = gUnpacker.get(k_device, 0, y_seg, 0, k_flag);
+	if(y_flag==0) continue;
+	hptr_array[ssd1hit2d_id]->Fill( x_seg, y_seg );
+      }
+    }
+    for(int x_seg=0; x_seg<NumOfSegSSD1; ++x_seg){
+      int x_flag_hit = gUnpacker.get_entries(k_device, 3, x_seg, 0, k_flag);
+      if(x_flag_hit==0) continue;
+      int x_flag = gUnpacker.get(k_device, 3, x_seg, 0, k_flag);
+      if(x_flag==0) continue;
+      for(int y_seg=0; y_seg<NumOfSegSSD1; ++y_seg){
+	int y_flag_hit = gUnpacker.get_entries(k_device, 2, y_seg, 0, k_flag);
+	if(y_flag_hit==0) continue;
+	int y_flag = gUnpacker.get(k_device, 2, y_seg, 0, k_flag);
+	if(y_flag==0) continue;
+	hptr_array[ssd1hit2d_id+1]->Fill( x_seg, y_seg );
+      }
+    }
 
 #if 0
     // Debug, dump data relating this detector
@@ -1086,6 +1129,34 @@ process_event()
       }//for(seg)
       hptr_array[ssd2mul_id +l]->Fill( multiplicity );
     }//for(l)
+    // Correlation XY
+    static const int ssd2hit2d_id = gHist.getSequentialID(kSSD2, 0, kHitPat2D, 1);
+    for(int x_seg=0; x_seg<NumOfSegSSD2; ++x_seg){
+      int x_flag_hit = gUnpacker.get_entries(k_device, 0, x_seg, 0, k_flag);
+      if(x_flag_hit==0) continue;
+      int x_flag = gUnpacker.get(k_device, 0, x_seg, 0, k_flag);
+      if(x_flag==0) continue;
+      for(int y_seg=0; y_seg<NumOfSegSSD2; ++y_seg){
+	int y_flag_hit = gUnpacker.get_entries(k_device, 1, y_seg, 0, k_flag);
+	if(y_flag_hit==0) continue;
+	int y_flag = gUnpacker.get(k_device, 1, y_seg, 0, k_flag);
+	if(y_flag==0) continue;
+	hptr_array[ssd2hit2d_id]->Fill( x_seg, y_seg );
+      }
+    }
+    for(int x_seg=0; x_seg<NumOfSegSSD2; ++x_seg){
+      int x_flag_hit = gUnpacker.get_entries(k_device, 2, x_seg, 0, k_flag);
+      if(x_flag_hit==0) continue;
+      int x_flag = gUnpacker.get(k_device, 2, x_seg, 0, k_flag);
+      if(x_flag==0) continue;
+      for(int y_seg=0; y_seg<NumOfSegSSD2; ++y_seg){
+	int y_flag_hit = gUnpacker.get_entries(k_device, 3, y_seg, 0, k_flag);
+	if(y_flag_hit==0) continue;
+	int y_flag = gUnpacker.get(k_device, 3, y_seg, 0, k_flag);
+	if(y_flag==0) continue;
+	hptr_array[ssd2hit2d_id+1]->Fill( x_seg, y_seg );
+      }
+    }
 
 #if 0
     // Debug, dump data relating this detector

@@ -1134,7 +1134,7 @@ TList* HistMaker::createSSD0(bool flag_ps)
     target_id = getUniqueID(kSSD0, 0, kHitPat2D, 0);
     sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
 					     nameLayer[1], nameLayer[0]),
-			   NumOfSegSSD0, 0, NumOfSegSSD0, NumOfSegSSD0, 0, NumOfSegSSD0,
+			   NumOfSegSSD0/6, 0, NumOfSegSSD0, NumOfSegSSD0/6, 0, NumOfSegSSD0,
 			   nameLayer[0], nameLayer[1]));
     top_dir->Add(sub_dir);
   }
@@ -1217,11 +1217,11 @@ TList* HistMaker::createSSD1(bool flag_ps)
     target_id = getUniqueID(kSSD1, 0, kHitPat2D, 0);
     sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
 					     nameLayer[0], nameLayer[1]),
-			   NumOfSegSSD1, 0, NumOfSegSSD1, NumOfSegSSD1, 0, NumOfSegSSD1,
+			   NumOfSegSSD1/6, 0, NumOfSegSSD1, NumOfSegSSD1/6, 0, NumOfSegSSD1,
 			   nameLayer[1], nameLayer[0]));
     sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
 					     nameLayer[2], nameLayer[3]),
-			   NumOfSegSSD1, 0, NumOfSegSSD1, NumOfSegSSD1, 0, NumOfSegSSD1,
+			   NumOfSegSSD1/6, 0, NumOfSegSSD1, NumOfSegSSD1/6, 0, NumOfSegSSD1,
 			   nameLayer[3], nameLayer[2]));
     top_dir->Add(sub_dir);
   }
@@ -1304,11 +1304,11 @@ TList* HistMaker::createSSD2(bool flag_ps)
     target_id = getUniqueID(kSSD2, 0, kHitPat2D, 0);
     sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
 					     nameLayer[1], nameLayer[0]),
-			   NumOfSegSSD2, 0, NumOfSegSSD2, NumOfSegSSD2, 0, NumOfSegSSD2,
+			   NumOfSegSSD2/6, 0, NumOfSegSSD2, NumOfSegSSD2/6, 0, NumOfSegSSD2,
 			   nameLayer[0], nameLayer[1]));
     sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
 					     nameLayer[3], nameLayer[2]),
-			   NumOfSegSSD2, 0, NumOfSegSSD2, NumOfSegSSD2, 0, NumOfSegSSD2,
+			   NumOfSegSSD2/6, 0, NumOfSegSSD2, NumOfSegSSD2/6, 0, NumOfSegSSD2,
 			   nameLayer[2], nameLayer[3]));
     top_dir->Add(sub_dir);
   }

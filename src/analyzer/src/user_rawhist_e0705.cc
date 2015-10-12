@@ -131,6 +131,7 @@ process_begin(const std::vector<std::string>& argv)
 			       "BTOF [ns]", ""
 			       ));
   tab_e07->Add(gHist.createEMC());
+  tab_e07->Add(gHist.createSSDT());
   tab_e07->Add(gHist.createSSD0());
   tab_e07->Add(gHist.createSSD1());
   tab_e07->Add(gHist.createSSD2());
@@ -2138,14 +2139,16 @@ process_event()
   {
     // Unpacker
     static const int k_d_bh1  = gUnpacker.get_device_id("BH1");
-    static const int k_d_bh2  = gUnpacker.get_device_id("BH2");
+    static const int k_d_bh2  = gUnpacker.get_device_id("BH2_E07");
+    //static const int k_d_bh2  = gUnpacker.get_device_id("BH2");
     static const int k_u      = 0; // up
     static const int k_d      = 1; // down
     static const int k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
 
     // HodoParam
     static const int cid_bh1  = 3;
-    static const int cid_bh2  = 4;
+    //static const int cid_bh2  = 4;
+    static const int cid_bh2  = 33;
     static const int plid     = 0;
 
     // Sequential ID
@@ -2154,21 +2157,23 @@ process_event()
     // BH2
     double t0  = -999;
     double ofs = 0;
-    for(int seg = 0; seg<NumOfSegBH2; ++seg){
-      int nhit = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
-      if(nhit != 0){
-	int tdc = gUnpacker.get(k_d_bh2, 0, seg, k_u, k_tdc);
-	if(tdc != 0){
-	  HodoParamMan& hodoMan = HodoParamMan::GetInstance();
-	  double bh2t=-999;
-	  hodoMan.GetTime(cid_bh2, plid, seg, k_u, tdc, bh2t);
-	  if(fabs(t0) > fabs(bh2t)){
-	    hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
-	    t0 = bh2t;
-	  }
-	}//if(tdc)
-      }// if(nhit)
-    }// for(seg)
+    //for(int seg = 0; seg<NumOfSegBH2; ++seg){
+    //for(int seg = 0; seg<NumOfSegBH2_E07; ++seg){
+    int seg = 0;
+    int nhit = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
+    if(nhit != 0){
+      int tdc = gUnpacker.get(k_d_bh2, 0, seg, k_u, k_tdc);
+      if(tdc != 0){
+	HodoParamMan& hodoMan = HodoParamMan::GetInstance();
+	double bh2t =-999;
+	hodoMan.GetTime(cid_bh2, plid, seg, k_u, tdc, bh2t);
+	if(fabs(t0) > fabs(bh2t)){
+	  hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
+	  t0 = bh2t;
+	}
+      }//if(tdc)
+    }// if(nhit)
+    //}// for(seg)
 
     // BH1
     for(int seg = 0; seg<NumOfSegBH1; ++seg){

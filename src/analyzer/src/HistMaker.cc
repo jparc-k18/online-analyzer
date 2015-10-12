@@ -1075,6 +1075,37 @@ TList* HistMaker::createFBH(bool flag_ps)
 }
 
 // -------------------------------------------------------------------------
+// createSSDT
+// -------------------------------------------------------------------------
+TList* HistMaker::createSSDT(bool flag_ps)
+{
+  std::string strDet = CONV_STRING(kSSDT);
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps) name_ps_files_.push_back(strDet);
+
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  { // TDC --------------------------------------------------------
+    std::string strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSDT, 0, kTDC, 0);
+    for(int seg=0; seg<NumOfSegSSDT; ++seg){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%d", nameDetector, nameSubDir, seg+1),
+			     0x1000, 0, 0x1000,
+			     "Segment", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
 // createSSD0
 // -------------------------------------------------------------------------
 TList* HistMaker::createSSD0(bool flag_ps)

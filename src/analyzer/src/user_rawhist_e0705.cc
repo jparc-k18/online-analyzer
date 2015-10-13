@@ -1799,50 +1799,6 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
-  // TOFMT -----------------------------------------------------------
-  {
-    // data type
-    static const int k_device = gUnpacker.get_device_id("TOFMT");
-    static const int k_u      = 0; // up
-    //    static const int k_d   = 1; // down
-    //    static const int k_adc = 0;
-    static const int k_tdc    = gUnpacker.get_data_id("TOFMT","tdc");
-
-    // sequential id
-    static const int tofmtt_id = gHist.getSequentialID(kTOFMT, 0, kTDC);
-    for(int seg=0; seg<NumOfSegTOF; ++seg){
-      // TDC
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-      if(nhit != 0){
-	int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-	if(tdc != 0){ hptr_array[tofmtt_id + seg]->Fill(tdc); }
-      }
-    }
-
-    // Hit pattern && multiplicity
-    static const int tofmthit_id = gHist.getSequentialID(kTOFMT, 0, kHitPat);
-    static const int tofmtmul_id = gHist.getSequentialID(kTOFMT, 0, kMulti);
-    int multiplicity = 0;
-    for(int seg=0; seg<NumOfSegTOF; ++seg){
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-      // AND
-      if(nhit != 0){
-	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-	// TDC AND
-	if(tdc != 0){
-	  hptr_array[tofmthit_id]->Fill(seg);
-	  ++multiplicity;
-	}
-      }
-    }
-    hptr_array[tofmtmul_id]->Fill(multiplicity);
-
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }
-
   // LAC -----------------------------------------------------------
   {
     // data typep

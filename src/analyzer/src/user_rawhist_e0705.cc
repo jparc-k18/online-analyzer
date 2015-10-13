@@ -921,6 +921,30 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+  // SSDT ---------------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("SSDT");
+    static const int k_tdc    = gUnpacker.get_data_id("SSDT","tdc");
+    // sequential id
+    static const int ssdt_id = gHist.getSequentialID(kSSDT, 0, kTDC, 1);
+    for(int seg=0; seg<NumOfSegSSDT*2; ++seg){
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      if(nhit==0) continue;
+      int tdc  = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
+      if(tdc>0) hptr_array[ssdt_id +seg/2]->Fill( tdc );
+    }//for(seg)
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
   // SSD0 ---------------------------------------------------------
   {
     // data type

@@ -56,6 +56,7 @@ process_begin(const std::vector<std::string>& argv)
   TGFileBrowser *tab_macro = gCon.makeFileBrowser("Macro");
 
   // Add macros to the Macro tab
+  tab_macro->Add(clear_all_canvas());
   tab_macro->Add(clear_canvas());
   tab_macro->Add(split22());
   tab_macro->Add(split32());
@@ -64,23 +65,50 @@ process_begin(const std::vector<std::string>& argv)
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
-  int unique_id = gHist.getUniqueID(kMisc, 0, kHitPat);
-  // Profile X
-  for(int i = 0; i<size_HistName; ++i){
-    char* title = Form("FF %d_X", (int)FF_plus[i]);
-    tab_hist->Add(gHist.createTH1(unique_id++, title,
-				  400,-200,200,
-				  "x position [mm]", ""));    
+  //BcOut
+  {
+    TList *sub_dir = new TList;
+    const char* nameSubDir = "BcOut";
+    sub_dir->SetName(nameSubDir);
+    int unique_id = gHist.getUniqueID(kMisc, 0, kHitPat);
+    // Profile X
+    for(int i = 0; i<size_HistName; ++i){
+      char* title = Form("%s FF %d_X", nameSubDir, (int)FF_plus[i]);
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+				    400,-200,200,
+				    "x position [mm]", ""));
+    }
+    // Profile Y
+    for(int i = 0; i<size_HistName; ++i){
+      char* title = Form("%s FF %d_Y", nameSubDir, (int)FF_plus[i]);
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+				    200,-100,100,
+				    "y position [mm]", ""));
+    }
+    tab_hist->Add(sub_dir);
   }
-
-  // Profile Y
-  for(int i = 0; i<size_HistName; ++i){
-    char* title = Form("FF %d_Y", (int)FF_plus[i]);
-    tab_hist->Add(gHist.createTH1(unique_id++, title,
-				  200,-100,100,
-				  "y position [mm]", ""));    
+  //SsdIn
+  {
+    TList *sub_dir = new TList;
+    const char* nameSubDir = "SsdIn";
+    sub_dir->SetName(nameSubDir);
+    int unique_id = gHist.getUniqueID(kMisc, 0, kHitPat2D);
+    // Profile X
+    for(int i = 0; i<size_HistName; ++i){
+      char* title = Form("%s FF %d_X", nameSubDir, (int)FF_plus[i]);
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+				    400,-200,200,
+				    "x position [mm]", ""));
+    }
+    // Profile Y
+    for(int i = 0; i<size_HistName; ++i){
+      char* title = Form("%s FF %d_Y", nameSubDir, (int)FF_plus[i]);
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+				    200,-100,100,
+				    "y position [mm]", ""));
+    }
+    tab_hist->Add(sub_dir);
   }
-
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
   // Then you need to do down cast when you use TH2.
@@ -110,20 +138,43 @@ process_event()
 
   static const double dist_FF = 1200.;
 
-  // Decode Hits & Search Track
-  DCRHC BcOutAna(DetIdBcOut);
-  bool BcOutTrack = BcOutAna.TrackSearch(9);
+  /////////// BcOut
+  {
+    DCRHC BcOutAna(DetIdBcOut);
+    bool BcOutTrack = BcOutAna.TrackSearch(9);
 
-  if(BcOutTrack){
-    static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat);
-    static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, size_HistName+1);
-    
-    for(int i = 0; i<size_HistName; ++i){
-      hptr_array[xpos_id+i]->Fill(BcOutAna.GetPosX(dist_FF+FF_plus[i]));
-      hptr_array[ypos_id+i]->Fill(BcOutAna.GetPosY(dist_FF+FF_plus[i]));
+    if(BcOutTrack){
+      static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat);
+      static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, size_HistName+1);
+
+      for(int i = 0; i<size_HistName; ++i){
+	hptr_array[xpos_id+i]->Fill(BcOutAna.GetPosX(dist_FF+FF_plus[i]));
+	hptr_array[ypos_id+i]->Fill(BcOutAna.GetPosY(dist_FF+FF_plus[i]));
+      }
     }
   }
+
+  ////////// SsdIn
+  {
+    DCRHC SsdAna(DetIdSsd);
+    bool  SsdTrack = SsdAna.TrackSearch(5);
+
+    static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
+    static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat2D, size_HistName+1);
+
+    if(SsdTrack){
+      for(int i=0; i<size_HistName; ++i){
+	hptr_array[xpos_id+i]->Fill(SsdAna.GetPosX(dist_FF+FF_plus[i]));
+	hptr_array[ypos_id+i]->Fill(SsdAna.GetPosY(dist_FF+FF_plus[i]));
+      }
+    }
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
   
+
   return 0;
 }
 

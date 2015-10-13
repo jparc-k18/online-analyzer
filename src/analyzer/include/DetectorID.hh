@@ -103,10 +103,6 @@ const int NumOfSegSP0    = 5;
 //
 const int SegIdScalerTrigger = 15;
 
-const int DetIdBcIn   = 10;
-const int DetIdBcOut  = 20;
-const int DetIdSdcIn  = 30;
-const int DetIdSdcOut = 40;
 const int NumOfSegBH1 = 11;
 const int NumOfSegBH2 =  5;
 const int NumOfSegTOF = 32;
@@ -117,10 +113,17 @@ const int NumOfSegBFT = 160;
 const int UorD = 2;
 const int AorT = 2;
 
+const int DetIdBcIn   = 10;
+const int DetIdBcOut  = 20;
+const int DetIdSdcIn  = 30;
+const int DetIdSdcOut = 40;
+const int DetIdSsd    = 50;
+
 const int NumOfLayersBcIn   = 12;
 const int NumOfLayersBcOut  = 12;
 const int NumOfLayersSdcIn  = 10;
 const int NumOfLayersSdcOut = 12;
+const int NumOfLayersSsd    = 10;
 
 const int NumOfLayersBC1  = 6;
 const int NumOfLayersBC2  = 6;

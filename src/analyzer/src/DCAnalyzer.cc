@@ -20,9 +20,9 @@ using namespace hddaq;
 
 UnpackerManager& g_unpacker = GUnpacker::get_instance();
 
-DCTdcCalibMan& t0man      = DCTdcCalibMan::GetInstance();
+DCTdcCalibMan&   t0man    = DCTdcCalibMan::GetInstance();
 DCDriftParamMan& driftman = DCDriftParamMan::GetInstance();
-DCGeomMan& geomman        = DCGeomMan::GetInstance();
+DCGeomMan&       geomman  = DCGeomMan::GetInstance();
 // tdc cut
 const int tdc_min = 550;
 const int tdc_max = 700;
@@ -35,6 +35,7 @@ DCRHC::DCRHC(int DetectorID)
   if(DetectorID==DetIdBcOut)  init_BcOut();
   if(DetectorID==DetIdSdcIn)  init_SdcIn();
   if(DetectorID==DetIdSdcOut) init_SdcOut();
+  if(DetectorID==DetIdSsd)    init_Ssd();
   detid = DetectorID;
   chi2 = -1;
 }
@@ -82,6 +83,20 @@ void DCRHC::init_SdcOut()
       cosvector.push_back(tilt[1]);
       z.push_back(geomman.GetLocalZ(id));
     }
+}
+//______________________________________________________________________________
+void DCRHC::init_Ssd()
+{
+  m_hitwire.resize(NumOfLayersSsd);
+  m_hitpos.resize(NumOfLayersSsd);
+  m_tdc.resize(NumOfLayersSsd);
+
+  for(int id=141; id<=150; ++id){
+    std::vector<double> tilt = angle(geomman.GetTiltAngle(id));
+    sinvector.push_back(tilt[0]);
+    cosvector.push_back(tilt[1]);
+    z.push_back(geomman.GetLocalZ(id));
+  }
 }
 //______________________________________________________________________________
 DCRHC::~DCRHC()
@@ -151,6 +166,7 @@ void DCRHC::pushback(int DetectorID)
   if(DetectorID==DetIdBcOut)  pushback_BcOut();
   if(DetectorID==DetIdSdcIn)  pushback_SdcIn();
   if(DetectorID==DetIdSdcOut) pushback_SdcOut();
+  if(DetectorID==DetIdSsd)    pushback_Ssd();
   return ;
 }
 //______________________________________________________________________________
@@ -306,6 +322,48 @@ void DCRHC::pushback_SdcIn()
       }
   }
 //______________________________________________________________________________
+void DCRHC::pushback_Ssd()
+{
+  for(int layer=0; layer<NumOfLayersSsd; ++layer){
+    m_hitwire[layer].clear();
+    m_tdc[layer].clear();
+  }
+  for(int layer=0; layer<NumOfLayersSSD0; ++layer){
+    for(int wire=0; wire<NumOfSegSSD0; ++wire){
+      int nhits = g_unpacker.get_entries(DetIdSSD0, layer, wire, 0, 1);
+      if(nhits==0) continue;
+      m_hitwire[layer].push_back(wire);
+      m_tdc[layer].push_back(0);
+    }
+  }
+  for(int layer=0; layer<NumOfLayersSSD1; ++layer){
+    for(int wire=0; wire<NumOfSegSSD1; ++wire){
+      int nhits = g_unpacker.get_entries(DetIdSSD1, layer, wire, 0, 1);
+      if(nhits==0)continue;
+      m_hitwire[layer + NumOfLayersSSD0].push_back(wire);
+      m_tdc[layer + NumOfLayersSSD0].push_back(0);
+    }
+  }
+  for(int layer=0; layer<NumOfLayersSSD2; ++layer){
+    for(int wire=0; wire<NumOfSegSSD2; ++wire){
+      int nhits = g_unpacker.get_entries(DetIdSSD2, layer, wire, 0, 1);
+      if(nhits==0)continue;
+      m_hitwire[layer + NumOfLayersSSD0 + NumOfLayersSSD1].push_back(wire);
+      m_tdc[layer + NumOfLayersSSD0 + NumOfLayersSSD1].push_back(0);
+    }
+  }
+
+#if DEBUG
+  std::cout<<"///////Hit Wire////"<<std::endl;
+  for(int i=0; i<NumOfLayersSsd; ++i){
+    for(int j = 0;j<m_hitwire[i].size();++j){
+      std::cout<<"[ "<<m_hitwire[i][j]
+	       <<"]"<<std::endl;
+    }
+  }
+#endif
+}
+//______________________________________________________________________________
 void DCRHC::HitPosition(int DetectorID)
 {
   std::vector<double> wire_offset, pitch, wire_center;
@@ -314,10 +372,11 @@ void DCRHC::HitPosition(int DetectorID)
   if(DetectorID==DetIdBcOut)  plid = 113;
   if(DetectorID==DetIdSdcIn)  plid =   1;
   if(DetectorID==DetIdSdcOut) plid =  31;
+  if(DetectorID==DetIdSsd)    plid = 141;
   for(unsigned int plane=0;plane<m_hitwire.size();++plane, ++plid)
     {
       ////////// require Multiplicity = 1 /////////////
-      if(m_hitwire[plane].size()!=1)continue;
+      if(m_hitwire[plane].size()!=1) continue;
       int wireid = m_hitwire[plane][0]+1;
       double hitposition = geomman.calcWirePosition(plid, wireid);
       m_hitpos[plane].push_back(hitposition);
@@ -341,7 +400,7 @@ void DCRHC::HitPosition(int DetectorID)
 //______________________________________________________________________________
 void DCRHC::makeHvector(int DetectorID)
 {
-  if(DetectorID==DetIdSdcOut)
+  if(DetectorID==DetIdSdcOut||DetectorID==DetIdSsd)
     {
       for(unsigned int i=0;i<m_hitpos.size();++i)
 	{
@@ -582,6 +641,7 @@ void DCRHC::makeChisquare(int DetectorID)
   if(DetectorID==DetIdBcOut)  plid = 113;
   if(DetectorID==DetIdSdcIn)  plid =   1;
   if(DetectorID==DetIdSdcOut) plid =  31;
+  if(DetectorID==DetIdSsd)    plid = 141;
   chi2 = 0;
   int j = 0;
   for(unsigned int plane=0;plane<m_hitwire.size();++plane ,++plid)
@@ -607,6 +667,10 @@ void DCRHC::makeDriftTime(int DetectorID)
     {
       for(unsigned int j=0;j<m_hitwire[i].size();++j)
 	{
+	  if(DetectorID==DetIdSsd){
+	    m_dtime[i].push_back(0);
+	    continue;
+	  }
 	  int wireid = m_hitwire[i][j]+1;
 	  //	  p0 = t0man.GetParam0(plid,wireid);
 	  //	  p1 = t0man.GetParam1(plid,wireid);
@@ -651,6 +715,10 @@ void DCRHC::makeDriftLength(int DetectorID)
     {
       for(unsigned int j=0;j<m_dtime[i].size();++j)
 	{
+	  if(DetectorID==DetIdSsd){
+	    m_dlength[i].push_back(0);
+	    continue;
+	  }
 	  int wireid = m_hitwire[i][j]+1;
 	  double dt;
 	  t = m_dtime[i][j];
@@ -705,8 +773,9 @@ std::vector<double> DCRHC::resolveLR(double left1,double right1,
 //______________________________________________________________________________
 void DCRHC::ReHitPosition(int DetectorID)
 {
-   if(DetectorID==DetIdBcOut || DetectorID==DetIdSdcIn)
-     {
+  if(DetectorID==DetIdSsd) return;
+  if(DetectorID==DetIdBcOut || DetectorID==DetIdSdcIn)
+    {
       for(unsigned int i=0;i<m_hitpos.size()/2;++i)
 	{
 	  if(m_hitpos[2*i].size()==0 || m_hitpos[2*i+1].size()==0)

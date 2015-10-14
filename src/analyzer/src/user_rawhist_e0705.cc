@@ -108,6 +108,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createFAC());
   tab_hist->Add(gHist.createSAC1());
   tab_hist->Add(gHist.createSCH());
+  tab_hist->Add(gHist.createKFAC());
   tab_hist->Add(gHist.createKIC(false));
   tab_hist->Add(gHist.createSDC2());
   tab_hist->Add(gHist.createHDC());
@@ -1345,6 +1346,34 @@ process_event()
       }
     }
     hptr_array[sch_mul_id]->Fill(multiplicity);
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+  // KFAC ---------------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("KFAC");
+    static const int k_adc    = gUnpacker.get_data_id("KFAC","adc");
+
+    // sequential id
+    static const int kfaca_id = gHist.getSequentialID(kKFAC, 0, kADC, 1);
+
+    for(int seg = 0; seg<NumOfSegKFAC; ++seg){
+      // ADC
+      int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      if(nhit_a != 0){
+	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	hptr_array[kfaca_id + seg]->Fill(adc, nhit_a);
+      }
+    }
 
 #if 0
     // Debug, dump data relating this detector

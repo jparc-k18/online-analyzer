@@ -1659,6 +1659,52 @@ TList* HistMaker::createSCH(bool flag_ps)
 }
 
 // -------------------------------------------------------------------------
+// createKFAC
+// -------------------------------------------------------------------------
+TList* HistMaker::createKFAC(bool flag_ps)
+{
+  // Determine the detector name
+  std::string strDet = CONV_STRING(kKFAC);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet); 
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet); 
+  }
+  
+  // Declaration of the directory
+  // Just type conversion from std::string to char*
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // ADC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    int target_id = getUniqueID(kKFAC, 0, kADC, 0);
+    for(int i = 0; i<NumOfSegKFAC; ++i){
+      const char* title = NULL;
+      int seg = i+1; // 1 origin
+      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // Return the TList pointer which is added into TGFileBrowser
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
 // createEMC
 // -------------------------------------------------------------------------
 TList* HistMaker::createEMC(bool flag_ps)

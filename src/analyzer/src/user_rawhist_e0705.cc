@@ -87,6 +87,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispSDC3());
   tab_macro->Add(dispSDC4());
   tab_macro->Add(dispHitPat());
+  tab_macro->Add(dispHitPatE07());
   tab_macro->Add(effBcOut());
   tab_macro->Add(effSdcIn());
   tab_macro->Add(effSdcOut());
@@ -139,6 +140,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_e07->Add(dispSSD0());
   tab_e07->Add(dispSSD1());
   tab_e07->Add(dispSSD2());
+  tab_e07->Add(dispSSDHitPat());
   //tab_e07->Add(dispProfileSSD());
 
   // Set histogram pointers to the vector sequentially.
@@ -1048,7 +1050,7 @@ process_event()
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
 	if(nhit_a>NumOfSamplesSSD){
-	  std::cerr<<"#W SSD0 layer:"<<l<<" seg:"<<seg
+	  std::cerr<<"#W SSD1 layer:"<<l<<" seg:"<<seg
 		   <<"the number of samples is too much : ["
 		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
 	}
@@ -1136,7 +1138,7 @@ process_event()
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
 	if(nhit_a>NumOfSamplesSSD){
-	  std::cerr<<"#W SSD0 layer:"<<l<<" seg:"<<seg
+	  std::cerr<<"#W SSD2 layer:"<<l<<" seg:"<<seg
 		   <<"the number of samples is too much : ["
 		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
 	}

@@ -153,6 +153,15 @@ TObject* dispSSD2()
   return m;
 }
 
+// dispSSDHitPat -------------------------------------------------------
+TObject* dispSSDHitPat()
+{
+  std::string path = getMacroPath() + "dispSSDHitPat.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispSSDHitPat");
+  return m;
+}
+
 // dispProfileSSD -------------------------------------------------------
 TObject* dispProfileSSD()
 {
@@ -285,6 +294,15 @@ TObject* dispHitPat()
   std::string path = getMacroPath() + "dispHitPat.C";
   TMacro* m = new TMacro(path.c_str());
   m->SetName("dispHitPat");
+  return m;
+}
+
+// dispHitPatE07 -----------------------------------------------------
+TObject* dispHitPatE07()
+{
+  std::string path = getMacroPath() + "dispHitPatE07.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispHitPatE07");
   return m;
 }
 

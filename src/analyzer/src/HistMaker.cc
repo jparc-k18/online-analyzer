@@ -1056,19 +1056,19 @@ TList* HistMaker::createFBH(bool flag_ps)
 			   200, -50, 150,
 			   "Segment", "TOT [ch]"));
   }
-  // Hit parttern -----------------------------------------------
+  // Hit parttern 2D --------------------------------------------
   {
-    int target_id = getUniqueID(kFBH, 0, kHitPat, 0);
-    top_dir->Add(createTH1(++target_id, "FBH_HitPat", // 1 origin
-			   NumOfSegFBH, 0, NumOfSegFBH,
+    int target_id = getUniqueID(kFBH, 0, kHitPat2D, 0);
+    top_dir->Add(createTH2(++target_id, "FBH_HitPat", // 1 origin
+			   NumOfSegFBH, 0, NumOfSegFBH, NumOfSegFBH, 0, NumOfSegFBH,
 			   "Segment", ""));
   }
   // Multiplicity -----------------------------------------------
   {
     const char* title = "FBH_multiplicity";
-    int target_id = getUniqueID(kFBH, 0, kMulti, 0);
-    top_dir->Add(createTH1(++target_id, title, // 1 origin
-			   NumOfSegFBH+1, 0, NumOfSegFBH+1,
+    int target_id = getUniqueID(kFBH, 0, kMulti2D, 0);
+    top_dir->Add(createTH2(++target_id, title, // 1 origin
+			   NumOfSegFBH, 0, NumOfSegFBH, NumOfSegFBH, 0, NumOfSegFBH,
 			   "Multiplicity", ""));
   }
   return top_dir;

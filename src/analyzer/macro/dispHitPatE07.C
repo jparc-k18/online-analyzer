@@ -45,17 +45,17 @@ void dispHitPatE07()
   base_id = HistMaker::getUniqueID(kFBH, 0, kHitPat2D);
   tmp = (TH2*)GHist::get(base_id);
   tmp->SetMinimum(0);
-  tmp->Draw();
+  tmp->Draw("colz");
 
   c->cd(6);
   base_id = HistMaker::getUniqueID(kSCH, 0, kHitPat);
-  tmp = (TH2*)GHist::get(base_id);
+  tmp = (TH1*)GHist::get(base_id);
   tmp->SetMinimum(0);
   tmp->Draw();
 
   c->cd(7);
   base_id = HistMaker::getUniqueID(kSSD1, 0, kHitPat, 2);
-  tmp = (TH2*)GHist::get(base_id);
+  tmp = (TH1*)GHist::get(base_id);
   tmp->SetMinimum(0);
   tmp->Draw();
 

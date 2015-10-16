@@ -1378,16 +1378,19 @@ process_event()
     static const int k_adc    = gUnpacker.get_data_id("KFAC","adc");
 
     // sequential id
-    static const int kfaca_id = gHist.getSequentialID(kKFAC, 0, kADC, 1);
-
+    static const int kfaca_id   = gHist.getSequentialID(kKFAC, 0, kADC, 1);
+    static const int kfaca2d_id = gHist.getSequentialID(kKFAC, 0, kADC2D, 1);
+    int adc[NumOfSegKFAC] = {};
     for(int seg = 0; seg<NumOfSegKFAC; ++seg){
       // ADC
       int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
       if(nhit_a != 0){
-	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-	hptr_array[kfaca_id + seg]->Fill(adc, nhit_a);
+	adc[seg] = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	hptr_array[kfaca_id + seg]->Fill(adc[seg], nhit_a);
       }
     }
+
+    hptr_array[kfaca2d_id]->Fill(adc[0], adc[1]);
 
 #if 0
     // Debug, dump data relating this detector
@@ -2183,17 +2186,20 @@ process_event()
     //for(int seg = 0; seg<NumOfSegBH2; ++seg){
     //for(int seg = 0; seg<NumOfSegBH2_E07; ++seg){
     int seg = 0;
-    int nhit = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
-    if(nhit != 0){
-      int tdc = gUnpacker.get(k_d_bh2, 0, seg, k_u, k_tdc);
-      if(tdc != 0){
+    int nhitu = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
+    int nhitd = gUnpacker.get_entries(k_d_bh2, 0, seg, k_d, k_tdc);
+    if(nhitu != 0 && nhitd != 0){
+      int tdcu = gUnpacker.get(k_d_bh2, 0, seg, k_u, k_tdc);
+      int tdcd = gUnpacker.get(k_d_bh2, 0, seg, k_d, k_tdc);
+      if(tdcu != 0 && tdcd != 0){
 	HodoParamMan& hodoMan = HodoParamMan::GetInstance();
-	double bh2t =-999;
-	hodoMan.GetTime(cid_bh2, plid, seg, k_u, tdc, bh2t);
-	if(fabs(t0) > fabs(bh2t)){
-	  hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
-	  t0 = bh2t;
-	}
+	double bh2ut, bh2dt;
+	hodoMan.GetTime(cid_bh2, plid, seg, k_u, tdcu, bh2ut);
+	hodoMan.GetTime(cid_bh2, plid, seg, k_d, tdcd, bh2dt);
+	t0 = (bh2ut+bh2dt)/2;
+	// if(fabs(t0) > fabs(bh2t)){
+	//   hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
+	//   t0 = bh2t;
       }//if(tdc)
     }// if(nhit)
     //}// for(seg)

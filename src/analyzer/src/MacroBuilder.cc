@@ -126,6 +126,15 @@ TObject* dispACs_E07()
   return m;
 }
 
+// dispFBH -------------------------------------------------------
+TObject* dispFBH()
+{
+  std::string path = getMacroPath() + "dispFBH.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispFBH");
+  return m;
+}
+
 // dispSSD0 -------------------------------------------------------
 TObject* dispSSD0()
 {

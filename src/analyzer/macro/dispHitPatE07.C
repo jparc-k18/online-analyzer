@@ -36,7 +36,7 @@ void dispHitPatE07()
   tmp->Draw();
 
   c->cd(4);
-  base_id = HistMaker::getUniqueID(kBH2, 0, kHitPat);
+  base_id = HistMaker::getUniqueID(kSSD0, 0, kHitPat);
   tmp = (TH1*)GHist::get(base_id);
   tmp->SetMinimum(0);
   tmp->Draw();

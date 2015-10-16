@@ -1696,6 +1696,12 @@ TList* HistMaker::createKFAC(bool flag_ps)
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
     }
+    // ADC2D
+    target_id = getUniqueID(kKFAC, 0, kADC2D, 0);
+    sub_dir->Add(createTH2(++target_id, "KFAC_ADC_2D",
+			   0x1000, 0, 0x1000, 0x1000, 0, 0x1000,
+			   "ADC [ch]", "ADC [ch]"));
+    
     // insert sub directory
     top_dir->Add(sub_dir);
   }

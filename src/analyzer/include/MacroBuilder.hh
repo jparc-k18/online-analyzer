@@ -14,6 +14,7 @@ TObject* dispBH2();
 TObject* dispBAC();
 TObject* dispBH2_E07();
 TObject* dispACs_E07();
+TObject* dispFBH();
 TObject* dispSSD0();
 TObject* dispSSD1();
 TObject* dispSSD2();

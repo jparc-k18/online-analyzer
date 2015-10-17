@@ -1161,12 +1161,20 @@ TList* HistMaker::createSSD0(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD0, 0, NumOfSegSSD0,
 			     "Segment", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD0, 0, NumOfSegSSD0,
+			     "Segment", ""));
     }
     target_id = getUniqueID(kSSD0, 0, kHitPat2D, 0);
     sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
 					     nameLayer[1], nameLayer[0]),
 			   NumOfSegSSD0/6, 0, NumOfSegSSD0, NumOfSegSSD0/6, 0, NumOfSegSSD0,
 			   nameLayer[0], nameLayer[1]));
+    // sub_dir->Add(createTH2(++target_id, Form("%s_C%s_%s%%%s", nameDetector, nameSubDir,
+    // 					     nameLayer[1], nameLayer[0]),
+    // 			   NumOfSegSSD0/6, 0, NumOfSegSSD0, NumOfSegSSD0/6, 0, NumOfSegSSD0,
+    // 			   nameLayer[0], nameLayer[1]));
     top_dir->Add(sub_dir);
   }
 
@@ -1181,6 +1189,10 @@ TList* HistMaker::createSSD0(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD0+1, 0, NumOfSegSSD0+1,
 			     "Multiplicity", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD0+1, 0, NumOfSegSSD0+1,
+			     "CMultiplicity", ""));
     }
     top_dir->Add(sub_dir);
   }
@@ -1244,6 +1256,10 @@ TList* HistMaker::createSSD1(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD1, 0, NumOfSegSSD1,
 			     "Segment", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD1, 0, NumOfSegSSD1,
+			     "Segment", ""));
     }
     target_id = getUniqueID(kSSD1, 0, kHitPat2D, 0);
     sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
@@ -1268,6 +1284,10 @@ TList* HistMaker::createSSD1(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD1+1, 0, NumOfSegSSD1+1,
 			     "Multiplicity", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD1+1, 0, NumOfSegSSD1+1,
+			     "CMultiplicity", ""));
     }
     top_dir->Add(sub_dir);
   }
@@ -1331,6 +1351,10 @@ TList* HistMaker::createSSD2(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD2, 0, NumOfSegSSD2,
 			     "Segment", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD2, 0, NumOfSegSSD2,
+			     "Segment", ""));
     }
     target_id = getUniqueID(kSSD2, 0, kHitPat2D, 0);
     sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
@@ -1355,6 +1379,10 @@ TList* HistMaker::createSSD2(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD2+1, 0, NumOfSegSSD2+1,
 			     "Multiplicity", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD2+1, 0, NumOfSegSSD2+1,
+			     "CMultiplicity", ""));
     }
     top_dir->Add(sub_dir);
   }

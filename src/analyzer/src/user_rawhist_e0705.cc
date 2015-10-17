@@ -970,7 +970,8 @@ process_event()
     static const int ssd0mul_id = gHist.getSequentialID(kSSD0, 0, kMulti,  1);
 
     for(int l=0; l<NumOfLayersSSD0; ++l){
-      int multiplicity = 0;
+      int  multiplicity = 0;
+      int cmultiplicity = 0;
       for(int seg=0; seg<NumOfSegSSD0; ++seg){
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
@@ -979,18 +980,22 @@ process_event()
 		   <<"the number of samples is too much : ["
 		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
 	}
-	int peak_height   = -1;
-	int peak_position = -1;
+	int  adc[nhit_a];
+	bool slope[nhit_a-1];
+	int  peak_height     = -1;
+	int  peak_position   = -1;
 	for(int m=0; m<nhit_a; ++m){
-	  int adc = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
-	  if(adc>peak_height){
-	    peak_height   = adc;
+	  adc[m] = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
+	  if(m>0) slope[m] = adc[m]>adc[m-1];
+	  if(adc[m]>peak_height){
+	    peak_height   = adc[m];
 	    peak_position = m;
 	  }
 	}
 	// Zero Suppression Flag
-	int nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
-	bool hit_flag = false;
+	int  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
+	bool  hit_flag = false;
+	bool chit_flag = slope[0] && slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	if(nhit_flag != 0){
 	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
 	  if(flag==1) hit_flag = true;
@@ -999,12 +1004,17 @@ process_event()
 	  hptr_array[ssd0adc_id +l]->Fill( seg, peak_height );
 	  hptr_array[ssd0tdc_id +l]->Fill( seg, peak_position );
 	  if(hit_flag){
-	    hptr_array[ssd0hit_id +l]->Fill( seg );
+	    hptr_array[ssd0hit_id +2*l]->Fill( seg );
 	    multiplicity++;
+	  }
+	  if(chit_flag){
+	    hptr_array[ssd0hit_id +2*l+1]->Fill( seg );
+	    cmultiplicity++;
 	  }
 	}
       }//for(seg)
-      hptr_array[ssd0mul_id +l]->Fill( multiplicity );
+      hptr_array[ssd0mul_id +2*l]->Fill( multiplicity );
+      hptr_array[ssd0mul_id +2*l+1]->Fill( cmultiplicity );
     }//for(l)
     // Correlation XY
     static const int ssd0hit2d_id = gHist.getSequentialID(kSSD0, 0, kHitPat2D, 1);
@@ -1045,7 +1055,8 @@ process_event()
     static const int ssd1mul_id = gHist.getSequentialID(kSSD1, 0, kMulti,  1);
 
     for(int l=0; l<NumOfLayersSSD1; ++l){
-      int multiplicity = 0;
+      int  multiplicity = 0;
+      int cmultiplicity = 0;
       for(int seg=0; seg<NumOfSegSSD1; ++seg){
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
@@ -1054,18 +1065,22 @@ process_event()
 		   <<"the number of samples is too much : ["
 		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
 	}
-	int peak_height   = -1;
-	int peak_position = -1;
+	int  adc[nhit_a];
+	bool slope[nhit_a-1];
+	int  peak_height   = -1;
+	int  peak_position = -1;
 	for(int m=0; m<nhit_a; ++m){
-	  int adc = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
-	  if(adc>peak_height){
-	    peak_height   = adc;
+	  adc[m] = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
+	  if(m>0) slope[m] = adc[m]>adc[m-1];
+	  if(adc[m]>peak_height){
+	    peak_height   = adc[m];
 	    peak_position = m;
 	  }
 	}
 	// Zero Suppression Flag
-	int nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
-	bool hit_flag = false;
+	int  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
+	bool  hit_flag = false;
+	bool chit_flag = slope[0] && slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	if(nhit_flag != 0){
 	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
 	  if(flag==1) hit_flag = true;
@@ -1074,12 +1089,17 @@ process_event()
 	  hptr_array[ssd1adc_id +l]->Fill( seg, peak_height );
 	  hptr_array[ssd1tdc_id +l]->Fill( seg, peak_position );
 	  if(hit_flag){
-	    hptr_array[ssd1hit_id +l]->Fill( seg );
+	    hptr_array[ssd1hit_id +2*l]->Fill( seg );
 	    multiplicity++;
+	  }
+	  if(chit_flag){
+	    hptr_array[ssd1hit_id +2*l+1]->Fill( seg );
+	    cmultiplicity++;
 	  }
 	}
       }//for(seg)
-      hptr_array[ssd1mul_id +l]->Fill( multiplicity );
+      hptr_array[ssd1mul_id +2*l]->Fill( multiplicity );
+      hptr_array[ssd1mul_id +2*l+1]->Fill( cmultiplicity );
     }//for(l)
     // Correlation XY
     static const int ssd1hit2d_id = gHist.getSequentialID(kSSD1, 0, kHitPat2D, 1);
@@ -1133,7 +1153,8 @@ process_event()
     static const int ssd2mul_id = gHist.getSequentialID(kSSD2, 0, kMulti,  1);
 
     for(int l=0; l<NumOfLayersSSD2; ++l){
-      int multiplicity = 0;
+      int  multiplicity = 0;
+      int cmultiplicity = 0;
       for(int seg=0; seg<NumOfSegSSD2; ++seg){
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
@@ -1142,18 +1163,22 @@ process_event()
 		   <<"the number of samples is too much : ["
 		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
 	}
-	int peak_height   = -1;
-	int peak_position = -1;
+	int  adc[nhit_a];
+	bool slope[nhit_a-1];
+	int  peak_height   = -1;
+	int  peak_position = -1;
 	for(int m=0; m<nhit_a; ++m){
-	  int adc = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
-	  if(adc>peak_height){
-	    peak_height   = adc;
+	  adc[m] = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
+	  if(m>0) slope[m] = adc[m]>adc[m-1];
+	  if(adc[m]>peak_height){
+	    peak_height   = adc[m];
 	    peak_position = m;
 	  }
 	}
 	// Zero Suppression Flag
-	int nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
-	bool hit_flag = false;
+	int  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
+	bool  hit_flag = false;
+	bool chit_flag = slope[0] && slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	if(nhit_flag != 0){
 	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
 	  if(flag==1) hit_flag = true;
@@ -1162,12 +1187,17 @@ process_event()
 	  hptr_array[ssd2adc_id +l]->Fill( seg, peak_height );
 	  hptr_array[ssd2tdc_id +l]->Fill( seg, peak_position );
 	  if(hit_flag){
-	    hptr_array[ssd2hit_id +l]->Fill( seg );
+	    hptr_array[ssd2hit_id +2*l]->Fill( seg );
 	    multiplicity++;
+	  }
+	  if(chit_flag){
+	    hptr_array[ssd2hit_id +2*l+1]->Fill( seg );
+	    cmultiplicity++;
 	  }
 	}
       }//for(seg)
-      hptr_array[ssd2mul_id +l]->Fill( multiplicity );
+      hptr_array[ssd2mul_id +2*l]->Fill( multiplicity );
+      hptr_array[ssd2mul_id +2*l+1]->Fill( cmultiplicity );
     }//for(l)
     // Correlation XY
     static const int ssd2hit2d_id = gHist.getSequentialID(kSSD2, 0, kHitPat2D, 1);
@@ -2262,7 +2292,6 @@ process_event()
 	hptr_array[ypos_id + seg]->Fill(ypos);
       }
       // XYpos
-      std::cout<<"xpos: "<<xpos<<" ypos: "<<ypos<<std::endl;
       if(xpos_nhit !=0 && ypos_nhit != 0){
 	hptr_array[xypos_id + seg]->Fill(xpos, ypos);
       }

@@ -2251,17 +2251,18 @@ process_event()
       int xpos_nhit = gUnpacker.get_entries(k_device, 0, 0, 0, k_xpos);
       if(xpos_nhit != 0){
 	xpos = gUnpacker.get(k_device, 0, 0, 0, k_xpos);
-	xpos = ( xpos / 1000. ) - 500.;
+	xpos = 500. - ( xpos / 1000. );
 	hptr_array[xpos_id + seg]->Fill(xpos);
       }
       // Ypos
       int ypos_nhit = gUnpacker.get_entries(k_device, 0, 0, 0, k_ypos);
       if(ypos_nhit != 0){
 	ypos = gUnpacker.get(k_device, 0, 0, 0, k_ypos);
-	ypos = ( ypos / 1000. ) - 500.;
+	ypos = 500. - ( ypos / 1000. );
 	hptr_array[ypos_id + seg]->Fill(ypos);
       }
       // XYpos
+      std::cout<<"xpos: "<<xpos<<" ypos: "<<ypos<<std::endl;
       if(xpos_nhit !=0 && ypos_nhit != 0){
 	hptr_array[xypos_id + seg]->Fill(xpos, ypos);
       }

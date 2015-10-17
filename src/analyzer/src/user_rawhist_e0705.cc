@@ -2235,6 +2235,7 @@ process_event()
     //static const int k_serial = gUnpacker.get_data_id("EMC", "serial");
     static const int k_xpos   = gUnpacker.get_data_id("EMC", "xpos");
     static const int k_ypos   = gUnpacker.get_data_id("EMC", "ypos");
+    //static const int k_state   = gUnpacker.get_data_id("EMC", "state");
     //static const int k_utime   = gUnpacker.get_data_id("EMC", "utime");
     //static const int k_ltime   = gUnpacker.get_data_id("EMC", "ltime");
 
@@ -2244,18 +2245,20 @@ process_event()
     static const int xypos_id = gHist.getSequentialID(kEMC, 0, kXYpos);
 
     for(int seg=0; seg<NumOfSegEMC; ++seg){
-      unsigned int xpos = 0;
-      unsigned int ypos = 0;
+      double xpos = 0;
+      double ypos = 0;
       // Xpos
       int xpos_nhit = gUnpacker.get_entries(k_device, 0, 0, 0, k_xpos);
       if(xpos_nhit != 0){
 	xpos = gUnpacker.get(k_device, 0, 0, 0, k_xpos);
+	xpos = ( xpos / 1000. ) - 500.;
 	hptr_array[xpos_id + seg]->Fill(xpos);
       }
       // Ypos
       int ypos_nhit = gUnpacker.get_entries(k_device, 0, 0, 0, k_ypos);
       if(ypos_nhit != 0){
 	ypos = gUnpacker.get(k_device, 0, 0, 0, k_ypos);
+	ypos = ( ypos / 1000. ) - 500.;
 	hptr_array[ypos_id + seg]->Fill(ypos);
       }
       // XYpos

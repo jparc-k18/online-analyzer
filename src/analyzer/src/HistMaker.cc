@@ -1733,15 +1733,15 @@ TList* HistMaker::createEMC(bool flag_ps)
     for(int i = 0; i<NumOfSegEMC; ++i){
       top_dir->Add(createTH1( ++xpos_id,
 			      Form("%s_Xpos", strDet.c_str()),
-			      0x200, 0, 0x200,
+			      0x200, -0x100, 0x100,
 			      "Xpos [mm]", ""));
       top_dir->Add(createTH1( ++ypos_id,
 			      Form("%s_Ypos", strDet.c_str()),
-			      0x200, 0, 0x200,
+			      0x200, -0x100, 0x100,
 			      "Ypos [mm]", ""));
       top_dir->Add(createTH2( ++xypos_id,
 			      Form("%s_XYpos", strDet.c_str()),
-			      0x200, 0, 0x200, 0x200, 0, 0x200,
+			      0x200, -0x100, 0x100, 0x200, -0x100, 0x100,
 			      "Xpos [mm]", "Ypos [mm]"));
     }
   }

@@ -230,9 +230,8 @@ process_end()
   double l2_acc     = (double)val[right][12];
   int    bh2_1      = val[center][3];
   int    bh2_2      = val[center][4];
-  int    bh1xbh2    = val[center][15];
+  double bh1xbh2    = (double)val[center][15];
   double TM         = (double)val[right][2];
-  double bh1bh2     = (double)val[right][29];
 
   printf("\n");
   printf("%-20s %15s\t",   "Spill",          separate_comma(spill).c_str());
@@ -244,7 +243,7 @@ process_end()
   printf("%-20s %15s\t",   "/p beam",        separate_comma((int)anti_pbeam).c_str());
   printf("%-20s %15.4f\n", "K beam/TM",      kbeam/TM);
   printf("%-20s %15s\t",   "(K,K)",          separate_comma((int)kk).c_str());
-  printf("%-20s %15.4f\n", "K beam/BH1xBH2", kbeam/bh1bh2);
+  printf("%-20s %15.4f\n", "K beam/BH1xBH2", kbeam/bh1xbh2);
   printf("%-20s %15s\t",   "L1 req",         separate_comma((int)l1_req).c_str());
   printf("%-20s %15.4f\n", "(K,K)/K-beam",   kk/kbeam);
   printf("%-20s %15s\t",   "L1 acc",     separate_comma((int)l1_acc).c_str());

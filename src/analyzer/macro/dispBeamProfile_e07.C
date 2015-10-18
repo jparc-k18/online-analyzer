@@ -15,7 +15,7 @@ void dispBeamProfile_e07()
   tex.SetTextSize(0.14);
   double xpos = 0.15, ypos = 0.75;
 
-  const double fit_width[2] = { 20., 10. };
+  const double fit_width[2] = { 100., 100. };
 
   const double ff[n_hist] = { -500., -200., 0., 200., 500.
 			      /*-100, 100*/ };

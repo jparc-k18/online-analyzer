@@ -87,6 +87,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispSDC3());
   tab_macro->Add(dispSDC4());
   tab_macro->Add(dispHitPat());
+  tab_macro->Add(dispHitPatE07());
   tab_macro->Add(effBcOut());
   tab_macro->Add(effSdcIn());
   tab_macro->Add(effSdcOut());
@@ -108,17 +109,18 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createFAC());
   tab_hist->Add(gHist.createSAC1());
   tab_hist->Add(gHist.createSCH());
+  tab_hist->Add(gHist.createKFAC(false));
   tab_hist->Add(gHist.createKIC(false));
   tab_hist->Add(gHist.createSDC2());
   tab_hist->Add(gHist.createHDC());
-  tab_hist->Add(gHist.createSP0());
-  tab_hist->Add(gHist.createSDC3());
-  tab_hist->Add(gHist.createSDC4());
+  tab_hist->Add(gHist.createSP0(false));
+  tab_hist->Add(gHist.createSDC3(false));
+  tab_hist->Add(gHist.createSDC4(false));
   tab_hist->Add(gHist.createTOF());
   tab_hist->Add(gHist.createLAC());
   tab_hist->Add(gHist.createLC());
   tab_hist->Add(gHist.createPWO_E05(false));
-  tab_hist->Add(gHist.createMsT());
+  tab_hist->Add(gHist.createMsT(false));
   tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createTriggerFlag_E07());
   tab_hist->Add(gHist.createCorrelation());
@@ -138,6 +140,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_e07->Add(dispSSD0());
   tab_e07->Add(dispSSD1());
   tab_e07->Add(dispSSD2());
+  tab_e07->Add(dispSSDHitPat());
   //tab_e07->Add(dispProfileSSD());
 
   // Set histogram pointers to the vector sequentially.
@@ -872,18 +875,20 @@ process_event()
     static const int fbh_tot_u_id = gHist.getSequentialID(kFBH, 0, kADC,    1);
     static const int fbh_tdc_d_id = gHist.getSequentialID(kFBH, 0, kTDC,    NumOfSegFBH +1);
     static const int fbh_tot_d_id = gHist.getSequentialID(kFBH, 0, kADC,    NumOfSegFBH +1);
-    static const int fbh_hit_id   = gHist.getSequentialID(kFBH, 0, kHitPat, 1);
-    static const int fbh_mul_id   = gHist.getSequentialID(kFBH, 0, kMulti,  1);
+    static const int fbh_hit2d_id   = gHist.getSequentialID(kFBH, 0, kHitPat2D, 1);
+    static const int fbh_mul2d_id   = gHist.getSequentialID(kFBH, 0, kMulti2D,  1);
 
     static const int fbh_t_2d_id   = gHist.getSequentialID(kFBH, 0, kTDC2D, 1);
     static const int fbh_tot_2d_id = gHist.getSequentialID(kFBH, 0, kADC2D, 1);
 
+    int hit_seg_u[NumOfSegFBH] = {};
+    int hit_seg_d[NumOfSegFBH] = {};
+    int multi_u = 0;
+    int multi_d = 0;
     int multiplicity  = 0;
     for(int i=0; i<NumOfSegFBH; ++i){
       int nhit_u = gUnpacker.get_entries(k_device, 0, i, k_u, k_leading);
       int nhit_d = gUnpacker.get_entries(k_device, 0, i, k_d, k_leading);
-      int hit_flag_u = 0;
-      int hit_flag_d = 0;
       for(int m=0; m<nhit_u; ++m){
 	int tdc_u      = gUnpacker.get(k_device, 0, i, k_u, k_leading,  m);
 	int trailing_u = gUnpacker.get(k_device, 0, i, k_u, k_trailing, m);
@@ -892,7 +897,10 @@ process_event()
 	hptr_array[fbh_tot_u_id +i]->Fill(tot_u);
 	hptr_array[fbh_t_2d_id]->Fill(i, tdc_u);
 	hptr_array[fbh_tot_2d_id]->Fill(i, tot_u);
-	if( tdc_min<tdc_u && tdc_u<tdc_max ) hit_flag_u++;
+	if( tdc_min<tdc_u && tdc_u<tdc_max ){
+	  hit_seg_u[multi_u++] = i;
+	  ++multiplicity;
+	}
       }
       for(int m=0; m<nhit_d; ++m){
 	int tdc_d      = gUnpacker.get(k_device, 0, i, k_d, k_leading,  m);
@@ -902,14 +910,18 @@ process_event()
 	hptr_array[fbh_tot_d_id +i]->Fill(tot_d);
 	hptr_array[fbh_t_2d_id]->Fill(i +NumOfSegFBH, tdc_d);
 	hptr_array[fbh_tot_2d_id]->Fill(i +NumOfSegFBH, tot_d);
-	if( tdc_min<tdc_d && tdc_d<tdc_max ) hit_flag_d++;
-      }
-      if( hit_flag_u>0 || hit_flag_d>0 ){
-	++multiplicity;
-	hptr_array[fbh_hit_id]->Fill(i);
+	if( tdc_min<tdc_d && tdc_d<tdc_max ){
+	  hit_seg_d[multi_d++] = i;
+	  ++multiplicity;
+	}
       }
     }
-    hptr_array[fbh_mul_id]->Fill(multiplicity);
+    for(int iu=0; iu<multi_u; ++iu){
+      for(int id=0; id<multi_d; ++id){
+	hptr_array[fbh_hit2d_id]->Fill( hit_seg_u[iu], hit_seg_d[id] );
+      }
+    }
+    hptr_array[fbh_mul2d_id]->Fill( multi_u, multi_d );
 
 #if 0
     // Debug, dump data relating this detector
@@ -958,26 +970,32 @@ process_event()
     static const int ssd0mul_id = gHist.getSequentialID(kSSD0, 0, kMulti,  1);
 
     for(int l=0; l<NumOfLayersSSD0; ++l){
-      int multiplicity = 0;
+      int  multiplicity = 0;
+      int cmultiplicity = 0;
       for(int seg=0; seg<NumOfSegSSD0; ++seg){
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
 	if(nhit_a>NumOfSamplesSSD){
-	  std::cerr<<"#W the number of samples is too much : ["
+	  std::cerr<<"#W SSD0 layer:"<<l<<" seg:"<<seg
+		   <<"the number of samples is too much : ["
 		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
 	}
-	int peak_height   = -1;
-	int peak_position = -1;
+	int  adc[nhit_a];
+	bool slope[nhit_a-1];
+	int  peak_height     = -1;
+	int  peak_position   = -1;
 	for(int m=0; m<nhit_a; ++m){
-	  int adc = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
-	  if(adc>peak_height){
-	    peak_height   = adc;
+	  adc[m] = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
+	  if(m>0) slope[m] = adc[m]>adc[m-1];
+	  if(adc[m]>peak_height){
+	    peak_height   = adc[m];
 	    peak_position = m;
 	  }
 	}
 	// Zero Suppression Flag
-	int nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
-	bool hit_flag = false;
+	int  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
+	bool  hit_flag = false;
+	bool chit_flag = slope[0] && slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	if(nhit_flag != 0){
 	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
 	  if(flag==1) hit_flag = true;
@@ -986,12 +1004,17 @@ process_event()
 	  hptr_array[ssd0adc_id +l]->Fill( seg, peak_height );
 	  hptr_array[ssd0tdc_id +l]->Fill( seg, peak_position );
 	  if(hit_flag){
-	    hptr_array[ssd0hit_id +l]->Fill( seg );
+	    hptr_array[ssd0hit_id +2*l]->Fill( seg );
 	    multiplicity++;
+	  }
+	  if(chit_flag){
+	    hptr_array[ssd0hit_id +2*l+1]->Fill( seg );
+	    cmultiplicity++;
 	  }
 	}
       }//for(seg)
-      hptr_array[ssd0mul_id +l]->Fill( multiplicity );
+      hptr_array[ssd0mul_id +2*l]->Fill( multiplicity );
+      hptr_array[ssd0mul_id +2*l+1]->Fill( cmultiplicity );
     }//for(l)
     // Correlation XY
     static const int ssd0hit2d_id = gHist.getSequentialID(kSSD0, 0, kHitPat2D, 1);
@@ -1032,26 +1055,32 @@ process_event()
     static const int ssd1mul_id = gHist.getSequentialID(kSSD1, 0, kMulti,  1);
 
     for(int l=0; l<NumOfLayersSSD1; ++l){
-      int multiplicity = 0;
+      int  multiplicity = 0;
+      int cmultiplicity = 0;
       for(int seg=0; seg<NumOfSegSSD1; ++seg){
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
 	if(nhit_a>NumOfSamplesSSD){
-	  std::cerr<<"#W the number of samples is too much : ["
+	  std::cerr<<"#W SSD1 layer:"<<l<<" seg:"<<seg
+		   <<"the number of samples is too much : ["
 		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
 	}
-	int peak_height   = -1;
-	int peak_position = -1;
+	int  adc[nhit_a];
+	bool slope[nhit_a-1];
+	int  peak_height   = -1;
+	int  peak_position = -1;
 	for(int m=0; m<nhit_a; ++m){
-	  int adc = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
-	  if(adc>peak_height){
-	    peak_height   = adc;
+	  adc[m] = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
+	  if(m>0) slope[m] = adc[m]>adc[m-1];
+	  if(adc[m]>peak_height){
+	    peak_height   = adc[m];
 	    peak_position = m;
 	  }
 	}
 	// Zero Suppression Flag
-	int nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
-	bool hit_flag = false;
+	int  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
+	bool  hit_flag = false;
+	bool chit_flag = slope[0] && slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	if(nhit_flag != 0){
 	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
 	  if(flag==1) hit_flag = true;
@@ -1060,12 +1089,17 @@ process_event()
 	  hptr_array[ssd1adc_id +l]->Fill( seg, peak_height );
 	  hptr_array[ssd1tdc_id +l]->Fill( seg, peak_position );
 	  if(hit_flag){
-	    hptr_array[ssd1hit_id +l]->Fill( seg );
+	    hptr_array[ssd1hit_id +2*l]->Fill( seg );
 	    multiplicity++;
+	  }
+	  if(chit_flag){
+	    hptr_array[ssd1hit_id +2*l+1]->Fill( seg );
+	    cmultiplicity++;
 	  }
 	}
       }//for(seg)
-      hptr_array[ssd1mul_id +l]->Fill( multiplicity );
+      hptr_array[ssd1mul_id +2*l]->Fill( multiplicity );
+      hptr_array[ssd1mul_id +2*l+1]->Fill( cmultiplicity );
     }//for(l)
     // Correlation XY
     static const int ssd1hit2d_id = gHist.getSequentialID(kSSD1, 0, kHitPat2D, 1);
@@ -1119,26 +1153,32 @@ process_event()
     static const int ssd2mul_id = gHist.getSequentialID(kSSD2, 0, kMulti,  1);
 
     for(int l=0; l<NumOfLayersSSD2; ++l){
-      int multiplicity = 0;
+      int  multiplicity = 0;
+      int cmultiplicity = 0;
       for(int seg=0; seg<NumOfSegSSD2; ++seg){
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
 	if(nhit_a>NumOfSamplesSSD){
-	  std::cerr<<"#W the number of samples is too much : ["
+	  std::cerr<<"#W SSD2 layer:"<<l<<" seg:"<<seg
+		   <<"the number of samples is too much : ["
 		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
 	}
-	int peak_height   = -1;
-	int peak_position = -1;
+	int  adc[nhit_a];
+	bool slope[nhit_a-1];
+	int  peak_height   = -1;
+	int  peak_position = -1;
 	for(int m=0; m<nhit_a; ++m){
-	  int adc = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
-	  if(adc>peak_height){
-	    peak_height   = adc;
+	  adc[m] = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
+	  if(m>0) slope[m] = adc[m]>adc[m-1];
+	  if(adc[m]>peak_height){
+	    peak_height   = adc[m];
 	    peak_position = m;
 	  }
 	}
 	// Zero Suppression Flag
-	int nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
-	bool hit_flag = false;
+	int  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
+	bool  hit_flag = false;
+	bool chit_flag = slope[0] && slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	if(nhit_flag != 0){
 	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
 	  if(flag==1) hit_flag = true;
@@ -1147,12 +1187,17 @@ process_event()
 	  hptr_array[ssd2adc_id +l]->Fill( seg, peak_height );
 	  hptr_array[ssd2tdc_id +l]->Fill( seg, peak_position );
 	  if(hit_flag){
-	    hptr_array[ssd2hit_id +l]->Fill( seg );
+	    hptr_array[ssd2hit_id +2*l]->Fill( seg );
 	    multiplicity++;
+	  }
+	  if(chit_flag){
+	    hptr_array[ssd2hit_id +2*l+1]->Fill( seg );
+	    cmultiplicity++;
 	  }
 	}
       }//for(seg)
-      hptr_array[ssd2mul_id +l]->Fill( multiplicity );
+      hptr_array[ssd2mul_id +2*l]->Fill( multiplicity );
+      hptr_array[ssd2mul_id +2*l+1]->Fill( cmultiplicity );
     }//for(l)
     // Correlation XY
     static const int ssd2hit2d_id = gHist.getSequentialID(kSSD2, 0, kHitPat2D, 1);
@@ -1345,6 +1390,37 @@ process_event()
       }
     }
     hptr_array[sch_mul_id]->Fill(multiplicity);
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+  // KFAC ---------------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("KFAC");
+    static const int k_adc    = gUnpacker.get_data_id("KFAC","adc");
+
+    // sequential id
+    static const int kfaca_id   = gHist.getSequentialID(kKFAC, 0, kADC, 1);
+    static const int kfaca2d_id = gHist.getSequentialID(kKFAC, 0, kADC2D, 1);
+    int adc[NumOfSegKFAC] = {};
+    for(int seg = 0; seg<NumOfSegKFAC; ++seg){
+      // ADC
+      int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      if(nhit_a != 0){
+	adc[seg] = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	hptr_array[kfaca_id + seg]->Fill(adc[seg], nhit_a);
+      }
+    }
+
+    hptr_array[kfaca2d_id]->Fill(adc[0], adc[1]);
 
 #if 0
     // Debug, dump data relating this detector
@@ -2140,17 +2216,20 @@ process_event()
     //for(int seg = 0; seg<NumOfSegBH2; ++seg){
     //for(int seg = 0; seg<NumOfSegBH2_E07; ++seg){
     int seg = 0;
-    int nhit = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
-    if(nhit != 0){
-      int tdc = gUnpacker.get(k_d_bh2, 0, seg, k_u, k_tdc);
-      if(tdc != 0){
+    int nhitu = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
+    int nhitd = gUnpacker.get_entries(k_d_bh2, 0, seg, k_d, k_tdc);
+    if(nhitu != 0 && nhitd != 0){
+      int tdcu = gUnpacker.get(k_d_bh2, 0, seg, k_u, k_tdc);
+      int tdcd = gUnpacker.get(k_d_bh2, 0, seg, k_d, k_tdc);
+      if(tdcu != 0 && tdcd != 0){
 	HodoParamMan& hodoMan = HodoParamMan::GetInstance();
-	double bh2t =-999;
-	hodoMan.GetTime(cid_bh2, plid, seg, k_u, tdc, bh2t);
-	if(fabs(t0) > fabs(bh2t)){
-	  hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
-	  t0 = bh2t;
-	}
+	double bh2ut, bh2dt;
+	hodoMan.GetTime(cid_bh2, plid, seg, k_u, tdcu, bh2ut);
+	hodoMan.GetTime(cid_bh2, plid, seg, k_d, tdcd, bh2dt);
+	t0 = (bh2ut+bh2dt)/2;
+	// if(fabs(t0) > fabs(bh2t)){
+	//   hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
+	//   t0 = bh2t;
       }//if(tdc)
     }// if(nhit)
     //}// for(seg)
@@ -2186,6 +2265,7 @@ process_event()
     //static const int k_serial = gUnpacker.get_data_id("EMC", "serial");
     static const int k_xpos   = gUnpacker.get_data_id("EMC", "xpos");
     static const int k_ypos   = gUnpacker.get_data_id("EMC", "ypos");
+    //static const int k_state   = gUnpacker.get_data_id("EMC", "state");
     //static const int k_utime   = gUnpacker.get_data_id("EMC", "utime");
     //static const int k_ltime   = gUnpacker.get_data_id("EMC", "ltime");
 
@@ -2195,18 +2275,20 @@ process_event()
     static const int xypos_id = gHist.getSequentialID(kEMC, 0, kXYpos);
 
     for(int seg=0; seg<NumOfSegEMC; ++seg){
-      unsigned int xpos = 0;
-      unsigned int ypos = 0;
+      double xpos = 0;
+      double ypos = 0;
       // Xpos
       int xpos_nhit = gUnpacker.get_entries(k_device, 0, 0, 0, k_xpos);
       if(xpos_nhit != 0){
 	xpos = gUnpacker.get(k_device, 0, 0, 0, k_xpos);
+	xpos = 500. - ( xpos / 1000. );
 	hptr_array[xpos_id + seg]->Fill(xpos);
       }
       // Ypos
       int ypos_nhit = gUnpacker.get_entries(k_device, 0, 0, 0, k_ypos);
       if(ypos_nhit != 0){
 	ypos = gUnpacker.get(k_device, 0, 0, 0, k_ypos);
+	ypos = 500. - ( ypos / 1000. );
 	hptr_array[ypos_id + seg]->Fill(ypos);
       }
       // XYpos

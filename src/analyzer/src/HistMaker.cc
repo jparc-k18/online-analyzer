@@ -1056,19 +1056,19 @@ TList* HistMaker::createFBH(bool flag_ps)
 			   200, -50, 150,
 			   "Segment", "TOT [ch]"));
   }
-  // Hit parttern -----------------------------------------------
+  // Hit parttern 2D --------------------------------------------
   {
-    int target_id = getUniqueID(kFBH, 0, kHitPat, 0);
-    top_dir->Add(createTH1(++target_id, "FBH_HitPat", // 1 origin
-			   NumOfSegFBH, 0, NumOfSegFBH,
+    int target_id = getUniqueID(kFBH, 0, kHitPat2D, 0);
+    top_dir->Add(createTH2(++target_id, "FBH_HitPat", // 1 origin
+			   NumOfSegFBH, 0, NumOfSegFBH, NumOfSegFBH, 0, NumOfSegFBH,
 			   "Segment", ""));
   }
   // Multiplicity -----------------------------------------------
   {
     const char* title = "FBH_multiplicity";
-    int target_id = getUniqueID(kFBH, 0, kMulti, 0);
-    top_dir->Add(createTH1(++target_id, title, // 1 origin
-			   NumOfSegFBH+1, 0, NumOfSegFBH+1,
+    int target_id = getUniqueID(kFBH, 0, kMulti2D, 0);
+    top_dir->Add(createTH2(++target_id, title, // 1 origin
+			   NumOfSegFBH, 0, NumOfSegFBH, NumOfSegFBH, 0, NumOfSegFBH,
 			   "Multiplicity", ""));
   }
   return top_dir;
@@ -1161,12 +1161,20 @@ TList* HistMaker::createSSD0(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD0, 0, NumOfSegSSD0,
 			     "Segment", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD0, 0, NumOfSegSSD0,
+			     "Segment", ""));
     }
     target_id = getUniqueID(kSSD0, 0, kHitPat2D, 0);
     sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
 					     nameLayer[1], nameLayer[0]),
 			   NumOfSegSSD0/6, 0, NumOfSegSSD0, NumOfSegSSD0/6, 0, NumOfSegSSD0,
 			   nameLayer[0], nameLayer[1]));
+    // sub_dir->Add(createTH2(++target_id, Form("%s_C%s_%s%%%s", nameDetector, nameSubDir,
+    // 					     nameLayer[1], nameLayer[0]),
+    // 			   NumOfSegSSD0/6, 0, NumOfSegSSD0, NumOfSegSSD0/6, 0, NumOfSegSSD0,
+    // 			   nameLayer[0], nameLayer[1]));
     top_dir->Add(sub_dir);
   }
 
@@ -1181,6 +1189,10 @@ TList* HistMaker::createSSD0(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD0+1, 0, NumOfSegSSD0+1,
 			     "Multiplicity", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD0+1, 0, NumOfSegSSD0+1,
+			     "CMultiplicity", ""));
     }
     top_dir->Add(sub_dir);
   }
@@ -1244,6 +1256,10 @@ TList* HistMaker::createSSD1(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD1, 0, NumOfSegSSD1,
 			     "Segment", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD1, 0, NumOfSegSSD1,
+			     "Segment", ""));
     }
     target_id = getUniqueID(kSSD1, 0, kHitPat2D, 0);
     sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
@@ -1268,6 +1284,10 @@ TList* HistMaker::createSSD1(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD1+1, 0, NumOfSegSSD1+1,
 			     "Multiplicity", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD1+1, 0, NumOfSegSSD1+1,
+			     "CMultiplicity", ""));
     }
     top_dir->Add(sub_dir);
   }
@@ -1331,6 +1351,10 @@ TList* HistMaker::createSSD2(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD2, 0, NumOfSegSSD2,
 			     "Segment", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD2, 0, NumOfSegSSD2,
+			     "Segment", ""));
     }
     target_id = getUniqueID(kSSD2, 0, kHitPat2D, 0);
     sub_dir->Add(createTH2(++target_id, Form("%s_%s_%s%%%s", nameDetector, nameSubDir,
@@ -1355,6 +1379,10 @@ TList* HistMaker::createSSD2(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD2+1, 0, NumOfSegSSD2+1,
 			     "Multiplicity", ""));
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD2+1, 0, NumOfSegSSD2+1,
+			     "CMultiplicity", ""));
     }
     top_dir->Add(sub_dir);
   }
@@ -1659,6 +1687,58 @@ TList* HistMaker::createSCH(bool flag_ps)
 }
 
 // -------------------------------------------------------------------------
+// createKFAC
+// -------------------------------------------------------------------------
+TList* HistMaker::createKFAC(bool flag_ps)
+{
+  // Determine the detector name
+  std::string strDet = CONV_STRING(kKFAC);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet); 
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet); 
+  }
+  
+  // Declaration of the directory
+  // Just type conversion from std::string to char*
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // ADC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    int target_id = getUniqueID(kKFAC, 0, kADC, 0);
+    for(int i = 0; i<NumOfSegKFAC; ++i){
+      const char* title = NULL;
+      int seg = i+1; // 1 origin
+      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+    // ADC2D
+    target_id = getUniqueID(kKFAC, 0, kADC2D, 0);
+    sub_dir->Add(createTH2(++target_id, "KFAC_ADC_2D",
+			   0x1000, 0, 0x1000, 0x1000, 0, 0x1000,
+			   "ADC [ch]", "ADC [ch]"));
+    
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // Return the TList pointer which is added into TGFileBrowser
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
 // createEMC
 // -------------------------------------------------------------------------
 TList* HistMaker::createEMC(bool flag_ps)
@@ -1681,15 +1761,15 @@ TList* HistMaker::createEMC(bool flag_ps)
     for(int i = 0; i<NumOfSegEMC; ++i){
       top_dir->Add(createTH1( ++xpos_id,
 			      Form("%s_Xpos", strDet.c_str()),
-			      0x200, 0, 0x200,
+			      0x100, -0x100, 0x100,
 			      "Xpos [mm]", ""));
       top_dir->Add(createTH1( ++ypos_id,
 			      Form("%s_Ypos", strDet.c_str()),
-			      0x200, 0, 0x200,
+			      0x100, -0x100, 0x100,
 			      "Ypos [mm]", ""));
       top_dir->Add(createTH2( ++xypos_id,
 			      Form("%s_XYpos", strDet.c_str()),
-			      0x200, 0, 0x200, 0x200, 0, 0x200,
+			      0x100, -0x100, 0x100, 0x100, -0x100, 0x100,
 			      "Xpos [mm]", "Ypos [mm]"));
     }
   }

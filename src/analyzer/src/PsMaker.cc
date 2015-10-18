@@ -950,23 +950,25 @@ void PsMaker::create(std::string& name)
   // TriggerFlag------------------------------------------------------------
   if(name == CONV_STRING(kTriggerFlag)){
     int base_id = 0;
-    par_list[kXdiv] = 1; par_list[kYdiv] = 1;
+    par_list[kXdiv] = 2; par_list[kYdiv] = 1;
     //    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x1000;
     flag_xaxis = false;
     flag_log   = false;
 
     base_id = HistMaker::getUniqueID(kTriggerFlag, 0, kHitPat);
     id_list.push_back(base_id);
+    base_id = HistMaker::getUniqueID(kTriggerFlag, 1, kHitPat);
+    id_list.push_back(base_id); //for(E07)
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
-  
+
   // EMC ----------------------------------------------------------------
   if(name == CONV_STRING(kEMC)){
     int base_id = 0;
     // XYpos
     par_list[kXdiv] = 1; par_list[kYdiv] = 1;
     base_id = HistMaker::getUniqueID(kEMC, 0, kXYpos);
-    for(int i = 0; i<NumOfSegEMC; ++i){ id_list.push_back( base_id ); }
+    for(int i = 0; i<NumOfSegEMC; ++i){ id_list.push_back( base_id++ ); }
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
 }

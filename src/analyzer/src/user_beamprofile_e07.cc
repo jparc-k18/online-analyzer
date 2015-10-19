@@ -28,13 +28,13 @@ namespace analyzer
   
   enum HistName
     {
-      FF_n500, FF_n300, FF_0, FF_300, FF_500,
+      FF_n500, FF_n200, FF_0, FF_200, FF_500,
       //FF_n100, FF_100,
       size_HistName
     };
   static const double FF_plus[] =
     {
-      -500., -300., 0, 300., 500.
+      -500., -200., 0, 200., 500.
       //-100., 100.,
     };
 

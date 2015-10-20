@@ -86,6 +86,14 @@ process_begin(const std::vector<std::string>& argv)
 				    "y position [mm]", ""));
     }
     tab_hist->Add(sub_dir);
+    // Profile XY
+    for(int i = 0; i<size_HistName; ++i){
+      char* title = Form("%s FF %d_XY", nameSubDir, (int)FF_plus[i]);
+      sub_dir->Add(gHist.createTH2(unique_id++, title,
+				   400,-200,200, 200,-100,100,
+				   "x position [mm]", "y position [mm]"));
+    }
+    tab_hist->Add(sub_dir);
   }
   //SsdIn
   {
@@ -146,10 +154,14 @@ process_event()
     if(BcOutTrack){
       static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat);
       static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, size_HistName+1);
+      static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, size_HistName*2+1);
 
       for(int i = 0; i<size_HistName; ++i){
-	hptr_array[xpos_id+i]->Fill(BcOutAna.GetPosX(dist_FF+FF_plus[i]));
-	hptr_array[ypos_id+i]->Fill(BcOutAna.GetPosY(dist_FF+FF_plus[i]));
+	double xpos = BcOutAna.GetPosX(dist_FF+FF_plus[i]);
+	double ypos = BcOutAna.GetPosY(dist_FF+FF_plus[i]);
+	hptr_array[xpos_id+i]->Fill(xpos);
+	hptr_array[ypos_id+i]->Fill(ypos);
+	hptr_array[xypos_id+i]->Fill(xpos, ypos);
       }
     }
   }
@@ -159,8 +171,8 @@ process_event()
     DCRHC SsdAna(DetIdSsd);
     bool  SsdTrack = SsdAna.TrackSearch(5);
 
-    static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
-    static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat2D, size_HistName+1);
+    static const int xpos_id  = gHist.getSequentialID(kMisc, 0, kHitPat2D);
+    static const int ypos_id  = gHist.getSequentialID(kMisc, 0, kHitPat2D, size_HistName+1);
 
     if(SsdTrack){
       for(int i=0; i<size_HistName; ++i){

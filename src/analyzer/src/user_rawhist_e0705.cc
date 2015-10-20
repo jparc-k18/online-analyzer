@@ -1545,7 +1545,7 @@ process_event()
 
 #if 0
     // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
+    gUnpacker.dump_data_device(k_device,0);
 #endif
   }
 

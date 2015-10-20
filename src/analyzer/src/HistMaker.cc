@@ -2812,12 +2812,22 @@ TList* HistMaker::createMsT(bool flag_ps)
 			   "Segment", ""));
   }
 
-  // HitPattern Counter Flag ----------------------------------------------------
+  // HitPattern  ----------------------------------------------------
   {
     int target_id = getUniqueID(kMsT, 0, kHitPat, 0);
-    top_dir->Add(createTH1(++target_id, Form("%s_LC_FLAG", nameDetector),
+    top_dir->Add(createTH1(target_id, Form("%s_TOF_HitPat", nameDetector),
 			   NumOfSegMsT, 0, NumOfSegMsT,
 			   "Segment", ""));
+    top_dir->Add(createTH1(target_id + 1, Form("%s_LC_HitPat", nameDetector),
+			   NumOfSegLC, 0, NumOfSegLC,
+			   "Segment", ""));
+  }
+  // Hit parttern 2D --------------------------------------------
+  {
+    int target_id = getUniqueID(kMsT, 0, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id, "MsT_Flag", // 1 origin
+			   3, 0, 3, 2, 0, 2,
+			   "2nd Accept", "fast clear"));
   }
 
   return top_dir;

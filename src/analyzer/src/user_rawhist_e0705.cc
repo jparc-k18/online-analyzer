@@ -80,6 +80,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispTOF());  
   tab_macro->Add(dispLAC());
   tab_macro->Add(dispLC());
+  tab_macro->Add(dispMsT());  
   tab_macro->Add(dispBC3());
   tab_macro->Add(dispBC4());
   tab_macro->Add(dispSDC2());
@@ -120,7 +121,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createLAC());
   tab_hist->Add(gHist.createLC());
   tab_hist->Add(gHist.createPWO_E05(false));
-  tab_hist->Add(gHist.createMsT(false));
+  tab_hist->Add(gHist.createMsT());
   tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createTriggerFlag_E07());
   tab_hist->Add(gHist.createCorrelation());
@@ -2086,10 +2087,13 @@ process_event()
   {
     // data type
     static const int k_device = gUnpacker.get_device_id("MsT");
+    static const int k_flag = gUnpacker.get_device_id("CAMAC-RM");
     // sequential id
     int tdc_id   = gHist.getSequentialID(kMsT, 0, kTDC);
     int tdc2d_id = gHist.getSequentialID(kMsT, 0, kTDC2D);
-    int flag_id  = gHist.getSequentialID(kMsT, 0, kHitPat);
+    int tof_hp_id  = gHist.getSequentialID(kMsT, 0, kHitPat, 0);
+    int lc_hp_id  = gHist.getSequentialID(kMsT, 0, kHitPat, 1);
+    int flag_id  = gHist.getSequentialID(kMsT, 0, kHitPat2D, 0);
     for(int seg=0; seg<NumOfSegMsT; ++seg){
       // TDC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, 0);
@@ -2097,16 +2101,23 @@ process_event()
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, 0);
 	hptr_array[tdc_id +seg]->Fill( tdc );
 	hptr_array[tdc2d_id]->Fill( seg, tdc );
+	// HitPat
+	hptr_array[tof_hp_id]->Fill(seg); 
       }
 
-      // Flag
+      // HitPat
       nhit = gUnpacker.get_entries(k_device, 1, seg, 0, 0);
       if(nhit != 0){
 	int flag = gUnpacker.get(k_device, 1, seg, 0, 0);
-	if(flag>0){ hptr_array[flag_id]->Fill(seg); }
+	if(flag>0){ hptr_array[lc_hp_id]->Fill(seg); }
       }
     }
 
+    // Flag
+    int flag_acc = gUnpacker.get(k_flag, 0, 0, 0, 2);
+    int flag_clr = gUnpacker.get(k_flag, 0, 0, 0, 3);
+    hptr_array[flag_id]->Fill( flag_acc, flag_clr );
+    
 #if 0
     // Debug, dump data relating this detector
     gUnpacker.dump_data_device(k_device);

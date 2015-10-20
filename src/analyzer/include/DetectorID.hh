@@ -66,6 +66,7 @@ const int NumOfSamplesSSD =  8;
 
 // E05 Detectors
 const int DetIdMsT     = 32;
+const int DetIdMsTRM   = 82;
 const int DetIdKIC     = 41;
 const int NumOfSegMsT  = 32;
 const int NumOfSegKIC  =  4;

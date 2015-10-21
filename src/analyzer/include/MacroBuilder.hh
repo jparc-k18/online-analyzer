@@ -42,6 +42,7 @@ TObject* effSdcOut();
 
 TObject* dispBeamProfile();
 TObject* dispBeamProfile_e07();
+TObject* dispBeamProfile_e05();
 
 TObject* dispACs_SFV();
 TObject* dispGeAdc();

@@ -30,6 +30,7 @@
 
 #define DEBUG    0
 #define FLAG_DAQ 1
+#define MODE_E07 0
 
 namespace analyzer
 {
@@ -57,8 +58,11 @@ process_begin(const std::vector<std::string>& argv)
   hddaq::gui::Controller& gCon = hddaq::gui::Controller::getInstance();
   TGFileBrowser *tab_hist  = gCon.makeFileBrowser("Hist");
   TGFileBrowser *tab_macro = gCon.makeFileBrowser("Macro");
-  //TGFileBrowser *tab_btof  = gCon.makeFileBrowser("BTOF");
+#if MODE_E07
   TGFileBrowser *tab_e07   = gCon.makeFileBrowser("E07");
+#else
+  TGFileBrowser *tab_e05  = gCon.makeFileBrowser("E05");
+#endif
 
   // Add macros to the Macro tab
   //tab_macro->Add(hoge());
@@ -71,12 +75,14 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispBFT());
   tab_macro->Add(dispBH2());
   tab_macro->Add(dispBAC());
+#if MODE_E07
   tab_macro->Add(dispBH2_E07());
   tab_macro->Add(dispACs_E07());
   tab_macro->Add(dispSCH());
+#endif
   tab_macro->Add(dispKIC());
-  tab_macro->Add(dispSP0Adc());
-  tab_macro->Add(dispSP0Tdc());
+  //  tab_macro->Add(dispSP0Adc());
+  //  tab_macro->Add(dispSP0Tdc());
   tab_macro->Add(dispTOF());  
   tab_macro->Add(dispLAC());
   tab_macro->Add(dispLC());
@@ -88,11 +94,21 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispSDC3());
   tab_macro->Add(dispSDC4());
   tab_macro->Add(dispHitPat());
+#if MODE_E07
   tab_macro->Add(dispHitPatE07());
+#endif
   tab_macro->Add(effBcOut());
   tab_macro->Add(effSdcIn());
   tab_macro->Add(effSdcOut());
   tab_macro->Add(auto_monitor_all());
+
+#if MODE_E07
+  bool fl_ps_e07 = true;
+  bool fl_ps_e05 = false;
+#else
+  bool fl_ps_e07 = false;
+  bool fl_ps_e05 = true;
+#endif
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
@@ -101,38 +117,51 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createBC3());
   tab_hist->Add(gHist.createBC4());
   tab_hist->Add(gHist.createBMW());
-  tab_hist->Add(gHist.createBH2(false));
-  tab_hist->Add(gHist.createBAC(false));
-  tab_hist->Add(gHist.createBH2_E07());
-  tab_hist->Add(gHist.createBAC_E07());
-  tab_hist->Add(gHist.createFBH());
-  tab_hist->Add(gHist.createPVAC());
-  tab_hist->Add(gHist.createFAC());
-  tab_hist->Add(gHist.createSAC1());
-  tab_hist->Add(gHist.createSCH());
+  tab_hist->Add(gHist.createBH2(fl_ps_e05));
+  tab_hist->Add(gHist.createBAC(fl_ps_e05));
+#if MODE_E07
+  tab_hist->Add(gHist.createBH2_E07(fl_ps_e07));
+  tab_hist->Add(gHist.createBAC_E07(fl_ps_e07));
+  tab_hist->Add(gHist.createFBH(fl_ps_e07));
+  tab_hist->Add(gHist.createPVAC(fl_ps_e07));
+  tab_hist->Add(gHist.createFAC(fl_ps_e07));
+  tab_hist->Add(gHist.createSAC1(fl_ps_e07));
+  tab_hist->Add(gHist.createSCH(fl_ps_e07));
   tab_hist->Add(gHist.createKFAC(false));
-  tab_hist->Add(gHist.createKIC(false));
+#endif
+  tab_hist->Add(gHist.createKIC(fl_ps_e05));
   tab_hist->Add(gHist.createSDC2());
   tab_hist->Add(gHist.createHDC());
   tab_hist->Add(gHist.createSP0(false));
-  tab_hist->Add(gHist.createSDC3(false));
-  tab_hist->Add(gHist.createSDC4(false));
+  tab_hist->Add(gHist.createSDC3(fl_ps_e05));
+  tab_hist->Add(gHist.createSDC4(fl_ps_e05));
   tab_hist->Add(gHist.createTOF());
   tab_hist->Add(gHist.createLAC());
   tab_hist->Add(gHist.createLC());
   tab_hist->Add(gHist.createPWO_E05(false));
   tab_hist->Add(gHist.createMsT());
   tab_hist->Add(gHist.createTriggerFlag());
-  tab_hist->Add(gHist.createTriggerFlag_E07());
+#if MODE_E07
+  tab_hist->Add(gHist.createTriggerFlag_E07(fl_ps_e07));
+#endif
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createDAQ(false));
 
   // Add extra histogram
   int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
+#if MODE_E07
   tab_e07->Add(gHist.createTH1(btof_id, "BTOF",
 			       300, -10, 5,
 			       "BTOF [ns]", ""
 			       ));
+#else
+  tab_e05->Add(gHist.createTH1(btof_id, "BTOF",
+			       300, -10, 5,
+			       "BTOF [ns]", ""
+			       ));
+#endif
+
+#if MODE_E07
   tab_e07->Add(gHist.createEMC());
   tab_e07->Add(gHist.createSSDT());
   tab_e07->Add(gHist.createSSD0());
@@ -143,6 +172,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_e07->Add(dispSSD2());
   tab_e07->Add(dispSSDHitPat());
   //tab_e07->Add(dispProfileSSD());
+#endif
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -213,6 +243,7 @@ process_event()
       }
     }// for(seg)
 
+#if MODE_E07
     // for E07
     static const int tf_e07_tdc_id = gHist.getSequentialID(kTriggerFlag, 1, kTDC);
     static const int tf_e07_hit_id = gHist.getSequentialID(kTriggerFlag, 1, kHitPat);
@@ -226,6 +257,7 @@ process_event()
 	}
       }
     }// for(seg)
+#endif
 
 #if 0
     // Debug, dump data relating this detector
@@ -744,6 +776,7 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+#if MODE_E07
   // BH2 E07 -----------------------------------------------------------
   {
     // data type
@@ -1431,6 +1464,7 @@ process_event()
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
 #endif
 
   // KIC -----------------------------------------------------------
@@ -2269,6 +2303,7 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+#if MODE_E07
   // EMC -----------------------------------------------------------
   {
     // data type
@@ -2316,6 +2351,7 @@ process_event()
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
 #endif
 
   return 0;

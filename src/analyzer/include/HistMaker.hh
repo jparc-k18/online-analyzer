@@ -68,6 +68,8 @@ class HistMaker{
   std::vector<std::string>      name_created_detectors_;
   std::vector<std::string>      name_ps_files_;
 
+  // return value of insert
+  typedef std::pair<std::map<int, int>::iterator, bool> TypeRetInsert;
   
 public:
   // Public functions ------------------------------------------------------

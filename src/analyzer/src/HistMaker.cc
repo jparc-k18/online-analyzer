@@ -2,6 +2,7 @@
 #include<cstdlib>
 #include<string>
 #include<algorithm>
+#include<utility>
 
 #include"DetectorID.hh"
 #include"HistHelper.hh"
@@ -100,14 +101,22 @@ TH1* HistMaker::createTH1(int unique_id, const char* title,
 
   // Add information to dictionaries which will be used to find the histogram
   int sequential_id = current_hist_id_++;
-  idmap_seq_from_unique_[unique_id]     = sequential_id;
-  idmap_seq_from_name_[title]           = sequential_id;
-  idmap_unique_from_seq_[sequential_id] = unique_id;
-
+  TypeRetInsert ret =  
+  idmap_seq_from_unique_.insert(std::make_pair(unique_id,     sequential_id));
+  idmap_seq_from_name_.insert(  std::make_pair(title,         sequential_id));
+  idmap_unique_from_seq_.insert(std::make_pair(sequential_id, unique_id));
+  if(!ret.second){
+    std::cerr << "#E: " << MyName << MyFunc  
+	      << "The unique id overlaps with other id"
+	      << std::endl;
+    std::cerr << " " << unique_id << " " << title << std::endl;
+    std::exit(-1);
+  }
+			     
   // create histogram using the static method of HistHelper class
   TH1 *h = GHist::I1(unique_id, title, nbinx, xmin, xmax);
   if(!h){
-    std::cerr << "#E: " << MyName << MyFunc
+    std::cerr << "#E: " << MyName << MyFunc  
 	      << "Fail to create TH1"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
@@ -133,9 +142,17 @@ TH2* HistMaker::createTH2(int unique_id, const char* title,
 
   // Add information to dictionaries which will be used to find the histogram
   int sequential_id = current_hist_id_++;
-  idmap_seq_from_unique_[unique_id]     = sequential_id;
-  idmap_seq_from_name_[title]           = sequential_id;
-  idmap_unique_from_seq_[sequential_id] = unique_id;
+  TypeRetInsert ret =  
+  idmap_seq_from_unique_.insert(std::make_pair(unique_id,     sequential_id));
+  idmap_seq_from_name_.insert(  std::make_pair(title,         sequential_id));
+  idmap_unique_from_seq_.insert(std::make_pair(sequential_id, unique_id));
+  if(!ret.second){
+    std::cerr << "#E: " << MyName << MyFunc  
+	      << "The unique id overlaps with other id"
+	      << std::endl;
+    std::cerr << " " << unique_id << " " << title << std::endl;
+    std::exit(-1);
+  }
 
   // create histogram using the static method of HistHelper class
   TH2 *h = GHist::I2(unique_id, title,

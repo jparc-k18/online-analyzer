@@ -369,6 +369,15 @@ TObject* dispBeamProfile_e07()
   return m;
 }
 
+// Beam profile for E05 -------------------------------------------
+TObject* dispBeamProfile_e05()
+{
+  std::string path = getMacroPath() + "dispBeamProfile_e05.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispBeamProfile_e05");
+  return m;
+}
+
 // dispACs_SFV -------------------------------------------------------
 TObject* dispACs_SFV()
 {

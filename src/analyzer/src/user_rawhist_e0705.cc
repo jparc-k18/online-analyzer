@@ -752,16 +752,16 @@ process_event()
 
     for(int seg = 0; seg<NumOfSegBAC; ++seg){
       // ADC
-      int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      int nhit_a = gUnpacker.get_entries(k_device, 0, seg+2, 0, k_adc);
       if(nhit_a != 0){
-	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	int adc = gUnpacker.get(k_device, 0, seg+2, 0, k_adc);
 	hptr_array[baca_id + seg]->Fill(adc, nhit_a);
       }
 
       // TDC
-      int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      int nhit_t = gUnpacker.get_entries(k_device, 0, seg+2, 0, k_tdc);
       if(nhit_t != 0){
-	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
+	int tdc = gUnpacker.get(k_device, 0, seg+2, 0, k_tdc);
 	if(tdc != 0){ hptr_array[bact_id + seg]->Fill(tdc, nhit_t); }
       }
     }

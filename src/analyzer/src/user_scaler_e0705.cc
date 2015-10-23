@@ -169,8 +169,9 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("L1 acc",         id_vme03_1, 19, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("MsT Go",         id_vme03_1, 14, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("MsT Clear",      id_vme03_1, 15, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("MstClr To PS Go",id_vme03_0, 26, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("L2 clear",       id_vme03_0, 27, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("L2 req",         id_vme03_0, 26, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("L2 req",         id_vme03_0, 30, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("L2 acc",         id_vme03_0, 12, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(K,K)",          id_vme03_0, 13, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(ub,ub)",        id_vme03_0, 14, true); cont_info[right][index++] = tmp;}
@@ -386,9 +387,9 @@ process_event()
 	       );
       }
       printf("\n%-10s %9.4f%% : %-15s %9.4f%% : %-15s %14.4f%%\n",
-	     "Live/Real", real_live*100,
-	     "DAQ Eff.",  daq_eff*100,
-	     "L2 Eff",    l2_eff*100);
+	     "Live/Real",      real_live*100,
+	     "DAQ Eff.",       daq_eff*100,
+	     "L2 req ratio",   l2_eff*100);
     }
   }
   

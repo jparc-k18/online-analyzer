@@ -22,7 +22,7 @@ namespace analyzer
   bool flag_spill_by_spill = false;
   bool flag_semi_online    = false;
 
-  static const int NofCh = 32;
+  static const int NofCh = 33;
 
   enum dispColumn{
     left, center, right,
@@ -93,7 +93,7 @@ process_begin(const std::vector<std::string>& argv)
     }
   }
 
-  for(int i = 0; i<32; ++i){
+  for(int i = 0; i<33; ++i){
     cont_info[left].push_back(   scaler_info("n/a", id_vme03_1, i, false) );
     cont_info[center].push_back( scaler_info("n/a", id_vme03_2, i, false) );
     cont_info[right].push_back(  scaler_info("n/a", id_vme03_0, i, false) );

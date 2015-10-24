@@ -129,6 +129,10 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("LAC(b)",    id_vme03_0,  7, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("LAC(c)",    id_vme03_0,  8, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("LC",        id_vme03_1, 27, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("KIC-U",     id_vme03_1, 23, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("KIC-D",     id_vme03_1, 26, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("KIC-L",     id_vme03_0, 22, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("KIC-R",     id_vme03_0, 25, true); cont_info[left][index++] = tmp;}
 
   // center column (E07 info)
   index = 0;

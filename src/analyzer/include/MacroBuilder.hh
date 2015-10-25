@@ -33,6 +33,7 @@ TObject* dispSDC2();
 TObject* dispHDC();
 TObject* dispSDC3();
 TObject* dispSDC4();
+TObject* dispPWO_E05();
 TObject* dispHitPat();
 TObject* dispHitPatE07();
 TObject* dispProfileSSD();

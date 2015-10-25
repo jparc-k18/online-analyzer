@@ -306,6 +306,15 @@ TObject* dispSDC4()
   return m;
 }
 
+// dispPWO_E05 -------------------------------------------------------
+TObject* dispPWO_E05()
+{
+  std::string path = getMacroPath() + "dispPWO_E05.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispPWO_E05");
+  return m;
+}
+
 // dispHitPat -----------------------------------------------------
 TObject* dispHitPat()
 {

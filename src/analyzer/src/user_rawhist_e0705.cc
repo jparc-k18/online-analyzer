@@ -81,8 +81,8 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispSCH());
 #endif
   tab_macro->Add(dispKIC());
-  //  tab_macro->Add(dispSP0Adc());
-  //  tab_macro->Add(dispSP0Tdc());
+  tab_macro->Add(dispSP0Adc());
+  tab_macro->Add(dispSP0Tdc());
   tab_macro->Add(dispTOF());  
   tab_macro->Add(dispLAC());
   tab_macro->Add(dispLC());
@@ -93,6 +93,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispHDC());
   tab_macro->Add(dispSDC3());
   tab_macro->Add(dispSDC4());
+  tab_macro->Add(dispPWO_E05());
   tab_macro->Add(dispHitPat());
 #if MODE_E07
   tab_macro->Add(dispHitPatE07());
@@ -138,7 +139,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createTOF());
   tab_hist->Add(gHist.createLAC());
   tab_hist->Add(gHist.createLC());
-  tab_hist->Add(gHist.createPWO_E05(false));
+  tab_hist->Add(gHist.createPWO_E05(fl_ps_e05));
   tab_hist->Add(gHist.createMsT());
   tab_hist->Add(gHist.createTriggerFlag());
 #if MODE_E07

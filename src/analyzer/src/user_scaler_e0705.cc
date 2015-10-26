@@ -176,8 +176,8 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("MsT Clear",      id_vme03_1, 15, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("MstClr To PS Go",id_vme03_0, 26, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("L2 clear",       id_vme03_0, 27, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("L2 req",         id_vme03_0, 30, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("L2 acc",         id_vme03_2, 1 , true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("L2 req",         id_vme03_2,  7, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("L2 acc",         id_vme03_2,  1, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(K,K)",          id_vme03_0, 13, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(ub,ub)",        id_vme03_0, 14, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(K,pi)",         id_vme03_0, 15, true); cont_info[right][index++] = tmp;}

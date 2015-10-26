@@ -187,7 +187,7 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("(K, pi)PS",      id_vme03_0, 19, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("K in",           id_vme03_0, 20, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("pi in",          id_vme03_0, 21, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("BH1xBH2",        id_vme03_0, 10, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("BH1xBH2",        id_vme03_2, 15, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("BH2xTOF",        id_vme03_0, 31, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("TOFxLC",         id_vme03_0, 29, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("TOFxLCx/LAC",    id_vme03_0, 23, true); cont_info[right][index++] = tmp;}

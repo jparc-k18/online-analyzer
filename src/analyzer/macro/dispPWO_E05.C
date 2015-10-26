@@ -18,9 +18,9 @@ void dispPWO_E05()
     c->Divide(4,4);
     int base_id = HistMaker::getUniqueID(kPWO, 0, kADC, 1);
     for(int i=0; i<n_seg; i++){
-      c->cd(i+1);
+      c->cd(i+1)->SetLogy();
       TH1 *h = (TH1*)GHist::get(base_id + i);
-      if(h) continue;
+      if(!h) continue;
       h->Draw();
     }
     c->Update();
@@ -33,7 +33,7 @@ void dispPWO_E05()
     c->Divide(4,4);
     int base_id = HistMaker::getUniqueID(kPWO, 0, kTDC, 1);
     for(int i=0; i<n_seg; i++){
-      c->cd(i+1);
+      c->cd(i+1)->SetLogy();
       TH1 *h = (TH1*)GHist::get(base_id + i);
       if(!h) continue;
       h->Draw();

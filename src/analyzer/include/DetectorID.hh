@@ -30,7 +30,7 @@ const int DetIdBVH  = 23;
 const int DetIdNRC  = 24;
 
 const int DetIdMisc    = 11;
-const int NumOfSegMisc = 16;
+const int NumOfSegMisc = 18;
 
 // E07 Detectors
 const int DetIdBH2_E07 =  33;

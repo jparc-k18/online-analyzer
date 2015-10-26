@@ -2238,19 +2238,21 @@ process_event()
   //------------------------------------------------------------------
   // BTOF
   //------------------------------------------------------------------
+#if MODE_E07
   {
     // Unpacker
     static const int k_d_bh1  = gUnpacker.get_device_id("BH1");
     static const int k_d_bh2  = gUnpacker.get_device_id("BH2_E07");
-    //static const int k_d_bh2  = gUnpacker.get_device_id("BH2");
+    //    static const int k_d_bh2  = gUnpacker.get_device_id("BH2");
+
     static const int k_u      = 0; // up
     static const int k_d      = 1; // down
     static const int k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
 
     // HodoParam
     static const int cid_bh1  = 3;
-    //static const int cid_bh2  = 4;
     static const int cid_bh2  = 33;
+    //    static const int cid_bh2  = 4;
     static const int plid     = 0;
 
     // Sequential ID
@@ -2259,9 +2261,9 @@ process_event()
     // BH2
     double t0  = -999;
     double ofs = 0;
-    //for(int seg = 0; seg<NumOfSegBH2; ++seg){
     //for(int seg = 0; seg<NumOfSegBH2_E07; ++seg){
     int seg = 0;
+    //    for(int seg = 0; seg<NumOfSegBH2; ++seg){
     int nhitu = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
     int nhitd = gUnpacker.get_entries(k_d_bh2, 0, seg, k_d, k_tdc);
     if(nhitu != 0 && nhitd != 0){
@@ -2273,12 +2275,13 @@ process_event()
 	hodoMan.GetTime(cid_bh2, plid, seg, k_u, tdcu, bh2ut);
 	hodoMan.GetTime(cid_bh2, plid, seg, k_d, tdcd, bh2dt);
 	t0 = (bh2ut+bh2dt)/2;
-	// if(fabs(t0) > fabs(bh2t)){
-	//   hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
-	//   t0 = bh2t;
+
+	//	if(fabs(t0) > fabs(bh2t)){
+	//	  hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
+	//	  t0 = bh2t;
       }//if(tdc)
     }// if(nhit)
-    //}// for(seg)
+    //    }// for(seg)
 
     // BH1
     for(int seg = 0; seg<NumOfSegBH1; ++seg){
@@ -2302,6 +2305,68 @@ process_event()
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+#else
+  {
+    // Unpacker
+    static const int k_d_bh1  = gUnpacker.get_device_id("BH1");
+    static const int k_d_bh2  = gUnpacker.get_device_id("BH2");
+    static const int k_u      = 0; // up
+    static const int k_d      = 1; // down
+    static const int k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
+
+    // HodoParam
+    static const int cid_bh1  = 3;
+    static const int cid_bh2  = 4;
+    static const int plid     = 0;
+
+    // Sequential ID
+    static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
+
+    // BH2
+    double t0  = -999;
+    double ofs = 0;
+    for(int seg = 0; seg<NumOfSegBH2; ++seg){
+      int nhit = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
+      if(nhit != 0){
+	int tdc = gUnpacker.get(k_d_bh2, 0, seg, k_u, k_tdc);
+	if(tdc != 0){
+	  HodoParamMan& hodoMan = HodoParamMan::GetInstance();
+	  double bh2t=-999;
+	  hodoMan.GetTime(cid_bh2, plid, seg, k_u, tdc, bh2t);
+	  if(fabs(t0) > fabs(bh2t)){
+	    hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
+	    t0 = bh2t;
+	  }
+	}//if(tdc)
+      }// if(nhit)
+    }// for(seg)
+
+    // BH1
+    for(int seg = 0; seg<NumOfSegBH1; ++seg){
+      int nhitu = gUnpacker.get_entries(k_d_bh1, 0, seg, k_u, k_tdc);
+      int nhitd = gUnpacker.get_entries(k_d_bh1, 0, seg, k_d, k_tdc);
+      if(nhitu != 0 &&  nhitd != 0){
+	int tdcu = gUnpacker.get(k_d_bh1, 0, seg, k_u, k_tdc);
+	int tdcd = gUnpacker.get(k_d_bh1, 0, seg, k_d, k_tdc);
+	if(tdcu != 0 && tdcd != 0){
+	  HodoParamMan& hodoMan = HodoParamMan::GetInstance();
+	  double bh1tu, bh1td;
+	  hodoMan.GetTime(cid_bh1, plid, seg, k_u, tdcu, bh1tu);
+	  hodoMan.GetTime(cid_bh1, plid, seg, k_d, tdcd, bh1td);
+	  double mt = (bh1tu+bh1td)/2.;
+	  double btof = mt-(t0+ofs);
+	  hptr_array[btof_id]->Fill(btof);
+	}// if(tdc)
+      }// if(nhit)
+    }// for(seg)
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
 #endif
 
 #if MODE_E07

@@ -117,10 +117,10 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createBFT());
   tab_hist->Add(gHist.createBC3());
   tab_hist->Add(gHist.createBC4());
-  tab_hist->Add(gHist.createBMW());
   tab_hist->Add(gHist.createBH2(fl_ps_e05));
   tab_hist->Add(gHist.createBAC(fl_ps_e05));
 #if MODE_E07
+  tab_hist->Add(gHist.createBMW());
   tab_hist->Add(gHist.createBH2_E07(fl_ps_e07));
   tab_hist->Add(gHist.createBAC_E07(fl_ps_e07));
   tab_hist->Add(gHist.createFBH(fl_ps_e07));
@@ -748,9 +748,12 @@ process_event()
     static const int k_tdc    = gUnpacker.get_data_id("BAC","tdc");
 
     // sequential id
-    static const int baca_id = gHist.getSequentialID(kBAC, 0, kADC, 1);
-    static const int bact_id = gHist.getSequentialID(kBAC, 0, kTDC, 1);
+    static const int baca_id = gHist.getSequentialID(kBAC, 0, kADC,    1);
+    static const int bact_id = gHist.getSequentialID(kBAC, 0, kTDC,    1);
+    static const int bach_id = gHist.getSequentialID(kBAC, 0, kHitPat, 1);
+    static const int bacm_id = gHist.getSequentialID(kBAC, 0, kMulti,  1);
 
+    int multiplicity = 0;
     for(int seg = 0; seg<NumOfSegBAC; ++seg){
       // ADC
       int nhit_a = gUnpacker.get_entries(k_device, 0, seg+2, 0, k_adc);
@@ -758,14 +761,19 @@ process_event()
 	int adc = gUnpacker.get(k_device, 0, seg+2, 0, k_adc);
 	hptr_array[baca_id + seg]->Fill(adc, nhit_a);
       }
-
       // TDC
       int nhit_t = gUnpacker.get_entries(k_device, 0, seg+2, 0, k_tdc);
       if(nhit_t != 0){
 	int tdc = gUnpacker.get(k_device, 0, seg+2, 0, k_tdc);
-	if(tdc != 0){ hptr_array[bact_id + seg]->Fill(tdc, nhit_t); }
+	if(tdc != 0){
+	  hptr_array[bact_id + seg]->Fill(tdc, nhit_t);
+	  hptr_array[bach_id]->Fill(seg);
+	  ++multiplicity;
+	}
       }
     }
+
+    hptr_array[bacm_id]->Fill(multiplicity);
 
 #if 0
     // Debug, dump data relating this detector

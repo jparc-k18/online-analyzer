@@ -307,7 +307,7 @@ void PsMaker::create(std::string& name)
     base_id = HistMaker::getUniqueID(kBAC, 0, kMulti);
     id_list.push_back(base_id);
 
-    drawOneCanvas(id_list, par_list, false, false);
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
 
   // BH2_E07 ----------------------------------------------------------------

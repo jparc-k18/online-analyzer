@@ -3626,7 +3626,7 @@ TList* HistMaker::createPWO_E05(bool flag_ps)
     for(int i=0; i<NumOfUnitPWO[box_id]; ++i){
       sub_dir->Add(createTH1(++target_id, Form("%s_%s_%d",
 					       nameDetector, nameSubDir, i+1),
-			     0x500, 0, 0x500,
+			     0x800, 0, 0x800,
 			     "TDC [ch]", ""));
     }
     // insert sub directory

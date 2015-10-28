@@ -941,7 +941,7 @@ void PsMaker::create(std::string& name)
     int base_id = 0;
     // ADC
     par_list[kXdiv] = 4; par_list[kYdiv] = 4;
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x800;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
 
@@ -951,7 +951,7 @@ void PsMaker::create(std::string& name)
 
     // TDC
     par_list[kXdiv] = 4; par_list[kYdiv] = 4;
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 4000;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x1000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
 

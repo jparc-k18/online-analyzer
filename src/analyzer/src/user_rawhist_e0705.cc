@@ -648,6 +648,7 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+#if MODE_E07
   // BMW -------------------------------------------------------------
   {
     // data type
@@ -681,6 +682,8 @@ process_event()
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
 #endif
 
   // BH2 -----------------------------------------------------------

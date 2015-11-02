@@ -9,6 +9,7 @@
 #include <TGFileBrowser.h>
 #include <TGraph.h>
 #include <TLegend.h>
+#include <TPaveText.h>
 #include <TStyle.h>
 #include <TString.h>
 
@@ -26,15 +27,14 @@ namespace analyzer
   using namespace hddaq::unpacker;
   using namespace hddaq;
 
-  static int spill = 0;
-
   enum eMonitor
     {
       kKbeam, kPibeam, nMonitor
     };
 
-  TGraph* graph[nMonitor];
-  Color_t color[nMonitor] = { kGreen, kBlue };
+  TGraph  *graph[nMonitor];
+  TLegend *leg;
+  Color_t  color[nMonitor] = { kGreen, kBlue };
 
 //____________________________________________________________________________
 int
@@ -65,7 +65,7 @@ process_begin(const std::vector<std::string>& argv)
       else     graph[i]->Draw("P");
       graph[i]->SetPoint(1,0,0);
     }
-    TLegend *leg = new TLegend(0.13, 0.13, 0.40, 0.32);
+    leg = new TLegend(0.13, 0.13, 0.37, 0.32);
     leg->SetTextSize(0.05);
     leg->SetFillColor(0);
     leg->SetBorderSize(4);
@@ -93,15 +93,17 @@ int
 process_event()
 {
   static UnpackerManager& g_unpacker = GUnpacker::get_instance();
-  
-  //static int run_number = g_unpacker.get_root()->get_run_number();
+  // static int run_number = g_unpacker.get_root()->get_run_number();
+
   {
     static const int scaler_id = g_unpacker.get_device_id("scaler");
 
     static const int module_id[nMonitor]  = {  1,  1 };
     static const int channel_id[nMonitor] = { 28, 29 };
-    static int beam[nMonitor]     = {};
-    static int beam_pre[nMonitor] = {};
+
+    static int spill = 0;
+    static double beam[nMonitor]     = {};
+    static double beam_pre[nMonitor] = {};
 
     for(int i=0; i<nMonitor; ++i){
       int hit = g_unpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
@@ -111,10 +113,16 @@ process_event()
 	graph[i]->SetPoint(spill, spill, beam_pre[i]);
 	graph[i]->GetYaxis()->SetRangeUser(0, 1e6);
 	graph[i]->GetXaxis()->SetLimits(spill-90, spill+10);
-	if(i==nMonitor-1) spill++;
+	if(i==nMonitor-1){
+	  double kpi_ratio = beam_pre[kKbeam]/beam_pre[kPibeam];
+	  leg->SetHeader(Form("  K/pi : %.3lf", kpi_ratio));
+	  spill++;
+	}
       }
-      beam_pre[i] = beam[i];
     }
+
+    for(int i=0; i<nMonitor; ++i) beam_pre[i] = beam[i];
+
   }
 
   return 0;

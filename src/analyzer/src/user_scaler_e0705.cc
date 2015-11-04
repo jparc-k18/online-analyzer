@@ -394,10 +394,21 @@ process_event()
 	       info[right].name.c_str(),  val[right][i]
 	       );
       }
+      
+      // additional DAQ information
       printf("\n%-10s %9.4f%% : %-15s %9.4f%% : %-15s %14.4f%%\n",
 	     "Live/Real",      real_live*100,
 	     "DAQ Eff.",       daq_eff*100,
 	     "L2 req ratio",   l2_eff*100);
+      
+      double duty_factor = 0;
+      if(1-daq_eff == 0){
+	duty_factor = 100;
+      }else{
+	duty_factor = daq_eff/(1-daq_eff)*(1/real_live - 1);
+      }
+      printf("%-10s %8.4f%%\n",
+	     "Duty factor",    duty_factor*100);
     }
   }
   

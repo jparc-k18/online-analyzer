@@ -365,6 +365,13 @@ process_event()
     if(inclement_spill)	++val[right][0];
 
     if(en_disp){
+      int event_number = g_unpacker.get_event_number();
+      std::cout << std::setw(10) << std::left  << "RUN"
+		<< std::setw(11) << std::right << run_number << " : "
+		<< std::setw(15) << std::left  << "Event Number"
+		<< std::setw(11) << std::right << event_number << " : "
+		<< std::endl     << std::endl;
+
       double real_time = (double)val[right][4];
       double live_time = (double)val[right][5];
       double l1_rec    = (double)val[right][6];

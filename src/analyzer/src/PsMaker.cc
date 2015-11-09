@@ -160,21 +160,29 @@ void PsMaker::create(std::string& name)
 
   // BFT ----------------------------------------------------------------
   if(name == CONV_STRING(kBFT)){
-    // BFT all
-    par_list[kXdiv] = 4; par_list[kYdiv] = 2;
+    // TDC
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 1000; // for TDC
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
 
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,      1));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,      2));
-    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,      1));
-    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,      2));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,     11));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,     12));
+    drawOneCanvas(id_list, par_list, flag_xaxis, false);
+
+    // TOT
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    par_list[kXrange_min] = -50; par_list[kXrange_max] = 150; // for TOT
+    flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
+
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,      1));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,      2));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,     11));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,     12));
     drawOneCanvas(id_list, par_list, flag_xaxis, false);
 
+    // HitPat & multi
     par_list[kXdiv] = 3; par_list[kYdiv] = 2;
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat,   1));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kHitPat,   2));

@@ -30,7 +30,7 @@ const int sdc2_tdc_min = 550;
 const int sdc2_tdc_max = 700;
 
 //______________________________________________________________________________
-DCRHC::DCRHC(int DetectorID)
+DCRHC::DCRHC( int DetectorID )
 {
   if(DetectorID==DetIdBcOut)  init_BcOut();
   if(DetectorID==DetIdSdcIn)  init_SdcIn();
@@ -40,7 +40,7 @@ DCRHC::DCRHC(int DetectorID)
   chi2 = -1;
 }
 //______________________________________________________________________________
-void DCRHC::init_BcOut()
+void DCRHC::init_BcOut( void )
 {
   m_hitwire.resize(NumOfLayersBcOut);
   m_hitpos.resize(NumOfLayersBcOut);
@@ -55,7 +55,7 @@ void DCRHC::init_BcOut()
     }
 }
 //______________________________________________________________________________
-void DCRHC::init_SdcIn()
+void DCRHC::init_SdcIn( void )
 {
   m_hitwire.resize(NumOfLayersSdcIn);
   m_hitpos.resize(NumOfLayersSdcIn);
@@ -70,7 +70,7 @@ void DCRHC::init_SdcIn()
     }
 }
 //______________________________________________________________________________
-void DCRHC::init_SdcOut()
+void DCRHC::init_SdcOut( void )
 {
   m_hitwire.resize(NumOfLayersSdcOut);
   m_hitpos.resize(NumOfLayersSdcOut);
@@ -85,7 +85,7 @@ void DCRHC::init_SdcOut()
     }
 }
 //______________________________________________________________________________
-void DCRHC::init_Ssd()
+void DCRHC::init_Ssd( void )
 {
   m_hitwire.resize(NumOfLayersSsd);
   m_hitpos.resize(NumOfLayersSsd);
@@ -99,7 +99,7 @@ void DCRHC::init_Ssd()
   }
 }
 //______________________________________________________________________________
-DCRHC::~DCRHC()
+DCRHC::~DCRHC( void )
 {
   m_hitwire.clear();
   m_hitpos.clear();
@@ -109,7 +109,7 @@ DCRHC::~DCRHC()
   lr.clear();
 }
 //______________________________________________________________________________
-void DCRHC::hoge()
+void DCRHC::hoge( void )
 {
   std::cout<<"////////// vector ////////////"<<std::endl;
   std::cout<<"[ ";
@@ -161,7 +161,7 @@ void DCRHC::hoge()
 
 }
 //______________________________________________________________________________
-void DCRHC::pushback(int DetectorID)
+void DCRHC::pushback( int DetectorID )
 {
   if(DetectorID==DetIdBcOut)  pushback_BcOut();
   if(DetectorID==DetIdSdcIn)  pushback_SdcIn();
@@ -170,7 +170,7 @@ void DCRHC::pushback(int DetectorID)
   return ;
 }
 //______________________________________________________________________________
-void DCRHC::pushback_BcOut()
+void DCRHC::pushback_BcOut( void )
 {
   for(int layer=0;layer<NumOfLayersBcOut;++layer)
     {
@@ -224,7 +224,7 @@ void DCRHC::pushback_BcOut()
 #endif
 }
 //______________________________________________________________________________
-void DCRHC::pushback_SdcIn()
+void DCRHC::pushback_SdcIn( void )
 {
   for(int layer=0;layer<NumOfLayersSdcIn;++layer)
     m_hitwire[layer].clear();
@@ -266,27 +266,16 @@ void DCRHC::pushback_SdcIn()
     }
 }
 //______________________________________________________________________________
-  void DCRHC::pushback_SdcOut()
-  {
-    for(int layer=0;layer<NumOfLayersSdcOut;++layer)
-      m_hitwire[layer].clear();
-    for(int layer=0;layer<NumOfLayersSDC3;++layer)
-      {
-	////// x-plane //////
-	if(layer==1 || layer==4)
-	  {
-	    for(int wire=0;wire<NumOfWireSDC3x;++wire)
-	      {
-		int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
-		if(hit==0)continue;
-		int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
-		m_hitwire[layer].push_back(wire);
-		m_tdc[layer].push_back(tdc);
-	      }
-	  }
-	////// u,v-plane //////
-	else
-	  for(int wire=0;wire<NumOfWireSDC3uv;++wire)
+void DCRHC::pushback_SdcOut( void )
+{
+  for(int layer=0;layer<NumOfLayersSdcOut;++layer)
+    m_hitwire[layer].clear();
+  for(int layer=0;layer<NumOfLayersSDC3;++layer)
+    {
+      ////// x-plane //////
+      if(layer==1 || layer==4)
+	{
+	  for(int wire=0;wire<NumOfWireSDC3x;++wire)
 	    {
 	      int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
 	      if(hit==0)continue;
@@ -294,24 +283,24 @@ void DCRHC::pushback_SdcIn()
 	      m_hitwire[layer].push_back(wire);
 	      m_tdc[layer].push_back(tdc);
 	    }
-      }
-    for(int layer=0;layer<NumOfLayersSDC4;++layer)
-      {
-	////// x-plane //////
-	if(layer==1 || layer==4)
+	}
+      ////// u,v-plane //////
+      else
+	for(int wire=0;wire<NumOfWireSDC3uv;++wire)
 	  {
-	    for(int wire=0;wire<NumOfWireSDC4x;++wire)
-	      {
-		int hit = g_unpacker.get_entries(DetIdSDC4,layer,0,wire,0);
-		if(hit==0)continue;
-		int tdc = g_unpacker.get(DetIdSDC4,layer,0,wire,0);
-		m_hitwire[layer + NumOfLayersSDC3].push_back(wire);
-		m_tdc[layer + NumOfLayersSDC3].push_back(tdc);
-	      }
+	    int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
+	    if(hit==0)continue;
+	    int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
+	    m_hitwire[layer].push_back(wire);
+	    m_tdc[layer].push_back(tdc);
 	  }
-	////// u,v-plane //////
-	else
-	  for(int wire=0;wire<NumOfWireSDC4uv;++wire)
+    }
+  for(int layer=0;layer<NumOfLayersSDC4;++layer)
+    {
+      ////// x-plane //////
+      if(layer==1 || layer==4)
+	{
+	  for(int wire=0;wire<NumOfWireSDC4x;++wire)
 	    {
 	      int hit = g_unpacker.get_entries(DetIdSDC4,layer,0,wire,0);
 	      if(hit==0)continue;
@@ -319,10 +308,21 @@ void DCRHC::pushback_SdcIn()
 	      m_hitwire[layer + NumOfLayersSDC3].push_back(wire);
 	      m_tdc[layer + NumOfLayersSDC3].push_back(tdc);
 	    }
-      }
-  }
+	}
+      ////// u,v-plane //////
+      else
+	for(int wire=0;wire<NumOfWireSDC4uv;++wire)
+	  {
+	    int hit = g_unpacker.get_entries(DetIdSDC4,layer,0,wire,0);
+	    if(hit==0)continue;
+	    int tdc = g_unpacker.get(DetIdSDC4,layer,0,wire,0);
+	    m_hitwire[layer + NumOfLayersSDC3].push_back(wire);
+	    m_tdc[layer + NumOfLayersSDC3].push_back(tdc);
+	  }
+    }
+}
 //______________________________________________________________________________
-void DCRHC::pushback_Ssd()
+void DCRHC::pushback_Ssd( void )
 {
   for(int layer=0; layer<NumOfLayersSsd; ++layer){
     m_hitwire[layer].clear();
@@ -364,7 +364,7 @@ void DCRHC::pushback_Ssd()
 #endif
 }
 //______________________________________________________________________________
-void DCRHC::HitPosition(int DetectorID)
+void DCRHC::HitPosition( int DetectorID )
 {
   std::vector<double> wire_offset, pitch, wire_center;
 
@@ -398,7 +398,7 @@ void DCRHC::HitPosition(int DetectorID)
 }
 
 //______________________________________________________________________________
-void DCRHC::makeHvector(int DetectorID)
+void DCRHC::makeHvector( int DetectorID )
 {
   if(DetectorID==DetIdSdcOut||DetectorID==DetIdSsd)
     {
@@ -439,7 +439,7 @@ void DCRHC::makeHvector(int DetectorID)
   return;
 }
 //______________________________________________________________________________
-void DCRHC::makeAvector()
+void DCRHC::makeAvector( void )
 {
   double a,b,c,d;
   a=b=c=d=0;
@@ -467,7 +467,7 @@ void DCRHC::makeAvector()
   return;
 }
 //______________________________________________________________________________
-void DCRHC::makeMatrix()
+void DCRHC::makeMatrix( void )
 {
   // 4*4 matrix
   // A B C D
@@ -542,7 +542,7 @@ void DCRHC::makeMatrix()
   return;
 }
 //______________________________________________________________________________
-bool DCRHC::make_MinimumPoint(double& dxdZ,double& dydZ,double& x0,double& y0)
+bool DCRHC::make_MinimumPoint( double& dxdZ,double& dydZ,double& x0,double& y0 )
 {
   double a,b,c,d;
   a=b=c=d=0;
@@ -606,17 +606,17 @@ bool DCRHC::TrackSearch(int min_plane)
     return false;
 }
 //______________________________________________________________________________
-double DCRHC::GetPosX(int PosZ)
+double DCRHC::GetPosX( int PosZ )
 {
   return dXdZ * PosZ + X0;
 }
 //______________________________________________________________________________
-double DCRHC::GetPosY(int PosZ)
+double DCRHC::GetPosY( int PosZ )
 {
   return dYdZ * PosZ + Y0;
 }
 //______________________________________________________________________________
-int DCRHC::num_Hitplane()
+int DCRHC::num_Hitplane( void )
 {
   int a=0;
   for(unsigned int i=0;i<m_hitwire.size();++i)
@@ -626,7 +626,7 @@ int DCRHC::num_Hitplane()
   return a;
 }
 //______________________________________________________________________________
-double DCRHC::GetResidual(int plane)
+double DCRHC::GetResidual( int plane )
 {
   double residue=200;
   double axis = cosvector[plane]*(X0 + dXdZ*z[plane])+sinvector[plane]*(Y0+dYdZ*z[plane]);
@@ -635,7 +635,7 @@ double DCRHC::GetResidual(int plane)
   return residue;
 }
 //______________________________________________________________________________
-void DCRHC::makeChisquare(int DetectorID)
+void DCRHC::makeChisquare( int DetectorID )
 {
   int plid=0;
   if(DetectorID==DetIdBcOut)  plid = 113;
@@ -655,7 +655,7 @@ void DCRHC::makeChisquare(int DetectorID)
   chi2 = chi2/(j-2);
 }
 //______________________________________________________________________________
-void DCRHC::makeDriftTime(int DetectorID)
+void DCRHC::makeDriftTime( int DetectorID )
 {
   int plid=0;
   if(DetectorID==DetIdBcOut)  plid = 113;
@@ -694,7 +694,7 @@ void DCRHC::makeDriftTime(int DetectorID)
 #endif
 }
 //______________________________________________________________________________
-double DCRHC::GetDriftTime(int plane)
+double DCRHC::GetDriftTime( int plane )
 {
   if(m_dtime[plane].size()>0)
     return m_dtime[plane][0];
@@ -702,7 +702,7 @@ double DCRHC::GetDriftTime(int plane)
     return -10;
 }
 //______________________________________________________________________________
-void DCRHC::makeDriftLength(int DetectorID)
+void DCRHC::makeDriftLength( int DetectorID )
 {
   int plid;
   if(DetectorID==DetIdBcOut)  plid = 113;
@@ -740,7 +740,7 @@ void DCRHC::makeDriftLength(int DetectorID)
 #endif
 }
 //______________________________________________________________________________
-double DCRHC::GetDriftLength(int plane)
+double DCRHC::GetDriftLength( int plane )
 {
   if(m_dlength[plane].size()>0)
     return m_dlength[plane][0];
@@ -748,8 +748,8 @@ double DCRHC::GetDriftLength(int plane)
     return -20;
 }
 //______________________________________________________________________________
-std::vector<double> DCRHC::resolveLR(double left1,double right1,
-			      double left2,double right2)
+std::vector<double> DCRHC::resolveLR( double left1,double right1,
+				      double left2,double right2 )
 {
   std::vector<double> LeftRight(2),RightLeft(2);
   LeftRight[0] = left1;
@@ -771,7 +771,7 @@ std::vector<double> DCRHC::resolveLR(double left1,double right1,
     }
 }
 //______________________________________________________________________________
-void DCRHC::ReHitPosition(int DetectorID)
+void DCRHC::ReHitPosition( int DetectorID )
 {
   if(DetectorID==DetIdSsd) return;
   if(DetectorID==DetIdBcOut || DetectorID==DetIdSdcIn)
@@ -792,7 +792,7 @@ void DCRHC::ReHitPosition(int DetectorID)
 	  m_hitpos[2*i][0] = selection[0];
 	  m_hitpos[2*i+1][0] = selection[1];
 	}
-         }
+    }
   else
     {
       for(unsigned int i=0;i<m_hitpos.size();++i)
@@ -819,17 +819,17 @@ void DCRHC::ReHitPosition(int DetectorID)
 #endif
 }
 //______________________________________________________________________________
-std::vector<int > DCRHC::GetTdc(int plane)
+std::vector<int > DCRHC::GetTdc( int plane )
 {
   return m_tdc[plane];
 }
 //______________________________________________________________________________
-std::vector<int > DCRHC::GetHitWire(int plane)
+std::vector<int > DCRHC::GetHitWire( int plane )
 {
   return m_hitwire[plane];
 }
 //______________________________________________________________________________
-void DCRHC::FullTrackSearch()
+void DCRHC::FullTrackSearch( void )
 {
   double buf_chi2 = -1;
   buf_chi2=10000;
@@ -838,97 +838,97 @@ void DCRHC::FullTrackSearch()
   std::cout<<"#D DCRHC::FullTrackSearch()"<<std::endl;
 #endif
   for(int p12=0;p12<2;++p12){for(int p11=0;p11<2;++p11){
-  for(int p10=0;p10<2;++p10){
-  for(int p9=0;p9<2;++p9){for(int p8=0;p8<2;++p8){for(int p7=0;p7<2;++p7){
-  for(int p6=0;p6<2;++p6){for(int p5=0;p5<2;++p5){for(int p4=0;p4<2;++p4){
-  for(int p3=0;p3<2;++p3){for(int p2=0;p2<2;++p2){
-  for(int p1=0;p1<2;++p1){
-    if(H[0]==1)
-      buf_hitpos.push_back(m_hitpos[0][p1]);
-    else
-      buf_hitpos.push_back(0);
-    if(H[1]==1)
-      buf_hitpos.push_back(m_hitpos[1][p2]);
-    else
-      buf_hitpos.push_back(0);
-    if(H[2]==1)
-      buf_hitpos.push_back(m_hitpos[2][p3]);
-    else
-      buf_hitpos.push_back(0);
-    if(H[3]==1)
-      buf_hitpos.push_back(m_hitpos[3][p4]);
-    else
-      buf_hitpos.push_back(0);
-    if(H[4]==1)
-      buf_hitpos.push_back(m_hitpos[4][p5]);
-    else
-      buf_hitpos.push_back(0);
-    if(H[5]==1)
-      buf_hitpos.push_back(m_hitpos[5][p6]);
-    else
-      buf_hitpos.push_back(0);
-    if(H[6]==1)
-      buf_hitpos.push_back(m_hitpos[6][p7]);
-    else
-      buf_hitpos.push_back(0);
-    if(H[7]==1)
-      buf_hitpos.push_back(m_hitpos[7][p8]);
-    else
-      buf_hitpos.push_back(0);
-    if(H[8]==1)
-      buf_hitpos.push_back(m_hitpos[8][p9]);
-    else
-      buf_hitpos.push_back(0);
-    if(H[9]==1)
-      buf_hitpos.push_back(m_hitpos[9][p10]);
-    else
-      buf_hitpos.push_back(0);
-    if(H[10]==1)
-      buf_hitpos.push_back(m_hitpos[10][p11]);
-    else
-      buf_hitpos.push_back(0);
-    if(H[11]==1)
-      buf_hitpos.push_back(m_hitpos[11][p12]);
-    else
-      buf_hitpos.push_back(0);
-    double a,b,c,d;
-    a=b=c=d=0;
-    for(unsigned int plane=0;plane<m_hitwire.size();++plane)
-      {
-	a += H[plane] * buf_hitpos[plane] * cosvector[plane];
-	b += H[plane] * buf_hitpos[plane] * z[plane] * cosvector[plane];
-	c += H[plane] * buf_hitpos[plane] * sinvector[plane];
-	d += H[plane] * buf_hitpos[plane] * z[plane] * sinvector[plane];
-      }
+      for(int p10=0;p10<2;++p10){
+	for(int p9=0;p9<2;++p9){for(int p8=0;p8<2;++p8){for(int p7=0;p7<2;++p7){
+	      for(int p6=0;p6<2;++p6){for(int p5=0;p5<2;++p5){for(int p4=0;p4<2;++p4){
+		    for(int p3=0;p3<2;++p3){for(int p2=0;p2<2;++p2){
+			for(int p1=0;p1<2;++p1){
+			  if(H[0]==1)
+			    buf_hitpos.push_back(m_hitpos[0][p1]);
+			  else
+			    buf_hitpos.push_back(0);
+			  if(H[1]==1)
+			    buf_hitpos.push_back(m_hitpos[1][p2]);
+			  else
+			    buf_hitpos.push_back(0);
+			  if(H[2]==1)
+			    buf_hitpos.push_back(m_hitpos[2][p3]);
+			  else
+			    buf_hitpos.push_back(0);
+			  if(H[3]==1)
+			    buf_hitpos.push_back(m_hitpos[3][p4]);
+			  else
+			    buf_hitpos.push_back(0);
+			  if(H[4]==1)
+			    buf_hitpos.push_back(m_hitpos[4][p5]);
+			  else
+			    buf_hitpos.push_back(0);
+			  if(H[5]==1)
+			    buf_hitpos.push_back(m_hitpos[5][p6]);
+			  else
+			    buf_hitpos.push_back(0);
+			  if(H[6]==1)
+			    buf_hitpos.push_back(m_hitpos[6][p7]);
+			  else
+			    buf_hitpos.push_back(0);
+			  if(H[7]==1)
+			    buf_hitpos.push_back(m_hitpos[7][p8]);
+			  else
+			    buf_hitpos.push_back(0);
+			  if(H[8]==1)
+			    buf_hitpos.push_back(m_hitpos[8][p9]);
+			  else
+			    buf_hitpos.push_back(0);
+			  if(H[9]==1)
+			    buf_hitpos.push_back(m_hitpos[9][p10]);
+			  else
+			    buf_hitpos.push_back(0);
+			  if(H[10]==1)
+			    buf_hitpos.push_back(m_hitpos[10][p11]);
+			  else
+			    buf_hitpos.push_back(0);
+			  if(H[11]==1)
+			    buf_hitpos.push_back(m_hitpos[11][p12]);
+			  else
+			    buf_hitpos.push_back(0);
+			  double a,b,c,d;
+			  a=b=c=d=0;
+			  for(unsigned int plane=0;plane<m_hitwire.size();++plane)
+			    {
+			      a += H[plane] * buf_hitpos[plane] * cosvector[plane];
+			      b += H[plane] * buf_hitpos[plane] * z[plane] * cosvector[plane];
+			      c += H[plane] * buf_hitpos[plane] * sinvector[plane];
+			      d += H[plane] * buf_hitpos[plane] * z[plane] * sinvector[plane];
+			    }
     
-    A.push_back(a);
-    A.push_back(b);
-    A.push_back(c);
-    A.push_back(d);
-    double dxdZ,dydZ,x0,y0;
-    make_MinimumPoint(dxdZ,dydZ,x0,y0);
-    makeChisquareSdcOut();
-    if(buf_chi2>chi2)
-      {
-	lr.clear();
-	buf_chi2 = chi2;
-	bufbuf_hitpos = buf_hitpos;
-	lr.push_back(p1);
-	lr.push_back(p2);
-	lr.push_back(p3);
-	lr.push_back(p4);
-	lr.push_back(p5);
-	lr.push_back(p6);
-	lr.push_back(p7);
-	lr.push_back(p8);
-	lr.push_back(p9);
-	lr.push_back(p10);
-	lr.push_back(p11);
-	lr.push_back(p12);
-      }
-    buf_hitpos.clear();
-    A.clear();
-  }}}}}}}}}}}
+			  A.push_back(a);
+			  A.push_back(b);
+			  A.push_back(c);
+			  A.push_back(d);
+			  double dxdZ,dydZ,x0,y0;
+			  make_MinimumPoint(dxdZ,dydZ,x0,y0);
+			  makeChisquareSdcOut();
+			  if(buf_chi2>chi2)
+			    {
+			      lr.clear();
+			      buf_chi2 = chi2;
+			      bufbuf_hitpos = buf_hitpos;
+			      lr.push_back(p1);
+			      lr.push_back(p2);
+			      lr.push_back(p3);
+			      lr.push_back(p4);
+			      lr.push_back(p5);
+			      lr.push_back(p6);
+			      lr.push_back(p7);
+			      lr.push_back(p8);
+			      lr.push_back(p9);
+			      lr.push_back(p10);
+			      lr.push_back(p11);
+			      lr.push_back(p12);
+			    }
+			  buf_hitpos.clear();
+			  A.clear();
+			}}}}}}}}}}}
   }
   // scan end
   for(int i=0;i<12;++i)
@@ -958,7 +958,7 @@ void DCRHC::FullTrackSearch()
 #endif  
 }
 //______________________________________________________________________________
-double DCRHC::GetResidualSdcOut(int plane)
+double DCRHC::GetResidualSdcOut( int plane )
 {
   double residue=200;
   double axis = cosvector[plane]*(X0 + dXdZ*z[plane])+sinvector[plane]*(Y0+dYdZ*z[plane]);
@@ -969,7 +969,7 @@ double DCRHC::GetResidualSdcOut(int plane)
   return residue;
 }
 //______________________________________________________________________________
-void DCRHC::makeChisquareSdcOut()
+void DCRHC::makeChisquareSdcOut( void )
 {
   int plid =  31;
   chi2 = 0;
@@ -985,7 +985,7 @@ void DCRHC::makeChisquareSdcOut()
   chi2 = chi2/(j-2);
 }
 //______________________________________________________________________________
-int DCRHC::Getlr(int plane)
+int DCRHC::Getlr( int plane )
 {
   return lr[plane];
 }
@@ -994,7 +994,7 @@ int DCRHC::Getlr(int plane)
 #include"cmath"
 
 std::vector<std::vector<double> >
-InvMatrix(std::vector<std::vector<double> > Matrix)
+InvMatrix( std::vector<std::vector<double> > Matrix )
 {
   std::vector<std::vector<double> > inv_matrix(4);
   double buf;
@@ -1032,22 +1032,22 @@ InvMatrix(std::vector<std::vector<double> > Matrix)
 	}
     }
   //output
-//   for(int i=0;i<4;++i)
-//     {
-//       std::cout<<"[ ";
-//       for(int j=0;j<4;++j)
-// 	{
-// 	  std::cout<<inv_matrix[i][j]<<" ";
-// 	}
-//       std::cout <<"]"<<std::endl;
-//     }
+  //   for(int i=0;i<4;++i)
+  //     {
+  //       std::cout<<"[ ";
+  //       for(int j=0;j<4;++j)
+  // 	{
+  // 	  std::cout<<inv_matrix[i][j]<<" ";
+  // 	}
+  //       std::cout <<"]"<<std::endl;
+  //     }
 
   return inv_matrix;
 
 }
 
 std::vector<double>
-angle(int degree)
+angle( int degree )
 {
   double pi,unit,ragian;
   pi = 2.0*asin(1.0);
@@ -1060,8 +1060,8 @@ angle(int degree)
   tilt.push_back(sin(ragian));
   tilt.push_back(cos(ragian));
   tilt.push_back(tan(ragian));
-//   tilt.push_back(sin(ragian_30));
-//   tilt.push_back(cos(ragian_30));
-//   tilt.push_back(tan(ragian_30));
+  //   tilt.push_back(sin(ragian_30));
+  //   tilt.push_back(cos(ragian_30));
+  //   tilt.push_back(tan(ragian_30));
   return tilt;
 }

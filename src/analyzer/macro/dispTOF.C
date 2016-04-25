@@ -9,17 +9,18 @@ void dispTOF()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  int n_seg = 32;
+  const int n_seg = 24;
 
   // draw ADC U
   TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
   c->Clear();
-  c->Divide(8,4);
+  c->Divide(6,4);
   int base_id = HistMaker::getUniqueID(kTOF, 0, kADC, 1);
-  for(int i = 0; i<n_seg; ++i){
+  for( int i = 0; i<n_seg; ++i ){
     c->cd(i+1);
     gPad->SetLogy();
     TH1 *h = (TH1*)GHist::get(base_id + i);
+    if( !h ) continue;
     h->GetXaxis()->SetRangeUser(0,3000);
     h->Draw();
   }
@@ -29,12 +30,13 @@ void dispTOF()
   // draw ADC D
   c = (TCanvas*)gROOT->FindObject("c2");
   c->Clear();
-  c->Divide(8,4);
+  c->Divide(6,4);
   int base_id = HistMaker::getUniqueID(kTOF, 0, kADC, 1+n_seg);
-  for(int i = 0; i<n_seg; ++i){
+  for( int i = 0; i<n_seg; ++i ){
     c->cd(i+1);
     gPad->SetLogy();
     TH1 *h = (TH1*)GHist::get(base_id + i);
+    if( !h ) continue;
     h->GetXaxis()->SetRangeUser(0,3000);
     h->Draw();
   }
@@ -44,11 +46,12 @@ void dispTOF()
   // draw TDC U
   c = (TCanvas*)gROOT->FindObject("c3");
   c->Clear();
-  c->Divide(8,4);
+  c->Divide(6,4);
   int base_id = HistMaker::getUniqueID(kTOF, 0, kTDC, 1);
-  for(int i = 0; i<n_seg; ++i){
+  for( int i = 0; i<n_seg; ++i ){
     c->cd(i+1);
-    GHist::get(base_id + i)->Draw();
+    TH1 *h = (TH1*)GHist::get(base_id + i);
+    if( h ) h->Draw();
   }
 
   c->Update();
@@ -56,11 +59,12 @@ void dispTOF()
   // draw TDC D
   c = (TCanvas*)gROOT->FindObject("c4");
   c->Clear();
-  c->Divide(8,4);
+  c->Divide(6,4);
   int base_id = HistMaker::getUniqueID(kTOF, 0, kTDC, 1+n_seg);
   for(int i = 0; i<n_seg; ++i){
     c->cd(i+1);
-    GHist::get(base_id + i)->Draw();
+    TH1 *h = (TH1*)GHist::get(base_id + i);
+    if( h ) h->Draw();
   }
 
   c->Update();

@@ -9,11 +9,9 @@ void dispProfileSSD()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  const int n_hist = 6;
+  const int n_hist = 4;
   
   const int ssd_id[n_hist] = {
-    HistMaker::getUniqueID(kSSD0, 0, kHitPat2D, 1),
-    0,
     HistMaker::getUniqueID(kSSD1, 0, kHitPat2D, 1),
     HistMaker::getUniqueID(kSSD1, 0, kHitPat2D, 2),
     HistMaker::getUniqueID(kSSD2, 0, kHitPat2D, 1),

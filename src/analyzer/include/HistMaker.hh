@@ -8,24 +8,25 @@
 
 #include<TROOT.h>
 
-enum DetectorType{
+enum DetectorType {
   kDetectorZero,
   // Detector unique ID in the beam line
-  kBH1, kBFT, kBC3, kBC4, kBMW, kBH2, kBAC,
-  kBH2_E07, kBAC_E07, kSSDT, kSSD0, kSSD1, kSSD2,
-  kPVAC, kFAC, kSAC1, kSCH, kEMC, kFBH, kKFAC,
-  kMsT, kKIC,
+  kBH1, kBFT, kBC3, kBC4, kBH2, kBAC, kFBH,
+  kSSDT, kSSD1, kSSD2,
+  kPVAC, kFAC, kSCH, kEMC, kMsT,
   // Detector unique ID in the SKS system
-  kSDC2, kHDC, kSP0, kSDC3, kSDC4, kTOF, kTOFMT, kLAC, kLC,
+  kSDC1, kSDC2, kSDC3, kTOF,
   // Old detectors
-  kBAC_SAC, kSFV_SAC3, kGe, kPWO,
+  kBMW, kBAC_SAC, kSFV_SAC3, kGe, kPWO, kSP0,
+  kBH2_E07, kBAC_E07, kSSD0, kSAC1, kKFAC,
+  kKIC, kHDC, kSDC4, kTOFMT, kLAC, kLC,
   // Others
   kTriggerFlag, kDAQ, kCorrelation, kMisc,
   sizeDetectorType,
   factorDetectorType = 10000000
 };
 
-enum SubDetectorType{
+enum SubDetectorType {
   kSubDetectorZero,
   // Detector unique sub ID in Counters
   kSP0_L1, kSP0_L2, kSP0_L3, kSP0_L4,
@@ -56,7 +57,7 @@ class TH1;
 class TH2;
 class TList;
 
-class HistMaker{
+class HistMaker {
   // Declaration of the private parameters ---------------------------------
   // histogram unique and sequential ID 
   int current_hist_id_; 
@@ -106,44 +107,45 @@ public:
   TList* createBFT(bool flag_ps=true);
   TList* createBC3(bool flag_ps=true);
   TList* createBC4(bool flag_ps=true);
-  TList* createBMW(bool flag_ps=true);
   TList* createBH2(bool flag_ps=true);
   TList* createBAC(bool flag_ps=true);
-  TList* createBH2_E07(bool flag_ps=true);
-  TList* createBAC_E07(bool flag_ps=true);
   TList* createFBH(bool flag_ps=true);
   TList* createSSDT(bool flag_ps=true);
-  TList* createSSD0(bool flag_ps=true);
   TList* createSSD1(bool flag_ps=true);
   TList* createSSD2(bool flag_ps=true);
   TList* createPVAC(bool flag_ps=true);
   TList* createFAC(bool flag_ps=true);
-  TList* createSAC1(bool flag_ps=true);
   TList* createSCH(bool flag_ps=true);
   TList* createEMC(bool flag_ps=true);
-  TList* createKFAC(bool flag_ps=true);
-  TList* createKIC(bool flag_ps=true);
+  TList* createSDC1(bool flag_ps=true);
   TList* createSDC2(bool flag_ps=true);
-  TList* createHDC(bool flag_ps=true);
-  TList* createSP0(bool flag_ps=true);
   TList* createSDC3(bool flag_ps=true);
-  TList* createSDC4(bool flag_ps=true);
   TList* createTOF(bool flag_ps=true);
-  TList* createTOFMT(bool flag_ps=true);
-  TList* createLAC(bool flag_ps=true);
-  TList* createLC(bool flag_ps=true);
   TList* createMsT(bool flag_ps=true);
   TList* createTriggerFlag(bool flag_ps=true);
-  TList* createTriggerFlag_E07(bool flag_ps=true);
   TList* createCorrelation(bool flag_ps=true);
   TList* createDAQ(bool flag_ps=true);
-  TList* createPWO_E05(bool flag_ps=true);
 
   // Old functions
+  TList* createBMW(bool flag_ps=true);
   TList* createBAC_SAC(bool flag_ps=true);
   TList* createSFV_SAC3(bool flag_ps=true);
   TList* createGe(bool flag_ps=true);
   TList* createPWO(bool flag_ps=true);
+  TList* createBH2_E07(bool flag_ps=true);
+  TList* createBAC_E07(bool flag_ps=true);
+  TList* createSSD0(bool flag_ps=true);
+  TList* createSAC1(bool flag_ps=true);
+  TList* createKFAC(bool flag_ps=true);
+  TList* createKIC(bool flag_ps=true);
+  TList* createHDC(bool flag_ps=true);
+  TList* createSP0(bool flag_ps=true);
+  TList* createSDC4(bool flag_ps=true);
+  TList* createTOFMT(bool flag_ps=true);
+  TList* createLAC(bool flag_ps=true);
+  TList* createLC(bool flag_ps=true);
+  TList* createTriggerFlag_E07(bool flag_ps=true);
+  TList* createPWO_E05(bool flag_ps=true);
 
 private:
   HistMaker();

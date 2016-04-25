@@ -20,10 +20,15 @@ void dispMsT()
     for( int i=0; i<n_seg/2; ++i ){
       c->cd(i+1);
       gPad->SetLogy();
-      TH1 *h = (TH1*)GHist::get(base_id + i);
-      if( !h ) continue;
-      h->GetXaxis()->SetRangeUser(0,2048);
-      h->Draw();
+      TH1 *h1 = (TH1*)GHist::get(base_id +i);
+      if( !h1 ) continue;
+      h1->GetXaxis()->SetRangeUser(0,2048);
+      h1->Draw();
+      TH1 *h2 = (TH1*)GHist::get(base_id +n_seg +i);
+      if( !h2 ) continue;
+      h2->GetXaxis()->SetRangeUser(0,2048);
+      h2->SetLineColor(kRed);
+      h2->Draw("same");
     }
     c->Update();
   }
@@ -37,10 +42,15 @@ void dispMsT()
     for( int i=0; i<n_seg/2; ++i ){
       c->cd(i+1);
       gPad->SetLogy();
-      TH1 *h = (TH1*)GHist::get(base_id + i);
-      if( !h ) continue;
-      h->GetXaxis()->SetRangeUser(0,2048);
-      h->Draw();
+      TH1 *h1 = (TH1*)GHist::get(base_id + i);
+      if( !h1 ) continue;
+      h1->GetXaxis()->SetRangeUser(0,2048);
+      h1->Draw();
+      TH1 *h2 = (TH1*)GHist::get(base_id +n_seg +i);
+      if( !h2 ) continue;
+      h2->GetXaxis()->SetRangeUser(0,2048);
+      h2->SetLineColor(kRed);
+      h2->Draw("same");
     }
     c->Update();
   }

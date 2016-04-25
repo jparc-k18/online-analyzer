@@ -2929,6 +2929,19 @@ TList* HistMaker::createMsT(bool flag_ps)
     top_dir->Add(sub_dir);
   }
 
+  // Timing Counter TDC (accept) ---------------------------------------------------------
+  {
+    TList *sub_dir = new TList;
+    sub_dir->SetName("MsT_TOF_TDC_Acc");
+    int target_id = getUniqueID(kMsT, 0, kTDC, NumOfSegTOF);
+    for(int seg=0; seg<NumOfSegTOF; ++seg){
+      sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d_Acc", nameDetector, seg+1),
+			     0x800, 0, 0x800,
+			     "Segment", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
   // Timing Counter TDC 2D -------------------------------------------------------
   {
     int target_id = getUniqueID(kMsT, 0, kTDC2D, 0);

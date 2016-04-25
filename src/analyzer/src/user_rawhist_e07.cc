@@ -1372,31 +1372,15 @@ process_event()
     static const int k_device = gUnpacker.get_device_id("MsT");
     static const int k_flag = gUnpacker.get_device_id("CAMAC-RM");
     // sequential id
-    int tdc_id    = gHist.getSequentialID(kMsT, 0, kTDC);
-    int tdc2d_id  = gHist.getSequentialID(kMsT, 0, kTDC2D);
-    int tof_hp_id = gHist.getSequentialID(kMsT, 0, kHitPat, 0);
-    int sch_hp_id = gHist.getSequentialID(kMsT, 0, kHitPat, 1);
-    int flag_id   = gHist.getSequentialID(kMsT, 0, kHitPat2D, 0);
-    for(int seg=0; seg<NumOfSegMsT; ++seg){
-      // TDC
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, 0);
-      if(nhit != 0){
-	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, 0);
-	hptr_array[tdc_id +seg]->Fill( tdc );
-	hptr_array[tdc2d_id]->Fill( seg, tdc );
-	// HitPat
-	hptr_array[tof_hp_id]->Fill(seg); 
-      }
-
-      // HitPat
-      nhit = gUnpacker.get_entries(k_device, 1, seg, 0, 0);
-      if(nhit != 0){
-	int flag = gUnpacker.get(k_device, 1, seg, 0, 0);
-	if(flag>0){ hptr_array[sch_hp_id]->Fill(seg); }
-      }
-    }
+    int tdc_id     = gHist.getSequentialID(kMsT, 0, kTDC);
+    int tdc_acc_id = gHist.getSequentialID(kMsT, 0, kTDC, NumOfSegTOF);
+    int tdc2d_id   = gHist.getSequentialID(kMsT, 0, kTDC2D);
+    int tof_hp_id  = gHist.getSequentialID(kMsT, 0, kHitPat, 0);
+    int sch_hp_id  = gHist.getSequentialID(kMsT, 0, kHitPat, 1);
+    int flag_id    = gHist.getSequentialID(kMsT, 0, kHitPat2D, 0);
 
     // Flag
+    bool accept = false;
     {
       int nhit_acc = gUnpacker.get_entries(k_flag, 0, 0, 0, 2);
       int nhit_clr = gUnpacker.get_entries(k_flag, 0, 0, 0, 3);
@@ -1404,8 +1388,29 @@ process_event()
 	int flag_acc = gUnpacker.get(k_flag, 0, 0, 0, 2);
 	int flag_clr = gUnpacker.get(k_flag, 0, 0, 0, 3);
 	hptr_array[flag_id]->Fill( flag_acc, flag_clr );
+	if( flag_acc && !flag_clr ) accept = true;
       }
     }    
+
+    for(int seg=0; seg<NumOfSegMsT; ++seg){
+      // TDC
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, 0);
+      if( nhit!=0 ){
+	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, 0);
+	hptr_array[tdc_id +seg]->Fill( tdc );
+	if( accept ) hptr_array[tdc_acc_id +seg]->Fill( tdc );
+	hptr_array[tdc2d_id]->Fill( seg, tdc );
+	// HitPat
+	hptr_array[tof_hp_id]->Fill(seg); 
+      }
+
+      // HitPat
+      nhit = gUnpacker.get_entries(k_device, 1, seg, 0, 0);
+      if( nhit!=0 ){
+	int flag = gUnpacker.get(k_device, 1, seg, 0, 0);
+	if(flag>0){ hptr_array[sch_hp_id]->Fill(seg); }
+      }
+    }
 
 #if 0
     // Debug, dump data relating this detector

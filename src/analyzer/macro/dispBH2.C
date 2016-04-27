@@ -9,36 +9,33 @@ void dispBH2()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  int n_seg = 5;
-
-  // draw ADC
-  TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
-  c->Clear();
-  c->Divide(3,2);
-  int base_id = HistMaker::getUniqueID(kBH2, 0, kADC, 1);
-  for(int i = 0; i<n_seg; ++i){
-    c->cd(i+1);
-    gPad->SetLogy();
-    TH1 *h = (TH1*)GHist::get(base_id + i);
-    h->GetXaxis()->SetRangeUser(0,2000);
-    h->Draw();
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
+    c->Clear();
+    c->Divide(2,2);
+    int icanvas = 0;
+    for( int ud=0; ud<2; ++ud ){
+      TH1 *h = NULL;
+      // draw ADC
+      c->cd( ++icanvas );
+      gPad->SetLogy();
+      h = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2, 0, kADC, ud+1) );
+      if( h ){
+	h->GetXaxis()->SetRangeUser(0,2000);
+	h->Draw();
+      }
+      // draw TDC
+      c->cd( ++icanvas );
+      gPad->SetLogy();
+      h = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, ud+1) );
+      if( h ){
+	h->GetXaxis()->SetRangeUser(0,2000);
+	h->Draw();
+      }
+      c->Update();
+      c->cd(0);
+    }
   }
-
-  c->Update();
-
-  // draw TDC
-  c = (TCanvas*)gROOT->FindObject("c2");
-  c->Clear();
-  c->Divide(3,2);
-  int base_id = HistMaker::getUniqueID(kBH2, 0, kTDC, 1);
-  for(int i = 0; i<n_seg; ++i){
-    c->cd(i+1);
-    GHist::get(base_id + i)->Draw();
-  }
-
-  c->Update();
-
-  c->cd(0);
 
   // You must write these lines for the thread safe
   // ----------------------------------

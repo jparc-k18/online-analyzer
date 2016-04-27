@@ -9,12 +9,12 @@ void dispSDC2()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  int n_layer = 6;
+  int n_layer = 4;
 
   // draw TDC
   TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
   c->Clear();
-  c->Divide(3,2);
+  c->Divide(2,2);
   int base_id = HistMaker::getUniqueID(kSDC2, 0, kTDC);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
@@ -28,7 +28,7 @@ void dispSDC2()
   // draw TDC1st
   c = (TCanvas*)gROOT->FindObject("c2");
   c->Clear();
-  c->Divide(3,2);
+  c->Divide(2,2);
   int base_id = HistMaker::getUniqueID(kSDC2, 0, kTDC2D);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
@@ -42,7 +42,7 @@ void dispSDC2()
   // draw HitPat
   c = (TCanvas*)gROOT->FindObject("c3");
   c->Clear();
-  c->Divide(3,2);
+  c->Divide(2,2);
   int base_id = HistMaker::getUniqueID(kSDC2, 0, kHitPat);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);
@@ -54,7 +54,7 @@ void dispSDC2()
   // draw Multi
   c = (TCanvas*)gROOT->FindObject("c4");
   c->Clear();
-  c->Divide(3,2);
+  c->Divide(2,2);
   int base_id = HistMaker::getUniqueID(kSDC2, 0, kMulti);
   for(int i = 0; i<n_layer; ++i){
     c->cd(i+1);

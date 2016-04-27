@@ -723,11 +723,17 @@ TList* HistMaker::createBH2(bool flag_ps)
 
     // Make histogram and add it
     int target_id = getUniqueID(kBH2, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegBH2; ++i){
+    for( int i=0; i<NumOfSegBH2*2; ++i ){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
-      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+      if( i<NumOfSegBH2 ){
+	int seg = i +1; // 1 origin
+	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+      }else{
+	int seg = i +1 -NumOfSegBH2; // 1 origin
+	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }
+
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
     }
@@ -746,11 +752,16 @@ TList* HistMaker::createBH2(bool flag_ps)
 
     // Make histogram and add it
     int target_id = getUniqueID(kBH2, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegBH2; ++i){
+    for( int i=0; i<NumOfSegBH2*2; ++i ){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
-      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+      if( i<NumOfSegBH2 ){
+	int seg = i +1; // 1 origin
+	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+      }else{
+	int seg = i +1 -NumOfSegBH2; // 1 origin
+	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));
     }
@@ -1901,7 +1912,7 @@ TList* HistMaker::createSDC1(bool flag_ps)
   top_dir->SetName(nameDetector);
 
   // layer configuration
-  const char* name_layer[] = {"x0", "x1", "v0", "v1", "u0", "u1"};
+  const char* name_layer[] = {"v0", "v1", "x0", "x1", "u0", "u1"};
 
   // TDC---------------------------------------------------------
   {
@@ -2363,6 +2374,14 @@ TList* HistMaker::createSDC3(bool flag_ps)
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     1600, 0, 1600,
+			     "TDC [ch]", ""));
+    }
+    target_id = getUniqueID(kSDC3, 0, kTDC2D, 0);
+    for(int i = 0; i<NumOfLayersSDC3; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     1024, 0, 1024,
 			     "TDC [ch]", ""));
     }
 

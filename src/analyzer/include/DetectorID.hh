@@ -107,7 +107,7 @@ const int NumOfLayersSSD0 =  2;
 const int DetIdMsT     = 32;
 const int DetIdMsTRM   = 82;
 const int DetIdKIC     = 41;
-const int NumOfSegMsT  = 32;
+const int NumOfSegMsT  = 24;
 const int NumOfSegKIC  =  4;
 // E13 Detectors
 const int DetIdBMW     = 10;

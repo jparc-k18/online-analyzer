@@ -11,7 +11,7 @@ TObject* split33( void );
 TObject* dispBH1( void );
 TObject* dispBFT( void );
 TObject* dispBH2( void );
-TObject* dispBAC( void );
+TObject* dispACs( void );
 TObject* dispFBH( void );
 TObject* dispSSD1( void );
 TObject* dispSSD2( void );
@@ -33,6 +33,7 @@ TObject* effSdcOut( void );
 TObject* dispBeamProfile( void );
 
 /* old functions */
+TObject* dispBAC( void );
 TObject* dispACs_SFV( void );
 TObject* dispGeAdc( void );
 TObject* dispGeAdc_60Co( void );

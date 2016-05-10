@@ -99,12 +99,12 @@ TObject* dispBH2( void )
   return m;
 }
 
-// dispBAC -------------------------------------------------------
-TObject* dispBAC( void )
+// dispACs -------------------------------------------------------
+TObject* dispACs( void )
 {
-  std::string path = getMacroPath() + "dispBAC.C";
+  std::string path = getMacroPath() + "dispACs.C";
   TMacro* m = new TMacro(path.c_str());
-  m->SetName("dispBAC");
+  m->SetName("dispACs");
   return m;
 }
 
@@ -267,6 +267,15 @@ TObject* dispBeamProfile( void )
   std::string path = getMacroPath() + "dispBeamProfile.C";
   TMacro* m = new TMacro(path.c_str());
   m->SetName("dispBeamProfile");
+  return m;
+}
+
+// dispBAC -------------------------------------------------------
+TObject* dispBAC( void )
+{
+  std::string path = getMacroPath() + "dispBAC.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispBAC");
   return m;
 }
 

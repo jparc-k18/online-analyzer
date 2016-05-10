@@ -69,7 +69,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispBH1());
   tab_macro->Add(dispBFT());
   tab_macro->Add(dispBH2());
-  tab_macro->Add(dispBAC());
+  tab_macro->Add(dispACs());
   tab_macro->Add(dispSCH());
   tab_macro->Add(dispTOF());  
   tab_macro->Add(dispMsT());  
@@ -640,13 +640,13 @@ process_event()
       // ADC
       int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
       if(nhit_a != 0){
-	int adc = gUnpacker.get(k_device, 0, seg+2, 0, k_adc);
+	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
 	hptr_array[baca_id + seg]->Fill(adc, nhit_a);
       }
       // TDC
       int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
       if(nhit_t != 0){
-	int tdc = gUnpacker.get(k_device, 0, seg+2, 0, k_tdc);
+	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
 	if(tdc != 0){
 	  hptr_array[bact_id + seg]->Fill(tdc, nhit_t);
 	  hptr_array[bach_id]->Fill(seg);
@@ -1118,7 +1118,7 @@ process_event()
       int multiplicity_wt = 0;
       for(int w = 0; w<NumOfWireSDC1; ++w){
 	int nhit = gUnpacker.get_entries(k_device, l, 0, w, k_tdc);
-	if(nhit == 0){continue;}
+	if( nhit==0 ) continue;
 	
 	// This wire fired at least one times.
 	++multiplicity;
@@ -1126,19 +1126,19 @@ process_event()
 
 	bool flag_hit_wt = false;
 	int  tdc1st = 0;
-	for(int m = 0; m<nhit; ++m){
+	for( int m=0; m<nhit; ++m ){
 	  int tdc = gUnpacker.get(k_device, l, 0, w, k_tdc, m);
 	  hptr_array[sdc1t_id + l]->Fill(tdc);
 	  if( tdc1st<tdc ) tdc1st = tdc;
 	  
 	  // Drift time check
-	  if(tdc_min < tdc && tdc < tdc_max){
+	  if( tdc_min<tdc && tdc<tdc_max ){
 	    flag_hit_wt = true;
 	  }
 	}
 
 	if( tdc1st!=0 ) hptr_array[sdc1t1st_id + l]->Fill(tdc1st);
-	if(flag_hit_wt){ ++multiplicity_wt; }
+	if( flag_hit_wt ) ++multiplicity_wt;
       }
       
       hptr_array[sdc1mul_id + l]->Fill(multiplicity);
@@ -1347,7 +1347,7 @@ process_event()
 	unsigned int tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
 	unsigned int tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
 	// TDC AND
-	if(tdc_u != 0 && tdc_d != 0){
+	if(tdc_u!=0 && tdc_d!=0){
 	  hptr_array[tofhit_id]->Fill(seg);
 	  ++multiplicity;
 	}

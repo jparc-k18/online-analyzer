@@ -9,6 +9,7 @@ void dispSDC1()
   Updater::setUpdating(true);
   // ----------------------------------
 
+  gStyle->SetOptStat(1111110);
   int n_layer = 6;
 
   // draw TDC
@@ -60,7 +61,7 @@ void dispSDC1()
     TH1 *h_wot = (TH1*)GHist::get(base_id + i);//->Clone();
     TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer);//->Clone();
     if( !h_wot || !h_wt ) continue;
-    h_wot->SetMaximum(h_wt->GetMaximum()*1.1);
+    // h_wot->SetMaximum(h_wt->GetMaximum()*1.1);
     h_wot->Draw();
     h_wt->SetLineColor(2);
     h_wt->Draw("same");

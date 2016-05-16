@@ -207,13 +207,13 @@ process_event()
     // node id
     static const int k_eb      = gUnpacker.get_fe_id("skseb");
     static const int k_vme     = gUnpacker.get_fe_id("vme01");
-    static const int k_copper  = gUnpacker.get_fe_id("clite1");
+    static const int k_clite   = gUnpacker.get_fe_id("clite1");
     static const int k_easiroc = gUnpacker.get_fe_id("easiroc0");
     
     // sequential id
     static const int eb_id      = gHist.getSequentialID(kDAQ, kEB, kHitPat);
     static const int vme_id     = gHist.getSequentialID(kDAQ, kVME, kHitPat2D);
-    static const int copper_id  = gHist.getSequentialID(kDAQ, kCopper, kHitPat2D);
+    static const int clite_id   = gHist.getSequentialID(kDAQ, kCLite, kHitPat2D);
     static const int easiroc_id = gHist.getSequentialID(kDAQ, kEASIROC, kHitPat2D);
 
     { // EB
@@ -230,10 +230,10 @@ process_event()
       }
     }
 
-    { // Copper node
-      TH2* h = dynamic_cast<TH2*>(hptr_array[copper_id]);
+    { // CLite node
+      TH2* h = dynamic_cast<TH2*>(hptr_array[clite_id]);
       for(int i = 0; i<14; ++i){
-	int data_size = gUnpacker.get_node_header(k_copper+i, DAQNode::k_data_size);
+	int data_size = gUnpacker.get_node_header(k_clite+i, DAQNode::k_data_size);
 	h->Fill(i+1, data_size);
       }
     }

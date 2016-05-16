@@ -32,7 +32,7 @@ enum SubDetectorType {
   kSP0_L1, kSP0_L2, kSP0_L3, kSP0_L4,
   kSP0_L5, kSP0_L6, kSP0_L7, kSP0_L8,
   // DAQ unique sub ID
-  kEB, kTKO, kVME, kCopper, kEASIROC, kCAMAC,
+  kEB, kTKO, kVME, kCLite, kEASIROC, kCAMAC,
   sizeSubDetectorType,
   factorSubDetectorType = 100000
 };

@@ -36,7 +36,7 @@ process_end()
 int
 process_event()
 {
-  sleep(1);
+  ::sleep(1);
   //  GUnpacker::get_instance().dump_data_fe(131);
   UnpackerManager& g_unpacker = GUnpacker::get_instance();
   //  int node_id = g_unpacker.get_fe_id("vme01");

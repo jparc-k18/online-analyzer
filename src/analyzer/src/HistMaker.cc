@@ -3172,11 +3172,11 @@ TList* HistMaker::createDAQ(bool flag_ps)
 			   500, 0, 1000,
 			   "VME node ID", "Data size [words]"));
 
-    target_id = getUniqueID(kDAQ, kCopper, kHitPat2D, 0);
-    top_dir->Add(createTH2(target_id + 1, "Data size Copper nodes", // 1 origin
+    target_id = getUniqueID(kDAQ, kCLite, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id + 1, "Data size CLite nodes", // 1 origin
 			   15, 0, 15,
 			   100, 0, 200,
-			   "Copper node ID", "Data size [words]"));
+			   "CLite node ID", "Data size [words]"));
 
     target_id = getUniqueID(kDAQ, kEASIROC, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id + 1, "Data size EASIROC nodes", // 1 origin

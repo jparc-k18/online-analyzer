@@ -40,7 +40,7 @@ namespace analyzer
 
 //____________________________________________________________________________
 int
-process_begin(const std::vector<std::string>& argv)
+process_begin( const std::vector<std::string>& argv )
 {
   ConfMan& gConfMan = ConfMan::getInstance();
   gConfMan.initialize(argv);
@@ -104,6 +104,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createDAQ(false));
+  tab_hist->Add(gHist.createTimeStamp());
 
   // Add extra histogram
   int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
@@ -153,7 +154,7 @@ process_begin(const std::vector<std::string>& argv)
 
 //____________________________________________________________________________
 int
-process_end()
+process_end( void )
 {
   hptr_array.clear();
   return 0;
@@ -161,9 +162,8 @@ process_end()
 
 //____________________________________________________________________________
 int
-process_event()
+process_event( void )
 {
-
   static UnpackerManager& gUnpacker = GUnpacker::get_instance();
   static HistMaker&       gHist     = HistMaker::getInstance();
   
@@ -177,16 +177,16 @@ process_event()
     static const int k_device = gUnpacker.get_device_id("Misc");
     static const int k_tdc    = gUnpacker.get_data_id("Misc", "tdc");
     
-    static const int tf_tdc_id = gHist.getSequentialID(kTriggerFlag, 0, kTDC);
-    static const int tf_hit_id = gHist.getSequentialID(kTriggerFlag, 0, kHitPat);
-    for(int seg = 0; seg<NumOfSegMisc; ++seg){
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      if(nhit != 0){
-	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
-	if(tdc != 0){
-	  hptr_array[tf_tdc_id+seg]->Fill(tdc);
-	  hptr_array[tf_hit_id]->Fill(seg);
-	  if(seg==SegIdScalerTrigger) scaler_flag = true;
+    static const int tf_tdc_id = gHist.getSequentialID( kTriggerFlag, 0, kTDC );
+    static const int tf_hit_id = gHist.getSequentialID( kTriggerFlag, 0, kHitPat );
+    for( int seg=0; seg<NumOfSegMisc; ++seg ){
+      int nhit = gUnpacker.get_entries( k_device, 0, seg, 0, k_tdc );
+      if( nhit>0 ){
+	int tdc = gUnpacker.get( k_device, 0, seg, 0, k_tdc );
+	if( tdc>0 ){
+	  hptr_array[tf_tdc_id+seg]->Fill( tdc );
+	  hptr_array[tf_hit_id]->Fill( seg );
+	  if( seg==SegIdScalerTrigger ) scaler_flag = true;
 	}
       }
     }// for(seg)
@@ -201,11 +201,28 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+  // TimeStamp --------------------------------------------------------
+  {
+    static const int k_device = gUnpacker.get_device_id("VME-RM");
+    static const int k_time   = gUnpacker.get_data_id("VME-RM", "time");
+    static const int hist_id  = gHist.getSequentialID(kTimeStamp, 0, kTDC);
+    int time0 = 0;
+    for( int i=0; i<NumOfVmeRm; ++i ){
+      int nhit = gUnpacker.get_entries( k_device, i, 0, 0, k_time );
+      if( nhit>0 ){
+	int time = gUnpacker.get( k_device, i, 0, 0, k_time );
+	if( i==0 ) time0 = time;
+	TH1* h = dynamic_cast<TH1*>(hptr_array[hist_id +i]);
+	h->Fill( time - time0 );
+      }
+    }
+  }
+
 #if FLAG_DAQ
   // DAQ -------------------------------------------------------------
   {
     // node id
-    static const int k_eb      = gUnpacker.get_fe_id("skseb");
+    static const int k_eb      = gUnpacker.get_fe_id("k18eb");
     static const int k_vme     = gUnpacker.get_fe_id("vme01");
     static const int k_clite   = gUnpacker.get_fe_id("clite1");
     static const int k_easiroc = gUnpacker.get_fe_id("easiroc0");

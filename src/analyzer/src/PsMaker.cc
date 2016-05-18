@@ -1008,6 +1008,16 @@ void PsMaker::create(std::string& name)
     for(int i = 0; i<NumOfSegEMC; ++i){ id_list.push_back( base_id++ ); }
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
+
+  // TimeStamp ----------------------------------------------------------------
+  if(name == CONV_STRING(kTimeStamp)){
+    int base_id = 0;
+    par_list[kXdiv] = 4; par_list[kYdiv] = 3;
+    base_id = HistMaker::getUniqueID(kTimeStamp, 0, kTDC);
+    for(int i=0; i<NumOfVmeRm; ++i ){ id_list.push_back( base_id++ ); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+  }
+
 }
 
 // -------------------------------------------------------------------------

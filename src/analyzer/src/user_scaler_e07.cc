@@ -308,9 +308,14 @@ process_event()
       info[right]  = cont_info[right][i];
 
       // Left column
-      if(info[left].flag_disp){
+      if( info[left].flag_disp ){
 	prev[left][i] = curr[left][i];
-	curr[left][i] = g_unpacker.get(scaler_id, info[left].module_id, 0, info[left].ch, 0);
+	int nhit = g_unpacker.get_entries( scaler_id, info[left].module_id, 0, info[left].ch, 0 );
+	if( nhit==0 ){
+	  curr[left][i] = 0;
+	}else{
+	  curr[left][i] = g_unpacker.get(scaler_id, info[left].module_id, 0, info[left].ch, 0);
+	}
 
 	if(curr[left][i] < prev[left][i]){
 	  prev[left][i] = 0;
@@ -327,7 +332,12 @@ process_event()
       // Center column
       if(info[center].flag_disp){
 	prev[center][i] = curr[center][i];
-	curr[center][i] = g_unpacker.get(scaler_id, info[center].module_id, 0, info[center].ch, 0);
+	int nhit = g_unpacker.get_entries( scaler_id, info[center].module_id, 0, info[center].ch, 0 );
+	if( nhit==0 ){
+	  curr[center][i] = 0;
+	}else{
+	  curr[center][i] = g_unpacker.get(scaler_id, info[center].module_id, 0, info[center].ch, 0);
+	}
 	
 	if(curr[center][i] < prev[center][i]){
 	  prev[center][i] = 0;
@@ -343,7 +353,12 @@ process_event()
       // Right column
       if(info[right].flag_disp){
 	prev[right][i] = curr[right][i];
-	curr[right][i] = g_unpacker.get(scaler_id, info[right].module_id, 0, info[right].ch, 0);
+	int nhit = g_unpacker.get_entries( scaler_id, info[right].module_id, 0, info[right].ch, 0 );
+	if( nhit==0 ){
+	  curr[right][i] = 0;
+	}else{
+	  curr[right][i] = g_unpacker.get(scaler_id, info[right].module_id, 0, info[right].ch, 0);
+	}
 
 	if(curr[right][i] < prev[right][i]){
 	  prev[right][i] = 0;

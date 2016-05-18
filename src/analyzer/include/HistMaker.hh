@@ -22,6 +22,7 @@ enum DetectorType {
   kKIC, kHDC, kSDC4, kTOFMT, kLAC, kLC,
   // Others
   kTriggerFlag, kDAQ, kCorrelation, kMisc,
+  kTimeStamp,
   sizeDetectorType,
   factorDetectorType = 10000000
 };
@@ -103,6 +104,7 @@ public:
   		 const char* xtitle="", const char* ytitle=""
   		 );
 
+  TList* createTimeStamp(bool flag_ps=true);
   TList* createBH1(bool flag_ps=true);
   TList* createBFT(bool flag_ps=true);
   TList* createBC3(bool flag_ps=true);

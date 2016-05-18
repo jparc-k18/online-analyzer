@@ -27,14 +27,14 @@ std::string getStr_FromEnum(const char* c){
 static const std::string MyName = "HistMaker::";
 
 // Constructor -------------------------------------------------------------
-HistMaker::HistMaker():
+HistMaker::HistMaker( void ):
   current_hist_id_(0)
 {
 
 }
 
 // Destructor --------------------------------------------------------------
-HistMaker::~HistMaker()
+HistMaker::~HistMaker( void )
 {
 
 }
@@ -172,6 +172,42 @@ TH2* HistMaker::createTH2(int unique_id, const char* title,
   return h;
 }
 
+//_____________________________________________________________________
+TList*
+HistMaker::createTimeStamp( bool flag_ps )
+{
+  // Determine the detector name
+  std::string strDet = CONV_STRING(kTimeStamp);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
+
+  // Declaration of the directory
+  // Just type conversion from std::string to char*
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  {
+    // Make histogram and add it
+    // Make unique ID
+    int target_id = getUniqueID( kTimeStamp, 0, kTDC, 0);
+    for( int i=0; i<NumOfVmeRm; ++i ){
+      int seg = i+1; // 1 origin
+      const char* title = Form("%s_%d", nameDetector, seg);
+      top_dir->Add( createTH1( ++target_id, title, // 1 origin
+			       0x1000, -0x1000, 0x1000,
+			       "TimeStamp", ""));
+    }
+  }
+
+  // Return the TList pointer which is added into TGFileBrowser
+  return top_dir;
+}
+
 // -------------------------------------------------------------------------
 // createBH1 
 // -------------------------------------------------------------------------
@@ -180,12 +216,12 @@ TList* HistMaker::createBH1(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kBH1);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -235,10 +271,10 @@ TList* HistMaker::createBH1(bool flag_ps)
     for(int i = 0; i<NumOfSegBH1*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegBH1){
-	int seg = i+1; // 1 origin 
+	int seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegBH1; // 1 origin 
+	int seg = i+1-NumOfSegBH1; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 

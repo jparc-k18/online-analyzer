@@ -23,15 +23,16 @@ const int NumOfSegSCH  = 64;
 const int NumOfSegTOF  = 24;
 
 // Misc
-const int DetIdTrigFlag = 21;
+const int DetIdMisc     = 21;
 const int DetIdScaler   = 22;
 const int DetIdEMC      = 23;
 const int DetIdSSDT     = 24;
-const int NumOfSegTrigFlag = 16;
+const int NumOfSegMisc     = 18;
 const int NumOfSegScaler   = 32;
 const int NumOfSegEMC      =  1;
 const int NumOfSegSSDT     = 16;
-const int SegIdScalerTrigger = 15;
+const int SegIdScalerTrigger = 15; // 0-based
+const int NumOfVmeRm = 10;
 
 // Trackers
 const int DetIdBC3  = 103;
@@ -82,8 +83,6 @@ const int NumOfSegSSD2 = 1536;
 const int NumOfSegBFT  =  160;
 
 // Old Detectors
-const int DetIdMisc    = 11;
-const int NumOfSegMisc = 18;
 const int DetIdLAC  =  6;
 const int DetIdLC   =  7;
 const int DetIdGC   =  8;

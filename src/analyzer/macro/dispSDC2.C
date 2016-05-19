@@ -9,6 +9,7 @@ void dispSDC2()
   Updater::setUpdating(true);
   // ----------------------------------
 
+  gStyle->SetOptStat(1111110);
   int n_layer = 4;
 
   // draw TDC
@@ -16,10 +17,9 @@ void dispSDC2()
   c->Clear();
   c->Divide(2,2);
   int base_id = HistMaker::getUniqueID(kSDC2, 0, kTDC);
-  for(int i = 0; i<n_layer; ++i){
+  for( int i=0; i<n_layer; ++i ){
     c->cd(i+1);
     TH1 *h = (TH1*)GHist::get(base_id + i);;
-    //    h->GetXaxis()->SetRangeUser(256,1000);
     h->Draw();
   }
 
@@ -30,7 +30,7 @@ void dispSDC2()
   c->Clear();
   c->Divide(2,2);
   int base_id = HistMaker::getUniqueID(kSDC2, 0, kTDC2D);
-  for(int i = 0; i<n_layer; ++i){
+  for( int i=0; i<n_layer; ++i ){
     c->cd(i+1);
     TH1 *h = (TH1*)GHist::get(base_id + i);;
     //    h->GetXaxis()->SetRangeUser(256,1000);
@@ -44,7 +44,7 @@ void dispSDC2()
   c->Clear();
   c->Divide(2,2);
   int base_id = HistMaker::getUniqueID(kSDC2, 0, kHitPat);
-  for(int i = 0; i<n_layer; ++i){
+  for( int i=0; i<n_layer; ++i ){
     c->cd(i+1);
     GHist::get(base_id + i)->Draw();
   }
@@ -56,7 +56,7 @@ void dispSDC2()
   c->Clear();
   c->Divide(2,2);
   int base_id = HistMaker::getUniqueID(kSDC2, 0, kMulti);
-  for(int i = 0; i<n_layer; ++i){
+  for( int i=0; i<n_layer; ++i ){
     c->cd(i+1);
     TH1 *h_wot = (TH1*)GHist::get(base_id + i)->Clone();
     TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer)->Clone();

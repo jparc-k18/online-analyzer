@@ -2393,7 +2393,7 @@ TList* HistMaker::createSDC3(bool flag_ps)
   top_dir->SetName(nameDetector);
 
   // layer configuration
-  const char* name_layer[NumOfLayersSDC3] = { "x0", "x1", "y0", "y1" };
+  const char* name_layer[NumOfLayersSDC3] = { "y0", "y1", "x0", "x1" };
 
   // TDC---------------------------------------------------------
   {
@@ -2436,10 +2436,13 @@ TList* HistMaker::createSDC3(bool flag_ps)
     // Make histogram and add it
     int target_id = getUniqueID(kSDC3, 0, kHitPat, 0);
     for(int i = 0; i<NumOfLayersSDC3; ++i){
+      int nwire;
+      if( i==0 || i==1 ) nwire = NumOfWireSDC3Y;
+      if( i==2 || i==3 ) nwire = NumOfWireSDC3X;
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     NumOfWireSDC3uv, 0, NumOfWireSDC3uv,
+			     nwire, 0, nwire,
 			     "wire", ""));
     }
 
@@ -2459,10 +2462,13 @@ TList* HistMaker::createSDC3(bool flag_ps)
     // without TDC gate
     int target_id = getUniqueID(kSDC3, 0, kMulti, 0);
     for(int i = 0; i<NumOfLayersSDC3; ++i){
+      int nwire;
+      if( i==0 || i==1 ) nwire = NumOfWireSDC3Y;
+      if( i==2 || i==3 ) nwire = NumOfWireSDC3X;
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     10, 0, 10,
+			     20, 0, 20,
 			     "Multiplicity", ""));
     }
 
@@ -2472,7 +2478,7 @@ TList* HistMaker::createSDC3(bool flag_ps)
       const char* title = NULL;
       title = Form("%s_%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     10, 0, 10,
+			     20, 0, 20,
 			     "Multiplicity", ""));
     }
 

@@ -1280,9 +1280,9 @@ process_event( void )
       int multiplicity_wt = 0;
       int sdc3_nwire = 0;
       if( l==0 || l==1 )
-	sdc3_nwire = NumOfWireSDC3X;
-      if( l==2 || l==3 )
 	sdc3_nwire = NumOfWireSDC3Y;
+      if( l==2 || l==3 )
+	sdc3_nwire = NumOfWireSDC3X;
       
       for( int w=0 ; w<sdc3_nwire; ++w ){
 	int nhit = gUnpacker.get_entries(k_device, l, 0, w, k_tdc);

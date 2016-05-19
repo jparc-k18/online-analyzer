@@ -265,25 +265,32 @@ void PsMaker::create(std::string& name)
   // BH2 ----------------------------------------------------------------
   if(name == CONV_STRING(kBH2)){
     int base_id = 0;
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+
     // ADC
-    par_list[kXdiv] = 2; par_list[kYdiv] = 3;
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
 
-    // ADC D
+    // ADC Up
     base_id = HistMaker::getUniqueID(kBH2, 0, kADC);
     for(int i = 0; i<NumOfSegBH2; ++i){id_list.push_back(base_id + i);}
-    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+    // ADC Down
+    base_id = HistMaker::getUniqueID(kBH2, 0, kADC, NumOfSegBH2 + 1);
+    for(int i = 0; i<NumOfSegBH2; ++i){id_list.push_back(base_id + i);}
 
     // TDC
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 4000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
 
-    // TDC D
+    // TDC Up
     base_id = HistMaker::getUniqueID(kBH2, 0, kTDC);
     for(int i = 0; i<NumOfSegBH2; ++i){id_list.push_back(base_id + i);}
+    // TDC Down
+    base_id = HistMaker::getUniqueID(kBH2, 0, kTDC, NumOfSegBH2 + 1);
+    for(int i = 0; i<NumOfSegBH2; ++i){id_list.push_back(base_id + i);}
+
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 
     // HitPat and multiplicity

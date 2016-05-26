@@ -3034,6 +3034,98 @@ TList* HistMaker::createMsT(bool flag_ps)
 }
 
 // -------------------------------------------------------------------------
+// createMtx3D
+// -------------------------------------------------------------------------
+TList* HistMaker::createMtx3D(bool flag_ps)
+{
+  // Determine the detector name
+  std::string strDet = CONV_STRING(kMtx3D);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet); 
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet); 
+  }
+  
+  // Declaration of the directory
+  // Just type conversion from std::string to char*
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // TDC TOF ---------------------------------------------------------------
+  {
+    TList *sub_dir = new TList;
+    sub_dir->SetName("Mtx_TOF_TDC");
+    int target_id = getUniqueID(kMtx3D, kHulTOF, kTDC, 0);
+    for(int seg=0; seg<NumOfSegTOF; ++seg){
+      sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d", nameDetector, seg+1),
+			     0xff, 0, 0xff,
+			     "TDC [5ns/bin]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // TDC FBH ---------------------------------------------------------------
+  {
+    TList *sub_dir = new TList;
+    sub_dir->SetName("Mtx_FBH_TDC");
+    int target_id = getUniqueID(kMtx3D, kHulFBH, kTDC, 0);
+    for(int seg=0; seg<NumOfSegClusteredFBH; ++seg){
+      sub_dir->Add(createTH1(++target_id, Form("%s_FBH_TDC_%d", nameDetector, seg+1),
+			     0xff, 0, 0xff,
+			     "TDC [5ns/bin]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // TDC SCH ---------------------------------------------------------------
+  {
+    TList *sub_dir = new TList;
+    sub_dir->SetName("Mtx_SCH_TDC");
+    int target_id = getUniqueID(kMtx3D, kHulSCH, kTDC, 0);
+    for(int seg=0; seg<NumOfSegSCH; ++seg){
+      sub_dir->Add(createTH1(++target_id, Form("%s_SCH_TDC_%d", nameDetector, seg+1),
+			     0xff, 0, 0xff,
+			     "TDC [5ns/bin]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // Hit parttern 2D (TOFxFBH) --------------------------------------------
+  {
+    int target_id = getUniqueID(kMsT, kHulTOFxFBH, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id, "Mtx_TOFxFBH", // 1 origin
+			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,
+			   NumOfSegTOF,          0, NumOfSegTOF,
+			   "Clustered FBH seg", "TOF seg"));
+    GHist::get(target_id)->SetMarkerSize(6);
+  }
+
+  // Hit parttern 2D (TOFxSCH) --------------------------------------------
+  {
+    int target_id = getUniqueID(kMsT, kHulTOFxSCH, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id, "Mtx_TOFxSCH", // 1 origin
+			   NumOfSegSCH, 0, NumOfSegSCH,
+			   NumOfSegTOF, 0, NumOfSegTOF,
+			   "SCH seg", "TOF seg"));
+    GHist::get(target_id)->SetMarkerSize(6);
+  }
+
+  // Hit parttern 2D (FBHxSCH) --------------------------------------------
+  {
+    int target_id = getUniqueID(kMsT, kHulFBHxSCH, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id, "Mtx_FBHxSCH", // 1 origin
+			   NumOfSegSCH,          0, NumOfSegSCH,
+			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,
+			   "SCH seg","Clustered FBH seg"));
+    GHist::get(target_id)->SetMarkerSize(6);
+  }
+
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
 // createTriggerFlag
 // -------------------------------------------------------------------------
 TList* HistMaker::createTriggerFlag(bool flag_ps)

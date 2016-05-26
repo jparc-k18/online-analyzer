@@ -21,6 +21,7 @@ const int NumOfSegPVAC =  1;
 const int NumOfSegFAC  =  1;
 const int NumOfSegSCH  = 64;
 const int NumOfSegTOF  = 24;
+const int NumOfSegClusteredFBH = 31;
 
 // Misc
 const int DetIdTFlag    = 21;

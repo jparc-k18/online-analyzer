@@ -13,7 +13,7 @@ enum DetectorType {
   // Detector unique ID in the beam line
   kBH1, kBFT, kBC3, kBC4, kBH2, kBAC, kFBH,
   kSSDT, kSSD1, kSSD2,
-  kPVAC, kFAC, kSCH, kEMC, kMsT,
+  kPVAC, kFAC, kSCH, kEMC, kMsT, kMtx3D,
   // Detector unique ID in the SKS system
   kSDC1, kSDC2, kSDC3, kTOF,
   // Old detectors
@@ -32,6 +32,9 @@ enum SubDetectorType {
   // Detector unique sub ID in Counters
   kSP0_L1, kSP0_L2, kSP0_L3, kSP0_L4,
   kSP0_L5, kSP0_L6, kSP0_L7, kSP0_L8,
+  // Sub Detector ID in HUL
+  kHulTOF,     kHulFBH,     kHulSCH,
+  kHulTOFxFBH, kHulTOFxSCH, kHulFBHxSCH,
   // DAQ unique sub ID
   kEB, kTKO, kVME, kCLite, kEASIROC, kCAMAC,
   sizeSubDetectorType,
@@ -124,6 +127,7 @@ public:
   TList* createSDC3(bool flag_ps=true);
   TList* createTOF(bool flag_ps=true);
   TList* createMsT(bool flag_ps=true);
+  TList* createMtx3D(bool flag_ps=false);
   TList* createTriggerFlag(bool flag_ps=true);
   TList* createCorrelation(bool flag_ps=true);
   TList* createDAQ(bool flag_ps=true);

@@ -101,6 +101,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createSDC3());
   tab_hist->Add(gHist.createTOF());
   tab_hist->Add(gHist.createMsT());
+  tab_hist->Add(gHist.createMtx3D());
   tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createDAQ(false));
@@ -1447,6 +1448,95 @@ process_event( void )
 	if( flag ) hptr_array[sch_hp_id]->Fill(seg);
       }
     }
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+  // Mtx3D --------------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("Mtx3D");
+    static const int k_tof    = gUnpacker.get_data_id("Mtx3D", "ttof");
+    static const int k_fbh    = gUnpacker.get_data_id("Mtx3D", "tfbh");
+    static const int k_sch    = gUnpacker.get_data_id("Mtx3D", "tch");
+
+    // sequential id
+    static const int tof_tdc_id = gHist.getSequentialID(kMtx3D, kHulTOF, kTDC);
+    static const int fbh_tdc_id = gHist.getSequentialID(kMtx3D, kHulFBH, kTDC);
+    static const int sch_tdc_id = gHist.getSequentialID(kMtx3D, kHulSCH, kTDC);
+    static const int tof_fbh_id = gHist.getSequentialID(kMtx3D, kHulTOFxFBH, kHitPat2D);
+    static const int tof_sch_id = gHist.getSequentialID(kMtx3D, kHulTOFxSCH, kHitPat2D);
+    static const int fbh_sch_id = gHist.getSequentialID(kMtx3D, kHulFBHxSCH, kHitPat2D);
+
+    // TOF
+    for(int seg=0; seg<NumOfSegTOF; ++seg){
+      // TDC
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_tof);
+      if( nhit!=0 ){
+	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tof);
+	hptr_array[tof_tdc_id +seg]->Fill( tdc );
+      }
+    }
+
+    // FBH
+    for(int seg=0; seg<NumOfSegClusteredFBH; ++seg){
+      // TDC
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_fbh);
+      if( nhit!=0 ){
+	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, k_fbh);
+	hptr_array[fbh_tdc_id +seg]->Fill( tdc );
+      }
+    }
+    
+    // SCH
+    for(int seg=0; seg<NumOfSegSCH; ++seg){
+      // TDC
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_sch);
+      if( nhit!=0 ){
+	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, k_sch);
+	hptr_array[sch_tdc_id +seg]->Fill( tdc );
+      }
+    }
+
+    // TOF x FBH
+    for(int i_tof=0; i_tof<NumOfSegTOF; ++i_tof){
+      int nhit_tof = gUnpacker.get_entries(k_device, 0, i_tof, 0, k_tof);
+      if(nhit_tof == 0) continue;
+      
+      for(int i_fbh=0; i_fbh<NumOfSegClusteredFBH; ++i_fbh){
+	int nhit_fbh = gUnpacker.get_entries(k_device, 0, i_fbh, 0, k_fbh);
+	if(nhit_fbh != 0) hptr_array[tof_fbh_id]->Fill(i_fbh, i_tof);
+      }// for(FBH)
+    }// for(TOF)
+
+    // TOF x SCH
+    for(int i_tof=0; i_tof<NumOfSegTOF; ++i_tof){
+      int nhit_tof = gUnpacker.get_entries(k_device, 0, i_tof, 0, k_tof);
+      if(nhit_tof == 0) continue;
+      
+      for(int i_sch=0; i_sch<NumOfSegSCH; ++i_sch){
+	int nhit_sch = gUnpacker.get_entries(k_device, 0, i_sch, 0, k_sch);
+	if(nhit_sch != 0) hptr_array[tof_sch_id]->Fill(i_sch, i_tof);
+      }// for(SCH)
+    }// for(TOF)
+
+    // FBH x SCH
+    for(int i_fbh=0; i_fbh<NumOfSegClusteredFBH; ++i_fbh){
+      int nhit_fbh = gUnpacker.get_entries(k_device, 0, i_fbh, 0, k_fbh);
+      if(nhit_fbh == 0) continue;
+      
+      for(int i_sch=0; i_sch<NumOfSegSCH; ++i_sch){
+	int nhit_sch = gUnpacker.get_entries(k_device, 0, i_sch, 0, k_sch);
+	if(nhit_sch != 0) hptr_array[fbh_sch_id]->Fill(i_sch, i_fbh);
+      }// for(SCH)
+    }// for(FBH)
 
 #if 0
     // Debug, dump data relating this detector

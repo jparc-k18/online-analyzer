@@ -3057,7 +3057,7 @@ TList* HistMaker::createTriggerFlag(bool flag_ps)
   {
     // Make histogram and add it
     int target_id = getUniqueID(kTriggerFlag, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegMisc; ++i){
+    for(int i = 0; i<NumOfSegTFlag; ++i){
       const char* title = NULL;
       title = Form("%s_%d", nameDetector, i+1);
       top_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -3105,7 +3105,7 @@ TList* HistMaker::createTriggerFlag_E07(bool flag_ps)
   {
     // Make histogram and add it
     int target_id = getUniqueID(kTriggerFlag, 1, kTDC, 0);
-    for(int i = 0; i<NumOfSegMisc; ++i){
+    for(int i = 0; i<NumOfSegTFlag; ++i){
       const char* title = NULL;
       title = Form("%s_%d", nameDetector, i+1);
       top_dir->Add(createTH1(++target_id, title, // 1 origin

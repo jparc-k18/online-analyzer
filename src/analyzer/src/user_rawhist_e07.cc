@@ -174,12 +174,12 @@ process_event( void )
   // TriggerFlag ---------------------------------------------------
   bool scaler_flag = false;
   {
-    static const int k_device = gUnpacker.get_device_id("Misc");
-    static const int k_tdc    = gUnpacker.get_data_id("Misc", "tdc");
+    static const int k_device = gUnpacker.get_device_id("TFlag");
+    static const int k_tdc    = gUnpacker.get_data_id("TFlag", "tdc");
     
     static const int tf_tdc_id = gHist.getSequentialID( kTriggerFlag, 0, kTDC );
     static const int tf_hit_id = gHist.getSequentialID( kTriggerFlag, 0, kHitPat );
-    for( int seg=0; seg<NumOfSegMisc; ++seg ){
+    for( int seg=0; seg<NumOfSegTFlag; ++seg ){
       int nhit = gUnpacker.get_entries( k_device, 0, seg, 0, k_tdc );
       if( nhit>0 ){
 	int tdc = gUnpacker.get( k_device, 0, seg, 0, k_tdc );

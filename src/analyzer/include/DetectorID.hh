@@ -23,11 +23,11 @@ const int NumOfSegSCH  = 64;
 const int NumOfSegTOF  = 24;
 
 // Misc
-const int DetIdMisc     = 21;
+const int DetIdTFlag    = 21;
 const int DetIdScaler   = 22;
 const int DetIdEMC      = 23;
 const int DetIdSSDT     = 24;
-const int NumOfSegMisc     = 18;
+const int NumOfSegTFlag    = 32;
 const int NumOfSegScaler   = 32;
 const int NumOfSegEMC      =  1;
 const int NumOfSegSSDT     = 16;

@@ -297,7 +297,7 @@ process_event()
   bool inclement_spill = false;
   {
     // scaler
-    static int scaler_id    = g_unpacker.get_device_id("scaler");
+    static int scaler_id    = g_unpacker.get_device_id("Scaler");
     
     for(int i = 0; i<NofCh; ++i){
       scaler_info info[size_dispColumn];

@@ -3164,7 +3164,7 @@ TList* HistMaker::createTriggerFlag(bool flag_ps)
     int target_id = getUniqueID(kTriggerFlag, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, title, // 1 origin
-			   20, 0, 20,
+			   NumOfSegTFlag+1, 0., NumOfSegTFlag+1,
 			   "Trigger flag", ""));
   }
 

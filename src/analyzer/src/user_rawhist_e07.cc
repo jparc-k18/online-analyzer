@@ -267,7 +267,7 @@ process_event( void )
 
 #endif
 
-  if(scaler_flag) return 0;
+  // if(scaler_flag) return 0;
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
@@ -614,15 +614,15 @@ process_event( void )
     bh2t_id = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2+1);
     for(int seg=0; seg<NumOfSegBH2; ++seg){
       // ADC
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
       if(nhit != 0){
-	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
 	hptr_array[bh2a_id + seg]->Fill(adc);
       }
       // TDC
-      nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
       if(nhit != 0){
-	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
+	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
 	if(tdc != 0){ hptr_array[bh2t_id + seg]->Fill(tdc); }
       }
     }

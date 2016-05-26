@@ -31,7 +31,7 @@ const int NumOfSegMisc     = 18;
 const int NumOfSegScaler   = 32;
 const int NumOfSegEMC      =  1;
 const int NumOfSegSSDT     = 16;
-const int SegIdScalerTrigger = 15; // 0-based
+const int SegIdScalerTrigger = 20; // 0-based
 const int NumOfVmeRm = 10;
 
 // Trackers

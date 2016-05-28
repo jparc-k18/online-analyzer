@@ -3094,7 +3094,7 @@ TList* HistMaker::createMtx3D(bool flag_ps)
 
   // Hit parttern 2D (TOFxFBH) --------------------------------------------
   {
-    int target_id = getUniqueID(kMsT, kHulTOFxFBH, kHitPat2D, 0);
+    int target_id = getUniqueID(kMst, kHulTOFxFBH, kHitPat2D, 0);
     top_dir->Add(createTH2(++target_id, "Mtx_TOFxFBH", // 1 origin
 			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,
 			   NumOfSegTOF,          0, NumOfSegTOF,

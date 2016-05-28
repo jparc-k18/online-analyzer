@@ -261,6 +261,15 @@ TObject* effSdcOut( void )
   return m;
 }
 
+// efficiency SdcInOut -----------------------------------------------
+TObject* effSdcInOut( void )
+{
+  std::string path = getMacroPath() + "effSdcInOut.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("effSdcInOut");
+  return m;
+}
+
 // Beam profile ---------------------------------------------------
 TObject* dispBeamProfile( void )
 {

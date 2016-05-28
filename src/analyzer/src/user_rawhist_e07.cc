@@ -80,8 +80,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(dispSDC3());
   tab_macro->Add(dispHitPat());
   tab_macro->Add(effBcOut());
-  tab_macro->Add(effSdcIn());
-  tab_macro->Add(effSdcOut());
+  tab_macro->Add(effSdcInOut());
   // tab_macro->Add(auto_monitor_all());
 
   // Add histograms to the Hist tab
@@ -167,7 +166,7 @@ process_event( void )
 {
   static UnpackerManager& gUnpacker = GUnpacker::get_instance();
   static HistMaker&       gHist     = HistMaker::getInstance();
-  
+
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
@@ -241,7 +240,7 @@ process_event( void )
 
     { // VME node
       TH2* h = dynamic_cast<TH2*>(hptr_array[vme_id]);
-      for(int i = 0; i<6; ++i){
+      for(int i = 0; i<10; ++i){
 	if(i == 1){continue;}
 	int data_size = gUnpacker.get_node_header(k_vme+i, DAQNode::k_data_size);
 	h->Fill(i+1, data_size);
@@ -825,9 +824,9 @@ process_event( void )
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
 	if(nhit_a>NumOfSamplesSSD){
-	  std::cerr<<"#W SSD1 layer:"<<l<<" seg:"<<seg
-		   <<"the number of samples is too much : ["
-		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
+	  std::cerr << "#W SSD1 layer:" << l << " seg:" << seg
+		    << " the number of samples is too much : ["
+		    << nhit_a << "/" << NumOfSamplesSSD << "]" << std::endl;
 	}
 	int  adc[nhit_a];
 	bool slope[nhit_a-1];
@@ -923,9 +922,9 @@ process_event( void )
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
 	if(nhit_a>NumOfSamplesSSD){
-	  std::cerr<<"#W SSD2 layer:"<<l<<" seg:"<<seg
-		   <<"the number of samples is too much : ["
-		   <<nhit_a<<"/"<<NumOfSamplesSSD<<"]"<<std::endl;
+	  std::cerr << "#W SSD2 layer:" << l << " seg:" << seg
+		    << "the number of samples is too much : ["
+		    << nhit_a << "/" << NumOfSamplesSSD << "]" << std::endl;
 	}
 	int  adc[nhit_a];
 	bool slope[nhit_a-1];

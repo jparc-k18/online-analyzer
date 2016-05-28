@@ -29,6 +29,7 @@ TObject* dispProfileSSD( void );
 TObject* effBcOut( void );
 TObject* effSdcIn( void );
 TObject* effSdcOut( void );
+TObject* effSdcInOut( void );
 
 TObject* dispBeamProfile( void );
 

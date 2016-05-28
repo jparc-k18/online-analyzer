@@ -3094,7 +3094,7 @@ TList* HistMaker::createMtx3D(bool flag_ps)
 
   // Hit parttern 2D (TOFxFBH) --------------------------------------------
   {
-    int target_id = getUniqueID(kMsT, kHulTOFxFBH, kHitPat2D, 0);
+    int target_id = getUniqueID(kMtx3D, kHulTOFxFBH, kHitPat2D, 0);
     top_dir->Add(createTH2(++target_id, "Mtx_TOFxFBH", // 1 origin
 			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,
 			   NumOfSegTOF,          0, NumOfSegTOF,
@@ -3104,7 +3104,7 @@ TList* HistMaker::createMtx3D(bool flag_ps)
 
   // Hit parttern 2D (TOFxSCH) --------------------------------------------
   {
-    int target_id = getUniqueID(kMsT, kHulTOFxSCH, kHitPat2D, 0);
+    int target_id = getUniqueID(kMtx3D, kHulTOFxSCH, kHitPat2D, 0);
     top_dir->Add(createTH2(++target_id, "Mtx_TOFxSCH", // 1 origin
 			   NumOfSegSCH, 0, NumOfSegSCH,
 			   NumOfSegTOF, 0, NumOfSegTOF,
@@ -3114,7 +3114,7 @@ TList* HistMaker::createMtx3D(bool flag_ps)
 
   // Hit parttern 2D (FBHxSCH) --------------------------------------------
   {
-    int target_id = getUniqueID(kMsT, kHulFBHxSCH, kHitPat2D, 0);
+    int target_id = getUniqueID(kMtx3D, kHulFBHxSCH, kHitPat2D, 0);
     top_dir->Add(createTH2(++target_id, "Mtx_FBHxSCH", // 1 origin
 			   NumOfSegSCH,          0, NumOfSegSCH,
 			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,

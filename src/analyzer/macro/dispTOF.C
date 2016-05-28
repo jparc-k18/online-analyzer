@@ -21,7 +21,7 @@ void dispTOF()
     gPad->SetLogy();
     TH1 *h = (TH1*)GHist::get(base_id + i);
     if( !h ) continue;
-    h->GetXaxis()->SetRangeUser(0,3000);
+    h->GetXaxis()->SetRangeUser(0,4096);
     h->Draw();
   }
 
@@ -37,7 +37,7 @@ void dispTOF()
     gPad->SetLogy();
     TH1 *h = (TH1*)GHist::get(base_id + i);
     if( !h ) continue;
-    h->GetXaxis()->SetRangeUser(0,3000);
+    h->GetXaxis()->SetRangeUser(0,4096);
     h->Draw();
   }
 

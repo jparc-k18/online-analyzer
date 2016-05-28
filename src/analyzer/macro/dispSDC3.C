@@ -22,7 +22,7 @@ void dispSDC3()
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get(base_id + i);
       if( !h ) continue;
-      h->GetXaxis()->SetRangeUser(700,1600);
+      // h->GetXaxis()->SetRangeUser(700,1600);
       h->Draw();
     }
     c->Update();
@@ -37,7 +37,7 @@ void dispSDC3()
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get(base_id + i);;
       if( !h ) continue;
-      h->GetXaxis()->SetRangeUser(700,1600);
+      // h->GetXaxis()->SetRangeUser(700,1600);
       h->Draw();
     }
     c->Update();

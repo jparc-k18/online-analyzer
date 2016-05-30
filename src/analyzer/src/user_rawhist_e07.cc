@@ -1632,8 +1632,8 @@ process_event( void )
     static const int k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
 
     // HodoParam
-    static const int cid_bh1  = 3;
-    static const int cid_bh2  = 4;
+    static const int cid_bh1  = 1;
+    static const int cid_bh2  = 2;
     static const int plid     = 0;
 
     // Sequential ID

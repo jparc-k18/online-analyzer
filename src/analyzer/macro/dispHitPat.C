@@ -36,10 +36,10 @@ void dispHitPat()
   h->Draw();
 
   c->cd(4);
-  base_id = HistMaker::getUniqueID(kFBH, 0, kHitPat2D);
+  base_id = HistMaker::getUniqueID(kFBH, 0, kHitPat);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
-  h->Draw("colz");
+  h->Draw();
 
   c->cd(5);
   base_id = HistMaker::getUniqueID(kSDC1, 0, kHitPat, 1);

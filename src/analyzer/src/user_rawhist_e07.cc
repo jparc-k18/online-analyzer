@@ -723,8 +723,8 @@ process_event( void )
     static const int fbh_tot_u_id = gHist.getSequentialID(kFBH, 0, kADC,    1);
     static const int fbh_tdc_d_id = gHist.getSequentialID(kFBH, 0, kTDC,    NumOfSegFBH +1);
     static const int fbh_tot_d_id = gHist.getSequentialID(kFBH, 0, kADC,    NumOfSegFBH +1);
-    static const int fbh_hit2d_id   = gHist.getSequentialID(kFBH, 0, kHitPat2D, 1);
-    static const int fbh_mul2d_id   = gHist.getSequentialID(kFBH, 0, kMulti2D,  1);
+    static const int fbh_hit_id   = gHist.getSequentialID(kFBH, 0, kHitPat, 1);
+    static const int fbh_mul_id   = gHist.getSequentialID(kFBH, 0, kMulti,  1);
 
     static const int fbh_t_2d_id   = gHist.getSequentialID(kFBH, 0, kTDC2D, 1);
     static const int fbh_tot_2d_id = gHist.getSequentialID(kFBH, 0, kADC2D, 1);
@@ -734,7 +734,9 @@ process_event( void )
     int multi_u = 0;
     int multi_d = 0;
     int multiplicity  = 0;
-    for(int i=0; i<NumOfSegFBH; ++i){
+    int hit_flag_u[NumOfSegFBH] = {};
+    int hit_flag_d[NumOfSegFBH] = {};
+    for( int i=0; i<NumOfSegFBH; ++i ){
       int nhit_u = gUnpacker.get_entries(k_device, 0, i, k_u, k_leading);
       int nhit_d = gUnpacker.get_entries(k_device, 0, i, k_d, k_leading);
       for(int m=0; m<nhit_u; ++m){
@@ -747,7 +749,7 @@ process_event( void )
 	hptr_array[fbh_tot_2d_id]->Fill(i, tot_u);
 	if( tdc_min<tdc_u && tdc_u<tdc_max ){
 	  hit_seg_u[multi_u++] = i;
-	  ++multiplicity;
+	  hit_flag_u[i] = true;
 	}
       }
       for(int m=0; m<nhit_d; ++m){
@@ -760,16 +762,16 @@ process_event( void )
 	hptr_array[fbh_tot_2d_id]->Fill(i +NumOfSegFBH, tot_d);
 	if( tdc_min<tdc_d && tdc_d<tdc_max ){
 	  hit_seg_d[multi_d++] = i;
-	  ++multiplicity;
+	  hit_flag_d[i] = true;
 	}
       }
-    }
-    for(int iu=0; iu<multi_u; ++iu){
-      for(int id=0; id<multi_d; ++id){
-	hptr_array[fbh_hit2d_id]->Fill( hit_seg_u[iu], hit_seg_d[id] );
+      if( hit_flag_u[i] && hit_flag_d[i] ){
+	hptr_array[fbh_hit_id]->Fill( i );
+	++multiplicity;
       }
     }
-    hptr_array[fbh_mul2d_id]->Fill( multi_u, multi_d );
+
+    hptr_array[fbh_mul_id]->Fill( multiplicity );
 
 #if 0
     // Debug, dump data relating this detector

@@ -103,6 +103,7 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("K beam ",   id_vme03_2, 19, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("pi beam",   id_vme03_2, 20, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("/p beam",   id_vme03_2, 21, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("/p beam(0.6)", id_vme03_0, 26, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BH1-OR",    id_vme03_2,  0, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BH1-1",     id_vme03_2,  1, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BH1-2",     id_vme03_2,  2, true); cont_info[left][index++] = tmp;}
@@ -164,7 +165,7 @@ int
 process_end()
 {
   std::cout << "\n#D : End of scaler, summarize this run" << std::endl;
-  printf("%-10s %10s : %-15s %10s\n",
+  printf("%-12s %10s : %-15s %10s\n",
 	 "- E07 -", "Integral", "", "Integral");
 	     
   for(int i = 0; i<NofCh; ++i){
@@ -175,7 +176,7 @@ process_end()
     info[right]  = cont_info[right][i];
 
     // display
-    printf("%-10s %10llu : %-15s %15llu \n",
+    printf("%-12s %10llu : %-15s %15llu \n",
 	   info[left].name.c_str(),   val[left][i],
 	   info[right].name.c_str(),  val[right][i]
 	   );
@@ -334,7 +335,7 @@ process_event()
       double daq_eff   = l1_acc/l1_rec;
       double l2_eff    = l2_acc/l1_acc;
 
-      printf("%-10s %10s : %-15s %10s \n",
+      printf("%-12s %10s : %-15s %10s \n",
 	     "- E07 -", "Integral", "", "Integral");
 	     
       for(int i = 0; i<NofCh; ++i){
@@ -345,14 +346,14 @@ process_event()
 	info[right]  = cont_info[right][i];
 
 	// display
-	printf("%-10s %10llu : %-15s %10llu \n",
+	printf("%-12s %10llu : %-15s %10llu \n",
 	       info[left].name.c_str(),   val[left][i],
 	       info[right].name.c_str(),  val[right][i]
 	       );
       }
       
       // additional DAQ information
-      printf("\n%-10s %9.4f%% : %-15s %9.4f%% \n%-10s %9.4f%% : ",
+      printf("\n%-12s %9.4f%% : %-15s %9.4f%% \n%-10s %9.4f%% : ",
 	     "Live/Real",      real_live*100,
 	     "DAQ Eff.",       daq_eff*100,
 	     "L2 Eff.",  l2_eff*100);

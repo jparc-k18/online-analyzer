@@ -267,7 +267,7 @@ process_event( void )
 
 #endif
 
-  // if(scaler_flag) return 0;
+  if(scaler_flag) return 0;
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;

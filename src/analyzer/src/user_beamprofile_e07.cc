@@ -47,6 +47,7 @@ process_begin(const std::vector<std::string>& argv)
   gConfMan.initializeDCGeomMan();
   gConfMan.initializeDCTdcCalibMan();
   gConfMan.initializeDCDriftParamMan();
+  gConfMan.initializeUserParamMan();
   if(!gConfMan.isGood()){return -1;}
   // unpacker and all the parameter managers are initialized at this stage
 
@@ -165,7 +166,7 @@ process_event()
       }
     }
   }
-
+  return 0;
   ////////// SsdIn
   {
     DCRHC SsdAna(DetIdSsd);

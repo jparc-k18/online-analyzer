@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "UnpackerManager.hh"
+#include "UserParamMan.hh"
 #include "DetectorID.hh"
 #include "DCTdcCalibMan.hh"
 #include "DCGeomMan.hh"
@@ -61,7 +62,7 @@ void DCRHC::init_SdcIn( void )
   m_hitpos.resize(NumOfLayersSdcIn);
   m_tdc.resize(NumOfLayersSdcIn);
 
-  for(int id=1;id<11;++id)
+  for(int id=1;id<8;++id)
     {
       std::vector<double> tilt = angle(geomman.GetTiltAngle(id));
       sinvector.push_back(tilt[0]);
@@ -76,7 +77,7 @@ void DCRHC::init_SdcOut( void )
   m_hitpos.resize(NumOfLayersSdcOut);
   m_tdc.resize(NumOfLayersSdcOut);
 
-  for(int id=31;id<43;++id)
+  for(int id=31;id<38;++id)
     {
       std::vector<double> tilt = angle(geomman.GetTiltAngle(id));
       sinvector.push_back(tilt[0]);
@@ -172,47 +173,42 @@ void DCRHC::pushback( int DetectorID )
 //______________________________________________________________________________
 void DCRHC::pushback_BcOut( void )
 {
-  for(int layer=0;layer<NumOfLayersBcOut;++layer)
-    {
+  static UserParamMan &paramMan = UserParamMan::getInstance();
+  static const double MinTdcBC3 = paramMan.getParameter("BC3_TDC", 0);
+  static const double MaxTdcBC3 = paramMan.getParameter("BC3_TDC", 1);
+  static const double MinTdcBC4 = paramMan.getParameter("BC4_TDC", 0);
+  static const double MaxTdcBC4 = paramMan.getParameter("BC4_TDC", 1);
+
+  for( int layer=0; layer<NumOfLayersBcOut; ++layer ){
       m_hitwire[layer].clear();
       m_tdc[layer].clear();
+  }
+  for( int layer=0; layer<NumOfLayersBC3; ++layer ){
+    for( int wire=0; wire<NumOfWireBC3; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdBC3, layer, 0, wire, 0 );
+      if( nhits==0 ) continue;
+      for( int i=0; i<nhits; ++i ){
+	int tdc = g_unpacker.get(DetIdBC3,layer,0,wire,0,i);
+	if( tdc<MinTdcBC3 || MaxTdcBC3<tdc ) continue;
+	m_hitwire[layer].push_back(wire);
+	m_tdc[layer].push_back(tdc);
+      }
     }
-  for(int layer=0;layer<NumOfLayersBC3;++layer)
-    {
-      for(int wire=0;wire<NumOfWireBC3;++wire)
-	{
-	  int nhits = g_unpacker.get_entries(DetIdBC3,layer,0,wire,0);
-	  if(nhits==0)continue;
-	  for(int i=0;i<nhits;++i)
-	    {
-	      //int tdc = (g_unpacker.get(DetIdBC3,layer,0,wire,2,i) & 0xffff ) - offset;
-	      int tdc = g_unpacker.get(DetIdBC3,layer,0,wire,0,i);
-	      if(tdc>tdc_min && tdc<tdc_max)
-		{
-		  m_hitwire[layer].push_back(wire);
-		  m_tdc[layer].push_back(tdc);
-		}
-	    }
-	}
+  }
+
+  for( int layer=0; layer<NumOfLayersBC4; ++layer ){
+    for( int wire=0; wire<NumOfWireBC4; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdBC4, layer, 0, wire, 0 );
+      if( nhits==0 ) continue;
+      for( int i=0; i<nhits; ++i ){
+	int tdc = g_unpacker.get( DetIdBC4, layer, 0, wire, 0, i );
+	if( tdc<MinTdcBC4 && MaxTdcBC4<tdc ) continue;
+	m_hitwire[layer + NumOfLayersBC3].push_back(wire);
+	m_tdc[layer + NumOfLayersBC3].push_back(tdc);
+      }
     }
-  for(int layer=0;layer<NumOfLayersBC4;++layer)
-    {
-      for(int wire=0;wire<64;++wire)
-	{
-	  int nhits = g_unpacker.get_entries(DetIdBC4,layer,0,wire,0);
-	  if(nhits==0)continue;
-	  for(int i=0;i<nhits;++i)
-	    {
-	      //int tdc = (g_unpacker.get(DetIdK6BDC,layer,0,wire,2,i) & 0xffff ) - offset;
-	      int tdc = g_unpacker.get(DetIdBC4,layer,0,wire,0,i);
-	      if(tdc>tdc_min && tdc<tdc_max)
-		{
-		  m_hitwire[layer + NumOfLayersBC3].push_back(wire);
-		  m_tdc[layer + NumOfLayersBC3].push_back(tdc);
-		}
-	    }
-	}
-    }
+  }
+
 #if DEBUG
   std::cout<<"///////Hit Wire////"<<std::endl;
   for(int i=0;i<12;++i)
@@ -226,50 +222,49 @@ void DCRHC::pushback_BcOut( void )
 //______________________________________________________________________________
 void DCRHC::pushback_SdcIn( void )
 {
-  for(int layer=0;layer<NumOfLayersSdcIn;++layer)
+  static UserParamMan &paramMan = UserParamMan::getInstance();
+  static const double MinTdcSDC1 = paramMan.getParameter("SDC1_TDC", 0);
+  static const double MaxTdcSDC1 = paramMan.getParameter("SDC1_TDC", 1);
+
+  for( int layer=0; layer<NumOfLayersSdcIn; ++layer )
     m_hitwire[layer].clear();
-  for(int layer=0;layer<NumOfLayersSDC1;++layer)
-    {
-      for(int wire=0;wire<NumOfWireSDC1;++wire)
-	{
-	  int nhits = g_unpacker.get_entries(DetIdSDC1,layer,0,wire,2);
-	  if(nhits==0)continue;
-	  for(int i=0;i<nhits;++i)
-	    {
-	      //int tdc = (g_unpacker.get(DetIdSDC1,layer,0,wire,2,i) & 0xffff ) - offset;
-	      int tdc = g_unpacker.get(DetIdSDC1,layer,0,wire,2,i);
-	      if(tdc>tdc_min && tdc<tdc_max)
-		{
-		  m_hitwire[layer].push_back(wire);
-		  m_tdc[layer].push_back(tdc);
-		}
-	    }
-	}
+  for( int layer=0; layer<NumOfLayersSDC1; ++layer ){
+    for( int wire=0; wire<NumOfWireSDC1; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdSDC1, layer, 0, wire, 0 );
+      if(nhits==0) continue;
+      for( int i=0; i<nhits; ++i ){
+	int tdc = g_unpacker.get( DetIdSDC1, layer, 0, wire, 2, i );
+	if( tdc<MinTdcSDC1 && MaxTdcSDC1<tdc ) continue;
+	m_hitwire[layer].push_back(wire);
+	m_tdc[layer].push_back(tdc);
+      }
     }
-  for(int layer=0;layer<NumOfLayersSDC2;++layer)
-    {
-      for(int wire=0;wire<NumOfWireSDC2;++wire)
-	{
-	  int nhits = g_unpacker.get_entries(DetIdSDC2,layer,0,wire,2);
-	  if(nhits==0)continue;
-	  for(int i=0;i<nhits;++i)
-	    {
-	      //int tdc = (g_unpacker.get(DetIdSDC2,layer,0,wire,2,i) & 0xffff ) - offset;
-	      int tdc = g_unpacker.get(DetIdSDC2,layer,0,wire,2,i);
-	      if(tdc>sdc2_tdc_min && tdc<sdc2_tdc_max)
-		{
-		  m_hitwire[layer + NumOfLayersSDC1].push_back(wire);
-		  m_tdc[layer + NumOfLayersSDC1].push_back(tdc);
-		}
-	    }
-	}
-    }
+  }
 }
 //______________________________________________________________________________
 void DCRHC::pushback_SdcOut( void )
 {
+  static UserParamMan &paramMan = UserParamMan::getInstance();
+  static const double MinTdcSDC2 = paramMan.getParameter("SDC2_TDC", 0);
+  static const double MaxTdcSDC2 = paramMan.getParameter("SDC2_TDC", 1);
+  static const double MinTdcSDC3 = paramMan.getParameter("SDC3_TDC", 0);
+  static const double MaxTdcSDC3 = paramMan.getParameter("SDC3_TDC", 1);
+
   for(int layer=0;layer<NumOfLayersSdcOut;++layer)
     m_hitwire[layer].clear();
+  for( int layer=0; layer<NumOfLayersSDC2; ++layer ){
+    for( int wire=0; wire<NumOfWireSDC2; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdSDC2, layer, 0, wire, 0 );
+      if( nhits==0 ) continue;
+      for( int i=0; i<nhits; ++i ){
+	int tdc = g_unpacker.get(DetIdSDC2,layer,0,wire,2,i);
+	if( tdc<MinTdcSDC2 && MaxTdcSDC2<tdc ) continue;
+	m_hitwire[layer + NumOfLayersSDC1].push_back(wire);
+	m_tdc[layer + NumOfLayersSDC1].push_back(tdc);
+      }
+    }
+  }
+
   for(int layer=0;layer<NumOfLayersSDC3;++layer)
     {
       ////// x-plane //////
@@ -327,14 +322,6 @@ void DCRHC::pushback_Ssd( void )
   for(int layer=0; layer<NumOfLayersSsd; ++layer){
     m_hitwire[layer].clear();
     m_tdc[layer].clear();
-  }
-  for(int layer=0; layer<NumOfLayersSSD0; ++layer){
-    for(int wire=0; wire<NumOfSegSSD0; ++wire){
-      int nhits = g_unpacker.get_entries(DetIdSSD0, layer, wire, 0, 1);
-      if(nhits==0) continue;
-      m_hitwire[layer].push_back(wire);
-      m_tdc[layer].push_back(0);
-    }
   }
   for(int layer=0; layer<NumOfLayersSSD1; ++layer){
     for(int wire=0; wire<NumOfSegSSD1; ++wire){

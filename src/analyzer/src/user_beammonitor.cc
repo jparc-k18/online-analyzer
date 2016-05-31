@@ -65,6 +65,7 @@ process_begin(const std::vector<std::string>& argv)
     for(int i=0; i<nBeam; ++i){
       c->cd()->SetGrid();
       g_beam[i] = new TGraph();
+      g_beam[i]->SetName("Beam Monitor");
       g_beam[i]->SetTitle("Beam Monitor");
       g_beam[i]->SetMarkerStyle(8);
       g_beam[i]->SetMarkerSize(1.5);
@@ -126,29 +127,29 @@ process_event()
   static UnpackerManager& g_unpacker = GUnpacker::get_instance();
   // static int run_number = g_unpacker.get_root()->get_run_number();
 
-  static const int scaler_id = g_unpacker.get_device_id("scaler");
+  static const int scaler_id = g_unpacker.get_device_id("Scaler");
 
   // Spill Increment
   static int spill = 0;
   bool spill_inc = false;
   {
-    static const int module_id  =  1;
-    static const int channel_id = 31;
+    static const int module_id  = 0;
+    static const int channel_id = 1;
 
     static int clock     = 0;
     static int clock_pre = 0;
     int hit = g_unpacker.get_entries( scaler_id, module_id, 0, channel_id, 0 );
     if(hit>0){
       clock = g_unpacker.get( scaler_id, module_id, 0, channel_id, 0 );
-      if(clock<clock_pre) spill_inc = true;
+      if( clock<clock_pre ) spill_inc = true;
     }
     clock_pre = clock;
   }
 
   // Beam Monitor
   {
-    static const int module_id[nBeam]  = {  1,  1 };
-    static const int channel_id[nBeam] = { 28, 29 };
+    static const int module_id[nBeam]  = {  2,  2 };
+    static const int channel_id[nBeam] = { 19, 20 };
 
     static double beam[nBeam]     = {};
     static double beam_pre[nBeam] = {};
@@ -158,10 +159,10 @@ process_event()
       if(hit==0) continue;
       beam[i] = g_unpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
     }
-    if(spill_inc){
+    if( spill_inc ){
       for(int i=0; i<nBeam; ++i){
 	g_beam[i]->SetPoint(spill, spill, beam_pre[i]);
-	g_beam[i]->GetYaxis()->SetRangeUser(0, 1e6);
+	g_beam[i]->GetYaxis()->SetRangeUser(0, 5e5);
 	g_beam[i]->GetXaxis()->SetLimits(spill-90, spill+10);
       }
       double kpi_ratio = beam_pre[kKbeam]/beam_pre[kPibeam];
@@ -195,7 +196,7 @@ process_event()
     for(int i=0; i<n2ndLevel; ++i) l2_pre[i] = l2[i];
   }
 
-  if(spill_inc) spill++;
+  if( spill_inc ) spill++;
 
   return 0;
 }

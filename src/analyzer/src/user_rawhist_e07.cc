@@ -104,7 +104,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createDAQ(false));
-  tab_hist->Add(gHist.createTimeStamp());
+  tab_hist->Add(gHist.createTimeStamp(false));
 
   // Add extra histogram
   int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
@@ -1554,8 +1554,8 @@ process_event( void )
     // data typep
     static const int k_device_bh1  = gUnpacker.get_device_id("BH1");
     static const int k_device_bh2  = gUnpacker.get_device_id("BH2");   
-    static const int k_device_tof  = gUnpacker.get_device_id("TOF");
     static const int k_device_sch  = gUnpacker.get_device_id("SCH");
+    static const int k_device_tof  = gUnpacker.get_device_id("TOF");
     static const int k_device_bc3  = gUnpacker.get_device_id("BC3");
     static const int k_device_bc4  = gUnpacker.get_device_id("BC4");   
     static const int k_device_sdc1 = gUnpacker.get_device_id("SDC1");
@@ -1581,13 +1581,13 @@ process_event( void )
 
     // TOF vs SCH
     TH2* hcor_tofsch = dynamic_cast<TH2*>(hptr_array[cor_id++]);
-    for(int seg1 = 0; seg1<NumOfSegTOF; ++seg1){
-      for(int seg2 = 0; seg2<NumOfSegSCH; ++seg2){
-	int hitTOF = gUnpacker.get_entries(k_device_tof, 0, seg1, 0, 1);
-	int hitSCH = gUnpacker.get_entries(k_device_sch, 0, seg2, 0, 1);
+    for(int seg1 = 0; seg1<NumOfSegSCH; ++seg1){
+      for(int seg2 = 0; seg2<NumOfSegTOF; ++seg2){
+	int hitSCH = gUnpacker.get_entries(k_device_sch, 0, seg1, 0, 1);
+	int hitTOF = gUnpacker.get_entries(k_device_tof, 0, seg2, 0, 1);
 	if(hitTOF == 0 || hitSCH == 0) continue;
-	int tdcTOF = gUnpacker.get(k_device_tof, 0, seg1, 0, 1);
-	int tdcSCH = gUnpacker.get(k_device_sch, 0, seg2, 0, 1);
+	int tdcSCH = gUnpacker.get(k_device_sch, 0, seg1, 0, 1);
+	int tdcTOF = gUnpacker.get(k_device_tof, 0, seg2, 0, 1);
 	if(tdcTOF != 0 && tdcSCH != 0){
 	  hcor_tofsch->Fill(seg1, seg2);
 	}

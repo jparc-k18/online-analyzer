@@ -1346,11 +1346,11 @@ TList* HistMaker::createSSD1(bool flag_ps)
     for(int l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
-			     NumOfSegSSD1+1, 0, NumOfSegSSD1+1,
+			     20, 0., 20.,
 			     "Multiplicity", ""));
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
-			     NumOfSegSSD1+1, 0, NumOfSegSSD1+1,
+			     20, 0., 20.,
 			     "CMultiplicity", ""));
     }
     top_dir->Add(sub_dir);
@@ -1441,11 +1441,11 @@ TList* HistMaker::createSSD2(bool flag_ps)
     for(int l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
-			     NumOfSegSSD2+1, 0, NumOfSegSSD2+1,
+			     20, 0., 20.,
 			     "Multiplicity", ""));
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
-			     NumOfSegSSD2+1, 0, NumOfSegSSD2+1,
+			     20, 0., 20.,
 			     "CMultiplicity", ""));
     }
     top_dir->Add(sub_dir);
@@ -3250,9 +3250,9 @@ TList* HistMaker::createCorrelation(bool flag_ps)
 
     // SCH vs TOF -----------------------------------------------
     top_dir->Add(createTH2(++target_id, "SCH_TOF", // 1 origin
-			   NumOfSegTOF, 0, NumOfSegTOF,
 			   NumOfSegSCH, 0, NumOfSegSCH,
-			   "TOF seg", "SCH seg"));
+			   NumOfSegTOF, 0, NumOfSegTOF,
+			   "SCH seg", "TOF seg"));
 
     // BC4 vs BC3 ----------------------------------------------
     top_dir->Add(createTH2(++target_id, "BC4x1_BC3x0", // 1 origin
@@ -3261,10 +3261,10 @@ TList* HistMaker::createCorrelation(bool flag_ps)
 			   "BC3 wire", "BC4 wire"));
 
     // SDC2 vs SDC1 --------------------------------------------
-    top_dir->Add(createTH2(++target_id, "HDCx1_SDC2x0", // 1 origin
+    top_dir->Add(createTH2(++target_id, "SDC2x1_SDC1x0", // 1 origin
+			   NumOfWireSDC1, 0, NumOfWireSDC1,
 			   NumOfWireSDC2, 0, NumOfWireSDC2,
-			   NumOfWireHDC,  0, NumOfWireHDC,
-			   "SDC2 wire", "HDC wire"));
+			   "HDC wire", "SDC2 wire"));
   }
 
   return top_dir;

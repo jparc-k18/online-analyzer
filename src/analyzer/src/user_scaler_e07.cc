@@ -353,7 +353,7 @@ process_event()
       }
       
       // additional DAQ information
-      printf("\n%-12s %9.4f%% : %-15s %9.4f%% \n%-10s %9.4f%% : ",
+      printf("\n%-12s %9.4f%% : %-15s %9.4f%% \n%-12s %9.4f%% : ",
 	     "Live/Real",      real_live*100,
 	     "DAQ Eff.",       daq_eff*100,
 	     "L2 Eff.",  l2_eff*100);

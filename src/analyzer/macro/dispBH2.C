@@ -15,7 +15,8 @@ void dispBH2()
     c->Divide(2,2);
     int icanvas = 0;
     for( int ud=0; ud<2; ++ud ){
-      TH1 *h = NULL;
+      TH1 *h  = NULL;
+      TH1 *hh = NULL;
       // draw ADC
       c->cd( ++icanvas );
       gPad->SetLogy();
@@ -23,6 +24,12 @@ void dispBH2()
       if( h ){
 	h->GetXaxis()->SetRangeUser(0,2000);
 	h->Draw();
+      }
+      hh = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2, 0, kADCwTDC, ud+1) );
+      if( hh ){
+	hh->GetXaxis()->SetRangeUser(0,2000);
+	hh->SetLineColor( kRed );
+	hh->Draw("same");
       }
       // draw TDC
       c->cd( ++icanvas );

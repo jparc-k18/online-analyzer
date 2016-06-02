@@ -20,6 +20,13 @@ dispACs( void )
     HistMaker::getUniqueID(kFAC,  0, kADC, 1),// FAC
   };
 
+  int adcwtdc_id[n_hist] = {
+    HistMaker::getUniqueID(kBAC,  0, kADCwTDC, 1),// BAC1
+    HistMaker::getUniqueID(kBAC,  0, kADCwTDC, 2),// BAC2
+    HistMaker::getUniqueID(kPVAC, 0, kADCwTDC, 1),// PVAC
+    HistMaker::getUniqueID(kFAC,  0, kADCwTDC, 1),// FAC
+  };
+
   int tdc_id[n_hist] = {
     HistMaker::getUniqueID(kBAC,  0, kTDC, 1),// BAC1
     HistMaker::getUniqueID(kBAC,  0, kTDC, 2),// BAC2
@@ -39,6 +46,11 @@ dispACs( void )
       if( !h ) continue;
       h->GetXaxis()->SetRangeUser(0,4000);
       h->Draw();
+      TH1 *hh = (TH1*)GHist::get( adcwtdc_id[i] );
+      if( !hh ) continue;
+      hh->GetXaxis()->SetRangeUser(0,4000);
+      hh->SetLineColor( kRed );
+      hh->Draw("same");
     }
     // draw ACs TDC
     for(int i = 0; i<n_hist; ++i){

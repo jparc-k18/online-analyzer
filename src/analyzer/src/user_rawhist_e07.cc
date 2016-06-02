@@ -283,8 +283,9 @@ process_event( void )
     static const int k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
 
     // Up PMT
-    int bh1a_id = gHist.getSequentialID(kBH1, 0, kADC);
-    int bh1t_id = gHist.getSequentialID(kBH1, 0, kTDC);
+    int bh1a_id   = gHist.getSequentialID(kBH1, 0, kADC);
+    int bh1t_id   = gHist.getSequentialID(kBH1, 0, kTDC);
+    int bh1awt_id = gHist.getSequentialID(kBH1, 0, kADCwTDC);
     for(int seg=0; seg<NumOfSegBH1; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
@@ -297,13 +298,21 @@ process_event( void )
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       if(nhit!=0){
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-	if(tdc!=0){ hptr_array[bh1t_id + seg]->Fill(tdc); }
+	if(tdc!=0){
+	  hptr_array[bh1t_id + seg]->Fill(tdc);
+	  // ADC wTDC
+	  if( gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
+	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+	    hptr_array[bh1awt_id + seg]->Fill( adc );
+	  }
+	}
       }
     }
 
     // Down PMT
-    bh1a_id = gHist.getSequentialID(kBH1, 0, kADC, NumOfSegBH1+1);
-    bh1t_id = gHist.getSequentialID(kBH1, 0, kTDC, NumOfSegBH1+1);
+    bh1a_id   = gHist.getSequentialID(kBH1, 0, kADC, NumOfSegBH1+1);
+    bh1t_id   = gHist.getSequentialID(kBH1, 0, kTDC, NumOfSegBH1+1);
+    bh1awt_id = gHist.getSequentialID(kBH1, 0, kADCwTDC, NumOfSegBH1+1);
     for(int seg=0; seg<NumOfSegBH1; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
@@ -316,7 +325,14 @@ process_event( void )
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
       if(nhit!=0){
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
-	if(tdc!=0){ hptr_array[bh1t_id + seg]->Fill(tdc); }
+	if( tdc!=0 ){
+	  hptr_array[bh1t_id + seg]->Fill(tdc);
+	  // ADC w/TDC
+	  if( gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
+	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+	    hptr_array[bh1awt_id + seg]->Fill(adc);
+	  }
+	}
       }
     }
 
@@ -592,8 +608,9 @@ process_event( void )
     static const int k_tdc    = gUnpacker.get_data_id("BH2", "tdc");
 
     // UP
-    int bh2a_id = gHist.getSequentialID(kBH2, 0, kADC);
-    int bh2t_id = gHist.getSequentialID(kBH2, 0, kTDC);    
+    int bh2a_id   = gHist.getSequentialID(kBH2, 0, kADC);
+    int bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC);    
+    int bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC);
     for(int seg=0; seg<NumOfSegBH2; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
@@ -603,15 +620,23 @@ process_event( void )
       }
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-      if(nhit != 0){
+      if( nhit!=0 ){
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-	if(tdc != 0){ hptr_array[bh2t_id + seg]->Fill(tdc); }
+	if( tdc!=0 ){
+	  hptr_array[bh2t_id + seg]->Fill(tdc);
+	  // ADC w/TDC
+	  if( gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
+	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+	    hptr_array[bh2awt_id + seg]->Fill(adc);
+	  }
+	}
       }
     }
 
     // DOWN
-    bh2a_id = gHist.getSequentialID(kBH2, 0, kADC, NumOfSegBH2+1);
-    bh2t_id = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2+1);
+    bh2a_id   = gHist.getSequentialID(kBH2, 0, kADC, NumOfSegBH2+1);
+    bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2+1);
+    bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC, NumOfSegBH2+1);
     for(int seg=0; seg<NumOfSegBH2; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
@@ -621,9 +646,16 @@ process_event( void )
       }
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
-      if(nhit != 0){
+      if( nhit!=0 ){
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
-	if(tdc != 0){ hptr_array[bh2t_id + seg]->Fill(tdc); }
+	if( tdc!=0 ){
+	  hptr_array[bh2t_id + seg]->Fill(tdc);
+	  // ADC w/TDC
+	  if( gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
+	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+	    hptr_array[bh2awt_id + seg]->Fill( adc );
+	  }
+	}
       }
     }
 
@@ -666,25 +698,31 @@ process_event( void )
     static const int k_tdc    = gUnpacker.get_data_id("BAC","tdc");
 
     // sequential id
-    static const int baca_id = gHist.getSequentialID(kBAC, 0, kADC,    1);
-    static const int bact_id = gHist.getSequentialID(kBAC, 0, kTDC,    1);
-    static const int bach_id = gHist.getSequentialID(kBAC, 0, kHitPat, 1);
-    static const int bacm_id = gHist.getSequentialID(kBAC, 0, kMulti,  1);
+    static const int baca_id   = gHist.getSequentialID(kBAC, 0, kADC,     1);
+    static const int bact_id   = gHist.getSequentialID(kBAC, 0, kTDC,     1);
+    static const int bacawt_id = gHist.getSequentialID(kBAC, 0, kADCwTDC, 1);
+    static const int bach_id   = gHist.getSequentialID(kBAC, 0, kHitPat,  1);
+    static const int bacm_id   = gHist.getSequentialID(kBAC, 0, kMulti,   1);
 
     int multiplicity = 0;
     for(int seg = 0; seg<NumOfSegBAC; ++seg){
       // ADC
       int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
-      if(nhit_a != 0){
+      if( nhit_a!=0 ){
 	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-	hptr_array[baca_id + seg]->Fill(adc, nhit_a);
+	hptr_array[baca_id + seg]->Fill( adc );
       }
       // TDC
       int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      if(nhit_t != 0){
+      if( nhit_t!=0 ){
 	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
-	if(tdc != 0){
-	  hptr_array[bact_id + seg]->Fill(tdc, nhit_t);
+	if( tdc!=0 ){
+	  hptr_array[bact_id + seg]->Fill( tdc );
+	  // ADC w/TDC
+	  if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
+	    int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	    hptr_array[bacawt_id + seg]->Fill( adc );
+	  }
 	  hptr_array[bach_id]->Fill(seg);
 	  ++multiplicity;
 	}
@@ -1011,8 +1049,9 @@ process_event( void )
     static const int k_tdc    = gUnpacker.get_data_id("PVAC","tdc");
 
     // sequential id
-    static const int pvaca_id = gHist.getSequentialID(kPVAC, 0, kADC, 1);
-    static const int pvact_id = gHist.getSequentialID(kPVAC, 0, kTDC, 1);
+    static const int pvaca_id   = gHist.getSequentialID(kPVAC, 0, kADC, 1);
+    static const int pvact_id   = gHist.getSequentialID(kPVAC, 0, kTDC, 1);
+    static const int pvacawt_id = gHist.getSequentialID(kPVAC, 0, kADCwTDC, 1);
 
     for(int seg = 0; seg<NumOfSegPVAC; ++seg){
       // ADC
@@ -1023,9 +1062,16 @@ process_event( void )
       }
       // TDC
       int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      if(nhit_t != 0){
+      if( nhit_t!=0 ){
 	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
-	if(tdc != 0){ hptr_array[pvact_id + seg]->Fill(tdc, nhit_t); }
+	if( tdc!=0 ){
+	  hptr_array[pvact_id + seg]->Fill( tdc );
+	  // ADC w/TDC
+	  if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
+	    int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	    hptr_array[pvacawt_id + seg]->Fill( adc );
+	  }
+	}
       }
     }
 
@@ -1049,19 +1095,27 @@ process_event( void )
     // sequential id
     static const int faca_id = gHist.getSequentialID(kFAC, 0, kADC, 1);
     static const int fact_id = gHist.getSequentialID(kFAC, 0, kTDC, 1);
+    static const int facawt_id = gHist.getSequentialID(kFAC, 0, kADCwTDC, 1);
 
     for(int seg = 0; seg<NumOfSegFAC; ++seg){
       // ADC
       int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
-      if(nhit_a != 0){
+      if( nhit_a!=0 ){
 	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-	hptr_array[faca_id + seg]->Fill(adc, nhit_a);
+	hptr_array[faca_id + seg]->Fill( adc );
       }
       // TDC
       int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      if(nhit_t != 0){
+      if( nhit_t!=0 ){
 	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
-	if(tdc != 0){ hptr_array[fact_id + seg]->Fill(tdc, nhit_t); }
+	if( tdc!=0 ){
+	  hptr_array[fact_id + seg]->Fill(tdc, nhit_t);
+	  // ADC w/TDC
+	  if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
+	    int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	    hptr_array[facawt_id + seg]->Fill( adc );
+	  }
+	}
       }
     }
 
@@ -1099,7 +1153,7 @@ process_event( void )
     static const int sch_tot_2d_id = gHist.getSequentialID(kSCH, 0, kADC2D,  1);
 
     int multiplicity  = 0;
-    for(int i = 0; i<NumOfSegSCH; ++i){
+    for( int i=0; i<NumOfSegSCH; ++i ){
       int nhit = gUnpacker.get_entries(k_device, 0, i, 0, k_leading);
       
       for(int m = 0; m<nhit; ++m){
@@ -1335,27 +1389,35 @@ process_event( void )
     static const int k_tdc    = gUnpacker.get_data_id("TOF","tdc");
 
     // sequential id
-    int tofa_id = gHist.getSequentialID(kTOF, 0, kADC);
-    int toft_id = gHist.getSequentialID(kTOF, 0, kTDC);
+    int tofa_id   = gHist.getSequentialID(kTOF, 0, kADC);
+    int toft_id   = gHist.getSequentialID(kTOF, 0, kTDC);
+    int tofawt_id = gHist.getSequentialID(kTOF, 0, kADCwTDC);
     for(int seg = 0; seg<NumOfSegTOF; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
-      if(nhit != 0){
+      if( nhit!=0 ){
 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-	hptr_array[tofa_id + seg]->Fill(adc);
+	hptr_array[tofa_id + seg]->Fill( adc );
       }
-
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       if(nhit != 0){
 	int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-	if(tdc != 0){ hptr_array[toft_id + seg]->Fill(tdc); }
+	if( tdc!=0 ){
+	  hptr_array[toft_id + seg]->Fill(tdc);
+	  // ADC w/TDC
+	  if( gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
+	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+	    hptr_array[tofawt_id + seg]->Fill( adc );
+	  }
+	}
       }
     }
 
     // Down PMT
-    tofa_id = gHist.getSequentialID(kTOF, 0, kADC, NumOfSegTOF+1);
-    toft_id = gHist.getSequentialID(kTOF, 0, kTDC, NumOfSegTOF+1);
+    tofa_id   = gHist.getSequentialID(kTOF, 0, kADC, NumOfSegTOF+1);
+    toft_id   = gHist.getSequentialID(kTOF, 0, kTDC, NumOfSegTOF+1);
+    tofawt_id = gHist.getSequentialID(kTOF, 0, kADCwTDC, NumOfSegTOF+1);
     
     for(int seg = 0; seg<NumOfSegTOF; ++seg){
       // ADC
@@ -1369,7 +1431,14 @@ process_event( void )
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
       if(nhit != 0){
 	int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
-	if(tdc != 0){ hptr_array[toft_id + seg]->Fill(tdc); }
+	if(tdc != 0){
+	  hptr_array[toft_id + seg]->Fill(tdc);
+	  // ADC w/TDC
+	  if( gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
+	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+	    hptr_array[tofawt_id + seg]->Fill( adc );
+	  }
+	}
       }
     }
 

@@ -46,6 +46,7 @@ enum DataType{
   // Usual data type
   kADC,   kTDC,   kHitPat,   kMulti, 
   kADC2D, kTDC2D, kHitPat2D, kMulti2D, 
+  kADCwTDC,
   // Extra data type for EMC
   kSerial, kXpos, kYpos, kXYpos, kTime,
   // Extra data type for Ge detector

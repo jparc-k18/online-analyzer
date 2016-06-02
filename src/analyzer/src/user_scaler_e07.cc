@@ -166,7 +166,7 @@ process_end()
 {
   std::cout << "\n#D : End of scaler, summarize this run" << std::endl;
   printf("%-12s %10s : %-15s %10s\n",
-	 "- E07 -", "Integral", "", "Integral");
+	 "[Counter]", "Integral", "[DAQ]", "Integral");
 	     
   for(int i = 0; i<NofCh; ++i){
     scaler_info info[size_dispColumn];
@@ -197,7 +197,7 @@ process_end()
   int    mst_clear  = val[right][11];
   int    clear      = val[right][12];
   double l2_acc     = (double)val[right][14];
-  int    bh2        = val[left][15];
+  int    bh2        = val[left][16];
   double bh1xbh2    = (double)val[right][28];
   double TM         = (double)val[right][3];
 
@@ -214,14 +214,14 @@ process_end()
   printf("%-20s %15.4f\n", "K beam/BH1xBH2", kbeam/bh1xbh2);
   printf("%-20s %15s\t",   "(K,pi)",         separate_comma((int)kpi).c_str());
   printf("%-20s %15.4f\n", "(K,K)/K-beam",   kk/kbeam);
-  printf("%-20s %15s\t",   "L1 req",         separate_comma((int)l1_req).c_str());
+  printf("%-20s %15s\t",   "L1 Req",         separate_comma((int)l1_req).c_str());
   printf("%-20s %15.4f\n", "(K,pi)/K-beam",  kpi/kbeam);
-  printf("%-20s %15s\t",   "L1 acc",     separate_comma((int)l1_acc).c_str());
+  printf("%-20s %15s\t",   "L1 Acc",     separate_comma((int)l1_acc).c_str());
   printf("%-20s %15.4f\n", "Live time/Real time", live_time/real_time);  
-  printf("%-20s %15s\t",   "Total Clear",    separate_comma(clear).c_str());
-  printf("%-20s %15.4f\n", "L1 acc/L1 req",  l1_acc/l1_req);
-  printf("%-20s %15s\t",   "L2 acc",     separate_comma((int)l2_acc).c_str());
-  printf("%-20s %15.4f\n", "L2 acc/L1 acc",  l2_acc/l1_acc);
+  printf("%-20s %15s\t",   "L2 Clear",    separate_comma(clear).c_str());
+  printf("%-20s %15.4f\n", "L1 Acc/L1 Req",  l1_acc/l1_req);
+  printf("%-20s %15s\t",   "L2 Acc",     separate_comma((int)l2_acc).c_str());
+  printf("%-20s %15.4f\n", "L2 Acc/L1 Acc",  l2_acc/l1_acc);
   printf("\n");
 
   return 0;
@@ -233,15 +233,24 @@ process_event()
 {
   static UnpackerManager& g_unpacker = GUnpacker::get_instance();
   
-  static int run_number = g_unpacker.get_root()->get_run_number();
-  static int event_count = 0;
+  static int  run_number = g_unpacker.get_root()->get_run_number();
+  static int  event_count = 0;
   static bool en_disp = false;
-  if(flag_semi_online){
-    if(event_count%300 == 0) en_disp = true;
-  }else{
-    if(event_count%20 == 0)  en_disp = true;
+  static int  scaler_id    = g_unpacker.get_device_id("Scaler");
+
+  if( flag_semi_online ){
+    if( event_count%300 == 0 ) en_disp = true;
+  } else {
+    en_disp = true;
   }
   
+  ++event_count;
+
+  if( !g_unpacker.get_entries( scaler_id, 0, 0, 0, 0 ) ){
+    en_disp = false;
+    return 0;
+  }
+
   // clear console
   if(en_disp) printf("\033[2J");
 
@@ -320,7 +329,7 @@ process_event()
 
     if(en_disp){
       int event_number = g_unpacker.get_event_number();
-      std::cout << std::setw(10) << std::left  << "RUN"
+      std::cout << std::setw(12) << std::left  << "RUN"
 		<< std::setw(11) << std::right << run_number << " : "
 		<< std::setw(15) << std::left  << "Event Number"
 		<< std::setw(11) << std::right << event_number
@@ -336,7 +345,7 @@ process_event()
       double l2_eff    = l2_acc/l1_acc;
 
       printf("%-12s %10s : %-15s %10s \n",
-	     "- E07 -", "Integral", "", "Integral");
+	     "", "Integral", "", "Integral");
 	     
       for(int i = 0; i<NofCh; ++i){
 	scaler_info info[size_dispColumn];
@@ -369,7 +378,6 @@ process_event()
     }
   }
   
-  ++event_count;
   en_disp = false;
 
   return 0;

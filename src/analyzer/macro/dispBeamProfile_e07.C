@@ -17,8 +17,7 @@ void dispBeamProfile_e07()
 
   const double fit_width[2] = { 50., 50. };
 
-  const double ff[n_hist] = { -500., -200., 0., 200., 500.
-			      /*-100, 100*/ };
+  const double ff[n_hist] = { 200., 500., 680, 1000., 1200. };
   double   rms[2][n_hist];
   double sigma[2][n_hist];
     

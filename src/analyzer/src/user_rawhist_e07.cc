@@ -1639,6 +1639,9 @@ process_event( void )
     }// for(TOF)
 
     // TOF x SCH
+    bool hul2d_flag = false;
+    bool hul3d_flag = false;    
+    bool fbh_coin   = false;
     for(int i_tof=0; i_tof<NumOfSegTOF; ++i_tof){
       int nhit_tof = gUnpacker.get_entries(k_device, 0, i_tof, 0, k_tof);
       if(nhit_tof == 0) continue;
@@ -1647,16 +1650,21 @@ process_event( void )
 	int nhit_sch = gUnpacker.get_entries(k_device, 0, i_sch, 0, k_sch);
 	if(nhit_sch != 0){
 	  hptr_array[tof_sch_id]->Fill(i_sch, i_tof);
-	  bool hul2d_flag = gMatrix.IsAccept( i_tof, i_sch );
-	  hptr_array[flag2d_id]->Fill( matrix2d_flag, hul2d_flag );
 	  // x FBH
 	  for(int i_fbh=0; i_fbh<NumOfSegClusteredFBH; ++i_fbh){
-	    bool hul3d_flag = gMatrix.IsAccept( i_tof, i_sch, i_fbh );
-	    hptr_array[flag3d_id]->Fill( matrix3d_flag, hul3d_flag );
+	    if( !hul3d_flag ) hul3d_flag = gMatrix.IsAccept( i_tof, i_sch, i_fbh );
+	    if( !fbh_coin ){
+	      int nhit_fbh = gUnpacker.get_entries(k_device, 0, i_fbh, 0, k_fbh);
+	      if( nhit_fbh>0 ) fbh_coin = true;
+	    }
 	  }
+	  if( !hul2d_flag ) hul2d_flag = ( gMatrix.IsAccept( i_tof, i_sch ) && fbh_coin );
 	}
       }// for(SCH)
     }// for(TOF)
+
+    hptr_array[flag2d_id]->Fill( matrix2d_flag, hul2d_flag );
+    hptr_array[flag3d_id]->Fill( matrix3d_flag, hul3d_flag );
 
     // FBH x SCH
     for(int i_fbh=0; i_fbh<NumOfSegClusteredFBH; ++i_fbh){

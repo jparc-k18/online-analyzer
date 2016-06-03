@@ -29,6 +29,7 @@ void dispSSD1()
       c->cd(l+1)->SetGrid();
       TH1 *h = (TH1*)GHist::get(ssd1_id[i][l]);
       if(!h) continue;
+      if( i==2 ) h->Rebin(4);
       h->Draw("colz");
     }
     c->Update();

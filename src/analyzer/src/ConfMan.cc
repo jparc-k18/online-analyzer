@@ -2,25 +2,27 @@
   ConfMan.cc
 */
 
-#include"ConfMan.hh"
-#include"UnpackerManager.hh"
-#include"Unpacker.hh"
-#include"filesystem_util.hh"
+#include "ConfMan.hh"
+#include "UnpackerManager.hh"
+#include "Unpacker.hh"
+#include "filesystem_util.hh"
 
-#include"HodoParamMan.hh"
-#include"HodoPHCMan.hh"
-#include"DCGeomMan.hh"
-#include"DCTdcCalibMan.hh"
-#include"DCDriftParamMan.hh"
-#include"UserParamMan.hh"
-#include"GeAdcCalibMan.hh"
+#include "HodoParamMan.hh"
+#include "HodoPHCMan.hh"
+#include "DCGeomMan.hh"
+#include "DCTdcCalibMan.hh"
+#include "DCDriftParamMan.hh"
+#include "UserParamMan.hh"
+#include "MatrixParamMan.hh"
+#include "MsTParamMan.hh"
+#include "GeAdcCalibMan.hh"
 
-#include<iostream>
-#include<fstream>
-#include<sstream>
-#include<vector>
-#include<algorithm>
-#include<iterator>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
 
 static const std::string MyName = "ConfMan::";
 
@@ -173,6 +175,35 @@ void ConfMan::initializeDCDriftParamMan()
   }else{
     std::cout << "#E " << MyName
 	      << " File path does not exist in " << name_file_["DRFTPM:"] 
+	      << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+
+// initialize MatrixParamMan --------------------------------------------------
+void ConfMan::initializeMatrixParamMan()
+{
+  if( ( name_file_["MATRIX2D:"] != "" ) && ( name_file_["MATRIX3D:"] != "" ) ){
+    MatrixParamMan& gMatrixParam = MatrixParamMan::GetInstance();
+    flag_[kIsGood] = gMatrixParam.Initialize( name_file_["MATRIX2D:"],
+					      name_file_["MATRIX3D:"] );
+  }else{
+    std::cout << "#E " << MyName
+	      << " File path does not exist in " << name_file_["MATRIX2D:"]
+	      << " or " << name_file_["MATRIX3D:"] << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+
+// initialize MsTParamMan --------------------------------------------------
+void ConfMan::initializeMsTParamMan()
+{
+  if( ( name_file_["MASS:"] != "" ) ){
+    MsTParamMan& gMsTParam = MsTParamMan::GetInstance();
+    flag_[kIsGood] = gMsTParam.Initialize( name_file_["MASS:"] );
+  }else{
+    std::cout << "#E " << MyName
+	      << " File path does not exist in " << name_file_["MASS:"]
 	      << std::endl;
     flag_.reset(kIsGood);
   }

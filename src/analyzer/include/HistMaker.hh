@@ -35,6 +35,7 @@ enum SubDetectorType {
   // Sub Detector ID in HUL
   kHulTOF,     kHulFBH,     kHulSCH,
   kHulTOFxFBH, kHulTOFxSCH, kHulFBHxSCH,
+  kHul2D, kHul3D,
   // DAQ unique sub ID
   kEB, kTKO, kVME, kCLite, kEASIROC, kCAMAC,
   sizeSubDetectorType,

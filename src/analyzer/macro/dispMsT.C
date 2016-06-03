@@ -84,10 +84,11 @@ void dispMsT()
     c->cd(1);
     GHist::get(base_id)->Draw();
     c->cd(2);
-    GHist::get(base_id+1)->Draw();
-    c->cd(3);
     base_id = HistMaker::getUniqueID(kMsT, 0, kTDC2D);
     GHist::get(base_id)->Draw("col");
+    c->cd(3);
+    base_id = HistMaker::getUniqueID(kMsT, kCAMAC, kHitPat2D, 0);
+    GHist::get(base_id)->Draw("text");
     c->cd(4);
     base_id = HistMaker::getUniqueID(kMsT, 0, kHitPat2D,0);
     GHist::get(base_id)->Draw("text");

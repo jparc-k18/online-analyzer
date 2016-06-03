@@ -3205,12 +3205,22 @@ TList* HistMaker::createMsT(bool flag_ps)
 			   NumOfSegSCH, 0, NumOfSegSCH,
 			   "Segment", ""));
   }
+
   // Hit parttern 2D --------------------------------------------
+  {
+    int target_id = getUniqueID(kMsT, kCAMAC, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id, "MsT_RM_Flag", // 1 origin
+			   3, 0., 3., 2, 0., 2.,
+			   "2nd Accept", "fast clear"));
+    GHist::get(target_id)->SetMarkerSize(6);
+  }
+
+  // Hit parttern 2D Flag --------------------------------------------
   {
     int target_id = getUniqueID(kMsT, 0, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id, "MsT_Flag", // 1 origin
-			   3, 0., 3., 2, 0., 2.,
-			   "2nd Accept", "fast clear"));
+			   3, 0., 3., 3, 0., 3.,
+			   "CAMAC-RM Flag", "MsT Accept"));
     GHist::get(target_id)->SetMarkerSize(6);
   }
 
@@ -3303,6 +3313,24 @@ TList* HistMaker::createMtx3D(bool flag_ps)
 			   NumOfSegSCH,          0, NumOfSegSCH,
 			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,
 			   "SCH seg","Clustered FBH seg"));
+    GHist::get(target_id)->SetMarkerSize(6);
+  }
+
+  // Hit parttern 2D (Flag) --------------------------------------------
+  {
+    int target_id = getUniqueID(kMtx3D, kHul2D, kHitPat2D, 0);
+    top_dir->Add(createTH2(++target_id, "Mtx_2D_FLAG", // 1 origin
+			   3, 0., 3., 3, 0., 3.,
+			   "Trigger Flag", "HUL Accept"));
+    GHist::get(target_id)->SetMarkerSize(6);
+  }
+
+  // Hit parttern 3D (Flag) --------------------------------------------
+  {
+    int target_id = getUniqueID(kMtx3D, kHul3D, kHitPat2D, 0);
+    top_dir->Add(createTH2(++target_id, "Mtx_3D_FLAG", // 1 origin
+			   3, 0., 3., 3, 0., 3.,
+			   "Trigger Flag", "HUL Accept"));
     GHist::get(target_id)->SetMarkerSize(6);
   }
 

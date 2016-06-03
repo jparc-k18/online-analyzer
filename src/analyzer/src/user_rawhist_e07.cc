@@ -27,6 +27,8 @@
 
 #include "UserParamMan.hh"
 #include "HodoParamMan.hh"
+#include "MatrixParamMan.hh"
+#include "MsTParamMan.hh"
 
 #define DEBUG    0
 #define FLAG_DAQ 0
@@ -49,6 +51,8 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.initializeDCGeomMan();
   gConfMan.initializeDCTdcCalibMan();
   gConfMan.initializeDCDriftParamMan();
+  gConfMan.initializeMatrixParamMan();
+  gConfMan.initializeMsTParamMan();
   gConfMan.initializeUserParamMan();
   if(!gConfMan.isGood()) return -1;
   // unpacker and all the parameter managers are initialized at this stage
@@ -166,13 +170,17 @@ process_event( void )
 {
   static UnpackerManager& gUnpacker = GUnpacker::get_instance();
   static HistMaker&       gHist     = HistMaker::getInstance();
+  static MatrixParamMan&  gMatrix   = MatrixParamMan::GetInstance();
+  static MsTParamMan&     gMsT      = MsTParamMan::GetInstance();
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
   // TriggerFlag ---------------------------------------------------
-  bool scaler_flag = false;
+  bool scaler_flag   = false;
+  bool matrix2d_flag = false;
+  bool matrix3d_flag = false;
   {
     static const int k_device = gUnpacker.get_device_id("TFlag");
     static const int k_tdc    = gUnpacker.get_data_id("TFlag", "tdc");
@@ -187,6 +195,8 @@ process_event( void )
 	  hptr_array[tf_tdc_id+seg]->Fill( tdc );
 	  hptr_array[tf_hit_id]->Fill( seg );
 	  if( seg==SegIdScalerTrigger ) scaler_flag = true;
+	  if( seg==8 ) matrix2d_flag = true;
+	  if( seg==9 ) matrix3d_flag = true;
 	}
       }
     }// for(seg)
@@ -267,7 +277,7 @@ process_event( void )
 
 #endif
 
-  if(scaler_flag) return 0;
+  if( scaler_flag ) return 0;
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
@@ -1483,18 +1493,20 @@ process_event( void )
     int tdc2d_id   = gHist.getSequentialID(kMsT, 0, kTDC2D);
     int tof_hp_id  = gHist.getSequentialID(kMsT, 0, kHitPat, 0);
     int sch_hp_id  = gHist.getSequentialID(kMsT, 0, kHitPat, 1);
+    int rm_flag_id = gHist.getSequentialID(kMsT, kCAMAC, kHitPat2D, 0);
     int flag_id    = gHist.getSequentialID(kMsT, 0, kHitPat2D, 0);
 
     // Flag
-    bool accept = false;
+    bool rm_accept = false;
+    bool mst_flag  = false;
     {
       int nhit_acc = gUnpacker.get_entries(k_flag, 0, 0, 0, 2);
       int nhit_clr = gUnpacker.get_entries(k_flag, 0, 0, 0, 3);
       if( nhit_acc && nhit_clr ){
 	int flag_acc = gUnpacker.get(k_flag, 0, 0, 0, 2);
 	int flag_clr = gUnpacker.get(k_flag, 0, 0, 0, 3);
-	hptr_array[flag_id]->Fill( flag_acc, flag_clr );
-	if( flag_acc && !flag_clr ) accept = true;
+	hptr_array[rm_flag_id]->Fill( flag_acc, flag_clr );
+	if( flag_acc && !flag_clr ) rm_accept = true;
       }
     }    
 
@@ -1504,12 +1516,24 @@ process_event( void )
       if( nhit!=0 ){
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, 0);
 	hptr_array[tdc_id +seg]->Fill( tdc );
-	if( accept ) hptr_array[tdc_id +NumOfSegTOF +seg]->Fill( tdc );
+	if( rm_accept ) hptr_array[tdc_id +NumOfSegTOF +seg]->Fill( tdc );
 	hptr_array[tdc2d_id]->Fill( seg, tdc );
 	// HitPat
 	hptr_array[tof_hp_id]->Fill(seg); 
+	for( int seg2=0; seg2<NumOfSegSCH; ++seg2 ){
+	  int nhit = gUnpacker.get_entries(k_device, 1, seg, 0, 0);
+	  if( nhit!=0 ){
+	    int flag = gUnpacker.get(k_device, 1, seg, 0, 0);
+	    if( flag ){
+	      if( !mst_flag ) mst_flag = gMsT.IsAccept( seg, seg2, tdc );
+	    }
+	  }
+	}
       }
     }
+
+    hptr_array[flag_id]->Fill( rm_accept, mst_flag );
+
     for(int seg=0; seg<NumOfSegSCH; ++seg){
       // HitPat
       int nhit = gUnpacker.get_entries(k_device, 1, seg, 0, 0);
@@ -1544,6 +1568,8 @@ process_event( void )
     static const int tof_fbh_id = gHist.getSequentialID(kMtx3D, kHulTOFxFBH, kHitPat2D);
     static const int tof_sch_id = gHist.getSequentialID(kMtx3D, kHulTOFxSCH, kHitPat2D);
     static const int fbh_sch_id = gHist.getSequentialID(kMtx3D, kHulFBHxSCH, kHitPat2D);
+    static const int flag2d_id  = gHist.getSequentialID(kMtx3D, kHul2D, kHitPat2D);
+    static const int flag3d_id  = gHist.getSequentialID(kMtx3D, kHul3D, kHitPat2D);
 
     // TOF
     for(int seg=0; seg<NumOfSegTOF; ++seg){
@@ -1593,7 +1619,16 @@ process_event( void )
       
       for(int i_sch=0; i_sch<NumOfSegSCH; ++i_sch){
 	int nhit_sch = gUnpacker.get_entries(k_device, 0, i_sch, 0, k_sch);
-	if(nhit_sch != 0) hptr_array[tof_sch_id]->Fill(i_sch, i_tof);
+	if(nhit_sch != 0){
+	  hptr_array[tof_sch_id]->Fill(i_sch, i_tof);
+	  bool hul2d_flag = gMatrix.IsAccept( i_tof, i_sch );
+	  hptr_array[flag2d_id]->Fill( matrix2d_flag, hul2d_flag );
+	  // x FBH
+	  for(int i_fbh=0; i_fbh<NumOfSegClusteredFBH; ++i_fbh){
+	    bool hul3d_flag = gMatrix.IsAccept( i_tof, i_sch, i_fbh );
+	    hptr_array[flag3d_id]->Fill( matrix3d_flag, hul3d_flag );
+	  }
+	}
       }// for(SCH)
     }// for(TOF)
 

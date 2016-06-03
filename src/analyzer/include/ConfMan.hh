@@ -43,6 +43,9 @@ public:
   void initializeDCTdcCalibMan();
   void initializeDCDriftParamMan();
 
+  void initializeMatrixParamMan();
+  void initializeMsTParamMan();
+
   void initializeUserParamMan();
 
   void initializeGeAdcCalibMan();

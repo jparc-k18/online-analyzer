@@ -279,6 +279,15 @@ TObject* dispBeamProfile( void )
   return m;
 }
 
+// BcOutFF ---------------------------------------------------
+TObject* dispBcOutFF( void )
+{
+  std::string path = getMacroPath() + "dispBcOutFF.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispBcOutFF");
+  return m;
+}
+
 // Mtx2D ---------------------------------------------------------
 TObject* dispMtx2D( void )
 {

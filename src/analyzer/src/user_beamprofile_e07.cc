@@ -28,14 +28,12 @@ namespace analyzer
   
   enum HistName
     {
-      FF_n500, FF_n200, FF_0, FF_200, FF_500,
-      //FF_n100, FF_100,
+      FF_200, FF_500, FF_680, FF_1000, FF_1200,
       size_HistName
     };
   static const double FF_plus[] =
     {
-      -500., -200., 0, 200., 500.
-      //-100., 100.,
+      200., 500., 680, 1000., 1200.
     };
 
 //____________________________________________________________________________
@@ -63,6 +61,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(split32());
   tab_macro->Add(split33());
   tab_macro->Add(dispBeamProfile_e07());
+  tab_macro->Add(dispBcOutFF());
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();

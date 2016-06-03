@@ -241,7 +241,7 @@ process_event()
   if( flag_semi_online ){
     if( event_count%300 == 0 ) en_disp = true;
   } else {
-    en_disp = true;
+    if( event_count%20 == 0 ) en_disp = true;
   }
   
   ++event_count;
@@ -286,11 +286,11 @@ process_event()
 	  curr[left][i] = g_unpacker.get(scaler_id, info[left].module_id, 0, info[left].ch, 0);
 	}
 
-	if(curr[left][i] < prev[left][i]){
+	if( curr[left][i] < prev[left][i] ){
 	  prev[left][i] = 0;
 	}
 
-	if(flag_spill_by_spill){
+	if( flag_spill_by_spill ){
 	  val[left][i]  = curr[left][i];
 	}else{
 	  val[left][i] += curr[left][i] - prev[left][i];
@@ -299,7 +299,7 @@ process_event()
       }
 
       // Right column
-      if(info[right].flag_disp){
+      if( info[right].flag_disp ){
 	prev[right][i] = curr[right][i];
 	int nhit = g_unpacker.get_entries( scaler_id, info[right].module_id, 0, info[right].ch, 0 );
 	if( nhit==0 ){
@@ -308,13 +308,13 @@ process_event()
 	  curr[right][i] = g_unpacker.get(scaler_id, info[right].module_id, 0, info[right].ch, 0);
 	}
 
-	if(curr[right][i] < prev[right][i]){
+	if( curr[right][i] < prev[right][i] ){
 	  prev[right][i] = 0;
 	  inclement_spill = true;
 	}
 	
-	if(i!=0){
-	  if(flag_spill_by_spill){
+	if( i!=0 ){
+	  if( flag_spill_by_spill ){
 	    val[right][i]  = curr[right][i];
 	  }else{
 	    val[right][i] += curr[right][i] - prev[right][i];
@@ -325,9 +325,9 @@ process_event()
     }
     
     // inclement spill
-    if(inclement_spill)	++val[right][0];
+    if( inclement_spill ) ++val[right][0];
 
-    if(en_disp){
+    if( en_disp ){
       int event_number = g_unpacker.get_event_number();
       std::cout << std::setw(12) << std::left  << "RUN"
 		<< std::setw(11) << std::right << run_number << " : "

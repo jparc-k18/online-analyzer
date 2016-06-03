@@ -33,6 +33,8 @@ TObject* effSdcInOut( void );
 
 TObject* dispBeamProfile( void );
 
+TObject* dispMtx2D( void );
+
 /* old functions */
 TObject* dispBAC( void );
 TObject* dispACs_SFV( void );

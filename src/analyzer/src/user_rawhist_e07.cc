@@ -85,6 +85,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(dispHitPat());
   tab_macro->Add(effBcOut());
   tab_macro->Add(effSdcInOut());
+  tab_macro->Add(dispMtx2D());
   // tab_macro->Add(auto_monitor_all());
 
   // Add histograms to the Hist tab
@@ -116,6 +117,16 @@ process_begin( const std::vector<std::string>& argv )
 			       300, -10, 5,
 			       "BTOF [ns]", ""
 			       ));
+  // Matrix pattern
+  // Mtx2D
+  {
+    int mtx2d_id = gHist.getUniqueID(kMisc, kHul2D, kHitPat2D);
+    gHist.createTH2(mtx2d_id, "Mtx2D pattern",
+		    NumOfSegSCH, 0, NumOfSegSCH,
+		    NumOfSegTOF, 0, NumOfSegTOF
+		    );
+  }// Mtx2D
+  
 
   tab_e07->Add(gHist.createEMC());
   tab_e07->Add(gHist.createSSDT());
@@ -152,6 +163,21 @@ process_begin( const std::vector<std::string>& argv )
   // gStyle->SetStatH(.35);
   gStyle->SetStatW(.32);
   gStyle->SetStatH(.25);
+
+  // Initialize Mtx2D pattern
+  {
+    MatrixParamMan&  gMatrix   = MatrixParamMan::GetInstance();
+    int mtx2d_id = gHist.getSequentialID(kMisc, kHul2D, kHitPat2D);
+    for(int i_tof = 0; i_tof<NumOfSegTOF; ++i_tof){
+      for(int i_sch = 0; i_sch<NumOfSegSCH; ++i_sch){
+	bool hul2d_flag = gMatrix.IsAccept( i_tof, i_sch );
+	if(!hul2d_flag) hptr_array[mtx2d_id]->Fill(i_sch, i_tof);
+      } // for(i_sch)
+    } // for(i_tof)
+
+    hptr_array[mtx2d_id]->SetLineWidth(2);
+    hptr_array[mtx2d_id]->SetLineColor(2);
+  }
 
   return 0;
 }

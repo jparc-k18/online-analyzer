@@ -15,7 +15,7 @@ void dispBeamProfile_e07()
   tex.SetTextSize(0.14);
   double xpos = 0.15, ypos = 0.75;
 
-  const double fit_width[2] = { 100., 100. };
+  const double fit_width[2] = { 50., 50. };
 
   const double ff[n_hist] = { -500., -200., 0., 200., 500.
 			      /*-100, 100*/ };
@@ -53,7 +53,8 @@ void dispBeamProfile_e07()
 	c->cd(i+1+xy*n_hist);
 	TH1 *h = (TH1*)GHist::get(base_id +i +xy*n_hist)->Clone();
 	h->GetXaxis()->SetRangeUser(-200,200);
-	double max = h->GetBinCenter(h->GetMaximumBin());
+	// double max = h->GetBinCenter(h->GetMaximumBin());
+	double max = 0.;
 	h->Fit("f", "Q", "", max-fit_width[xy], max+fit_width[xy]);
 	sigma[xy][i] = f->GetParameter("Sigma");
 	h->Draw();

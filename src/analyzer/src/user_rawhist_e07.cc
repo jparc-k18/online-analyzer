@@ -74,6 +74,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(dispBFT());
   tab_macro->Add(dispBH2());
   tab_macro->Add(dispACs());
+  tab_macro->Add(dispFBH());
   tab_macro->Add(dispSCH());
   tab_macro->Add(dispTOF());  
   tab_macro->Add(dispMsT());  
@@ -797,6 +798,8 @@ process_event( void )
     static const int fbh_tot_u_id = gHist.getSequentialID(kFBH, 0, kADC,    1);
     static const int fbh_tdc_d_id = gHist.getSequentialID(kFBH, 0, kTDC,    NumOfSegFBH +1);
     static const int fbh_tot_d_id = gHist.getSequentialID(kFBH, 0, kADC,    NumOfSegFBH +1);
+    static const int fbh_t_all_id   = gHist.getSequentialID(kFBH, 0, kTDC, NumOfSegFBH*2+1);
+    static const int fbh_tot_all_id = gHist.getSequentialID(kFBH, 0, kADC, NumOfSegFBH*2+1);
     static const int fbh_hit_id   = gHist.getSequentialID(kFBH, 0, kHitPat, 1);
     static const int fbh_mul_id   = gHist.getSequentialID(kFBH, 0, kMulti,  1);
 
@@ -819,6 +822,8 @@ process_event( void )
 	int tot_u      = tdc_u - trailing_u;
 	hptr_array[fbh_tdc_u_id +i]->Fill(tdc_u);
 	hptr_array[fbh_tot_u_id +i]->Fill(tot_u);
+	hptr_array[fbh_t_all_id]->Fill( tdc_u );
+	hptr_array[fbh_tot_all_id]->Fill( tot_u );
 	hptr_array[fbh_t_2d_id]->Fill(i, tdc_u);
 	hptr_array[fbh_tot_2d_id]->Fill(i, tot_u);
 	if( tdc_min<tdc_u && tdc_u<tdc_max ){
@@ -832,6 +837,8 @@ process_event( void )
 	int tot_d      = tdc_d - trailing_d;
 	hptr_array[fbh_tdc_d_id +i]->Fill(tdc_d);
 	hptr_array[fbh_tot_d_id +i]->Fill(tot_d);
+	hptr_array[fbh_t_all_id]->Fill( tdc_d );
+	hptr_array[fbh_tot_all_id]->Fill( tot_d );
 	hptr_array[fbh_t_2d_id]->Fill(i +NumOfSegFBH, tdc_d);
 	hptr_array[fbh_tot_2d_id]->Fill(i +NumOfSegFBH, tot_d);
 	if( tdc_min<tdc_d && tdc_d<tdc_max ){

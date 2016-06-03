@@ -1155,7 +1155,7 @@ TList* HistMaker::createFBH(bool flag_ps)
 			       "TDC [ch]", ""));
       } else {
 	sub_dir->Add(createTH1(++target_id, Form("%s_%s_%dD", // 1 origin
-						 nameDetector, nameSubDir, i+1),
+						 nameDetector, nameSubDir, i+1-NumOfSegFBH),
 			       1024, 0, 1024,
 			       "TDC [ch]", ""));
       }
@@ -1176,17 +1176,30 @@ TList* HistMaker::createFBH(bool flag_ps)
 			       "TOT [ch]", ""));
       }else{
 	sub_dir->Add(createTH1(++target_id, Form("%s_%s_%dD", // 1 origin
-						 nameDetector, nameSubDir, i+1),
+						 nameDetector, nameSubDir, i+1-NumOfSegFBH),
 			       200, -50, 150,
 			       "TOT [ch]", ""));
       }
     }
     top_dir->Add(sub_dir);
   }
+  // TDC/TOT SUM -----------------------------------------------------
+  {
+    // TDC
+    top_dir->Add(createTH1(getUniqueID(kFBH, 0, kTDC, NumOfSegFBH*2+1),
+			   Form("%s_TDC", nameDetector),
+			   1024, 0, 1024,
+			   "TDC [ch]", ""));
+    // TOT
+    top_dir->Add(createTH1(getUniqueID(kFBH, 0, kADC, NumOfSegFBH*2+1),
+			   Form("%s_TOT", nameDetector),
+			   200, -50, 150,
+			   "TOT [ch]", ""));
+  }
   // TDC-2D --------------------------------------------
   {
     int target_id = getUniqueID(kFBH, 0, kTDC2D, 0);
-    top_dir->Add(createTH2(++target_id, "FBH_TDC_2D", // 1 origin
+    top_dir->Add(createTH2(++target_id, "FBH_TDC2D", // 1 origin
 			   NumOfSegFBH*2, 0, NumOfSegFBH*2,
 			   1024, 0, 1024,
 			   "Segment", "TDC [ch]"));
@@ -1194,7 +1207,7 @@ TList* HistMaker::createFBH(bool flag_ps)
   // TOT-2D --------------------------------------------
   {
     int target_id = getUniqueID(kFBH, 0, kADC2D, 0);
-    top_dir->Add(createTH2(++target_id, "FBH_TOT_2D", // 1 origin
+    top_dir->Add(createTH2(++target_id, "FBH_TOT2D", // 1 origin
 			   NumOfSegFBH*2, 0, NumOfSegFBH*2,
 			   200, -50, 150,
 			   "Segment", "TOT [ch]"));

@@ -126,7 +126,8 @@ process_begin( const std::vector<std::string>& argv )
     int mtx2d_id = gHist.getUniqueID(kMisc, kHul2D, kHitPat2D);
     gHist.createTH2(mtx2d_id, "Mtx2D pattern",
 		    NumOfSegSCH,   0, NumOfSegSCH,
-		    NumOfSegTOF+1, 0, NumOfSegTOF+1
+		    NumOfSegTOF+1, 0, NumOfSegTOF+1,
+		    "SCH seg", "TOF seg"
 		    );
   }// Mtx2D
 
@@ -136,7 +137,8 @@ process_begin( const std::vector<std::string>& argv )
     for(int i = 0; i<NumOfSegClusteredFBH; ++i){
       gHist.createTH2(mtx3d_id+i, Form("Mtx3D pattern_FBH%d",i),
 		      NumOfSegSCH,   0, NumOfSegSCH,
-		      NumOfSegTOF+1, 0, NumOfSegTOF+1
+		      NumOfSegTOF+1, 0, NumOfSegTOF+1,
+		      "SCH seg", "TOF seg"
 		      );
     }// for(i)
   }// Mtx3D

@@ -7,6 +7,8 @@
 #include <vector>
 #include <map>
 
+#include<TROOT.h>
+
 class MsTParamMan
 {
   std::vector< std::vector<double> > m_low_threshold;
@@ -23,6 +25,8 @@ private:
   MsTParamMan( void );
   MsTParamMan( const MsTParamMan& object );
   MsTParamMan& operator =( const MsTParamMan& object );
+
+  ClassDef(MsTParamMan, 0)
 };
 
 // getInstance

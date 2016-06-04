@@ -6,6 +6,7 @@
 
 #include "DCGeomMan.hh"
 #include "DCGeomRecord.hh"
+#include "ConfMan.hh"
 
 #include <string>
 #include <stdexcept>
@@ -16,6 +17,22 @@
 const int MaxChar = 200;
 
 DCGeomMan *DCGeomMan::geomMan_=0;
+
+// initialize DCGeomMan -----------------------------------------------------
+void
+ConfMan::initializeDCGeomMan()
+{
+  if(name_file_["DCGEOM:"] != ""){
+    DCGeomMan& gDCGeo = DCGeomMan::GetInstance();
+    flag_[kIsGood] = gDCGeo.Initialize(name_file_["DCGEOM:"]);
+  }else{
+    std::cout << "#E ConfMan::"
+	      << " File path does not exist in " << name_file_["DCGEOM:"] 
+	      << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+// initialize DCGeomMan -----------------------------------------------------
 
 DCGeomMan::DCGeomMan()
   : TOFid_(51), LCid_(54)

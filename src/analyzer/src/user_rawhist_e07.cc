@@ -87,6 +87,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(effBcOut());
   tab_macro->Add(effSdcInOut());
   tab_macro->Add(dispMtx2D());
+  tab_macro->Add(dispMtx3D());
   // tab_macro->Add(auto_monitor_all());
 
   // Add histograms to the Hist tab
@@ -124,10 +125,21 @@ process_begin( const std::vector<std::string>& argv )
   {
     int mtx2d_id = gHist.getUniqueID(kMisc, kHul2D, kHitPat2D);
     gHist.createTH2(mtx2d_id, "Mtx2D pattern",
-		    NumOfSegSCH, 0, NumOfSegSCH,
-		    NumOfSegTOF, 0, NumOfSegTOF
+		    NumOfSegSCH,   0, NumOfSegSCH,
+		    NumOfSegTOF+1, 0, NumOfSegTOF+1
 		    );
   }// Mtx2D
+
+  // Mtx3D
+  {
+    int mtx3d_id = gHist.getUniqueID(kMisc, kHul3D, kHitPat2D);
+    for(int i = 0; i<NumOfSegClusteredFBH; ++i){
+      gHist.createTH2(mtx3d_id+i, Form("Mtx3D pattern_FBH%d",i),
+		      NumOfSegSCH,   0, NumOfSegSCH,
+		      NumOfSegTOF+1, 0, NumOfSegTOF+1
+		      );
+    }// for(i)
+  }// Mtx3D
   
 
   tab_e07->Add(gHist.createEMC());
@@ -165,21 +177,6 @@ process_begin( const std::vector<std::string>& argv )
   // gStyle->SetStatH(.35);
   gStyle->SetStatW(.32);
   gStyle->SetStatH(.25);
-
-  // Initialize Mtx2D pattern
-  {
-    MatrixParamMan&  gMatrix   = MatrixParamMan::GetInstance();
-    int mtx2d_id = gHist.getSequentialID(kMisc, kHul2D, kHitPat2D);
-    for(int i_tof = 0; i_tof<NumOfSegTOF; ++i_tof){
-      for(int i_sch = 0; i_sch<NumOfSegSCH; ++i_sch){
-	bool hul2d_flag = gMatrix.IsAccept( i_tof, i_sch );
-	if(!hul2d_flag) hptr_array[mtx2d_id]->Fill(i_sch, i_tof);
-      } // for(i_sch)
-    } // for(i_tof)
-
-    hptr_array[mtx2d_id]->SetLineWidth(2);
-    hptr_array[mtx2d_id]->SetLineColor(2);
-  }
 
   return 0;
 }
@@ -1624,6 +1621,8 @@ process_event( void )
     static const int tof_fbh_id = gHist.getSequentialID(kMtx3D, kHulTOFxFBH, kHitPat2D);
     static const int tof_sch_id = gHist.getSequentialID(kMtx3D, kHulTOFxSCH, kHitPat2D);
     static const int fbh_sch_id = gHist.getSequentialID(kMtx3D, kHulFBHxSCH, kHitPat2D);
+    static const int mtx2d_id   = gHist.getSequentialID(kMtx3D, kHul2DHitPat,kHitPat2D);
+    static const int mtx3d_id   = gHist.getSequentialID(kMtx3D, kHul3DHitPat,kHitPat2D);
     static const int flag2d_id  = gHist.getSequentialID(kMtx3D, kHul2D, kHitPat2D);
     static const int flag3d_id  = gHist.getSequentialID(kMtx3D, kHul3D, kHitPat2D);
 
@@ -1658,6 +1657,7 @@ process_event( void )
     }
 
     // TOF x FBH
+    bool fl_fbh_hit = false;
     for(int i_tof=0; i_tof<NumOfSegTOF; ++i_tof){
       int nhit_tof = gUnpacker.get_entries(k_device, 0, i_tof, 0, k_tof);
       if(nhit_tof == 0) continue;
@@ -1665,6 +1665,7 @@ process_event( void )
       for(int i_fbh=0; i_fbh<NumOfSegClusteredFBH; ++i_fbh){
 	int nhit_fbh = gUnpacker.get_entries(k_device, 0, i_fbh, 0, k_fbh);
 	if(nhit_fbh != 0) hptr_array[tof_fbh_id]->Fill(i_fbh, i_tof);
+	if(nhit_fbh != 0) fl_fbh_hit = true;
       }// for(FBH)
     }// for(TOF)
 
@@ -1680,14 +1681,17 @@ process_event( void )
 	int nhit_sch = gUnpacker.get_entries(k_device, 0, i_sch, 0, k_sch);
 	if(nhit_sch != 0){
 	  hptr_array[tof_sch_id]->Fill(i_sch, i_tof);
+	  
+	  if(fl_fbh_hit) hptr_array[mtx2d_id]->Fill(i_sch, i_tof);
 	  // x FBH
 	  for(int i_fbh=0; i_fbh<NumOfSegClusteredFBH; ++i_fbh){
 	    if( !hul3d_flag ) hul3d_flag = gMatrix.IsAccept( i_tof, i_sch, i_fbh );
+	    int nhit_fbh = gUnpacker.get_entries(k_device, 0, i_fbh, 0, k_fbh);
+	    if( nhit_fbh>0 ) hptr_array[mtx3d_id+i_fbh]->Fill(i_sch, i_tof);
 	    if( !fbh_coin ){
-	      int nhit_fbh = gUnpacker.get_entries(k_device, 0, i_fbh, 0, k_fbh);
 	      if( nhit_fbh>0 ) fbh_coin = true;
 	    }
-	  }
+	  }// for(FBH)
 	  if( !hul2d_flag ) hul2d_flag = ( gMatrix.IsAccept( i_tof, i_sch ) && fbh_coin );
 	}
       }// for(SCH)

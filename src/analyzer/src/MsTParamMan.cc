@@ -8,9 +8,28 @@
 #include <algorithm>
 
 #include "MsTParamMan.hh"
+#include "ConfMan.hh"
 #include "DetectorID.hh"
 
 static const std::string class_name("MsTParamMan");
+
+ClassImp(MsTParamMan)
+
+// initialize MsTParamMan --------------------------------------------------
+void
+ConfMan::initializeMsTParamMan()
+{
+  if( ( name_file_["MASS:"] != "" ) ){
+    MsTParamMan& gMsTParam = MsTParamMan::GetInstance();
+    flag_[kIsGood] = gMsTParam.Initialize( name_file_["MASS:"] );
+  }else{
+    std::cout << "#E ConfMan::"
+	      << " File path does not exist in " << name_file_["MASS:"]
+	      << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+// initialize MsTParamMan --------------------------------------------------
 
 //_____________________________________________________________________
 MsTParamMan::MsTParamMan( void )

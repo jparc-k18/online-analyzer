@@ -247,8 +247,8 @@ void DCRHC::pushback_SdcOut( void )
   static UserParamMan &paramMan = UserParamMan::getInstance();
   static const double MinTdcSDC2 = paramMan.getParameter("SDC2_TDC", 0);
   static const double MaxTdcSDC2 = paramMan.getParameter("SDC2_TDC", 1);
-  static const double MinTdcSDC3 = paramMan.getParameter("SDC3_TDC", 0);
-  static const double MaxTdcSDC3 = paramMan.getParameter("SDC3_TDC", 1);
+  //  static const double MinTdcSDC3 = paramMan.getParameter("SDC3_TDC", 0);
+  //  static const double MaxTdcSDC3 = paramMan.getParameter("SDC3_TDC", 1);
 
   for(int layer=0;layer<NumOfLayersSdcOut;++layer)
     m_hitwire[layer].clear();

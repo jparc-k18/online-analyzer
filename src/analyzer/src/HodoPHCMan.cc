@@ -5,6 +5,7 @@
 */
 
 #include "HodoPHCMan.hh"
+#include "ConfMan.hh"
 
 #include <iostream>
 #include <iomanip>
@@ -25,6 +26,23 @@ const int SegShift  =  0;
 const int CidShift  = 11;
 const int PlidShift = 19;
 const int UdShift   = 27;
+
+// initialize HodoPHCMan ----------------------------------------------------
+void
+ConfMan::initializeHodoPHCMan()
+{
+  if(name_file_["HDPHC:"] != ""){
+    HodoPHCMan& gHodoPHC = HodoPHCMan::GetInstance();
+    gHodoPHC.SetFileName(name_file_["HDPHC:"]);
+    flag_[kIsGood] = gHodoPHC.Initialize();
+  }else{
+    std::cout << "#E ConfMan::"
+	      << " File path does not exist in " << name_file_["HDPHC:"] 
+	      << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+// initialize HodoPHCMan ----------------------------------------------------
 
 inline int KEY( int cid, int pl, int seg, int ud )
 {

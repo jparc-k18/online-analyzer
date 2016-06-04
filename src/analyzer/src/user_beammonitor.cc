@@ -57,7 +57,7 @@ process_begin(const std::vector<std::string>& argv)
   // unpacker and all the parameter managers are initialized at this stage
 
   // Make tabs
-  hddaq::gui::Controller& gCon = hddaq::gui::Controller::getInstance();
+  hddaq::gui::Controller::getInstance();
 
   // Beam Monitor
   {

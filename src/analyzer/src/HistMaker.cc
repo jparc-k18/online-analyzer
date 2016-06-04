@@ -3329,6 +3329,34 @@ TList* HistMaker::createMtx3D(bool flag_ps)
     GHist::get(target_id)->SetMarkerSize(6);
   }
 
+  // Hit parttern 2D (TOFxSCH FBH required) ----------------------------
+  {
+    TList *sub_dir = new TList;
+    sub_dir->SetName("Mtx2D_TOF_FBH");
+    int target_id = getUniqueID(kMtx3D, kHul2DHitPat, kHitPat2D, 0);
+    sub_dir->Add(createTH2(++target_id, "Mtx2D_TOFxSCH", // 1 origin
+			   NumOfSegSCH, 0, NumOfSegSCH,
+			   NumOfSegTOF, 0, NumOfSegTOF,
+			   "SCH seg", "TOF seg"));
+    GHist::get(target_id)->SetMarkerSize(6);
+    top_dir->Add(sub_dir);
+  }
+
+  // Hit parttern 3D (TOFxSCH FBH required) ----------------------------
+  {
+    TList *sub_dir = new TList;
+    sub_dir->SetName("Mtx3D_TOF_FBH");
+    int target_id = getUniqueID(kMtx3D, kHul3DHitPat, kHitPat2D, 0);
+    for(int i = 0; i<NumOfSegClusteredFBH; ++i){
+      sub_dir->Add(createTH2(++target_id, Form("Mtx3D_TOFxSCH_FBH%d",i), // 1 origin
+			     NumOfSegSCH, 0, NumOfSegSCH,
+			     NumOfSegTOF, 0, NumOfSegTOF,
+			     "SCH seg", "TOF seg"));
+      GHist::get(target_id)->SetMarkerSize(6);
+    }// for(i)
+    top_dir->Add(sub_dir);
+  }
+
   // Hit parttern 2D (Flag) --------------------------------------------
   {
     int target_id = getUniqueID(kMtx3D, kHul2D, kHitPat2D, 0);

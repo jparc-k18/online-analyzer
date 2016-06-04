@@ -5,12 +5,30 @@
 */
 
 #include "HodoParamMan.hh"
+#include "ConfMan.hh"
 
 #include <iostream>
 #include <iomanip>
 #include <cstdio>
 #include <fstream>
 #include <cstdlib>
+
+// initialize HodoParamMan --------------------------------------------------
+void
+ConfMan::initializeHodoParamMan()
+{
+  if(name_file_["HDPRM:"] != ""){
+    HodoParamMan& gHodoParam = HodoParamMan::GetInstance();
+    gHodoParam.SetFileName(name_file_["HDPRM:"]);
+    flag_[kIsGood] = gHodoParam.Initialize();
+  }else{
+    std::cout << "#E ConfMan::"
+	      << " File path does not exist in " << name_file_["HDPRM:"] 
+	      << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+// initialize HodoParamMan --------------------------------------------------
 
 HodoParamMan::HodoParamMan()
 {

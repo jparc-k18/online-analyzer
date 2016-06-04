@@ -35,6 +35,7 @@ TObject* dispBeamProfile( void );
 TObject* dispBcOutFF( void );
 
 TObject* dispMtx2D( void );
+TObject* dispMtx3D( void );
 
 /* old functions */
 TObject* dispBAC( void );

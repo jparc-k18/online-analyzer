@@ -3,11 +3,27 @@
 */
 
 #include "GeAdcCalibMan.hh"
+#include "ConfMan.hh"
 
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
+
+// initialize GeAdcCalibMan ----------------------------------------------
+void ConfMan::initializeGeAdcCalibMan()
+{
+  if(name_file_["GEADC:"] != ""){
+    GeAdcCalibMan& gGeAdcCalib = GeAdcCalibMan::GetInstance();
+    flag_[kIsGood] = gGeAdcCalib.Initialize(name_file_["GEADC:"]);
+  }else{
+    std::cout << "#E ConfMan"
+	      << " File path does not exist in " << name_file_["GEADC:"] 
+	      << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+// initialize GeAdcCalibMan ----------------------------------------------
 
 #define frand() (-0.5+(double) rand() / RAND_MAX)
 

@@ -7,6 +7,8 @@
 #include <vector>
 #include <map>
 
+#include<TROOT.h>
+
 class MatrixParamMan
 {
   std::vector< std::vector<double> > m_enable_2d;
@@ -25,6 +27,8 @@ private:
   MatrixParamMan( void );
   MatrixParamMan( const MatrixParamMan& object );
   MatrixParamMan& operator =( const MatrixParamMan& object );
+
+  ClassDef(MatrixParamMan, 0)
 };
 
 // getInstance

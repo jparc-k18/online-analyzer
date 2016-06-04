@@ -7,9 +7,29 @@
 #include <cstdlib>
 
 #include "MatrixParamMan.hh"
+#include "ConfMan.hh"
 #include "DetectorID.hh"
 
+ClassImp(MatrixParamMan)
+
 static const std::string class_name("MatrixParamMan");
+
+// initialize MatrixParamMan --------------------------------------------------
+void
+ConfMan::initializeMatrixParamMan()
+{
+  if( ( name_file_["MATRIX2D:"] != "" ) && ( name_file_["MATRIX3D:"] != "" ) ){
+    MatrixParamMan& gMatrixParam = MatrixParamMan::GetInstance();
+    flag_[kIsGood] = gMatrixParam.Initialize( name_file_["MATRIX2D:"],
+					      name_file_["MATRIX3D:"] );
+  }else{
+    std::cout << "#E ConfMan::"
+	      << " File path does not exist in " << name_file_["MATRIX2D:"]
+	      << " or " << name_file_["MATRIX3D:"] << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+// initialize MatrixParamMan --------------------------------------------------
 
 //_____________________________________________________________________
 MatrixParamMan::MatrixParamMan( void )

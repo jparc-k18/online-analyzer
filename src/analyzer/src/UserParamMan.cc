@@ -4,8 +4,25 @@
 #include<cstdlib>
 
 #include"UserParamMan.hh"
+#include"ConfMan.hh"
 
 static const std::string MyName = "UserParamMan::";
+
+// initialize UserParamMan --------------------------------------------------
+void
+ConfMan::initializeUserParamMan()
+{
+  if(name_file_["USER:"] != ""){
+    UserParamMan& gUserParam = UserParamMan::getInstance();
+    flag_[kIsGood] = gUserParam.initialize(name_file_["USER:"]);
+  }else{
+    std::cout << "#E ConfMan::"
+	      << " File path does not exist in " << name_file_["USER:"] 
+	      << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+// initialize UserParamMan --------------------------------------------------
 
 // program instance -------------------------------------------------------
 // getSize (const char*)

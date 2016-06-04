@@ -5,11 +5,29 @@
 */
 
 #include "DCTdcCalibMan.hh"
+#include "ConfMan.hh"
 
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
+
+// initialize DCTdcCalibMan ----------------------------------------------
+void
+ConfMan::initializeDCTdcCalibMan()
+{
+  if(name_file_["TDCCALIB:"] != ""){
+    DCTdcCalibMan& gDCTdcCalib = DCTdcCalibMan::GetInstance();
+    gDCTdcCalib.SetFileName(name_file_["TDCCALIB:"]);
+    flag_[kIsGood] = gDCTdcCalib.Initialize();
+  }else{
+    std::cout << "#E ConfMan::"
+	      << " File path does not exist in " << name_file_["TDCCALIB:"] 
+	      << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+// initialize DCTdcCalibMan ----------------------------------------------
 
 const int BufSize = 200;
 

@@ -5,12 +5,29 @@
 */
 
 #include "DCDriftParamMan.hh"
+#include "ConfMan.hh"
 
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
 #include <cmath>
 #include <cstdlib>
+
+// initialize DCDriftMan ------------------------------------------------
+void ConfMan::initializeDCDriftParamMan()
+{
+  if(name_file_["DRFTPM:"] != ""){
+    DCDriftParamMan& gDCDriftParam = DCDriftParamMan::GetInstance();
+    gDCDriftParam.SetFileName(name_file_["DRFTPM:"]);
+    flag_[kIsGood] = gDCDriftParam.Initialize();
+  }else{
+    std::cout << "#E ConfMan::"
+	      << " File path does not exist in " << name_file_["DRFTPM:"] 
+	      << std::endl;
+    flag_.reset(kIsGood);
+  }
+}
+// initialize DCDriftMan ------------------------------------------------
 
 const int BufSize = 200;
 const int MaxParam = 10;

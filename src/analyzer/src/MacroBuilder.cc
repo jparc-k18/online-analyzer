@@ -297,6 +297,15 @@ TObject* dispMtx2D( void )
   return m;
 }
 
+// Mtx3D ---------------------------------------------------------
+TObject* dispMtx3D( void )
+{
+  std::string path = getMacroPath() + "dispMtx3D.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispMtx3D");
+  return m;
+}
+
 // dispBAC -------------------------------------------------------
 TObject* dispBAC( void )
 {

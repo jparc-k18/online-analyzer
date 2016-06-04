@@ -14,7 +14,7 @@ my_dir  = $(src_top_dir)/$(my_name)
 
 include ../common.mk
 
-core_obj = MsTParamMan.o MatrixParamMan.o UserParamMan.o HodoParamMan.o HodoPHCMan.o DCGeomMan.o DCTdcCalibMan.o DCDriftParamMan.o DCGeomRecord.o ConfMan.o GeAdcCalibMan.o
+core_obj = UserParamMan.o HodoParamMan.o HodoPHCMan.o DCGeomMan.o DCTdcCalibMan.o DCDriftParamMan.o DCGeomRecord.o ConfMan.o 
 
 my_obj_skeleton	:= $(core_obj) user_skeleton.o
 my_tgt_skeleton	:= $(bin_dir)/skeleton
@@ -25,13 +25,13 @@ my_tgt_udebug	:= $(bin_dir)/unpacker_debug
 my_obj_tag	:= $(core_obj) user_tag_checker.o
 my_tgt_tag	:= $(bin_dir)/tag_checker
 
-my_obj_rawhist_e13	:= $(core_obj) user_rawhist_e13.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o
+my_obj_rawhist_e13	:= $(core_obj) user_rawhist_e13.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o GeAdcCalibMan.o
 my_tgt_rawhist_e13	:= $(bin_dir)/raw_hist_e13
 
 my_obj_rawhist_e0705	:= $(core_obj) user_rawhist_e0705.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o
 my_tgt_rawhist_e0705	:= $(bin_dir)/raw_hist_e0705
 
-my_obj_rawhist_e07	:= $(core_obj) user_rawhist_e07.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o
+my_obj_rawhist_e07	:= $(core_obj) user_rawhist_e07.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o MsTParamMan.o MatrixParamMan.o
 my_tgt_rawhist_e07	:= $(bin_dir)/raw_hist_e07
 
 my_obj_beammonitor	:= $(core_obj) user_beammonitor.o
@@ -87,6 +87,18 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
  $(my_dir)/linkdef/HistMaker_LinkDef.hh
 	$(QUIET) $(ECHO) "=== Generating dictionary $^ - > $@"
 	rootcint -f $@ -c -p $^
+
+ $(my_dir)/dict/MatrixParamMan_Dict.cc: \
+ $(my_dir)/include/MatrixParamMan.hh \
+ $(my_dir)/linkdef/MatrixParamMan_LinkDef.hh
+	$(QUIET) $(ECHO) "=== Generating dictionary $^ - > $@"
+	rootcint -f $@ -c -p $^
+
+ $(my_dir)/dict/MsTParamMan_Dict.cc: \
+ $(my_dir)/include/MsTParamMan.hh \
+ $(my_dir)/linkdef/MsTParamMan_LinkDef.hh
+	$(QUIET) $(ECHO) "=== Generating dictionary $^ - > $@"
+	rootcint -f $@ -c -p $^
 #_____________________________________________________________________________
 my_obj_skeleton	:= $(addprefix $(my_dir)/src/,$(my_obj_skeleton))
 my_lib_skeleton	:= libmyskeleton.so
@@ -127,7 +139,9 @@ $(eval $(call make-gui-target,$(my_tgt_rawhist_e0705),$(my_lib_rawhist_e0705)))
 my_obj_rawhist_e07	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e07))
 my_obj_rawhist_e07	:= $(my_obj_rawhist_e07) \
 		$(my_dir)/dict/HistMaker_Dict.o \
-		$(my_dir)/dict/GuiPs_Dict.o
+		$(my_dir)/dict/GuiPs_Dict.o \
+		$(my_dir)/dict/MatrixParamMan_Dict.o \
+		$(my_dir)/dict/MsTParamMan_Dict.o 
 my_lib_rawhist_e07	:= libmyrawhist_e07.so
 $(eval $(call make-lib,$(my_lib_rawhist_e07),$(my_obj_rawhist_e07)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e07),$(my_lib_rawhist_e07)))

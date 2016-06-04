@@ -111,6 +111,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createDAQ(false));
   tab_hist->Add(gHist.createTimeStamp(false));
+  tab_hist->Add(gHist.createDCEff());
 
   // Add extra histogram
   int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
@@ -766,7 +767,7 @@ process_event( void )
       }
     }
 
-    hptr_array[bacm_id]->Fill(multiplicity);
+    hptr_array[bacm_id]->Fill( multiplicity );
 
 #if 0
     // Debug, dump data relating this detector
@@ -1092,10 +1093,13 @@ process_event( void )
     static const int k_tdc    = gUnpacker.get_data_id("PVAC","tdc");
 
     // sequential id
-    static const int pvaca_id   = gHist.getSequentialID(kPVAC, 0, kADC, 1);
-    static const int pvact_id   = gHist.getSequentialID(kPVAC, 0, kTDC, 1);
+    static const int pvaca_id   = gHist.getSequentialID(kPVAC, 0, kADC,     1);
+    static const int pvact_id   = gHist.getSequentialID(kPVAC, 0, kTDC,     1);
     static const int pvacawt_id = gHist.getSequentialID(kPVAC, 0, kADCwTDC, 1);
+    static const int pvach_id   = gHist.getSequentialID(kPVAC, 0, kHitPat,  1);
+    static const int pvacm_id   = gHist.getSequentialID(kPVAC, 0, kMulti,   1);
 
+    int multiplicity = 0;
     for(int seg = 0; seg<NumOfSegPVAC; ++seg){
       // ADC
       int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
@@ -1114,9 +1118,12 @@ process_event( void )
 	    int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
 	    hptr_array[pvacawt_id + seg]->Fill( adc );
 	  }
+	  hptr_array[pvach_id]->Fill( seg );
+	  ++multiplicity;
 	}
       }
     }
+    hptr_array[pvacm_id]->Fill( multiplicity );
 
 #if 0
     // Debug, dump data relating this detector
@@ -1136,10 +1143,13 @@ process_event( void )
     static const int k_tdc    = gUnpacker.get_data_id("FAC","tdc");
 
     // sequential id
-    static const int faca_id = gHist.getSequentialID(kFAC, 0, kADC, 1);
-    static const int fact_id = gHist.getSequentialID(kFAC, 0, kTDC, 1);
+    static const int faca_id = gHist.getSequentialID(kFAC, 0, kADC,       1);
+    static const int fact_id = gHist.getSequentialID(kFAC, 0, kTDC,       1);
     static const int facawt_id = gHist.getSequentialID(kFAC, 0, kADCwTDC, 1);
+    static const int fach_id = gHist.getSequentialID(kFAC, 0, kHitPat,    1);
+    static const int facm_id = gHist.getSequentialID(kFAC, 0, kMulti,     1);
 
+    int multiplicity = 0;
     for(int seg = 0; seg<NumOfSegFAC; ++seg){
       // ADC
       int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
@@ -1158,9 +1168,13 @@ process_event( void )
 	    int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
 	    hptr_array[facawt_id + seg]->Fill( adc );
 	  }
+	  hptr_array[fach_id]->Fill( seg );
+	  ++multiplicity;
 	}
       }
     }
+
+    hptr_array[facm_id]->Fill( multiplicity );
 
 #if 0
     // Debug, dump data relating this detector
@@ -1257,7 +1271,7 @@ process_event( void )
 	
 	// This wire fired at least one times.
 	++multiplicity;
-	hptr_array[sdc1hit_id + l]->Fill(w, nhit);
+	// hptr_array[sdc1hit_id + l]->Fill(w, nhit);
 
 	bool flag_hit_wt = false;
 	int  tdc1st = 0;
@@ -1273,7 +1287,10 @@ process_event( void )
 	}
 
 	if( tdc1st!=0 ) hptr_array[sdc1t1st_id + l]->Fill(tdc1st);
-	if( flag_hit_wt ) ++multiplicity_wt;
+	if( flag_hit_wt ){
+	  ++multiplicity_wt;
+	  hptr_array[sdc1hit_id + l]->Fill( w );
+	}
       }
       
       hptr_array[sdc1mul_id + l]->Fill(multiplicity);
@@ -1320,7 +1337,7 @@ process_event( void )
 	
 	// This wire fired at least one times.
 	++multiplicity;
-	hptr_array[sdc2hit_id + l]->Fill(w, nhit);
+	// hptr_array[sdc2hit_id + l]->Fill(w, nhit);
 
 	bool flag_hit_wt = false;
 	int  tdc1st = 0;
@@ -1336,7 +1353,10 @@ process_event( void )
 	}
 
 	if( tdc1st!=0 ) hptr_array[sdc2t1st_id +l]->Fill( tdc1st );
-	if( flag_hit_wt ) ++multiplicity_wt;
+	if( flag_hit_wt ){
+	  ++multiplicity_wt;
+	  hptr_array[sdc2hit_id + l]->Fill( w );
+	}
       }
       
       hptr_array[sdc2mul_id + l]->Fill(multiplicity);
@@ -1389,7 +1409,7 @@ process_event( void )
 	
 	// This wire fired at least one times.
 	++multiplicity;
-	hptr_array[sdc3hit_id + l]->Fill(w, nhit);
+	// hptr_array[sdc3hit_id + l]->Fill(w, nhit);
 
 	bool flag_hit_wt = false;
 	int  tdc1st = 0;
@@ -1405,7 +1425,10 @@ process_event( void )
 	}
 
 	if( tdc1st!=0 ) hptr_array[sdc3t1st_id +l]->Fill( tdc1st );
-	if( flag_hit_wt ) ++multiplicity_wt;
+	if( flag_hit_wt ){
+	  ++multiplicity_wt;
+	  hptr_array[sdc3hit_id + l]->Fill( w );
+	}
       }
       
       hptr_array[sdc3mul_id +l]->Fill( multiplicity );

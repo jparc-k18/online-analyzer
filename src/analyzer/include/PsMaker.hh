@@ -41,6 +41,7 @@ private:
 		     bool flag_xaxis, bool flag_log,
 		     const char* optDraw = ""
 		     );
+  void drawDCEff( void );
   void clearOneCanvas(int npad);  
 
   PsMaker();

@@ -3489,7 +3489,7 @@ TList* HistMaker::createCorrelation(bool flag_ps)
     top_dir->Add(createTH2(++target_id, "SDC2x1_SDC1x0", // 1 origin
 			   NumOfWireSDC1, 0, NumOfWireSDC1,
 			   NumOfWireSDC2, 0, NumOfWireSDC2,
-			   "HDC wire", "SDC2 wire"));
+			   "SDC1 wire", "SDC2 wire"));
   }
 
   return top_dir;
@@ -3574,6 +3574,21 @@ TList* HistMaker::createDAQ(bool flag_ps)
   return top_dir;  
 }
 
+//_____________________________________________________________________
+TList*
+HistMaker::createDCEff( bool flag_ps )
+{
+  // Determine the detector name
+  std::string strDet = CONV_STRING( kDCEff );
+  // name list of crearted detector
+  name_created_detectors_.push_back( strDet );
+  if( flag_ps ){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back( strDet );
+  }
+
+  return NULL;
+}
 
 // -------------------------------------------------------------------------
 // Old functions

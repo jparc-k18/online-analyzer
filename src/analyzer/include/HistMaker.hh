@@ -22,7 +22,7 @@ enum DetectorType {
   kKIC, kHDC, kSDC4, kTOFMT, kLAC, kLC,
   // Others
   kTriggerFlag, kDAQ, kCorrelation, kMisc,
-  kTimeStamp,
+  kTimeStamp, kDCEff,
   sizeDetectorType,
   factorDetectorType = 10000000
 };
@@ -133,6 +133,7 @@ public:
   TList* createTriggerFlag(bool flag_ps=true);
   TList* createCorrelation(bool flag_ps=true);
   TList* createDAQ(bool flag_ps=true);
+  TList* createDCEff(bool flag_ps=true);
 
   // Old functions
   TList* createBMW(bool flag_ps=true);

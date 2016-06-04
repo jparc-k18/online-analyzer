@@ -9,18 +9,19 @@
 #include<iostream>
 #include<algorithm>
 
-#include<TROOT.h>
-#include<TList.h>
-#include<TIterator.h>
-#include<TClass.h>
-#include<TCanvas.h>
-#include<TPad.h>
-#include<TPostScript.h>
-#include<TH1.h>
-#include<TH2.h>
-#include<TText.h>
-#include<TString.h>
-#include<TStyle.h>
+#include <TROOT.h>
+#include <TList.h>
+#include <TIterator.h>
+#include <TClass.h>
+#include <TCanvas.h>
+#include <TLatex.h>
+#include <TPad.h>
+#include <TPostScript.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <TText.h>
+#include <TString.h>
+#include <TStyle.h>
 
 #define CONV_STRING(x) getStr_FromEnum(#x)
 
@@ -406,12 +407,16 @@ void PsMaker::create(std::string& name)
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 
     // TDC/TOT 2D, HitPat and Multi
-    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    par_list[kXdiv] = 3; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kFBH, 0, kTDC, NumOfSegFBH*2+1);
+    id_list.push_back(base_id);
+    base_id = HistMaker::getUniqueID(kFBH, 0, kADC, NumOfSegFBH*2+1);
+    id_list.push_back(base_id);
+    base_id = HistMaker::getUniqueID(kFBH, 0, kHitPat);
+    id_list.push_back(base_id);
     base_id = HistMaker::getUniqueID(kFBH, 0, kTDC2D);
     id_list.push_back(base_id);
     base_id = HistMaker::getUniqueID(kFBH, 0, kADC2D);
-    id_list.push_back(base_id);
-    base_id = HistMaker::getUniqueID(kFBH, 0, kHitPat);
     id_list.push_back(base_id);
     base_id = HistMaker::getUniqueID(kFBH, 0, kMulti);
     id_list.push_back(base_id);
@@ -501,7 +506,7 @@ void PsMaker::create(std::string& name)
     int base_id = 0;
     // ADC
     par_list[kXdiv] = 2; par_list[kYdiv] = 2;
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 4000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
     
@@ -524,7 +529,7 @@ void PsMaker::create(std::string& name)
     int base_id = 0;
     // ADC
     par_list[kXdiv] = 2; par_list[kYdiv] = 2;
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 4000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
     
@@ -585,12 +590,16 @@ void PsMaker::create(std::string& name)
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 
     // TDC/TOT 2D, HitPat and Multi
-    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    par_list[kXdiv] = 3; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kSCH, 0, kTDC, NumOfSegSCH+1);
+    id_list.push_back(base_id);
+    base_id = HistMaker::getUniqueID(kSCH, 0, kADC, NumOfSegSCH+1);
+    id_list.push_back(base_id);
+    base_id = HistMaker::getUniqueID(kSCH, 0, kHitPat);
+    id_list.push_back(base_id);
     base_id = HistMaker::getUniqueID(kSCH, 0, kTDC2D);
     id_list.push_back(base_id);
     base_id = HistMaker::getUniqueID(kSCH, 0, kADC2D);
-    id_list.push_back(base_id);
-    base_id = HistMaker::getUniqueID(kSCH, 0, kHitPat);
     id_list.push_back(base_id);
     base_id = HistMaker::getUniqueID(kSCH, 0, kMulti);
     id_list.push_back(base_id);
@@ -1036,7 +1045,6 @@ void PsMaker::create(std::string& name)
   // Correlation ------------------------------------------------------------
   if(name == CONV_STRING(kCorrelation)){
     par_list[kXdiv] = 2; par_list[kYdiv] = 2;
-    
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 1));
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 2));
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 3));
@@ -1047,6 +1055,13 @@ void PsMaker::create(std::string& name)
   // TriggerFlag------------------------------------------------------------
   if(name == CONV_STRING(kTriggerFlag)){
     int base_id = 0;
+    par_list[kXdiv] = 6; par_list[kYdiv] = 4;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x1000;    
+
+    base_id = HistMaker::getUniqueID( kTriggerFlag, 0, kTDC );
+    for( int i=0; i<24; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, false);
+
     par_list[kXdiv] = 1; par_list[kYdiv] = 1;
     //    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x1000;
 
@@ -1076,6 +1091,10 @@ void PsMaker::create(std::string& name)
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
 
+  // DC Eff ----------------------------------------------------------------
+  if(name == CONV_STRING(kDCEff)){
+    drawDCEff();
+  }
 }
 
 // -------------------------------------------------------------------------
@@ -1171,4 +1190,145 @@ void PsMaker::drawRunNumber()
   cps_->GetPad(1)->Close();
 }
 
+// -------------------------------------------------------------------------
+// drawDCEff
+// -------------------------------------------------------------------------
+void PsMaker::drawDCEff( void )
+{
+  static const std::string MyFunc = "drawDCEff ";
 
+  TLatex text;
+  text.SetNDC();
+  text.SetTextSize( 0.08 );
+
+  // BcOut
+  {
+    ps_->NewPage();
+    int x = 4; int y = 3;
+    cps_->Divide( x, y );
+    int bc3_id = HistMaker::getUniqueID( kBC3, 0, kMulti );
+    for( int i=0; i<NumOfLayersBC3; ++i ){
+      cps_->cd( i+1 );
+      TH1* h = GHist::get( bc3_id+i+NumOfLayersBC3);
+      if( !h ){
+	std::cerr << "#E: " << MyName << MyFunc
+		  << "Pointer is NULL\n"
+		  << " Unique ID: " << bc3_id+i+NumOfLayersBC3 << std::endl;
+	return;
+      }
+      h->SetLineColor(1);
+      h->Draw();
+      double nof0   = h->GetBinContent(1);
+      double nofall = h->GetEntries();
+      double eff    = 1. - nof0/nofall;
+      double xpos   = 0.4;
+      double ypos   = 0.5;
+      text.SetTextSize( 0.08 );
+      text.DrawLatex( xpos, ypos, Form("plane eff. %.2f", eff ) );
+    }
+    int bc4_id = HistMaker::getUniqueID( kBC4, 0, kMulti );
+    for( int i=0; i<NumOfLayersBC4; ++i ){
+      cps_->cd( i+1+NumOfLayersBC3 );
+      TH1* h = GHist::get( bc4_id+i+NumOfLayersBC4 );
+      if( !h ){
+	std::cerr << "#E: " << MyName << MyFunc
+		  << "Pointer is NULL\n"
+		  << " Unique ID: " << bc4_id+i+NumOfLayersBC4 << std::endl;
+	return;
+      }
+      h->SetLineColor(1);
+      h->Draw();
+      double nof0   = h->GetBinContent(1);
+      double nofall = h->GetEntries();
+      double eff    = 1. - nof0/nofall;
+      double xpos   = 0.4;
+      double ypos   = 0.5;
+      text.SetTextSize( 0.08 );
+      text.DrawLatex( xpos, ypos, Form("plane eff. %.2f", eff ) );
+    }
+    cps_->Update();
+    cps_->cd();
+    clearOneCanvas( x*y );
+  }
+
+  // SdcIn
+  {
+    ps_->NewPage();
+    int x = 4; int y = 2;
+    cps_->Divide( x, y );
+    int sdc1_id = HistMaker::getUniqueID( kSDC1, 0, kMulti );
+    for( int i=0; i<NumOfLayersSDC1; ++i ){
+      cps_->cd( i+1 );
+      TH1* h = GHist::get( sdc1_id+i+NumOfLayersSDC1 );
+      if( !h ){
+	std::cerr << "#E: " << MyName << MyFunc
+		  << "Pointer is NULL\n"
+		  << " Unique ID: " << sdc1_id+i+NumOfLayersSDC1 << std::endl;
+	return;
+      }
+      h->SetLineColor(1);
+      h->Draw();
+      double nof0   = h->GetBinContent(1);
+      double nofall = h->GetEntries();
+      double eff    = 1. - nof0/nofall;
+      double xpos   = 0.35;
+      double ypos   = 0.5;
+      text.SetTextSize( 0.08 );
+      text.DrawLatex( xpos, ypos, Form("plane eff. %.2f", eff ) );
+    }
+    cps_->Update();
+    cps_->cd();
+    clearOneCanvas( x*y );
+  }
+
+  // SdcOut
+  {
+    ps_->NewPage();
+    int x = 4; int y = 2;
+    cps_->Divide( x, y );
+    int sdc2_id = HistMaker::getUniqueID( kSDC2, 0, kMulti );
+    for( int i=0; i<NumOfLayersSDC2; ++i ){
+      cps_->cd( i+1 );
+      TH1* h = GHist::get( sdc2_id+i+NumOfLayersSDC2 );
+      if( !h ){
+	std::cerr << "#E: " << MyName << MyFunc
+		  << "Pointer is NULL\n"
+		  << " Unique ID: " << sdc2_id+i+NumOfLayersSDC2 << std::endl;
+	return;
+      }
+      h->SetLineColor(1);
+      h->Draw();
+      double nof0   = h->GetBinContent(1);
+      double nofall = h->GetEntries();
+      double eff    = 1. - nof0/nofall;
+      double xpos   = 0.35;
+      double ypos   = 0.5;
+      text.SetTextSize( 0.08 );
+      text.DrawLatex( xpos, ypos, Form("plane eff. %.2f", eff ) );
+    }
+    int sdc3_id = HistMaker::getUniqueID( kSDC3, 0, kMulti );
+    for( int i=0; i<NumOfLayersSDC3; ++i ){
+      cps_->cd( i+1+NumOfLayersSDC2 );
+      TH1* h = GHist::get( sdc3_id+i+NumOfLayersSDC3 );
+      if( !h ){
+	std::cerr << "#E: " << MyName << MyFunc
+		  << "Pointer is NULL\n"
+		  << " Unique ID: " << sdc3_id+i+NumOfLayersSDC3 << std::endl;
+	return;
+      }
+      h->SetLineColor(1);
+      h->Draw();
+      double nof0   = h->GetBinContent(1);
+      double nofall = h->GetEntries();
+      double eff    = 1. - nof0/nofall;
+      double xpos   = 0.35;
+      double ypos   = 0.5;
+      text.SetTextSize( 0.08 );
+      text.DrawLatex( xpos, ypos, Form("plane eff. %.2f", eff ) );
+    }
+    cps_->Update();
+    cps_->cd();
+    clearOneCanvas( x*y );
+  }
+
+}

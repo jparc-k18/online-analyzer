@@ -17,7 +17,7 @@ ClassImp(MsTParamMan)
 
 // initialize MsTParamMan --------------------------------------------------
 void
-ConfMan::initializeMsTParamMan()
+ConfMan::initializeMsTParamMan( void )
 {
   if( ( name_file_["MASS:"] != "" ) ){
     MsTParamMan& gMsTParam = MsTParamMan::GetInstance();
@@ -102,7 +102,7 @@ MsTParamMan::Initialize( const std::string& filename )
       ++tofseg;
     }
 
-#if 0
+#if 1
     // Low
     std::cout << "Low Threshold" << std::endl;
     for( int i=0; i<NumOfSegDetA; ++i ){
@@ -135,6 +135,9 @@ MsTParamMan::Initialize( const std::string& filename )
 bool
 MsTParamMan::IsAccept( int detA, int detB, int tdc )
 {
+  // for FERA
+  if( detA>=13 ) detA += 2;
+
   int low  = m_low_threshold[detA][detB];
   int high = m_high_threshold[detA][detB];
   return ( low < tdc && tdc < high );

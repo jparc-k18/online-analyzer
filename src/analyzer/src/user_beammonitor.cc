@@ -34,7 +34,7 @@ namespace analyzer
 
   enum e2ndLevel
     {
-      k2ndGo, k2ndClear, n2ndLevel
+      k2ndAcc, k2ndClear, n2ndLevel
     };
 
   TGraph  *g_beam[nBeam];
@@ -59,11 +59,14 @@ process_begin(const std::vector<std::string>& argv)
   // Make tabs
   hddaq::gui::Controller::getInstance();
 
+  TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
+  c->Divide(1,2);
+
   // Beam Monitor
   {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
+    //TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
     for(int i=0; i<nBeam; ++i){
-      c->cd()->SetGrid();
+      c->cd(1)->SetGrid();
       g_beam[i] = new TGraph();
       g_beam[i]->SetName("Beam Monitor");
       g_beam[i]->SetTitle("Beam Monitor");
@@ -85,11 +88,11 @@ process_begin(const std::vector<std::string>& argv)
 
   // 2nd Level Monitor
   {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
+    //TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
     for(int i=0; i<n2ndLevel; ++i){
-      c->cd()->SetGrid();
+      c->cd(2)->SetGrid();
       g_2nd[i] = new TGraph();
-      g_2nd[i]->SetTitle("MsT Monitor");
+      g_2nd[i]->SetTitle("Mass Trigger Monitor");
       g_2nd[i]->SetMarkerStyle(8);
       g_2nd[i]->SetMarkerSize(1.5);
       g_2nd[i]->SetMarkerColor(col_2nd[i]);
@@ -101,8 +104,8 @@ process_begin(const std::vector<std::string>& argv)
     leg_2nd->SetTextSize(0.05);
     leg_2nd->SetFillColor(0);
     leg_2nd->SetBorderSize(4);
-    leg_2nd->AddEntry(g_2nd[k2ndGo],    "MsT Go",    "p");
-    leg_2nd->AddEntry(g_2nd[k2ndClear], "MsT Clear", "p");
+    leg_2nd->AddEntry(g_2nd[k2ndAcc],   "MsT Accept", "p");
+    leg_2nd->AddEntry(g_2nd[k2ndClear], "MsT Clear",  "p");
     leg_2nd->Draw();
   }
 
@@ -173,8 +176,8 @@ process_event()
 
   // 2nd Level Monitor
   {
-    static const int module_id[n2ndLevel]  = {  1,  1 };
-    static const int channel_id[n2ndLevel] = { 14, 15 };
+    static const int module_id[n2ndLevel]  = {  0,   0 };
+    static const int channel_id[n2ndLevel] = {  12, 13 };
 
     static double l2[n2ndLevel]     = {};
     static double l2_pre[n2ndLevel] = {};
@@ -190,7 +193,7 @@ process_event()
 	g_2nd[i]->GetYaxis()->SetRangeUser(0, 1.5e3);
 	g_2nd[i]->GetXaxis()->SetLimits(spill-90, spill+10);
       }
-      double accept_ratio = l2_pre[k2ndGo]/(l2_pre[k2ndGo]+l2_pre[k2ndClear]);
+      double accept_ratio = l2_pre[k2ndAcc]/(l2_pre[k2ndAcc]+l2_pre[k2ndClear]);
       leg_2nd->SetHeader(Form("  Acc. : %.3lf", accept_ratio));
     }
     for(int i=0; i<n2ndLevel; ++i) l2_pre[i] = l2[i];

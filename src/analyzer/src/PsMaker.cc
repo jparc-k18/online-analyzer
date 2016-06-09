@@ -663,7 +663,7 @@ void PsMaker::create(std::string& name)
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
 
     // SDC2 TDC
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 1000;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 1500;
     base_id = HistMaker::getUniqueID(kSDC2, 0, kTDC);
     for(int i = 0; i<NumOfLayersSDC2; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, false);
@@ -753,7 +753,7 @@ void PsMaker::create(std::string& name)
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
 
     // SDC3 TDC
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 1000;
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 1500;
     base_id = HistMaker::getUniqueID(kSDC3, 0, kTDC);
     for(int i = 0; i<NumOfLayersSDC3; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, false);

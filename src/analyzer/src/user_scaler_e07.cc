@@ -216,11 +216,11 @@ process_end()
   printf("%-20s %15.4f\n", "(K,K)/K-beam",   kk/kbeam);
   printf("%-20s %15s\t",   "L1 Req",         separate_comma((int)l1_req).c_str());
   printf("%-20s %15.4f\n", "(K,pi)/K-beam",  kpi/kbeam);
-  printf("%-20s %15s\t",   "L1 Acc",     separate_comma((int)l1_acc).c_str());
+  printf("%-20s %15s\t",   "L1 Acc",         separate_comma((int)l1_acc).c_str());
   printf("%-20s %15.4f\n", "Live time/Real time", live_time/real_time);  
-  printf("%-20s %15s\t",   "L2 Clear",    separate_comma(clear).c_str());
+  printf("%-20s %15s\t",   "L2 Clear",       separate_comma(clear).c_str());
   printf("%-20s %15.4f\n", "L1 Acc/L1 Req",  l1_acc/l1_req);
-  printf("%-20s %15s\t",   "L2 Acc",     separate_comma((int)l2_acc).c_str());
+  printf("%-20s %15s\t",   "L2 Acc",         separate_comma((int)l2_acc).c_str());
   printf("%-20s %15.4f\n", "L2 Acc/L1 Acc",  l2_acc/l1_acc);
   printf("\n");
 

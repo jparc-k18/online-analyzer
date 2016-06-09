@@ -32,17 +32,17 @@ namespace analyzer
       kKbeam, kPibeam, nBeam
     };
 
-  enum e2ndLevel
+  enum eDAQ
     {
-      k2ndAcc, k2ndClear, n2ndLevel
+      k1stReq, k1stAcc, nDAQ
     };
 
   TGraph  *g_beam[nBeam];
-  TGraph  *g_2nd[nBeam];
+  TGraph  *g_daq[nDAQ];
   TLegend *leg_beam;
-  TLegend *leg_2nd;
+  TLegend *leg_daq;
   Color_t  col_beam[nBeam] = { kGreen, kBlue };
-  Color_t  col_2nd[nBeam]  = { kRed,   kBlue };
+  Color_t  col_daq[nDAQ]   = { kBlue,  kRed };
 
 //____________________________________________________________________________
 int
@@ -77,7 +77,7 @@ process_begin(const std::vector<std::string>& argv)
       else     g_beam[i]->Draw("P");
       g_beam[i]->SetPoint(1,0,0);
     }
-    leg_beam = new TLegend(0.13, 0.13, 0.37, 0.32);
+    leg_beam = new TLegend(0.13, 0.13, 0.28, 0.32);
     leg_beam->SetTextSize(0.05);
     leg_beam->SetFillColor(0);
     leg_beam->SetBorderSize(4);
@@ -86,27 +86,27 @@ process_begin(const std::vector<std::string>& argv)
     leg_beam->Draw();
   }
 
-  // 2nd Level Monitor
+  // DAQ Monitor
   {
     //TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
-    for(int i=0; i<n2ndLevel; ++i){
+    for(int i=0; i<nDAQ; ++i){
       c->cd(2)->SetGrid();
-      g_2nd[i] = new TGraph();
-      g_2nd[i]->SetTitle("Mass Trigger Monitor");
-      g_2nd[i]->SetMarkerStyle(8);
-      g_2nd[i]->SetMarkerSize(1.5);
-      g_2nd[i]->SetMarkerColor(col_2nd[i]);
-      if(i==0) g_2nd[i]->Draw("AP");
-      else     g_2nd[i]->Draw("P");
-      g_2nd[i]->SetPoint(1,0,0);
+      g_daq[i] = new TGraph();
+      g_daq[i]->SetTitle("DAQ Monitor");
+      g_daq[i]->SetMarkerStyle(8);
+      g_daq[i]->SetMarkerSize(1.5);
+      g_daq[i]->SetMarkerColor(col_daq[i]);
+      if(i==0) g_daq[i]->Draw("AP");
+      else     g_daq[i]->Draw("P");
+      g_daq[i]->SetPoint(1,0,0);
     }
-    leg_2nd = new TLegend(0.13, 0.13, 0.37, 0.32);
-    leg_2nd->SetTextSize(0.05);
-    leg_2nd->SetFillColor(0);
-    leg_2nd->SetBorderSize(4);
-    leg_2nd->AddEntry(g_2nd[k2ndAcc],   "MsT Accept", "p");
-    leg_2nd->AddEntry(g_2nd[k2ndClear], "MsT Clear",  "p");
-    leg_2nd->Draw();
+    leg_daq = new TLegend(0.13, 0.13, 0.28, 0.32);
+    leg_daq->SetTextSize(0.05);
+    leg_daq->SetFillColor(0);
+    leg_daq->SetBorderSize(4);
+    leg_daq->AddEntry(g_daq[k1stReq], "1st Request", "p");
+    leg_daq->AddEntry(g_daq[k1stAcc], "1st Accept",  "p");
+    leg_daq->Draw();
   }
 
   gROOT->SetStyle("Modern");
@@ -174,29 +174,29 @@ process_event()
     for(int i=0; i<nBeam; ++i) beam_pre[i] = beam[i];
   }
 
-  // 2nd Level Monitor
+  // DAQ Monitor
   {
-    static const int module_id[n2ndLevel]  = {  0,   0 };
-    static const int channel_id[n2ndLevel] = {  12, 13 };
+    static const int module_id[nDAQ]  = { 0, 0 };
+    static const int channel_id[nDAQ] = { 6, 7 };
 
-    static double l2[n2ndLevel]     = {};
-    static double l2_pre[n2ndLevel] = {};
+    static double daq[nDAQ]     = {};
+    static double daq_pre[nDAQ] = {};
 
-    for(int i=0; i<n2ndLevel; ++i){
+    for(int i=0; i<nDAQ; ++i){
       int hit = g_unpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
       if(hit==0) continue;
-      l2[i] = g_unpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
+      daq[i] = g_unpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
     }
     if(spill_inc){
-      for(int i=0; i<n2ndLevel; ++i){
-	g_2nd[i]->SetPoint(spill, spill, l2_pre[i]);
-	g_2nd[i]->GetYaxis()->SetRangeUser(0, 1.5e3);
-	g_2nd[i]->GetXaxis()->SetLimits(spill-90, spill+10);
+      for(int i=0; i<nDAQ; ++i){
+	g_daq[i]->SetPoint(spill, spill, daq_pre[i]);
+	g_daq[i]->GetYaxis()->SetRangeUser(0, 1.5e3);
+	g_daq[i]->GetXaxis()->SetLimits(spill-90, spill+10);
       }
-      double accept_ratio = l2_pre[k2ndAcc]/(l2_pre[k2ndAcc]+l2_pre[k2ndClear]);
-      leg_2nd->SetHeader(Form("  Acc. : %.3lf", accept_ratio));
+      double daq_eff = daq_pre[k1stAcc]/daq_pre[k1stReq];
+      leg_daq->SetHeader( Form("  DAQ Eff. : %.3lf", daq_eff));
     }
-    for(int i=0; i<n2ndLevel; ++i) l2_pre[i] = l2[i];
+    for(int i=0; i<nDAQ; ++i) daq_pre[i] = daq[i];
   }
 
   if( spill_inc ) spill++;

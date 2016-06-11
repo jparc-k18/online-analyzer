@@ -119,8 +119,8 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("BH2-OR",    id_vme03_2, 12, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BAC1",      id_vme03_2, 13, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BAC2",      id_vme03_2, 14, true); cont_info[left][index++] = tmp;}
-  {scaler_info tmp("PVAC",      id_vme03_2, 15, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("FBH",       id_vme03_0, 10, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("PVAC",      id_vme03_2, 15, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("FAC",       id_vme03_2, 16, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("SCH",       id_vme03_2, 17, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("TOF",       id_vme03_2, 18, true); cont_info[left][index++] = tmp;}
@@ -199,7 +199,7 @@ process_end()
   int    clear      = val[right][12];
   double l2_acc     = (double)val[right][14];
   int    bh2        = val[left][16];
-  int    fbh        = val[left][20];
+  int    fbh        = val[left][19];
   double sch        = (double)val[left][22];
   double TM         = (double)val[right][3];
   double daq_eff    = l1_acc/l1_req;

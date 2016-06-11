@@ -120,6 +120,7 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("BAC1",      id_vme03_2, 13, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("BAC2",      id_vme03_2, 14, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("PVAC",      id_vme03_2, 15, true); cont_info[left][index++] = tmp;}
+  {scaler_info tmp("FBH",       id_vme03_0, 10, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("FAC",       id_vme03_2, 16, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("SCH",       id_vme03_2, 17, true); cont_info[left][index++] = tmp;}
   {scaler_info tmp("TOF",       id_vme03_2, 18, true); cont_info[left][index++] = tmp;}
@@ -144,11 +145,11 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("L2 Acc",       id_vme03_0, 17, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(ub)",         id_vme03_0, 18, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(ub,ub)",      id_vme03_0, 19, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("(K,pi)",       id_vme03_0, 20, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("(pi,TOF)",     id_vme03_0, 20, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(K,K)",        id_vme03_0, 21, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(ub)PS",       id_vme03_0, 22, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(ub,ub)PS",    id_vme03_0, 23, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("(K,pi)PS",     id_vme03_0, 24, true); cont_info[right][index++] = tmp;}
+  {scaler_info tmp("(pi,TOF)PS",   id_vme03_0, 24, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("(K,K)PS",      id_vme03_0, 25, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("K in",         id_vme03_2, 25, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("pi in",        id_vme03_2, 26, true); cont_info[right][index++] = tmp;}
@@ -187,7 +188,7 @@ process_end()
   double kbeam      = (double)val[left][0];
   double pibeam     = (double)val[left][1];
   double kk         = (double)val[right][19];
-  double kpi        = (double)val[right][18];
+  double bh1xbh2    = (double)val[right][28];
   double real_time  = (double)val[right][4];
   double live_time  = (double)val[right][5];
   double l1_req     = (double)val[right][6];
@@ -198,30 +199,38 @@ process_end()
   int    clear      = val[right][12];
   double l2_acc     = (double)val[right][14];
   int    bh2        = val[left][16];
-  double bh1xbh2    = (double)val[right][28];
+  int    fbh        = val[left][20];
+  double sch        = (double)val[left][22];
   double TM         = (double)val[right][3];
+  double daq_eff    = l1_acc/l1_req;
+  double real_live  = live_time/real_time;
+  double duty_factor = 0;
+  if( 1-daq_eff == 0 )
+    duty_factor = 100.;
+  else
+    duty_factor = daq_eff/(1-daq_eff)*(1/real_live - 1);
 
   printf("\n");
   printf("                                   \t");
   printf("%-20s %15s\n",   "BH2",            separate_comma(bh2).c_str());
   printf("%-20s %15s\t",   "Spill",          separate_comma(spill).c_str());
-  printf("%-20s %15s\n",   "MsT Go",         separate_comma(mst_acc).c_str());
+  printf("%-20s %15s\n",   "FBH",            separate_comma(fbh).c_str());
   printf("%-20s %15s\t",   "K beam",         separate_comma((int)kbeam).c_str());
-  printf("%-20s %15s\n",   "MsT Clear",      separate_comma(mst_clear).c_str());
-  printf("%-20s %15s\t",   "pi beam",        separate_comma((int)pibeam).c_str());
   printf("%-20s %15.4f\n", "K beam/TM",      kbeam/TM);
-  printf("%-20s %15s\t",   "(K,K)",          separate_comma((int)kk).c_str());
+  printf("%-20s %15s\t",   "pi beam",        separate_comma((int)pibeam).c_str());
   printf("%-20s %15.4f\n", "K beam/BH1xBH2", kbeam/bh1xbh2);
-  printf("%-20s %15s\t",   "(K,pi)",         separate_comma((int)kpi).c_str());
+  printf("%-20s %15s\t",   "BH1xBH2",        separate_comma((int)bh1xbh2).c_str());
+  printf("%-20s %15.4f\n", "K beam/SCH",     kbeam/sch);
+  printf("%-20s %15s\t",   "(K,K)",          separate_comma((int)kk).c_str());
   printf("%-20s %15.4f\n", "(K,K)/K-beam",   kk/kbeam);
   printf("%-20s %15s\t",   "L1 Req",         separate_comma((int)l1_req).c_str());
-  printf("%-20s %15.4f\n", "(K,pi)/K-beam",  kpi/kbeam);
+  printf("%-20s %15.4f\n", "Live time/Real time", real_live);  
   printf("%-20s %15s\t",   "L1 Acc",         separate_comma((int)l1_acc).c_str());
-  printf("%-20s %15.4f\n", "Live time/Real time", live_time/real_time);  
+  printf("%-20s %15.4f\n", "L1 Acc/L1 Req",  daq_eff);
   printf("%-20s %15s\t",   "L2 Clear",       separate_comma(clear).c_str());
-  printf("%-20s %15.4f\n", "L1 Acc/L1 Req",  l1_acc/l1_req);
-  printf("%-20s %15s\t",   "L2 Acc",         separate_comma((int)l2_acc).c_str());
   printf("%-20s %15.4f\n", "L2 Acc/L1 Acc",  l2_acc/l1_acc);
+  printf("%-20s %15s\t",   "L2 Acc",         separate_comma((int)l2_acc).c_str());
+  printf("%-20s %15.4f\n", "Duty Factor",    duty_factor);  
   printf("\n");
 
   return 0;

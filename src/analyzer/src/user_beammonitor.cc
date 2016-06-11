@@ -34,7 +34,7 @@ namespace analyzer
 
   enum eDAQ
     {
-      k1stReq, k1stAcc, nDAQ
+      kDAQEff, kDuty, nDAQ
     };
 
   TGraph  *g_beam[nBeam];
@@ -42,7 +42,7 @@ namespace analyzer
   TLegend *leg_beam;
   TLegend *leg_daq;
   Color_t  col_beam[nBeam] = { kGreen, kBlue };
-  Color_t  col_daq[nDAQ]   = { kBlue,  kRed };
+  Color_t  col_daq[nDAQ]   = { kRed,   kBlue };
 
 //____________________________________________________________________________
 int
@@ -104,8 +104,8 @@ process_begin(const std::vector<std::string>& argv)
     leg_daq->SetTextSize(0.05);
     leg_daq->SetFillColor(0);
     leg_daq->SetBorderSize(4);
-    leg_daq->AddEntry(g_daq[k1stReq], "1st Request", "p");
-    leg_daq->AddEntry(g_daq[k1stAcc], "1st Accept",  "p");
+    leg_daq->AddEntry(g_daq[kDAQEff], "DAQ Eff.",    "p");
+    leg_daq->AddEntry(g_daq[kDuty],   "Duty Factor", "p");
     leg_daq->Draw();
   }
 
@@ -176,27 +176,44 @@ process_event()
 
   // DAQ Monitor
   {
-    static const int module_id[nDAQ]  = { 0, 0 };
-    static const int channel_id[nDAQ] = { 6, 7 };
+    static const int module_id[2]  = { 0, 0 };
+    static const int channel_id[2] = { 6, 7 };
+    static double daq[2]     = {};
+    static double daq_pre[2] = {};
 
-    static double daq[nDAQ]     = {};
-    static double daq_pre[nDAQ] = {};
-
-    for(int i=0; i<nDAQ; ++i){
+    static const int rl_module_id[2]  = { 0, 0 };
+    static const int rl_channel_id[2] = { 4, 5 };
+    static double real_live[2]     = {};
+    static double real_live_pre[2] = {};
+    
+    for(int i=0; i<2; ++i){
       int hit = g_unpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
-      if(hit==0) continue;
-      daq[i] = g_unpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
+      if( hit==0 ) continue;
+      daq[i] = (double)g_unpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
     }
-    if(spill_inc){
-      for(int i=0; i<nDAQ; ++i){
-	g_daq[i]->SetPoint(spill, spill, daq_pre[i]);
-	g_daq[i]->GetYaxis()->SetRangeUser(0, 1.5e3);
-	g_daq[i]->GetXaxis()->SetLimits(spill-90, spill+10);
-      }
-      double daq_eff = daq_pre[k1stAcc]/daq_pre[k1stReq];
+    for(int i=0; i<2; ++i){
+      int hit = g_unpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
+      if( hit==0 ) continue;
+      real_live[i] = (double)g_unpacker.get( scaler_id, rl_module_id[i], 0, rl_channel_id[i], 0 );
+    }
+    if( spill_inc ){
+      double daq_eff = daq_pre[1]/daq_pre[0];
+      double duty    = 0.;
+      if( 1-daq_eff==0. )
+	duty = 100.;
+      else
+	duty = daq_eff/(1-daq_eff)*(real_live_pre[0]/real_live_pre[1] - 1);
+      
+      g_daq[kDAQEff]->SetPoint(spill, spill, daq_eff);
+      g_daq[kDAQEff]->GetYaxis()->SetRangeUser(0, 1.0);
+      g_daq[kDAQEff]->GetXaxis()->SetLimits(spill-90, spill+10);
+      g_daq[kDuty]->SetPoint(spill, spill, duty);
       leg_daq->SetHeader( Form("  DAQ Eff. : %.3lf", daq_eff));
     }
-    for(int i=0; i<nDAQ; ++i) daq_pre[i] = daq[i];
+    for(int i=0; i<2; ++i){
+      daq_pre[i] = daq[i];
+      real_live_pre[i] = real_live[i];
+    }
   }
 
   if( spill_inc ) spill++;

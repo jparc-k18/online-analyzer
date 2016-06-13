@@ -54,9 +54,9 @@ void ConfMan::initialize(const std::vector<std::string>& argv)
   int nArg = argv.size();
   if (sizeArgumentList > nArg)
     {
-      std::cerr << "#E" << MyName << MyFunc
-		<< "usage:\n"
-		<< argv[kProcess]
+      std::cerr << "#E " << MyName << MyFunc << std::endl
+		<< " Usage: "
+		<< basename( argv[kProcess] )
 		<< " [config file] [input stream]"
 		<< std::endl;
       std::exit(1);

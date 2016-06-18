@@ -102,7 +102,7 @@ MsTParamMan::Initialize( const std::string& filename )
       ++tofseg;
     }
 
-#if 1
+#if 0
     // Low
     std::cout << "Low Threshold" << std::endl;
     for( int i=0; i<NumOfSegDetA; ++i ){

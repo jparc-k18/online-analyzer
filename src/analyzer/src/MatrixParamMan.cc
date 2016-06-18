@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <cstdlib>
 
@@ -84,11 +85,13 @@ MatrixParamMan::Initialize( const std::string& filename_2d,
       if( channel==NumOfSegSCH-1 ) ++tofseg;
     }
 
-#if 0
-    for( int i=0; i<NumOfSegTOF; ++i ){
-      std::cout << i << "\t:";
+#if 1
+    std::cout << "#D " << func_name << " "
+              << "2D Parameter" << std::endl;
+    for( int i=NumOfSegTOF-1; i>=0; --i ){
+      std::cout << std::setw(2) << i << " :";
       for( int j=0; j<NumOfSegSCH; ++j ){
-	std::cout << " " << m_enable_2d[i][j];
+	std::cout << m_enable_2d[i][j];
       }
       std::cout << std::endl;
     }
@@ -138,11 +141,14 @@ MatrixParamMan::Initialize( const std::string& filename_2d,
     }
 
 #if 0
-    for( int i=0; i<NumOfSegTOF; ++i ){
-      for( int j=0; j<NumOfSegSCH; ++j ){
-      std::cout << i << "\t" << j << "\t:";
-	for( int k=0; k<NumOfSegClusteredFBH; ++k ){
-	  std::cout << " " << m_enable_3d[i][j][k];
+    std::cout << "#D " << func_name << " "
+              << "3D Parameter" << std::endl;
+    for( int k=0; k<NumOfSegClusteredFBH; ++k ){
+      std::cout << "Clustered FBH : " << k << std::endl;
+      for( int i=NumOfSegTOF-1; i>=0; --i ){
+	std::cout << std::setw(2) << i << " :";
+	for( int j=0; j<NumOfSegSCH; ++j ){
+	  std::cout << m_enable_3d[i][j][k];
 	}
 	std::cout << std::endl;
       }

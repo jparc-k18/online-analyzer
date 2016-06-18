@@ -1,6 +1,5 @@
 // Author: Tomonori Takahashi
 
-
 #include <iomanip>
 #include <iostream>
 #include <cstdio>
@@ -12,6 +11,7 @@
 #include "UnpackerManager.hh"
 #include "Unpacker.hh"
 #include "DAQNode.hh"
+#include "DetectorID.hh"
 #include "ConfMan.hh"
 
 namespace analyzer
@@ -51,6 +51,12 @@ namespace analyzer
   static long long unsigned int prev[size_dispColumn][NofCh] = {{0}, {0}};
   static long long unsigned int curr[size_dispColumn][NofCh] = {{0}, {0}};
   static long long unsigned int val[size_dispColumn][NofCh]  = {{0}, {0}};
+
+  ///// for EMC
+  static double emc_pos_x_start = -9999.;
+  static double emc_pos_y_start = -9999.;
+  static double emc_pos_x_stop  = -9999.;
+  static double emc_pos_y_stop  = -9999.;
 
 //____________________________________________________________________________
 std::string
@@ -183,7 +189,6 @@ process_end()
 	   );
   }
 
-  std::cout << "\n#D : For the scaler check sheet" << std::endl;
   int    spill      = val[right][0];
   double kbeam      = (double)val[left][0];
   double pibeam     = (double)val[left][1];
@@ -210,6 +215,7 @@ process_end()
   else
     duty_factor = daq_eff/(1-daq_eff)*(1/real_live - 1);
 
+  std::cout << "\n#D : For the check sheet" << std::endl;
   printf("\n");
   printf("                                   \t");
   printf("%-20s %15s\n",   "BH2",            separate_comma(bh2).c_str());
@@ -232,8 +238,14 @@ process_end()
   printf("%-20s %15s\t",   "L2 Acc",         separate_comma((int)l2_acc).c_str());
   printf("%-20s %15.4f\n", "Duty Factor",    duty_factor);  
   printf("\n");
+  printf("%-20s ", "EMC Start Position");
+  printf("%5s ( %3.1lf, %3.1lf ) \n", "", emc_pos_x_start, emc_pos_y_start );
+  printf("%-20s ", "EMC Stop Position");
+  printf("%5s ( %3.1lf, %3.1lf ) \n", "", emc_pos_x_stop,  emc_pos_y_stop  );
+  std::cout << std::endl;
 
   return 0;
+
 }
 
 //____________________________________________________________________________
@@ -242,10 +254,10 @@ process_event()
 {
   static UnpackerManager& g_unpacker = GUnpacker::get_instance();
   
-  static int  run_number = g_unpacker.get_root()->get_run_number();
+  static int  run_number  = g_unpacker.get_root()->get_run_number();
   static int  event_count = 0;
-  static bool en_disp = false;
-  static int  scaler_id    = g_unpacker.get_device_id("Scaler");
+  static bool en_disp     = false;
+  static int  scaler_id   = g_unpacker.get_device_id("Scaler");
 
   if( flag_semi_online ){
     if( event_count%300 == 0 ) en_disp = true;
@@ -253,6 +265,27 @@ process_event()
     if( event_count%20 == 0 ) en_disp = true;
   }
   
+  // EMC
+  {
+    static const int k_device = g_unpacker.get_device_id("EMC");
+    static const int k_xpos   = g_unpacker.get_data_id("EMC", "xpos");
+    static const int k_ypos   = g_unpacker.get_data_id("EMC", "ypos");
+    double xpos = -9999.;
+    double ypos = -9999.;
+    for( int seg=0; seg<NumOfSegEMC; ++seg ){
+      int xpos_nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_xpos );
+      if( xpos_nhit!=0 ) xpos = g_unpacker.get( k_device, 0, 0, 0, k_xpos );
+      int ypos_nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_ypos );
+      if( ypos_nhit!=0 ) ypos = g_unpacker.get( k_device, 0, 0, 0, k_ypos );
+    }
+    if( event_count==0 ){
+      emc_pos_x_start = xpos/1000.;
+      emc_pos_y_start = ypos/1000.;
+    }
+    emc_pos_x_stop   = xpos/1000.;
+    emc_pos_y_stop   = ypos/1000.;
+  }
+
   ++event_count;
 
   if( !g_unpacker.get_entries( scaler_id, 0, 0, 0, 0 ) ){
@@ -269,7 +302,6 @@ process_event()
 	val[col][i] = 0;
       }
     }
-
     run_number = g_unpacker.get_root()->get_run_number();
   }
 

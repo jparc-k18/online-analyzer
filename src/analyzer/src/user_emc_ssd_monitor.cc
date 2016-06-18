@@ -210,7 +210,6 @@ process_event( void )
     }
     std::cout << std::setw(4) << rspill << " : "
 	      << rhour << "h " << rmin << "m " << rsec << "s\e[m" << std::endl;
-    std::cout << "emc_alart : " << emc_alart[0] << " " << emc_alart[1] << std::endl;
   }
     
   if( emc_state==0 )

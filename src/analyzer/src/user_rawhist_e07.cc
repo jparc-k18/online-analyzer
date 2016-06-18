@@ -31,7 +31,7 @@
 #include "MsTParamMan.hh"
 
 #define DEBUG    0
-#define FLAG_DAQ 0
+#define FLAG_DAQ 1
 
 namespace analyzer
 {
@@ -263,12 +263,17 @@ process_event( void )
     static const int k_vme     = gUnpacker.get_fe_id("vme01");
     static const int k_clite   = gUnpacker.get_fe_id("clite1");
     static const int k_easiroc = gUnpacker.get_fe_id("easiroc0");
-    
+    static const int k_ccnet01 = gUnpacker.get_fe_id("ccnet01");
+    static const int k_emc01   = gUnpacker.get_fe_id("emc01");
+    static const int k_hul01   = gUnpacker.get_fe_id("hul3dmtx");
+
     // sequential id
     static const int eb_id      = gHist.getSequentialID(kDAQ, kEB, kHitPat);
     static const int vme_id     = gHist.getSequentialID(kDAQ, kVME, kHitPat2D);
     static const int clite_id   = gHist.getSequentialID(kDAQ, kCLite, kHitPat2D);
     static const int easiroc_id = gHist.getSequentialID(kDAQ, kEASIROC, kHitPat2D);
+    static const int camac_id   = gHist.getSequentialID(kDAQ, kCAMAC, kHitPat2D);
+    static const int misc_id    = gHist.getSequentialID(kDAQ, kMiscNode, kHitPat2D);
 
     { // EB
       int data_size = gUnpacker.get_node_header(k_eb, DAQNode::k_data_size);
@@ -277,10 +282,10 @@ process_event( void )
 
     { // VME node
       TH2* h = dynamic_cast<TH2*>(hptr_array[vme_id]);
-      for(int i = 0; i<10; ++i){
-	if(i == 1){continue;}
+      for( int i=0; i<10; ++i ){
+	if( i==1 || i==5 ) continue;
 	int data_size = gUnpacker.get_node_header(k_vme+i, DAQNode::k_data_size);
-	h->Fill(i+1, data_size);
+	h->Fill( i, data_size );
       }
     }
 
@@ -288,17 +293,37 @@ process_event( void )
       TH2* h = dynamic_cast<TH2*>(hptr_array[clite_id]);
       for(int i = 0; i<14; ++i){
 	int data_size = gUnpacker.get_node_header(k_clite+i, DAQNode::k_data_size);
-	h->Fill(i+1, data_size);
+	h->Fill( i, data_size );
       }
     }
 
     { // EASIROC node
       TH2* h = dynamic_cast<TH2*>(hptr_array[easiroc_id]);
-      for(int i = 0; i<10; ++i){
+      for(int i = 0; i<20; ++i){
 	int data_size = gUnpacker.get_node_header(k_easiroc+i, DAQNode::k_data_size);
-	h->Fill(i+1, data_size);
+	h->Fill( i, data_size );
       }
     }
+
+    { // CAMAC node
+      TH2* h = dynamic_cast<TH2*>(hptr_array[camac_id]);
+      int data_size = gUnpacker.get_node_header( k_ccnet01, DAQNode::k_data_size );
+      h->Fill( 0., data_size );
+    }
+
+    { // Misc node
+      TH2* h = dynamic_cast<TH2*>(hptr_array[misc_id]);
+      {
+	int data_size = gUnpacker.get_node_header( k_emc01, DAQNode::k_data_size );
+	h->Fill( 0., data_size );
+      }
+
+      {
+	int data_size = gUnpacker.get_node_header( k_hul01, DAQNode::k_data_size );
+	h->Fill( 1, data_size );
+      }
+    }
+
 
   }
 

@@ -1997,7 +1997,7 @@ TList* HistMaker::createEMC(bool flag_ps)
 			      "Ypos [mm]", ""));
       top_dir->Add(createTH2( ++xypos_id,
 			      Form("%s_XYpos", strDet.c_str()),
-			      0x20, -0x100, 0x100, 0x20, -0x100, 0x100,
+			      0x80, -0x100, 0x100, 0x80, -0x100, 0x100,
 			      "Xpos [mm]", "Ypos [mm]"));
     }
   }
@@ -3555,7 +3555,7 @@ TList* HistMaker::createDAQ(bool flag_ps)
     // Node information
     target_id = getUniqueID(kDAQ, kVME, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id + 1, "Data size VME nodes", // 1 origin
-			   7, 0, 7,
+			   15, 0, 15,
 			   500, 0, 1000,
 			   "VME node ID", "Data size [words]"));
 
@@ -3567,15 +3567,21 @@ TList* HistMaker::createDAQ(bool flag_ps)
 
     target_id = getUniqueID(kDAQ, kEASIROC, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id + 1, "Data size EASIROC nodes", // 1 origin
-			   11, 0, 11,
-			   50, 0, 100,
+			   20, 0, 20,
+			   100, 0, 100,
 			   "EASIROC node ID", "Data size [words]"));
 
     target_id = getUniqueID(kDAQ, kCAMAC, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id + 1, "Data size CAMAC nodes", // 1 origin
 			   3, 0, 3,
-			   50, 0, 100,
+			   100, 0, 200,
 			   "CAMAC node ID", "Data size [words]"));
+
+    target_id = getUniqueID(kDAQ, kMiscNode, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id + 1, "Data size Misc nodes", // 1 origin
+			   5, 0, 5,
+			   100, 0, 200,
+			   "Misc node ID", "Data size [words]"));
   }
   
   {

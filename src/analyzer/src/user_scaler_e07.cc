@@ -57,6 +57,8 @@ namespace analyzer
   static double emc_pos_y_start = -9999.;
   static double emc_pos_x_stop  = -9999.;
   static double emc_pos_y_stop  = -9999.;
+  static const double emc_x_offset = 500000 - 303300;
+  static const double emc_y_offset = 500000 + 164000;
 
 //____________________________________________________________________________
 std::string
@@ -279,11 +281,11 @@ process_event()
       if( ypos_nhit!=0 ) ypos = g_unpacker.get( k_device, 0, 0, 0, k_ypos );
     }
     if( event_count==0 ){
-      emc_pos_x_start = xpos/1000.;
-      emc_pos_y_start = ypos/1000.;
+      emc_pos_x_start = (xpos-emc_x_offset)/1000.;
+      emc_pos_y_start = (ypos-emc_y_offset)/1000.;
     }
-    emc_pos_x_stop   = xpos/1000.;
-    emc_pos_y_stop   = ypos/1000.;
+    emc_pos_x_stop   = (xpos-emc_x_offset)/1000.;
+    emc_pos_y_stop   = (ypos-emc_y_offset)/1000.;
   }
 
   ++event_count;

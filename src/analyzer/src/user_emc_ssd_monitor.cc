@@ -22,6 +22,9 @@ namespace analyzer
 
   static const std::string space_name("analyzer");
 
+  static const std::string& hostname = std::getenv("HOSTNAME");
+  static const std::string& exechost = "sksterm4";
+  static bool emc_alart[2] = { false, false };
   static const double emc_x_offset = 500000 - 303300;
   static const double emc_y_offset = 500000 + 164000;
   static const int NumOfAPVDAQ = 3;
@@ -101,7 +104,10 @@ process_event( void )
     if( ypos_nhit!=0 ) ypos = g_unpacker.get( k_device, 0, 0, 0, k_ypos );
     xpos -= emc_x_offset;
     ypos -= emc_y_offset;
-    spill  = emc_manager.Pos2Spill( xpos, ypos )*2;
+    if( spill > emc_manager.Pos2Spill( xpos, ypos )*2 ){
+      emc_alart[0] = false; emc_alart[1] = false;
+    }
+    spill = emc_manager.Pos2Spill( xpos, ypos )*2;
     rspill = nspill - spill;
 
     int nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_state );
@@ -188,10 +194,23 @@ process_event( void )
     int rmin  = rsec/60 - rhour*60;
     rsec = rsec%60;
     std::cout << " -> ";
-    if( rspill<600 ) std::cout << "\e[33;1m";
-    else if( rspill<100 ) std::cout << "\e[35;1m";
+    if( rspill<600 ){
+      std::cout << "\e[33;1m";
+      if( !emc_alart[0] && hostname==exechost ){
+	emc_alart[0] = true;
+	system("sh /home/sks/bin/emc_alart.sh");
+      }
+    }
+    else if( rspill<100 ){
+      std::cout << "\e[35;1m";
+      if( !emc_alart[1] && hostname==exechost ){
+	emc_alart[1] = true;
+	system("sh /home/sks/bin/emc_alart.sh");
+      }
+    }
     std::cout << std::setw(4) << rspill << " : "
 	      << rhour << "h " << rmin << "m " << rsec << "s\e[m" << std::endl;
+    std::cout << "emc_alart : " << emc_alart[0] << " " << emc_alart[1] << std::endl;
   }
     
   if( emc_state==0 )

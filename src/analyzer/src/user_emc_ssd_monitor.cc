@@ -13,6 +13,7 @@
 #include "Unpacker.hh"
 #include "DAQNode.hh"
 #include "ConfMan.hh"
+#include "EMCParamMan.hh"
 
 namespace analyzer
 {
@@ -21,6 +22,8 @@ namespace analyzer
 
   static const std::string space_name("analyzer");
 
+  static const double emc_x_offset = 500000 - 303300;
+  static const double emc_y_offset = 500000 + 164000;
   static const int NumOfAPVDAQ = 3;
   static const int MaxEventBuffer = 100;
   int  event_buffer = 0;
@@ -38,6 +41,7 @@ process_begin( const std::vector<std::string>& argv )
 
   ConfMan& gConfMan = ConfMan::getInstance();
   gConfMan.initialize( argv );
+  gConfMan.initializeEMCParamMan();
   if( !gConfMan.isGood() ) return -1;
   
   for( int i=0; i<MaxEventBuffer; ++i ){
@@ -65,7 +69,8 @@ process_event( void )
 {
   static const std::string func_name("["+space_name+"::"+__func__+"()]");
 
-  static UnpackerManager& g_unpacker = GUnpacker::get_instance();
+  static UnpackerManager& g_unpacker  = GUnpacker::get_instance();
+  static EMCParamMan&     emc_manager = EMCParamMan::GetInstance();
   
   const int run_number   = g_unpacker.get_root()->get_run_number();
   const int event_number = g_unpacker.get_event_number();
@@ -80,9 +85,25 @@ process_event( void )
   }
 
   // EMC -----------------------------------------------------------
+  static const int nspill = emc_manager.NSpill()*2;
+  static int spill  = 0;
+  static int rspill = 0;
   {
     static const int k_device = g_unpacker.get_device_id("EMC");
-    static const int k_state   = g_unpacker.get_data_id("EMC", "state");
+    static const int k_xpos   = g_unpacker.get_data_id("EMC", "xpos");
+    static const int k_ypos   = g_unpacker.get_data_id("EMC", "ypos");
+    static const int k_state  = g_unpacker.get_data_id("EMC", "state");
+    double xpos = -9999.;
+    double ypos = -9999.;
+    int xpos_nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_xpos );
+    if( xpos_nhit!=0 ) xpos = g_unpacker.get( k_device, 0, 0, 0, k_xpos );
+    int ypos_nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_ypos );
+    if( ypos_nhit!=0 ) ypos = g_unpacker.get( k_device, 0, 0, 0, k_ypos );
+    xpos -= emc_x_offset;
+    ypos -= emc_y_offset;
+    spill  = emc_manager.Pos2Spill( xpos, ypos )*2;
+    rspill = nspill - spill;
+
     int nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_state );
     if( nhit>0 )
       emc_state = g_unpacker.get( k_device, 0, 0, 0, k_state );
@@ -158,8 +179,21 @@ process_event( void )
     }
   }
 
-  std::cout << "#D Event# " << std::setw(6) << event_number << std::endl;
+  std::cout << "#D Event# " << std::setw(9) << event_number << std::endl;
 
+  if( spill>=0 ){
+    std::cout << "   Spill# " << std::setw(4) << spill << "/" << nspill;
+    int rsec  = int(rspill*5.52);
+    int rhour = rsec/3600;
+    int rmin  = rsec/60 - rhour*60;
+    rsec = rsec%60;
+    std::cout << " -> ";
+    if( rspill<600 ) std::cout << "\e[33;1m";
+    else if( rspill<100 ) std::cout << "\e[35;1m";
+    std::cout << std::setw(4) << rspill << " : "
+	      << rhour << "h " << rmin << "m " << rsec << "s\e[m" << std::endl;
+  }
+    
   if( emc_state==0 )
     std::cout << "   EMC state : " << "\e[32;1m" << emc_state
 	      << "\e[m" << std::endl;

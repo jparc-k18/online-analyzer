@@ -274,12 +274,10 @@ process_event()
     static const int k_ypos   = g_unpacker.get_data_id("EMC", "ypos");
     double xpos = -9999.;
     double ypos = -9999.;
-    for( int seg=0; seg<NumOfSegEMC; ++seg ){
-      int xpos_nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_xpos );
-      if( xpos_nhit!=0 ) xpos = g_unpacker.get( k_device, 0, 0, 0, k_xpos );
-      int ypos_nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_ypos );
-      if( ypos_nhit!=0 ) ypos = g_unpacker.get( k_device, 0, 0, 0, k_ypos );
-    }
+    int xpos_nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_xpos );
+    if( xpos_nhit!=0 ) xpos = g_unpacker.get( k_device, 0, 0, 0, k_xpos );
+    int ypos_nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_ypos );
+    if( ypos_nhit!=0 ) ypos = g_unpacker.get( k_device, 0, 0, 0, k_ypos );
     if( event_count==0 ){
       emc_pos_x_start = (xpos-emc_x_offset)/1000.;
       emc_pos_y_start = (ypos-emc_y_offset)/1000.;

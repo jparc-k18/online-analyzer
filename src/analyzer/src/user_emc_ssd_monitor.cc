@@ -24,7 +24,7 @@ namespace analyzer
 
   static const std::string& hostname = std::getenv("HOSTNAME");
   static const std::string& exechost = "sksterm4";
-  static bool emc_alart[2] = { false, false };
+  static bool emc_alart[3] = { false, false, false };
   static const double emc_x_offset = 500000 - 303300;
   static const double emc_y_offset = 500000 + 164000;
   static const int NumOfAPVDAQ = 3;
@@ -105,7 +105,7 @@ process_event( void )
     xpos -= emc_x_offset;
     ypos -= emc_y_offset;
     if( spill > emc_manager.Pos2Spill( xpos, ypos )*2 ){
-      emc_alart[0] = false; emc_alart[1] = false;
+      emc_alart[0] = false; emc_alart[1] = false; emc_alart[2] = false;
     }
     spill = emc_manager.Pos2Spill( xpos, ypos )*2;
     rspill = nspill - spill;
@@ -209,8 +209,11 @@ process_event( void )
       }
     }
     if( rspill==0 ){
-      std::cout << "\e[35;1m";
-      system("sh /home/sks/bin/emc_alart.sh");
+      std::cout << "\e[31;1m";
+      if( !emc_alart[2] && hostname==exechost ){
+	emc_alart[2] = true;
+	system("sh /home/sks/bin/emc_alart.sh");
+      }
     }
     std::cout << std::setw(4) << rspill << " : "
 	      << rhour << "h " << rmin << "m " << rsec << "s\e[m" << std::endl;

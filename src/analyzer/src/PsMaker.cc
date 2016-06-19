@@ -466,12 +466,22 @@ void PsMaker::create(std::string& name)
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
 
     // HitPat/Multi
-    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     base_id = HistMaker::getUniqueID(kSSD1, 0, kHitPat);
-    for(int i=0; i<NumOfLayersSSD1; ++i){ id_list.push_back(base_id++); }
+    for(int i=0; i<NumOfLayersSSD1; ++i){
+      id_list.push_back(base_id+2*i);
+    }
+    for(int i=0; i<NumOfLayersSSD1; ++i){
+      id_list.push_back(base_id+2*i+1);
+    }
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
     base_id = HistMaker::getUniqueID(kSSD1, 0, kMulti);
-    for(int i=0; i<NumOfLayersSSD1; ++i){ id_list.push_back(base_id++); }
+    for(int i=0; i<NumOfLayersSSD1; ++i){
+      id_list.push_back(base_id+2*i);
+    }
+    for(int i=0; i<NumOfLayersSSD1; ++i){
+      id_list.push_back(base_id+2*i+1);
+    }
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
 
@@ -492,12 +502,22 @@ void PsMaker::create(std::string& name)
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
 
     // HitPat/Multi
-    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     base_id = HistMaker::getUniqueID(kSSD2, 0, kHitPat);
-    for(int i=0; i<NumOfLayersSSD2; ++i){ id_list.push_back(base_id++); }
+    for(int i=0; i<NumOfLayersSSD2; ++i){
+      id_list.push_back(base_id+2*i);
+    }
+    for(int i=0; i<NumOfLayersSSD2; ++i){
+      id_list.push_back(base_id+2*i+1);
+    }
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
     base_id = HistMaker::getUniqueID(kSSD2, 0, kMulti);
-    for(int i=0; i<NumOfLayersSSD2; ++i){ id_list.push_back(base_id++); }
+    for(int i=0; i<NumOfLayersSSD2; ++i){
+      id_list.push_back(base_id+2*i);
+    }
+    for(int i=0; i<NumOfLayersSSD2; ++i){
+      id_list.push_back(base_id+2*i+1);
+    }
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
 

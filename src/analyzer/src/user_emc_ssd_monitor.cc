@@ -208,6 +208,10 @@ process_event( void )
 	system("sh /home/sks/bin/emc_alart.sh");
       }
     }
+    if( rspill==0 ){
+      std::cout << "\e[35;1m";
+      system("sh /home/sks/bin/emc_alart.sh");
+    }
     std::cout << std::setw(4) << rspill << " : "
 	      << rhour << "h " << rmin << "m " << rsec << "s\e[m" << std::endl;
   }

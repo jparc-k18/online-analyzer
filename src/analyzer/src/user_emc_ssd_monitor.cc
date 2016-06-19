@@ -27,11 +27,12 @@ namespace analyzer
   static bool emc_alart[2] = { false, false };
   static const double emc_x_offset = 500000 - 303300;
   static const double emc_y_offset = 500000 + 164000;
-  static const int NumOfAPVDAQ = 3;
+  static const int NumOfAPVDAQ = 12;
   static const int MaxEventBuffer = 100;
   int  event_buffer = 0;
-  int  emc_state = -1;
-  int  ssd_state = -1;
+  int  emc_state  = -1;
+  uint64_t  ssd1_state = 0;
+  uint64_t  ssd2_state = 0;
   bool ssdt_flag = false;
   bool ssd1_flag[NumOfLayersSSD1][NumOfAPVDAQ][MaxEventBuffer];
   bool ssd2_flag[NumOfLayersSSD2][NumOfAPVDAQ][MaxEventBuffer];
@@ -137,7 +138,7 @@ process_event( void )
       for( int seg=0; seg<NumOfSegSSD1; ++seg ){
 	int  nhit_adc  = g_unpacker.get_entries( k_device, l, seg, 0, k_adc  );
 	int  nhit_flag = g_unpacker.get_entries( k_device, l, seg, 0, k_flag );
-	if( nhit_flag==0 ) continue;
+	if( nhit_flag==0 || nhit_adc==0 ) continue;
 	int flag = g_unpacker.get( k_device, l, seg, 0, k_flag );
 	if( flag==0 ) continue;
 	int adc = g_unpacker.get( k_device, l, seg, 0, k_adc );
@@ -158,7 +159,7 @@ process_event( void )
       for( int seg=0; seg<NumOfSegSSD2; ++seg ){
 	int  nhit_adc  = g_unpacker.get_entries( k_device, l, seg, 0, k_adc  );
 	int  nhit_flag = g_unpacker.get_entries( k_device, l, seg, 0, k_flag );
-	if( nhit_flag==0 ) continue;
+	if( nhit_flag==0 || nhit_adc==0 ) continue;
 	int flag = g_unpacker.get( k_device, l, seg, 0, k_flag );
 	if( flag==0 ) continue;
 	int adc = g_unpacker.get( k_device, l, seg, 0, k_adc );
@@ -170,16 +171,17 @@ process_event( void )
     }//for(l)
   }
 
-  ssd_state = 0;
+  ssd1_state = 0;
+  ssd2_state = 0;
   for( int i=0; i<MaxEventBuffer; ++i ){
     for( int apv=0; apv<NumOfAPVDAQ; ++apv ){
       for( int l=0; l<NumOfLayersSSD1; ++l ){
 	if( ssd1_flag[l][apv][i] )
-	  ssd_state |= 0x1<<(apv+l*NumOfAPVDAQ);
+	  ssd1_state |= 0x1<<(apv+l*NumOfAPVDAQ);
       }
       for( int l=0; l<NumOfLayersSSD2; ++l ){
 	if( ssd2_flag[l][apv][i] ){
-	  ssd_state |= 0x1<<(apv+l*NumOfAPVDAQ+NumOfAPVDAQ*NumOfLayersSSD1);
+	  ssd2_state |= 0x1<<(apv+l*NumOfAPVDAQ);
 	}
       }
     }
@@ -222,12 +224,12 @@ process_event( void )
     std::cout << "   EMC state : " << "\e[31;1m" << emc_state
 	      << "\e[m" << std::endl;
 
-  if( ssd_state==0xffffff )
-    std::cout << "   SSD state : " << "\e[32;1m" << static_cast< std::bitset<24> >(ssd_state) << "\e[m" << std::endl;
-  else if( ( ssd_state&0xfff )==0xfff )
-    std::cout << "   SSD state : " << "\e[33;1m" << static_cast< std::bitset<24> >(ssd_state) << "\e[m" << std::endl;
+  if( ssd1_state==0xffffff )
+    std::cout << "   SSD1 state : " << "\e[32;1m" << static_cast< std::bitset<48> >(ssd1_state) << "\e[m" << std::endl;
+  else if( ( ssd1_state&0xfff )==0xfff )
+    std::cout << "   SSD1 state : " << "\e[33;1m" << static_cast< std::bitset<48> >(ssd1_state) << "\e[m" << std::endl;
   else
-    std::cout << "   SSD state : " << "\e[31;1m" << static_cast< std::bitset<24> >(ssd_state) << "\e[m" << std::endl;
+    std::cout << "   SSD1 state : " << "\e[31;1m" << static_cast< std::bitset<48> >(ssd1_state) << "\e[m" << std::endl;
 
   return 0;
 }

@@ -959,7 +959,7 @@ process_event( void )
 	  if(flag==1) hit_flag = true;
 	}
 	chit_flag[l][seg] = hit_flag &&
-	  slope[1] && slope[2] && !slope[4] && !slope[5];
+	  slope[0] && slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	if(peak_height>=0 && peak_position>=0){
 	  hptr_array[ssd1adc_id +l]->Fill( seg, peak_height );
 	  hptr_array[ssd1tdc_id +l]->Fill( seg, peak_position );
@@ -1048,7 +1048,7 @@ process_event( void )
 	  if(flag==1) hit_flag = true;
 	}
 	chit_flag[l][seg] = hit_flag &&
-	  slope[1] && slope[2] && !slope[4] && !slope[5];
+	  slope[0] && slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	if(peak_height>=0 && peak_position>=0){
 	  hptr_array[ssd2adc_id +l]->Fill( seg, peak_height );
 	  hptr_array[ssd2tdc_id +l]->Fill( seg, peak_position );

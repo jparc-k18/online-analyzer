@@ -1123,7 +1123,7 @@ void PsMaker::drawOneCanvas(std::vector<int>& id_list,
   cps_->Divide(par_list[kXdiv], par_list[kYdiv]);
   for(int i = 0; i<(int)id_list.size(); ++i){
     if(id_list[i]==-1) continue;
-    cps_->cd(i + 1);
+    cps_->cd(i + 1)->SetGrid();
     if(flag_log){
       // log scale flag
       cps_->GetPad(i + 1)->SetLogy(1);

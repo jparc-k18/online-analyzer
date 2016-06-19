@@ -201,7 +201,7 @@ process_event( void )
 	system("sh /home/sks/bin/emc_alart.sh");
       }
     }
-    else if( rspill<100 ){
+    if( rspill<100 ){
       std::cout << "\e[35;1m";
       if( !emc_alart[1] && hostname==exechost ){
 	emc_alart[1] = true;

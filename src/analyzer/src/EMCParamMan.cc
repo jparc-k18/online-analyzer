@@ -74,7 +74,7 @@ EMCParamMan::Initialize( const std::string& filename )
     m_spill.push_back( spill );
     m_x.push_back( x );
     m_y.push_back( y );
-    m_nspill++;
+    m_nspill = spill;
   }
   std::cout << std::endl;
 

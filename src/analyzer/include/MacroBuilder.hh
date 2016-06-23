@@ -37,6 +37,8 @@ TObject* dispBcOutFF( void );
 TObject* dispMtx2D( void );
 TObject* dispMtx3D( void );
 
+TObject* dispDAQ( void );
+
 /* old functions */
 TObject* dispBAC( void );
 TObject* dispACs_SFV( void );

@@ -3556,19 +3556,19 @@ TList* HistMaker::createDAQ(bool flag_ps)
     target_id = getUniqueID(kDAQ, kVME, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id + 1, "Data size VME nodes", // 1 origin
 			   15, 0, 15,
-			   500, 0, 1000,
+			   100, 0, 1200,
 			   "VME node ID", "Data size [words]"));
 
     target_id = getUniqueID(kDAQ, kCLite, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id + 1, "Data size CLite nodes", // 1 origin
 			   15, 0, 15,
-			   100, 0, 200,
+			   200, 0, 400,
 			   "CLite node ID", "Data size [words]"));
 
     target_id = getUniqueID(kDAQ, kEASIROC, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id + 1, "Data size EASIROC nodes", // 1 origin
 			   20, 0, 20,
-			   100, 0, 100,
+			   50, 0, 100,
 			   "EASIROC node ID", "Data size [words]"));
 
     target_id = getUniqueID(kDAQ, kCAMAC, kHitPat2D, 0);
@@ -3584,26 +3584,26 @@ TList* HistMaker::createDAQ(bool flag_ps)
 			   "Misc node ID", "Data size [words]"));
   }
   
-  {
-    // TKO box information
-    // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTKO);
-    const char* nameSubDir = strSubDir.c_str();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
+  // {
+  //   // TKO box information
+  //   // Declaration of the sub-directory
+  //   std::string strSubDir  = CONV_STRING(kTKO);
+  //   const char* nameSubDir = strSubDir.c_str();
+  //   TList *sub_dir = new TList;
+  //   sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kDAQ, kTKO, kHitPat2D, 0);
-    for(int box = 0; box<6; ++box){
-      const char* title = NULL;
-      title = Form("TKO box%d", box);
-      sub_dir->Add(createTH2(target_id + box+1, title, // 1 origin
-			     24, 0, 24, 
-			     40, 0, 40,
-			     "TKO MA", "N of decoded hits"));
+  //   int target_id = getUniqueID(kDAQ, kTKO, kHitPat2D, 0);
+  //   for(int box = 0; box<6; ++box){
+  //     const char* title = NULL;
+  //     title = Form("TKO box%d", box);
+  //     sub_dir->Add(createTH2(target_id + box+1, title, // 1 origin
+  // 			     24, 0, 24, 
+  // 			     40, 0, 40,
+  // 			     "TKO MA", "N of decoded hits"));
       
-      top_dir->Add(sub_dir);
-    }
-  }
+  //     top_dir->Add(sub_dir);
+  //   }
+  // }
 
   return top_dir;  
 }

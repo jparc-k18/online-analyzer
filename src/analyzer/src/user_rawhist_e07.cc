@@ -88,6 +88,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(effSdcInOut());
   tab_macro->Add(dispMtx2D());
   tab_macro->Add(dispMtx3D());
+  tab_macro->Add(dispDAQ());
   // tab_macro->Add(auto_monitor_all());
 
   // Add histograms to the Hist tab
@@ -284,7 +285,9 @@ process_event( void )
       TH2* h = dynamic_cast<TH2*>(hptr_array[vme_id]);
       for( int i=0; i<10; ++i ){
 	if( i==1 || i==5 ) continue;
-	int data_size = gUnpacker.get_node_header(k_vme+i, DAQNode::k_data_size);
+	int node_id = k_vme+i;
+	if( i==9 ) node_id = 0x210;
+	int data_size = gUnpacker.get_node_header( node_id, DAQNode::k_data_size);
 	h->Fill( i, data_size );
       }
     }

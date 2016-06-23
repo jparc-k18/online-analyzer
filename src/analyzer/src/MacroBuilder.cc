@@ -306,6 +306,15 @@ TObject* dispMtx3D( void )
   return m;
 }
 
+// DAQ -----------------------------------------------------------
+TObject* dispDAQ( void )
+{
+  std::string path = getMacroPath() + "dispDAQ.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispDAQ");
+  return m;
+}
+
 // dispBAC -------------------------------------------------------
 TObject* dispBAC( void )
 {

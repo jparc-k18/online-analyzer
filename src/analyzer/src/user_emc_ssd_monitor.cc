@@ -198,36 +198,39 @@ process_event( void )
       std::cout << "\e[33;1m";
       if( !emc_alart[0] && hostname==exechost ){
 	emc_alart[0] = true;
-	system("sh /home/sks/bin/emc_alart.sh");
+	system("sh /home/sks/bin/emc_spill_alart.sh");
       }
     }
     if( rspill<100 ){
       std::cout << "\e[35;1m";
       if( !emc_alart[1] && hostname==exechost ){
 	emc_alart[1] = true;
-	system("sh /home/sks/bin/emc_alart.sh");
+	system("sh /home/sks/bin/emc_spill_alart.sh");
       }
     }
     if( rspill==0 ){
       std::cout << "\e[31;1m";
       if( !emc_alart[2] && hostname==exechost ){
 	emc_alart[2] = true;
-	system("sh /home/sks/bin/emc_alart.sh");
+	system("sh /home/sks/bin/emc_spill_alart.sh");
       }
     }
     std::cout << std::setw(4) << rspill << " : "
 	      << rhour << "h " << rmin << "m " << rsec << "s\e[m" << std::endl;
   }
     
-  if( emc_state==0 )
+  if( emc_state==0 ){
     std::cout << "   EMC state : " << "\e[32;1m" << emc_state
 	      << "\e[m" << std::endl;
-  else if( emc_state==1 )
+  }else if( emc_state==1 ){
     std::cout << "   EMC state : " << "\e[35;1m" << emc_state
 	      << "\e[m" << std::endl;
-  else
+    system("sh /home/sks/bin/emc_state_alart.sh");
+  }else{
     std::cout << "   EMC state : " << "\e[31;1m" << emc_state
 	      << "\e[m" << std::endl;
+    system("sh /home/sks/bin/emc_state_alart.sh");
+  }
 
   if( ssd_state==0xffffff )
     std::cout << "   SSD state : " << "\e[32;1m" << static_cast< std::bitset<24> >(ssd_state) << "\e[m" << std::endl;

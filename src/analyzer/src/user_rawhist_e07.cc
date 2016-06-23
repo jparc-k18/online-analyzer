@@ -834,10 +834,6 @@ process_event( void )
     static const int fbh_t_2d_id   = gHist.getSequentialID(kFBH, 0, kTDC2D, 1);
     static const int fbh_tot_2d_id = gHist.getSequentialID(kFBH, 0, kADC2D, 1);
 
-    int hit_seg_u[NumOfSegFBH] = {};
-    int hit_seg_d[NumOfSegFBH] = {};
-    int multi_u = 0;
-    int multi_d = 0;
     int multiplicity  = 0;
     int hit_flag_u[NumOfSegFBH] = {};
     int hit_flag_d[NumOfSegFBH] = {};
@@ -855,7 +851,6 @@ process_event( void )
 	hptr_array[fbh_t_2d_id]->Fill(i, tdc_u);
 	hptr_array[fbh_tot_2d_id]->Fill(i, tot_u);
 	if( tdc_min<tdc_u && tdc_u<tdc_max ){
-	  hit_seg_u[multi_u++] = i;
 	  hit_flag_u[i] = true;
 	}
       }
@@ -870,7 +865,6 @@ process_event( void )
 	hptr_array[fbh_t_2d_id]->Fill(i +NumOfSegFBH, tdc_d);
 	hptr_array[fbh_tot_2d_id]->Fill(i +NumOfSegFBH, tot_d);
 	if( tdc_min<tdc_d && tdc_d<tdc_max ){
-	  hit_seg_d[multi_d++] = i;
 	  hit_flag_d[i] = true;
 	}
       }
@@ -937,10 +931,11 @@ process_event( void )
 	chit_flag[l][seg] = false;
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
-	if(nhit_a>NumOfSamplesSSD){
+	if( nhit_a==0 ) continue;
+	if( nhit_a != NumOfSamplesSSD ){
 	  std::cerr << "#W SSD1 layer:" << l << " seg:" << seg
-		    << " the number of samples is too much : ["
-		    << nhit_a << "/" << NumOfSamplesSSD << "]" << std::endl;
+		    << " the number of samples is wrong : "
+		    << nhit_a << "/" << NumOfSamplesSSD << std::endl;
 	}
 	int  adc[nhit_a];
 	bool slope[nhit_a-1];
@@ -1026,10 +1021,11 @@ process_event( void )
 	chit_flag[l][seg] = false;
 	// ADC
 	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
-	if(nhit_a>NumOfSamplesSSD){
+	if( nhit_a==0 ) continue;
+	if( nhit_a != NumOfSamplesSSD ){
 	  std::cerr << "#W SSD2 layer:" << l << " seg:" << seg
-		    << "the number of samples is too much : ["
-		    << nhit_a << "/" << NumOfSamplesSSD << "]" << std::endl;
+		    << " the number of samples is wrong : "
+		    << nhit_a << "/" << NumOfSamplesSSD << std::endl;
 	}
 	int  adc[nhit_a];
 	bool slope[nhit_a-1];

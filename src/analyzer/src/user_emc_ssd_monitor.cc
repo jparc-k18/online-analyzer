@@ -79,7 +79,8 @@ process_event( void )
   const int run_number   = g_unpacker.get_root()->get_run_number();
   const int event_number = g_unpacker.get_event_number();
  
-  event_buffer = (++event_buffer)%MaxEventBuffer;
+  event_buffer++;
+  event_buffer = event_buffer%MaxEventBuffer;
 
   for( int apv=0; apv<NumOfAPVDAQ; ++apv ){
     for( int l=0; l<NumOfLayersSSD1; ++l )
@@ -186,7 +187,8 @@ process_event( void )
     }
   }
 
-  std::cout << "#D Event# " << std::setw(9) << event_number << std::endl;
+  std::cout << "#D Run# " << std::setw(5) << run_number << " : "
+	    << "Event# " << std::setw(9) << event_number << std::endl;
 
   if( spill>=0 ){
     std::cout << "   Spill# " << std::setw(4) << spill << "/" << nspill;
@@ -195,14 +197,14 @@ process_event( void )
     int rmin  = rsec/60 - rhour*60;
     rsec = rsec%60;
     std::cout << " -> ";
-    if( rspill<600 ){
+    if( rhour<1 ){
       std::cout << "\e[33;1m";
       if( !emc_alart[0] && hostname==exechost ){
 	emc_alart[0] = true;
 	system("sh /home/sks/bin/emc_spill_alart.sh");
       }
     }
-    if( rspill<100 ){
+    if( rhour<1 && rmin<10 ){
       std::cout << "\e[35;1m";
       if( !emc_alart[1] && hostname==exechost ){
 	emc_alart[1] = true;

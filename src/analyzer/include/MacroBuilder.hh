@@ -16,6 +16,7 @@ TObject* dispFBH( void );
 TObject* dispSSD1( void );
 TObject* dispSSD2( void );
 TObject* dispSSDHitPat( void );
+TObject* dispSSDMulti( void );
 TObject* dispSCH( void );
 TObject* dispTOF( void );
 TObject* dispMsT( void );

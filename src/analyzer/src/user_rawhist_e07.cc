@@ -152,6 +152,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_e07->Add(dispSSD1());
   tab_e07->Add(dispSSD2());
   tab_e07->Add(dispSSDHitPat());
+  tab_e07->Add(dispSSDMulti());
   //tab_e07->Add(dispProfileSSD());
 
   // Set histogram pointers to the vector sequentially.

@@ -144,6 +144,15 @@ TObject* dispSSDHitPat( void )
   return m;
 }
 
+// dispSSDMulti -------------------------------------------------------
+TObject* dispSSDMulti( void )
+{
+  std::string path = getMacroPath() + "dispSSDMulti.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispSSDMulti");
+  return m;
+}
+
 // dispProfileSSD -------------------------------------------------------
 TObject* dispProfileSSD( void )
 {

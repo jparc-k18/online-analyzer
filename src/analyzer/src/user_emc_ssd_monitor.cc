@@ -25,6 +25,7 @@ namespace analyzer
   static const std::string& hostname = std::getenv("HOSTNAME");
   static const std::string& exechost = "sksterm4";
   static bool emc_alart[3] = { false, false, false };
+  static const double spill_prescale = 3.;
   static const double emc_x_offset = 500000 - 303300;
   static const double emc_y_offset = 500000 + 164000;
   static const int NumOfAPVDAQ = 3;
@@ -78,7 +79,8 @@ process_event( void )
   const int run_number   = g_unpacker.get_root()->get_run_number();
   const int event_number = g_unpacker.get_event_number();
  
-  event_buffer = (++event_buffer)%MaxEventBuffer;
+  event_buffer++;
+  event_buffer = event_buffer%MaxEventBuffer;
 
   for( int apv=0; apv<NumOfAPVDAQ; ++apv ){
     for( int l=0; l<NumOfLayersSSD1; ++l )
@@ -88,7 +90,7 @@ process_event( void )
   }
 
   // EMC -----------------------------------------------------------
-  static const int nspill = emc_manager.NSpill()*2;
+  static const int nspill = emc_manager.NSpill()*spill_prescale;
   static int spill  = 0;
   static int rspill = 0;
   {
@@ -104,10 +106,10 @@ process_event( void )
     if( ypos_nhit!=0 ) ypos = g_unpacker.get( k_device, 0, 0, 0, k_ypos );
     xpos -= emc_x_offset;
     ypos -= emc_y_offset;
-    if( spill > emc_manager.Pos2Spill( xpos, ypos )*2 ){
+    if( spill > emc_manager.Pos2Spill( xpos, ypos )*spill_prescale ){
       emc_alart[0] = false; emc_alart[1] = false; emc_alart[2] = false;
     }
-    spill = emc_manager.Pos2Spill( xpos, ypos )*2;
+    spill = emc_manager.Pos2Spill( xpos, ypos )*spill_prescale;
     rspill = nspill - spill;
 
     int nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_state );
@@ -185,7 +187,8 @@ process_event( void )
     }
   }
 
-  std::cout << "#D Event# " << std::setw(9) << event_number << std::endl;
+  std::cout << "#D Run# " << std::setw(5) << run_number << " : "
+	    << "Event# " << std::setw(9) << event_number << std::endl;
 
   if( spill>=0 ){
     std::cout << "   Spill# " << std::setw(4) << spill << "/" << nspill;
@@ -194,14 +197,14 @@ process_event( void )
     int rmin  = rsec/60 - rhour*60;
     rsec = rsec%60;
     std::cout << " -> ";
-    if( rspill<600 ){
+    if( rhour<1 ){
       std::cout << "\e[33;1m";
       if( !emc_alart[0] && hostname==exechost ){
 	emc_alart[0] = true;
 	system("sh /home/sks/bin/emc_spill_alart.sh");
       }
     }
-    if( rspill<100 ){
+    if( rhour<1 && rmin<10 ){
       std::cout << "\e[35;1m";
       if( !emc_alart[1] && hostname==exechost ){
 	emc_alart[1] = true;

@@ -22,57 +22,57 @@ void dispSCH()
     HistMaker::getUniqueID(kSCH, 0, kMulti,  1)
   };
 
-  // Draw TDC 01-32
-  {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
-    c->Clear();
-    c->Divide(8,4);
-    for( int i=0; i<n_seg/2; ++i ){
-      c->cd(i+1)->SetGrid();
-      TH1 *h = (TH1*)GHist::get( sch_id_c1[0]+i );
-      h->Draw();
-    }
-    c->Update();
-  }
+  // // Draw TDC 01-32
+  // {
+  //   TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
+  //   c->Clear();
+  //   c->Divide(8,4);
+  //   for( int i=0; i<n_seg/2; ++i ){
+  //     c->cd(i+1)->SetGrid();
+  //     TH1 *h = (TH1*)GHist::get( sch_id_c1[0]+i );
+  //     h->Draw();
+  //   }
+  //   c->Update();
+  // }
 
-  // Draw TDC 33-64
-  {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
-    c->Clear();
-    c->Divide(8,4);
-    for( int i=0; i<n_seg/2; ++i ){
-      c->cd(i+1)->SetGrid();
-      TH1 *h = (TH1*)GHist::get( sch_id_c1[0]+i+n_seg/2 );
-      h->Draw();
-    }
-    c->Update();
-  }
+  // // Draw TDC 33-64
+  // {
+  //   TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
+  //   c->Clear();
+  //   c->Divide(8,4);
+  //   for( int i=0; i<n_seg/2; ++i ){
+  //     c->cd(i+1)->SetGrid();
+  //     TH1 *h = (TH1*)GHist::get( sch_id_c1[0]+i+n_seg/2 );
+  //     h->Draw();
+  //   }
+  //   c->Update();
+  // }
 
-  // Draw TOT 01-32
-  {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
-    c->Clear();
-    c->Divide(8,4);
-    for( int i=0; i<n_seg/2; ++i ){
-      c->cd(i+1)->SetGrid();
-      TH1 *h = (TH1*)GHist::get( sch_id_c1[1]+i );
-      h->Draw();
-    }
-    c->Update();
-  }
+  // // Draw TOT 01-32
+  // {
+  //   TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
+  //   c->Clear();
+  //   c->Divide(8,4);
+  //   for( int i=0; i<n_seg/2; ++i ){
+  //     c->cd(i+1)->SetGrid();
+  //     TH1 *h = (TH1*)GHist::get( sch_id_c1[1]+i );
+  //     h->Draw();
+  //   }
+  //   c->Update();
+  // }
 
-  // Draw TOT 33-64
-  {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
-    c->Clear();
-    c->Divide(8,4);
-    for( int i=0; i<n_seg/2; ++i ){
-      c->cd(i+1)->SetGrid();
-      TH1 *h = (TH1*)GHist::get( sch_id_c1[1]+i+n_seg/2 );
-      h->Draw();
-    }
-    c->Update();
-  }
+  // // Draw TOT 33-64
+  // {
+  //   TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
+  //   c->Clear();
+  //   c->Divide(8,4);
+  //   for( int i=0; i<n_seg/2; ++i ){
+  //     c->cd(i+1)->SetGrid();
+  //     TH1 *h = (TH1*)GHist::get( sch_id_c1[1]+i+n_seg/2 );
+  //     h->Draw();
+  //   }
+  //   c->Update();
+  // }
 
   // draw TDC/TOT
   {

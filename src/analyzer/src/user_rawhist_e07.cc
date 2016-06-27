@@ -39,6 +39,9 @@ namespace analyzer
   using namespace hddaq;
   
   std::vector<TH1*> hptr_array;
+  bool flag_event_cut = false;
+  static int event_cut_factor = 1;
+
 
 //____________________________________________________________________________
 int
@@ -56,6 +59,14 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.initializeUserParamMan();
   if(!gConfMan.isGood()) return -1;
   // unpacker and all the parameter managers are initialized at this stage
+
+  if( argv.size()==4 ){
+    int factor = std::strtod( argv[3].c_str(), NULL );
+    if( factor!=0 ) event_cut_factor = std::abs( factor );
+    flag_event_cut = true;
+    std::cout << "#D Event cut flag on : factor="
+	      << event_cut_factor << std::endl;
+  }
 
   // Make tabs
   hddaq::gui::Controller& gCon = hddaq::gui::Controller::getInstance();
@@ -205,6 +216,10 @@ process_event( void )
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
+
+  const int event_number = gUnpacker.get_event_number();
+  if( flag_event_cut && event_number%event_cut_factor!=0 )
+    return 0;
 
   // TriggerFlag ---------------------------------------------------
   bool scaler_flag   = false;

@@ -27,26 +27,10 @@ namespace analyzer
   using namespace hddaq::unpacker;
   using namespace hddaq;
 
-  enum eBeam
-    {
-      kKbeam, kPibeam, nBeam
-    };
-
-  enum eDAQ
-    {
-      kDAQEff, kDuty, nDAQ
-    };
-
-  enum eSSD1
-    {
-      kSSD1Y0, kSSD1X0, kSSD1Y1, kSSD1X1,
-      nSSD1
-    };
-  enum eSSD2
-    {
-      kSSD2X0, kSSD2Y0, kSSD2X1, kSSD2Y1,
-      nSSD2
-    };
+  enum eBeam { kKbeam, kPibeam, nBeam };
+  enum eDAQ  { kDAQEff, kDuty, nDAQ   };
+  enum eSSD1 { kSSD1Y0, kSSD1X0, kSSD1Y1, kSSD1X1, nSSD1 };
+  enum eSSD2 { kSSD2X0, kSSD2Y0, kSSD2X1, kSSD2Y1, nSSD2 };
 
   TGraph  *g_beam[nBeam];
   TGraph  *g_daq[nDAQ];

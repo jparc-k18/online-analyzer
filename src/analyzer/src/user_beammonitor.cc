@@ -79,16 +79,18 @@ process_begin(const std::vector<std::string>& argv)
       g_beam[i]->SetMarkerStyle(8);
       g_beam[i]->SetMarkerSize(1.5);
       g_beam[i]->SetMarkerColor(col_beam[i]);
-      if(i==0) g_beam[i]->Draw("AP");
-      else     g_beam[i]->Draw("P");
+      g_beam[i]->SetLineWidth(3);
+      g_beam[i]->SetLineColor(col_beam[i]);
+      if(i==0) g_beam[i]->Draw("AL");
+      else     g_beam[i]->Draw("L");
       g_beam[i]->SetPoint(1,0,0);
     }
     leg_beam = new TLegend( legX, legY, legX+legW, legY+legH );
     leg_beam->SetTextSize(0.05);
     leg_beam->SetFillColor(0);
     leg_beam->SetBorderSize(4);
-    leg_beam->AddEntry(g_beam[kKbeam],  "K beam",  "p");
-    leg_beam->AddEntry(g_beam[kPibeam], "pi beam", "p");
+    leg_beam->AddEntry(g_beam[kKbeam],  "K beam",  "P");
+    leg_beam->AddEntry(g_beam[kPibeam], "pi beam", "P");
     leg_beam->Draw();
   }
 
@@ -102,16 +104,18 @@ process_begin(const std::vector<std::string>& argv)
       g_daq[i]->SetMarkerStyle(8);
       g_daq[i]->SetMarkerSize(1.5);
       g_daq[i]->SetMarkerColor(col_daq[i]);
-      if(i==0) g_daq[i]->Draw("AP");
-      else     g_daq[i]->Draw("P");
+      g_daq[i]->SetLineWidth(3);
+      g_daq[i]->SetLineColor(col_daq[i]);
+      if(i==0) g_daq[i]->Draw("AL");
+      else     g_daq[i]->Draw("L");
       g_daq[i]->SetPoint(1,0,0);
     }
     leg_daq = new TLegend( legX, legY, legX+legW, legY+legH );
     leg_daq->SetTextSize(0.05);
     leg_daq->SetFillColor(0);
     leg_daq->SetBorderSize(4);
-    leg_daq->AddEntry(g_daq[kDAQEff], "DAQ Eff.",    "p");
-    leg_daq->AddEntry(g_daq[kDuty],   "Duty Factor", "p");
+    leg_daq->AddEntry(g_daq[kDAQEff], "DAQ Eff.",    "P");
+    leg_daq->AddEntry(g_daq[kDuty],   "Duty Factor", "P");
     leg_daq->Draw();
   }
 
@@ -128,20 +132,22 @@ process_begin(const std::vector<std::string>& argv)
       g_ssd1[i]->SetTitle("SSD1 Multiplicity Monitor");
       g_ssd1[i]->SetMarkerStyle(8);
       g_ssd1[i]->SetMarkerSize(1.);
+      g_ssd1[i]->SetLineWidth(3);
       col_ssd1[i] = i+1;
       g_ssd1[i]->SetMarkerColor(col_ssd1[i]);
-      if(i==0) g_ssd1[i]->Draw("AP");
-      else     g_ssd1[i]->Draw("P");
+      g_ssd1[i]->SetLineColor(col_ssd1[i]);
+      if(i==0) g_ssd1[i]->Draw("AL");
+      else     g_ssd1[i]->Draw("L");
       g_ssd1[i]->SetPoint(1,0,0);
     }
     leg_ssd1 = new TLegend( legX, legY, legX+legW, legY+legH );
     leg_ssd1->SetTextSize(0.05);
     leg_ssd1->SetFillColor(0);
     leg_ssd1->SetBorderSize(4);
-    leg_ssd1->AddEntry(g_ssd1[kSSD1Y0], "SSD1-Y0", "p");
-    leg_ssd1->AddEntry(g_ssd1[kSSD1X0], "SSD1-X0", "p");
-    leg_ssd1->AddEntry(g_ssd1[kSSD1Y1], "SSD1-Y1", "p");
-    leg_ssd1->AddEntry(g_ssd1[kSSD1X1], "SSD1-X1", "p");
+    leg_ssd1->AddEntry(g_ssd1[kSSD1Y0], "SSD1-Y0", "P");
+    leg_ssd1->AddEntry(g_ssd1[kSSD1X0], "SSD1-X0", "P");
+    leg_ssd1->AddEntry(g_ssd1[kSSD1Y1], "SSD1-Y1", "P");
+    leg_ssd1->AddEntry(g_ssd1[kSSD1X1], "SSD1-X1", "P");
     leg_ssd1->Draw();
   }
 
@@ -153,20 +159,22 @@ process_begin(const std::vector<std::string>& argv)
       g_ssd2[i]->SetTitle("SSD2 Multiplicity Monitor");
       g_ssd2[i]->SetMarkerStyle(8);
       g_ssd2[i]->SetMarkerSize(1.);
+      g_ssd2[i]->SetLineWidth(3);
       col_ssd2[i] = i+1;
       g_ssd2[i]->SetMarkerColor(col_ssd2[i]);
-      if(i==0) g_ssd2[i]->Draw("AP");
-      else     g_ssd2[i]->Draw("P");
+      g_ssd2[i]->SetLineColor(col_ssd2[i]);
+      if(i==0) g_ssd2[i]->Draw("AL");
+      else     g_ssd2[i]->Draw("L");
       g_ssd2[i]->SetPoint(1,0,0);
     }
     leg_ssd2 = new TLegend( legX, legY, legX+legW, legY+legH );
     leg_ssd2->SetTextSize(0.05);
     leg_ssd2->SetFillColor(0);
     leg_ssd2->SetBorderSize(4);
-    leg_ssd2->AddEntry(g_ssd2[kSSD2X0], "SSD2-X0", "p");
-    leg_ssd2->AddEntry(g_ssd2[kSSD2Y0], "SSD2-Y0", "p");
-    leg_ssd2->AddEntry(g_ssd2[kSSD2X1], "SSD2-X1", "p");
-    leg_ssd2->AddEntry(g_ssd2[kSSD2Y1], "SSD2-Y1", "p");
+    leg_ssd2->AddEntry(g_ssd2[kSSD2X0], "SSD2-X0", "P");
+    leg_ssd2->AddEntry(g_ssd2[kSSD2Y0], "SSD2-Y0", "P");
+    leg_ssd2->AddEntry(g_ssd2[kSSD2X1], "SSD2-X1", "P");
+    leg_ssd2->AddEntry(g_ssd2[kSSD2Y1], "SSD2-Y1", "P");
     leg_ssd2->Draw();
   }
 

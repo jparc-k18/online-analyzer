@@ -213,7 +213,7 @@ process_end()
   double real_live  = live_time/real_time;
   double duty_factor = 0;
   if( 1-daq_eff == 0 )
-    duty_factor = 100.;
+    duty_factor = 1.;
   else
     duty_factor = daq_eff/(1-daq_eff)*(1/real_live - 1);
 

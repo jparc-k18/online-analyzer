@@ -34,7 +34,7 @@ if [ ! -f $conf_file ]; then
 fi
 
 if [ $# = 0 ]; then
-    $exe_file $conf_file ${ebhost}:$port
+    $exe_file $conf_file ${ebhost}:$port a
 
 elif [ $# = 1 ]; then
     data_file=$data_dir/run$1.dat.gz

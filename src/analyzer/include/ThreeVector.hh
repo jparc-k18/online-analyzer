@@ -4,11 +4,24 @@
   2012/1/24
 */
 
-#ifndef ThreeVector_h
-#define ThreeVector_h 1
+#ifndef THREE_VECTOR_HH
+#define THREE_VECTOR_HH
 
-#include <CLHEP/Vector/ThreeVector.h>
+#include <ostream>
 
-typedef CLHEP::Hep3Vector ThreeVector;
+#include <TVector3.h>
+
+typedef TVector3 ThreeVector;
+
+//______________________________________________________________________________
+inline
+std::ostream&
+operator <<( std::ostream& ost,
+	     const ThreeVector& v )
+{
+  ost << "(" << v.x() << ", " << v.y()
+      << ", " << v.z() << ")";
+  return ost;
+}
 
 #endif

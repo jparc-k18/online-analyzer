@@ -1,56 +1,49 @@
+#!/usr/bin/make
+
 #### configuration ####
-arch        := $(shell uname)
-SHELL       := /bin/sh
-GCC         := gcc
-CC          := gcc
-CXX         := g++
-OUT_PUT_OPT := -o
-LD          := g++
-#LDFLAGS     := -export-dynamic
-#CXXFLAGS    := -O0 -Wall -fPIC
-CXXFLAGS    := -O3 -Wall -fPIC
-#DEBUGFLAGS  := -pg -g
-CXXFLAGS    += -pg -p
-SOFLAGS     := -shared
-#SOFLAGS     := -shared -Wl,-soname,
-CPPFLAGS    += $(addprefix -I,\
+color		:= 1
+arch		:= $(shell uname)
+SHELL		:= /bin/sh
+GCC		:= gcc
+CC		:= gcc
+CXX		:= g++
+OUT_PUT_OPT	:= -o
+LD		:= g++
+#LDFLAGS	:= -export-dynamic
+#CXXFLAGS	:= -O0 -Wall -fPIC
+CXXFLAGS	:= -O3 -Wall -fPIC
+#DEBUGFLAGS	:= -pg -g
+CXXFLAGS	+= -pg -p
+SOFLAGS		:= -shared
+#SOFLAGS	:= -shared -Wl,-soname,
+CPPFLAGS	+= $(addprefix -I,\
                 $(include_top_dir) \
                 $(root_include_dir) \
-                $(unpacker_include_dir)) \
-		$(clhep_include)
+                $(unpacker_include_dir))
 
-#AR   := ar
-CP   := cp -vf
-ECHO := echo
-MV   := mv -vf
-RM   := rm -vf
-SED  := sed
-MAKE := gmake
+#AR	:= ar
+CP	:= cp -vf
+ECHO	:= echo -e
+MV	:= mv -vf
+RM	:= rm -vf
+SED	:= sed
+MAKE	:= gmake
 
-QUIET := @
-
+QUIET	:= @
 
 #### external libraries ####
 #ext_libs := -lz -lbz2
 # -lpthread
 
-#### CLHEP ####
-clhep_config  := clhep-config
-# clhep_cpp     := $(shell $(clhep_config) --cpp)
-# clhep_cxx     := $(shell $(clhep_config) --cxx)
-clhep_include := $(shell $(clhep_config) --include)
-clhep_libs    := $(shell $(clhep_config) --libs)
-clhep_ldflags := $(shell $(clhep_config) --ldflags)
-
 #### ROOT Libraries ####
-root_config      := root-config
-root_include_dir := $(shell $(root_config) --incdir)
-root_cflags      := $(shell $(root_config) --cflags)
-root_ld_flags    := $(shell $(root_config) --ldflags)
-root_libs        := $(shell $(root_config) --libs)
-root_glibs       := $(shell $(root_config) --glibs)
-#root_libs        := $(shell $(root_config) --new --libs)
-#root_glibs       := $(shell $(root_config) --new --glibs)
+root_config		:= root-config
+root_include_dir	:= $(shell $(root_config) --incdir)
+root_cflags		:= $(shell $(root_config) --cflags)
+root_ld_flags		:= $(shell $(root_config) --ldflags)
+root_libs		:= $(shell $(root_config) --libs)
+root_glibs		:= $(shell $(root_config) --glibs)
+#root_libs		:= $(shell $(root_config) --new --libs)
+#root_glibs		:= $(shell $(root_config) --new --glibs)
 
 # for TEveBrowser
 root_glibs += \
@@ -63,39 +56,49 @@ root_glibs += \
 # -lRGL 
 
 #### HD DAQ Unpacker ####
-unpacker_install      := $(HOME)/software/unpacker/pro
-#unpacker_install      := $(HOME)/software/unpacker/unpacker.tmp
-unpacker_include_dir  := $(unpacker_install)/include
-unpacker_cflags       := -I$(unpacker_include_dir)
-unpacker_lib_dir      := $(unpacker_install)/lib
-unpacker_libs         := \
- -Wl,-rpath,$(unpacker_lib_dir) -L$(unpacker_lib_dir) -lHDDAQUnpacker
+unpacker_config		:= unpacker-config
+unpacker_include_dir	:= $(shell $(unpacker_config) --incdir)
+unpacker_cflags		:= $(shell $(unpacker_config) --include)
+unpacker_lib_dir	:= $(shell $(unpacker_config) --libdir)
+unpacker_libs		:= $(shell $(unpacker_config) --libs)
 
 #### analyzer ####
-top_dir         := $(HOME)/workgit
-src_top_dir     := $(top_dir)/src
-bin_dir         := $(top_dir)/bin
-include_top_dir := $(top_dir)/include
-lib_dir         := $(top_dir)/lib
-link_opt        := -Wl,-rpath,$(lib_dir) -L$(lib_dir)
+top_dir		:= $(HOME)/workgit
+src_top_dir	:= $(top_dir)/src
+bin_dir		:= $(top_dir)/bin
+include_top_dir	:= $(top_dir)/include
+lib_dir		:= $(top_dir)/lib
+link_opt	:= -Wl,-rpath,$(lib_dir) -L$(lib_dir)
 
-#my_name      :=
-headers      := $(filter %.hh,$(wildcard $(PWD)/include/*))
-top_headers  := $(addprefix $(include_top_dir)/,$(notdir $(headers)))
-sources      := $(filter %.cc,$(wildcard $(PWD)/src/*))
-objects      := $(subst .cc,.o,$(sources))
-linkdefs     :=
-#libraries    =
-# granlibs     = \
+#my_name	:=
+headers		:= $(filter %.hh,$(wildcard $(PWD)/include/*))
+top_headers	:= $(addprefix $(include_top_dir)/,$(notdir $(headers)))
+sources		:= $(filter %.cc,$(wildcard $(PWD)/src/*))
+objects		:= $(subst .cc,.o,$(sources))
+linkdefs	:=
+#libraries	=
+# granlibs	= \
 #  $(addprefix $(lib_dir)/lib,$(notdir $(subst .o,.so,$(objects))))
-#need_dict    :=
-dictionaries = \
+#need_dict	:=
+dictionaries	= \
   $(patsubst %.cc,%_Dict.cc,\
    $(filter-out %/,$(addprefix \
     $(patsubst %src/,%dict/,$(dir $(need_dict))),$(notdir $(need_dict)))))
-dict_objs = $(subst .cc,.o, $(dictionaries))
-dependencies += $(subst .o,.d,$(objects) $(dict_objs))
+dict_objs	= $(subst .cc,.o, $(dictionaries))
+dependencies	+= $(subst .o,.d,$(objects) $(dict_objs))
 
+#### escape sequence ####
+ifeq ($(color),1)
+black		= \033[0;30;1m
+red		= \033[0;31;1m
+green		= \033[0;32;1m
+yellow		= \033[0;33;1m
+blue		= \033[0;34;1m
+magenta		= \033[0;35;1m
+cyan		= \033[0;36;1m
+white		= \033[0;37;1m
+default_color	= \033[0m
+endif
 
 #_______________________________________________________________________________
 .PHONY: all lib show clean distclean 
@@ -120,13 +123,13 @@ $(eval $(call copy-headers))
 #_______________________________________________________________________________
 %.o: %.cc
 	$(call make-depend,$<,$@,$(subst .o,.d,$@))
-	$(QUIET) $(ECHO) "=== compiling $@"
+	$(QUIET) $(ECHO) "$(yellow)=== compiling $@$(default_color)"
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OUT_PUT_OPT) $@ -c $<
 
 #_______________________________________________________________________________
 # usage $(call make-depend,source-file,object-file,depend-file)
 define make-depend
- $(QUIET) $(ECHO) "==== make dependency"
+ $(QUIET) $(ECHO) "$(cyan)==== make dependency$(default_color)"
  $(GCC) -MM         \
 	-MF $3      \
 	-MP         \
@@ -149,7 +152,7 @@ endef
 define obj-to-lib
  $(addprefix $(lib_dir)/lib,$(subst .o,.so,$(notdir $1)))::\
  $(strip $1)
-	$(QUIET) $(ECHO) "===== create granular library";
+	$(QUIET) $(ECHO) "$(yellow)===== create granular library$(default_color)";
 	$(QUIET) $(ECHO) "      $$^";
 	$(QUIET) $(ECHO) "      ->    $$@";
 	$(LD) $(SOFLAGS) $(LDFLAGS) $$^ $(OUT_PUT_OPT) $$@;
@@ -157,7 +160,7 @@ endef
 
 define make-lib
  $(addprefix $(lib_dir)/,$(strip $1)):: $(strip $2)
-	$(QUIET) $(ECHO) "==== create library ====";
+	$(QUIET) $(ECHO) "$(yellow)==== create library ====$(default_color)";
 	$(QUIET) $(ECHO) "    $$^";
 	$(QUIET) $(ECHO) "    ->     $$@";
 	$(LD) $(SOFLAGS) $(LDFLAGS) $$^ $(OUT_PUT_OPT) $$@;
@@ -176,7 +179,7 @@ define to-dict
 $1:: \
  $(subst dict,include,$(subst _Dict.cc,.hh,$1)) \
  $(subst dict,linkdef,$(subst _Dict.cc,_LinkDef.hh,$1))
-	$(QUIET) $(ECHO) "==== Generating dictionary $$@ from $$^";
+	$(QUIET) $(ECHO) "$(blue)==== Generating dictionary $$@ $(default_color): $$^";
 	rootcint -f $$@ -c -p $$^;
 endef
 
@@ -190,7 +193,7 @@ $(strip $1):: \
   $(lib_dir)/$(strip $2) \
   $(lib_dir)/libMain.so \
   $(lib_dir)/libHistHelper.so
-	$(QUIET) $(ECHO) " ==== create program $$@: $$^ "
+	$(QUIET) $(ECHO) "$(magenta) ==== create program $$@ $(default_color): $$^"
 	$(LD) $(OUT_PUT_OPT) $$@ \
 	$(LDFLAGS) $(ext_libs) $(unpacker_libs) $(root_glibs) \
 	$(link_opt) \
@@ -205,13 +208,12 @@ $(strip $1):: \
   $(lib_dir)/$(strip $2) \
   $(lib_dir)/libNoGuiMain.so \
   $(lib_dir)/libHistHelper.so 
-	$(QUIET) $(ECHO) " ==== create program $$@: $$^ "
+	$(QUIET) $(ECHO) "$(magenta) ==== create program $$@ $(default_color): $$^"
 	$(LD) $(OUT_PUT_OPT) $$@ \
 	$(LDFLAGS) $(ext_libs) $(unpacker_libs) $(root_glibs) \
 	$(link_opt) \
          -lNoGuiMain -lHistHelper \
 	$(addprefix -l,$(subst .so,,$(subst lib,,$(strip $2)))) \
-	$(clhep_libs) \
 	$$<
 endef
 
@@ -221,13 +223,12 @@ define make-gui-target
   $(lib_dir)/$(strip $2) \
   $(lib_dir)/libGuiMain.so \
   $(lib_dir)/libHistHelper.so
-	$(QUIET) $(ECHO) " ==== create program $$@: $$^"
+	$(QUIET) $(ECHO) "$(magenta) ==== create program $$@ $(default_color): $$^"
 	$(LD) $(OUT_PUT_OPT) $$@ \
 	$(LDFLAGS) $(ext_libs) $(unpacker_libs) $(root_glibs) \
 	$(link_opt) \
          -lGuiMain -lHistHelper \
          $(addprefix -l,$(subst .so,,$(subst lib,,$(strip $2)))) \
-	$(clhep_libs) \
 	$$<
 endef
 #_______________________________________________________________________________

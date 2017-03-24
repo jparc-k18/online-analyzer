@@ -3,9 +3,15 @@
 #include <iomanip>
 #include <iostream>
 #include <cstdio>
+#include <fstream>
 #include <string>
 #include <sstream>
 #include <vector>
+
+#include <TCanvas.h>
+#include <TLatex.h>
+#include <TLine.h>
+#include <TTimeStamp.h>
 
 #include "DAQNode.hh"
 #include "UnpackerManager.hh"
@@ -25,12 +31,13 @@ namespace analyzer
 
   typedef unsigned long long Scaler;
 
-  UnpackerManager& g_unpacker = GUnpacker::get_instance();
-  int  run_number;
+  UnpackerManager& gUnpacker = GUnpacker::get_instance();
+  int  g_run_number;
+  bool g_spill_end         = false;
   bool flag_spill_by_spill = false;
   bool flag_semi_online    = false;
-
-  static const int MaxRow = 32;
+  
+  static const std::size_t MaxRow = 32;
   enum eDisp { kLeft, kRight, MaxColumn };
 
   struct ScalerInfo
@@ -51,6 +58,11 @@ namespace analyzer
   };
 
   std::vector< std::vector<ScalerInfo> > info;
+
+  ///// for Scaler Sheet
+  Scaler g_spill = 0;
+  bool   flag_scaler_sheet   = false;
+  Scaler spill_scaler_sheet  = 1;
 
   ///// for EMC
   static double emc_pos_x_start = -9999.;
@@ -107,9 +119,9 @@ Print( void )
 
   std::cout << "\033[2J" << std::endl;
 
-  int event_number = g_unpacker.get_event_number();
+  int event_number = gUnpacker.get_event_number();
   std::cout << std::left  << std::setw(12) << "RUN"
-	    << std::right << std::setw(16) << run_number << " : "
+	    << std::right << std::setw(16) << g_run_number << " : "
 	    << std::left  << std::setw(12) << "Event Number"
 	    << std::right << std::setw(16) << event_number
 	    << std::endl  << std::endl;
@@ -122,7 +134,7 @@ Print( void )
   double real_live = live_time/real_time;
   double daq_eff   = l1_acc/l1_req;
   double l2_eff    = l2_acc/l1_acc;
-  double duty_factor = daq_eff/(1-daq_eff)*(1/real_live - 1);
+  double duty_factor = daq_eff/(1.-daq_eff)*(1./real_live - 1.);
   if( duty_factor > 1. ) duty_factor = 1.;
 
   for( std::size_t i=0; i<MaxRow; ++i ){
@@ -157,66 +169,169 @@ Print( void )
 }
 
 //____________________________________________________________________________
+inline void
+DrawOneBox( double x, double y,
+	    const std::string& title1, const std::string& val1 )
+{
+  TLatex tex;
+  tex.SetNDC();
+  tex.SetTextSize(0.04);
+  tex.SetTextAlign(12);
+  tex.DrawLatex( x, y, title1.c_str() );
+  tex.SetTextAlign(32);
+  tex.DrawLatex( x+0.28, y, val1.c_str() );
+}
+
+//____________________________________________________________________________
+inline void
+DrawOneLine( const std::string& title1, const std::string& val1,
+	     const std::string& title2, const std::string& val2,
+	     const std::string& title3, const std::string& val3 )
+{
+  static int i = 0;
+  const double ystep = 0.05;
+  const double y0 = 0.95;
+  double y = y0 - (i+1)*ystep;
+  double x[] = { 0.05, 0.35, 0.67 };
+  DrawOneBox( x[0], y, title1, val1 );
+  DrawOneBox( x[1], y, title2, val2 );
+  DrawOneBox( x[2], y, title3, val3 );
+  TLine line;
+  line.SetNDC();
+  line.SetLineColor(kGray);
+  line.DrawLine( 0.05, y-0.5*ystep, 0.95, y-0.5*ystep );
+  line.SetLineColor(kBlack);
+  line.DrawLine( 0.34, y-0.5*ystep, 0.34, y+0.5*ystep );
+  line.DrawLine( 0.66, y-0.5*ystep, 0.66, y+0.5*ystep );
+  if( i==1 || i==5 )
+    line.DrawLine( 0.05, y-0.5*ystep, 0.95, y-0.5*ystep );
+
+  ++i;
+}
+
+//____________________________________________________________________________
+inline void
+DrawOneLine( const std::string& title1,
+	     const std::string& title2,
+	     const std::string& title3 )
+{
+  DrawOneLine( title1, separate_comma( Get(title1) ),
+	       title2, separate_comma( Get(title2) ),
+	       title3, separate_comma( Get(title3) ) );
+}
+
+//____________________________________________________________________________
+inline void
+PrintScalerSheet( void )
+{
+  std::ostringstream oss;
+  PrintHelper phelper( 6, std::ios::dec | std::ios::fixed, oss );
+
+  TCanvas c1( "c1", "c1", 1200, 800 );
+
+  TTimeStamp stamp;
+  stamp.Add( -stamp.GetZoneOffset() );
+
+  DrawOneLine( stamp.AsString("s"), "",
+	       "", "",
+	       "Name", "" );
+  DrawOneLine( Form("#color[%d]{Run#}", kRed+1), separate_comma( g_run_number ),
+	       "Ref Run#", "",
+	       "Event#", separate_comma( gUnpacker.get_event_number() ) );
+  DrawOneLine( "K-Beam", separate_comma( Get("K_beam") ),
+	       "#pi -Beam", separate_comma( Get("pi_beam") ),
+	       "D4", "[T]" );
+  DrawOneLine( "p-Beam", separate_comma( Get("/p_beam") ),
+	       "BH1xBH2", separate_comma( Get("BH1xBH2") ),
+	       "KURAMA", "[T]" );
+  DrawOneLine( "BH2xTOF", separate_comma( Get("BH2xTOF") ),
+	       "Spill", separate_comma( g_spill ),
+	       "Delay", "[s]" );
+  DrawOneLine( "IM", separate_comma( Get("IM") ),
+	       "TM", separate_comma( Get("TM") ),
+	       "Width", "[s]" );
+  DrawOneLine( "BH1-OR", "K_in", "L1_Req" );
+  DrawOneLine( "BH2-OR", "pi_in", "L1_Acc" );
+  DrawOneLine( "BAC1", "K_out", "MST_Acc" );
+  DrawOneLine( "BAC2", "pi_out", "MST_Clear" );
+  DrawOneLine( "PVAC", "(ub)", "FBH" );
+  DrawOneLine( "FAC", "(ub,ub)", "MTX_Acc" );
+  DrawOneLine( "SCH", "(pi,TOF)", "L2_Req" );
+  DrawOneLine( "TOF", "(K,K)", "L2_Acc" );
+
+  const std::string& scaler_sheet_pdf("/tmp/scaler_sheet.pdf");
+
+  c1.Print( scaler_sheet_pdf.c_str() );
+
+  const std::string& print_command("lpr "+scaler_sheet_pdf);
+  ::system( print_command.c_str() );
+
+}
+
+//____________________________________________________________________________
 int
 process_begin(const std::vector<std::string>& argv)
 {
   ConfMan& gConfMan = ConfMan::getInstance();
   gConfMan.initialize(argv);
 
-  // spill by spill flag
-  if( argv.size() == 4 ){
-    flag_spill_by_spill = true;
+  flag_spill_by_spill = true;
+
+  if( argv.size() > 3 ){
+    // scaler sheet flag
+    if( argv[3]=="--print" ){
+      flag_spill_by_spill = false;
+      flag_scaler_sheet = true;
+      if( argv.size()==5 && argv[4].substr(0,8)=="--spill=" ){
+	std::istringstream iss;
+	iss.str( argv[4].substr(8) );
+	iss >> spill_scaler_sheet;
+      }
+    }
   }
 
   // semi online flag
   if( argv.size() == 3 ){
     if( argv[2].find(":",0) == std::string::npos ){
       flag_semi_online = true;
+      flag_spill_by_spill = false;
     }
   }
 
   info.resize(MaxColumn);
 
-  for( int i=0; i<MaxRow; ++i ){
+  for( std::size_t i=0; i<MaxRow; ++i ){
     info[kLeft].push_back( ScalerInfo("n/a", kLeft, i, false) );
     info[kRight].push_back( ScalerInfo("n/a", kRight, i, false) );
   }
 
   { // kLeft column (counter info)
     int index = 0;
-    info[kLeft][index++] = ScalerInfo("K_beam",  0,  0, true);
-    info[kLeft][index++] = ScalerInfo("pi_beam", 0,  1, true);
-    info[kLeft][index++] = ScalerInfo("/p_beam", 0,  2, true);
-    info[kLeft][index++] = ScalerInfo("BH1-OR",  0,  3, true);
-    info[kLeft][index++] = ScalerInfo("BH1-1",   0,  4, true);
-    info[kLeft][index++] = ScalerInfo("BH1-2",   0,  5, true);
-    info[kLeft][index++] = ScalerInfo("BH1-3",   0,  6, true);
-    info[kLeft][index++] = ScalerInfo("BH1-4",   0,  7, true);
-    info[kLeft][index++] = ScalerInfo("BH1-5",   0,  8, true);
-    info[kLeft][index++] = ScalerInfo("BH1-6",   0,  9, true);
-    info[kLeft][index++] = ScalerInfo("BH1-7",   0, 10, true);
-    info[kLeft][index++] = ScalerInfo("BH1-8",   0, 11, true);
-    info[kLeft][index++] = ScalerInfo("BH1-9",   0, 12, true);
-    info[kLeft][index++] = ScalerInfo("BH1-10",  0, 13, true);
-    info[kLeft][index++] = ScalerInfo("BH1-11",  0, 14, true);
-    info[kLeft][index++] = ScalerInfo("BH2-OR",  0, 15, true);
-    info[kLeft][index++] = ScalerInfo("BAC1",    0, 16, true);
-    info[kLeft][index++] = ScalerInfo("BAC2",    0, 17, true);
-    info[kLeft][index++] = ScalerInfo("FBH",     0, 18, true);
-    info[kLeft][index++] = ScalerInfo("PVAC",    0, 19, true);
-    info[kLeft][index++] = ScalerInfo("FAC",     0, 20, true);
-    info[kLeft][index++] = ScalerInfo("SCH",     0, 21, true);
-    info[kLeft][index++] = ScalerInfo("TOF",     0, 22, true);
-    info[kLeft][index++] = ScalerInfo("23",      0, 23, true);
-    info[kLeft][index++] = ScalerInfo("24",      0, 24, true);
-    info[kLeft][index++] = ScalerInfo("25",      0, 25, true);
-    info[kLeft][index++] = ScalerInfo("26",      0, 26, true);
-    info[kLeft][index++] = ScalerInfo("27",      0, 27, true);
-    info[kLeft][index++] = ScalerInfo("28",      0, 28, true);
-    info[kLeft][index++] = ScalerInfo("29",      0, 29, true);
-    info[kLeft][index++] = ScalerInfo("30",      0, 30, true);
-    info[kLeft][index++] = ScalerInfo("31",      0, 31, true);
+    info[kLeft][index++] = ScalerInfo("K_beam",  0, 19, true);
+    info[kLeft][index++] = ScalerInfo("pi_beam", 0, 20, true);
+    info[kLeft][index++] = ScalerInfo("/p_beam", 0, 21, true);
+    info[kLeft][index++] = ScalerInfo("BH1-OR",  0,  0, true);
+    info[kLeft][index++] = ScalerInfo("BH1-1",   0,  1, true);
+    info[kLeft][index++] = ScalerInfo("BH1-2",   0,  2, true);
+    info[kLeft][index++] = ScalerInfo("BH1-3",   0,  3, true);
+    info[kLeft][index++] = ScalerInfo("BH1-4",   0,  4, true);
+    info[kLeft][index++] = ScalerInfo("BH1-5",   0,  5, true);
+    info[kLeft][index++] = ScalerInfo("BH1-6",   0,  6, true);
+    info[kLeft][index++] = ScalerInfo("BH1-7",   0,  7, true);
+    info[kLeft][index++] = ScalerInfo("BH1-8",   0,  8, true);
+    info[kLeft][index++] = ScalerInfo("BH1-9",   0,  9, true);
+    info[kLeft][index++] = ScalerInfo("BH1-10",  0, 10, true);
+    info[kLeft][index++] = ScalerInfo("BH1-11",  0, 11, true);
+    info[kLeft][index++] = ScalerInfo("BH2-OR",  0, 12, true);
+    info[kLeft][index++] = ScalerInfo("BAC1",    0, 13, true);
+    info[kLeft][index++] = ScalerInfo("BAC2",    0, 14, true);
+    info[kLeft][index++] = ScalerInfo("FBH",     0, 42, true);
+    info[kLeft][index++] = ScalerInfo("PVAC",    0, 15, true);
+    info[kLeft][index++] = ScalerInfo("FAC",     0, 16, true);
+    info[kLeft][index++] = ScalerInfo("SCH",     0, 17, true);
+    info[kLeft][index++] = ScalerInfo("TOF",     0, 18, true);
   }
+
   { // kRight column (DAQ info)
     int index = 0;
     info[kRight][index++] = ScalerInfo("Spill",        0, 32, true);
@@ -229,64 +344,36 @@ process_begin(const std::vector<std::string>& argv)
     info[kRight][index++] = ScalerInfo("L1_Acc",       0, 39, true);
     info[kRight][index++] = ScalerInfo("MTX_Acc",      0, 40, true);
     info[kRight][index++] = ScalerInfo("MTX-1",        0, 41, true);
-    info[kRight][index++] = ScalerInfo("MST_Acc",      0, 42, true);
-    info[kRight][index++] = ScalerInfo("MST_Clear",    0, 43, true);
-    info[kRight][index++] = ScalerInfo("MST_Clear_PS", 0, 44, true);
-    info[kRight][index++] = ScalerInfo("L2_Clear",     0, 45, true);
-    info[kRight][index++] = ScalerInfo("L2_Req",       0, 46, true);
-    info[kRight][index++] = ScalerInfo("L2_Acc",       0, 47, true);
-    info[kRight][index++] = ScalerInfo("(ub)",         0, 48, true);
-    info[kRight][index++] = ScalerInfo("(ub,ub)",      0, 49, true);
-    info[kRight][index++] = ScalerInfo("(pi,TOF)",     0, 50, true);
-    info[kRight][index++] = ScalerInfo("(K,K)",        0, 51, true);
-    info[kRight][index++] = ScalerInfo("(ub)PS",       0, 52, true);
-    info[kRight][index++] = ScalerInfo("(ub,ub)PS",    0, 53, true);
-    info[kRight][index++] = ScalerInfo("(pi,TOF)PS",   0, 54, true);
-    info[kRight][index++] = ScalerInfo("(K,K)PS",      0, 55, true);
-    info[kRight][index++] = ScalerInfo("K_in",         0, 56, true);
-    info[kRight][index++] = ScalerInfo("pi_in",        0, 57, true);
-    info[kRight][index++] = ScalerInfo("K_out",        0, 58, true);
-    info[kRight][index++] = ScalerInfo("pi_out",       0, 59, true);
-    info[kRight][index++] = ScalerInfo("BH1xBH2",      0, 60, true);
-    info[kRight][index++] = ScalerInfo("BH2xTOF",      0, 61, true);
-    info[kRight][index++] = ScalerInfo("PVACx/FAC",    0, 62, true);
-    info[kRight][index++] = ScalerInfo("31",           0, 63, true);
+    info[kRight][index++] = ScalerInfo("MST_Acc",      0, 44, true);
+    info[kRight][index++] = ScalerInfo("MST_Clear",    0, 45, true);
+    info[kRight][index++] = ScalerInfo("MST_Clear_PS", 0, 46, true);
+    info[kRight][index++] = ScalerInfo("L2_Clear",     0, 47, true);
+    info[kRight][index++] = ScalerInfo("L2_Req",       0, 48, true);
+    info[kRight][index++] = ScalerInfo("L2_Acc",       0, 49, true);
+    info[kRight][index++] = ScalerInfo("(ub)",         0, 50, true);
+    info[kRight][index++] = ScalerInfo("(ub,ub)",      0, 51, true);
+    info[kRight][index++] = ScalerInfo("(pi,TOF)",     0, 52, true);
+    info[kRight][index++] = ScalerInfo("(K,K)",        0, 53, true);
+    info[kRight][index++] = ScalerInfo("(ub)PS",       0, 54, true);
+    info[kRight][index++] = ScalerInfo("(ub,ub)PS",    0, 55, true);
+    info[kRight][index++] = ScalerInfo("(pi,TOF)PS",   0, 56, true);
+    info[kRight][index++] = ScalerInfo("(K,K)PS",      0, 57, true);
+    info[kRight][index++] = ScalerInfo("K_in",         0, 25, true);
+    info[kRight][index++] = ScalerInfo("pi_in",        0, 26, true);
+    info[kRight][index++] = ScalerInfo("K_out",        0, 27, true);
+    info[kRight][index++] = ScalerInfo("pi_out",       0, 28, true);
+    info[kRight][index++] = ScalerInfo("BH1xBH2",      0, 22, true);
+    info[kRight][index++] = ScalerInfo("BH2xTOF",      0, 23, true);
+    info[kRight][index++] = ScalerInfo("PVACx/FAC",    0, 24, true);
   }
-  { // kRight column (DAQ info)
-    int index = 0;
-    info[kRight][index++] = ScalerInfo("Spill",        0, 64, true);
-    info[kRight][index++] = ScalerInfo("10M Clock",    0, 65, true);
-    info[kRight][index++] = ScalerInfo("IM",           0, 66, true);
-    info[kRight][index++] = ScalerInfo("TM",           0, 67, true);
-    info[kRight][index++] = ScalerInfo("Real_Time",    0, 68, true);
-    info[kRight][index++] = ScalerInfo("Live_Time",    0, 69, true);
-    info[kRight][index++] = ScalerInfo("L1_Req",       0, 70, true);
-    info[kRight][index++] = ScalerInfo("L1_Acc",       0, 71, true);
-    info[kRight][index++] = ScalerInfo("MTX_Acc",      0, 72, true);
-    info[kRight][index++] = ScalerInfo("MTX-1",        0, 73, true);
-    info[kRight][index++] = ScalerInfo("MST_Acc",      0, 74, true);
-    info[kRight][index++] = ScalerInfo("MST_Clear",    0, 75, true);
-    info[kRight][index++] = ScalerInfo("MST_Clear_PS", 0, 76, true);
-    info[kRight][index++] = ScalerInfo("L2_Clear",     0, 77, true);
-    info[kRight][index++] = ScalerInfo("L2_Req",       0, 78, true);
-    info[kRight][index++] = ScalerInfo("L2_Acc",       0, 79, true);
-    info[kRight][index++] = ScalerInfo("(ub)",         0, 80, true);
-    info[kRight][index++] = ScalerInfo("(ub,ub)",      0, 81, true);
-    info[kRight][index++] = ScalerInfo("(pi,TOF)",     0, 82, true);
-    info[kRight][index++] = ScalerInfo("(K,K)",        0, 83, true);
-    info[kRight][index++] = ScalerInfo("(ub)PS",       0, 84, true);
-    info[kRight][index++] = ScalerInfo("(ub,ub)PS",    0, 85, true);
-    info[kRight][index++] = ScalerInfo("(pi,TOF)PS",   0, 86, true);
-    info[kRight][index++] = ScalerInfo("(K,K)PS",      0, 87, true);
-    info[kRight][index++] = ScalerInfo("K_in",         0, 88, true);
-    info[kRight][index++] = ScalerInfo("pi_in",        0, 89, true);
-    info[kRight][index++] = ScalerInfo("K_out",        0, 90, true);
-    info[kRight][index++] = ScalerInfo("pi_out",       0, 91, true);
-    info[kRight][index++] = ScalerInfo("BH1xBH2",      0, 92, true);
-    info[kRight][index++] = ScalerInfo("BH2xTOF",      0, 93, true);
-    info[kRight][index++] = ScalerInfo("PVACx/FAC",    0, 94, true);
-    info[kRight][index++] = ScalerInfo("31",           0, 95, true);
-  }
+
+  std::cout << "#D flag" << std::left << std::endl
+	    << " key = " << std::setw(20) << "flag_spill_by_spill"
+	    << " val = " << flag_spill_by_spill << std::endl
+	    << " key = " << std::setw(20) << "flag_semi_online"
+	    << " val = " << flag_semi_online    << std::endl
+	    << " key = " << std::setw(20) << "flag_scaler_sheet"
+	    << " val = " << flag_scaler_sheet   << std::endl;
 
   return 0;
 }
@@ -295,6 +382,9 @@ process_begin(const std::vector<std::string>& argv)
 int
 process_end()
 {
+  if( flag_scaler_sheet )
+    return 0;
+
   PrintHelper phelper( 6, std::ios::dec | std::ios::fixed, std::cout );
 
   std::cout << "\n#D : End of scaler, summarize this run" << std::endl;
@@ -388,7 +478,7 @@ process_event()
 {
   static int  event_count = 0;
   static bool en_disp     = false;
-  static int  scaler_id   = g_unpacker.get_device_id("Scaler");
+  static int  scaler_id   = gUnpacker.get_device_id("Scaler");
 
   if( flag_semi_online ){
     if( event_count%300 == 0 ) en_disp = true;
@@ -396,17 +486,33 @@ process_event()
     if( event_count%1 == 0 ) en_disp = true;
   }
 
+  // TFlag
+  g_spill_end = false;
+  {
+    static const int k_device = gUnpacker.get_device_id("TFlag");
+    static const int k_seg    = SegIdScalerTrigger;
+    static const int k_tdc    = gUnpacker.get_data_id("TFlag", "tdc");
+    if( gUnpacker.get_entries( k_device, 0, k_seg, 0, k_tdc )>0 &&
+	gUnpacker.get( k_device, 0, k_seg, 0, k_tdc )>0 )
+      {
+	g_spill_end = true;
+      }
+  }
+
+  if( flag_scaler_sheet && !g_spill_end )
+    return 0;
+
   // EMC
   {
-    static const int k_device = g_unpacker.get_device_id("EMC");
-    static const int k_xpos   = g_unpacker.get_data_id("EMC", "xpos");
-    static const int k_ypos   = g_unpacker.get_data_id("EMC", "ypos");
+    static const int k_device = gUnpacker.get_device_id("EMC");
+    static const int k_xpos   = gUnpacker.get_data_id("EMC", "xpos");
+    static const int k_ypos   = gUnpacker.get_data_id("EMC", "ypos");
     double xpos = -9999.;
     double ypos = -9999.;
-    int xpos_nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_xpos );
-    if( xpos_nhit!=0 ) xpos = g_unpacker.get( k_device, 0, 0, 0, k_xpos );
-    int ypos_nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_ypos );
-    if( ypos_nhit!=0 ) ypos = g_unpacker.get( k_device, 0, 0, 0, k_ypos );
+    int xpos_nhit = gUnpacker.get_entries( k_device, 0, 0, 0, k_xpos );
+    if( xpos_nhit!=0 ) xpos = gUnpacker.get( k_device, 0, 0, 0, k_xpos );
+    int ypos_nhit = gUnpacker.get_entries( k_device, 0, 0, 0, k_ypos );
+    if( ypos_nhit!=0 ) ypos = gUnpacker.get( k_device, 0, 0, 0, k_ypos );
     if( xpos_nhit>0 && ypos_nhit>0 ){
       if( event_count==0 ){
 	emc_pos_x_start = (xpos-emc_x_offset)/1000.;
@@ -419,13 +525,13 @@ process_event()
 
   ++event_count;
 
-  if( !g_unpacker.get_entries( scaler_id, 0, 0, 0, 0 ) ){
+  if( !gUnpacker.get_entries( scaler_id, 0, 0, 0, 0 ) ){
     en_disp = false;
     return 0;
   }
 
-  if(run_number != g_unpacker.get_root()->get_run_number()){
-    run_number = g_unpacker.get_root()->get_run_number();
+  if(g_run_number != gUnpacker.get_root()->get_run_number()){
+    g_run_number = gUnpacker.get_root()->get_run_number();
     for( std::size_t i=0; i<MaxColumn; ++i ){
       for( std::size_t j=0; j<MaxRow; ++j ){
 	if( i==kRight && j==0 ) continue;
@@ -437,7 +543,7 @@ process_event()
   {
     bool inclement_spill = false;
     // scaler
-    static int scaler_id    = g_unpacker.get_device_id("Scaler");
+    static int scaler_id    = gUnpacker.get_device_id("Scaler");
 
     for( std::size_t i=0; i<MaxColumn; ++i ){
       for( std::size_t j=0; j<MaxRow; ++j ){
@@ -445,11 +551,11 @@ process_event()
 	if( i==kRight && j==0 ) continue;
 	int module_id = info[i][j].module_id;
 	int channel   = info[i][j].channel;
-	int nhit = g_unpacker.get_entries( scaler_id, module_id, 0, channel, 0 );
+	int nhit = gUnpacker.get_entries( scaler_id, module_id, 0, channel, 0 );
 	if( nhit<=0 ) continue;
-	Scaler val = g_unpacker.get( scaler_id, module_id, 0, channel, 0 );
+	Scaler val = gUnpacker.get( scaler_id, module_id, 0, channel, 0 );
 
-	if( info[i][j].prev > val ){
+	if( info[i][j].prev > val || flag_scaler_sheet ){
 	  inclement_spill = true;
 	  info[i][j].prev = 0;
 	}
@@ -467,12 +573,22 @@ process_event()
     if( inclement_spill )
       info[kRight][0].data++;
 
-    if( en_disp ){
+    if( en_disp /* && !flag_scaler_sheet */ ){
       Print();
     }
   }
 
   en_disp = false;
+
+  if( g_spill_end && flag_scaler_sheet ){
+    ++g_spill;
+    std::cout << "#D found spill end "
+	      << g_spill << "/" << spill_scaler_sheet << std::endl;
+    if( g_spill==spill_scaler_sheet ){
+      PrintScalerSheet();
+      return -1;
+    }
+  }
 
   return 0;
 }

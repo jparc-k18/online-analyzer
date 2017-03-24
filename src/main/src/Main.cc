@@ -212,7 +212,11 @@ Main::run()
 	      if (isRunning())
 		{
 		  // TThread::Lock();
-		  process_event();
+		  int ret = process_event();
+		  if( ret!=0 ){
+		    std::cout << "#D1 analyzer::process_event() return " << ret << std::endl;
+		    break;
+		  }
 		  // TThread::UnLock();
 		}
 // 	      double d1 = get_dtime();
@@ -245,8 +249,13 @@ Main::run()
   else
     {
       g_unpacker.initialize();
-      for (;!g_unpacker.eof();++g_unpacker)
-	process_event();
+      for (;!g_unpacker.eof();++g_unpacker){
+	int ret = process_event();
+	if( ret!=0 ){
+	  std::cout << "#D2 analyzer::process_event() return " << ret << std::endl;
+	  break;
+	}
+      }
       std::cout << "#D2 Main::run() exit loop"  << std::endl;
     }
   process_end();

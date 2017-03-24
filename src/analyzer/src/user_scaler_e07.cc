@@ -239,7 +239,7 @@ PrintScalerSheet( void )
 	       "Ref Run#", "",
 	       "Event#", separate_comma( gUnpacker.get_event_number() ) );
   DrawOneLine( "K-Beam", separate_comma( Get("K_beam") ),
-	       "#pi -Beam", separate_comma( Get("pi_beam") ),
+	       "#pi-Beam", separate_comma( Get("pi_beam") ),
 	       "D4", "[T]" );
   DrawOneLine( "p-Beam", separate_comma( Get("/p_beam") ),
 	       "BH1xBH2", separate_comma( Get("BH1xBH2") ),
@@ -250,8 +250,8 @@ PrintScalerSheet( void )
   DrawOneLine( "IM", separate_comma( Get("IM") ),
 	       "TM", separate_comma( Get("TM") ),
 	       "Width", "[s]" );
-  DrawOneLine( "BH1-OR", "K_in", "L1_Req" );
-  DrawOneLine( "BH2-OR", "pi_in", "L1_Acc" );
+  DrawOneLine( "BH1", "K_in", "L1_Req" );
+  DrawOneLine( "BH2", "pi_in", "L1_Acc" );
   DrawOneLine( "BAC1", "K_out", "MST_Acc" );
   DrawOneLine( "BAC2", "pi_out", "MST_Clear" );
   DrawOneLine( "PVAC", "(ub)", "FBH" );
@@ -310,7 +310,7 @@ process_begin(const std::vector<std::string>& argv)
     info[kLeft][index++] = ScalerInfo("K_beam",  0, 19, true);
     info[kLeft][index++] = ScalerInfo("pi_beam", 0, 20, true);
     info[kLeft][index++] = ScalerInfo("/p_beam", 0, 21, true);
-    info[kLeft][index++] = ScalerInfo("BH1-OR",  0,  0, true);
+    info[kLeft][index++] = ScalerInfo("BH1",  0,  0, true);
     info[kLeft][index++] = ScalerInfo("BH1-1",   0,  1, true);
     info[kLeft][index++] = ScalerInfo("BH1-2",   0,  2, true);
     info[kLeft][index++] = ScalerInfo("BH1-3",   0,  3, true);
@@ -322,7 +322,7 @@ process_begin(const std::vector<std::string>& argv)
     info[kLeft][index++] = ScalerInfo("BH1-9",   0,  9, true);
     info[kLeft][index++] = ScalerInfo("BH1-10",  0, 10, true);
     info[kLeft][index++] = ScalerInfo("BH1-11",  0, 11, true);
-    info[kLeft][index++] = ScalerInfo("BH2-OR",  0, 12, true);
+    info[kLeft][index++] = ScalerInfo("BH2",  0, 12, true);
     info[kLeft][index++] = ScalerInfo("BAC1",    0, 13, true);
     info[kLeft][index++] = ScalerInfo("BAC2",    0, 14, true);
     info[kLeft][index++] = ScalerInfo("FBH",     0, 42, true);
@@ -402,7 +402,7 @@ process_end()
   Scaler l1_acc     = Get("L1_Acc");
   Scaler clear      = Get("L2_Clear");
   Scaler l2_acc     = Get("L2_Acc");
-  Scaler bh2        = Get("BH2-OR");
+  Scaler bh2        = Get("BH2");
   Scaler fbh        = Get("FBH");
   Scaler sch        = Get("SCH");
   Scaler TM         = Get("TM");
@@ -486,6 +486,9 @@ process_event()
     if( event_count%1 == 0 ) en_disp = true;
   }
 
+  if( flag_scaler_sheet && event_count==0 )
+    std::cout << "#D waiting spill end " << std::flush;
+
   // TFlag
   g_spill_end = false;
   {
@@ -498,9 +501,6 @@ process_event()
 	g_spill_end = true;
       }
   }
-
-  if( flag_scaler_sheet && !g_spill_end )
-    return 0;
 
   // EMC
   {
@@ -524,6 +524,12 @@ process_event()
   }
 
   ++event_count;
+
+  if( flag_scaler_sheet && !g_spill_end ){
+    if( event_count%100==0 )
+      std::cout << "." << std::flush;
+    return 0;
+  }
 
   if( !gUnpacker.get_entries( scaler_id, 0, 0, 0, 0 ) ){
     en_disp = false;
@@ -588,6 +594,7 @@ process_event()
       PrintScalerSheet();
       return -1;
     }
+    std::cout << "#D waiting spill end " << std::flush;
   }
 
   return 0;

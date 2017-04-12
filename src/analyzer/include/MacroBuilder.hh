@@ -63,6 +63,8 @@ TObject* dispHDC( void );
 TObject* dispSDC4( void );
 TObject* dispBeamProfile_e07( void );
 TObject* dispBeamProfile_e05( void );
+TObject* dispBeamProfile_e03( void );
+TObject* dispBeamProfile_e40( void );
 
 TObject* auto_monitor_all( void );
 

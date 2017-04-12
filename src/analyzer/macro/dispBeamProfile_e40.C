@@ -1,7 +1,7 @@
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
-void dispBeamProfile_e07()
+void dispBeamProfile_e40()
 {
   // You must write these lines for the thread safe
   // ----------------------------------
@@ -17,7 +17,7 @@ void dispBeamProfile_e07()
 
   const double fit_width[2] = { 50., 50. };
 
-  const double ff[n_hist] = { 200., 500., 680, 1000., 1200. };
+  const double ff[n_hist] = { -300., -100., 100., 300., 500. };
   double   rms[2][n_hist];
   double sigma[2][n_hist];
     

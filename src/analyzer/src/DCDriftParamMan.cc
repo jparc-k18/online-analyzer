@@ -53,6 +53,7 @@ void DCDriftParamMan::clearElements( void )
   std::map <unsigned int, DCDriftParamRecord *>::iterator itr;
   for( itr=Cont_.begin(); itr!=Cont_.end(); ++itr ){
     delete itr->second;
+    itr->second = 0;
   }
   Cont_.clear();
 }

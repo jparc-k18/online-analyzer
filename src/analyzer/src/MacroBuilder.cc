@@ -522,6 +522,24 @@ TObject* dispBeamProfile_e05( void )
   return m;
 }
 
+// Beam profile for E03 study -------------------------------------
+TObject* dispBeamProfile_e03( void )
+{
+  std::string path = getMacroPath() + "dispBeamProfile_e03.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispBeamProfile_e03");
+  return m;
+}
+
+// Beam profile for E40 study -------------------------------------
+TObject* dispBeamProfile_e40( void )
+{
+  std::string path = getMacroPath() + "dispBeamProfile_e40.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispBeamProfile_e40");
+  return m;
+}
+
 // auto_monitor_all -----------------------------------------------
 TObject* auto_monitor_all( void )
 {

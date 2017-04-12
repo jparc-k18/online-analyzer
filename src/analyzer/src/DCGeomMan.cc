@@ -193,6 +193,7 @@ void DCGeomMan::clearElements( void )
   std::map <int, DCGeomRecord *>::iterator itr;
   for( itr=geomRecord_.begin(); itr!=geomRecord_.end(); ++itr ){
     delete itr->second;
+    itr->second = 0;
   }
   geomRecord_.clear();
   TOFid_=51;

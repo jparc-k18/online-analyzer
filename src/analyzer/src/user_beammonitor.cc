@@ -220,7 +220,7 @@ process_event()
 
   // Beam Monitor
   {
-    static const int module_id[nBeam]  = {  2,  2 };
+    static const int module_id[nBeam]  = {  0,  0 };
     static const int channel_id[nBeam] = { 19, 20 };
 
     static double beam[nBeam]     = {};
@@ -245,13 +245,13 @@ process_event()
 
   // DAQ Monitor
   {
-    static const int module_id[2]  = { 0, 0 };
-    static const int channel_id[2] = { 6, 7 };
+    static const int module_id[2]  = {  0,  0 };
+    static const int channel_id[2] = { 38, 39 };
     static double daq[2]     = {};
     static double daq_pre[2] = {};
 
-    static const int rl_module_id[2]  = { 0, 0 };
-    static const int rl_channel_id[2] = { 4, 5 };
+    static const int rl_module_id[2]  = {  0,  0 };
+    static const int rl_channel_id[2] = { 36, 37 };
     static double real_live[2]     = {};
     static double real_live_pre[2] = {};
     

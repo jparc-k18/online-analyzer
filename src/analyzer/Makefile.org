@@ -46,6 +46,12 @@ my_tgt_beamprofile_e07  := $(bin_dir)/beamprofile_e07
 my_obj_beamprofile_e05  := $(core_obj) user_beamprofile_e05.o HistMaker.o MacroBuilder.o DCAnalyzer.o
 my_tgt_beamprofile_e05  := $(bin_dir)/beamprofile_e05
 
+my_obj_beamprofile_e03  := $(core_obj) user_beamprofile_e03.o HistMaker.o MacroBuilder.o DCAnalyzer.o
+my_tgt_beamprofile_e03  := $(bin_dir)/beamprofile_e03
+
+my_obj_beamprofile_e40  := $(core_obj) user_beamprofile_e40.o HistMaker.o MacroBuilder.o DCAnalyzer.o
+my_tgt_beamprofile_e40  := $(bin_dir)/beamprofile_e40
+
 my_obj_emc_ssd_monitor	:= $(core_obj) user_emc_ssd_monitor.o
 my_tgt_emc_ssd_monitor	:= $(bin_dir)/emc_ssd_monitor
 
@@ -76,6 +82,8 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_rawhist_e07) \
 	$(my_tgt_beammonitor) \
 	$(my_tgt_beamprofile_e07) \
+	$(my_tgt_beamprofile_e03) \
+	$(my_tgt_beamprofile_e40) \
 	$(my_tgt_emc_ssd_monitor) \
 	$(my_tgt_scaler_e07)
 #	$(my_old_tgt)
@@ -179,6 +187,22 @@ my_obj_beamprofile_e05	:= $(my_obj_beamprofile_e05) \
 my_lib_beamprofile_e05 := libmybeamprofile_e05.so
 $(eval $(call make-lib,$(my_lib_beamprofile_e05),$(my_obj_beamprofile_e05)))
 $(eval $(call make-gui-target,$(my_tgt_beamprofile_e05),$(my_lib_beamprofile_e05)))
+
+#_____________________________________________________________________________
+my_obj_beamprofile_e03	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e03))
+my_obj_beamprofile_e03	:= $(my_obj_beamprofile_e03) \
+		  $(my_dir)/dict/HistMaker_Dict.o
+my_lib_beamprofile_e03 := libmybeamprofile_e03.so
+$(eval $(call make-lib,$(my_lib_beamprofile_e03),$(my_obj_beamprofile_e03)))
+$(eval $(call make-gui-target,$(my_tgt_beamprofile_e03),$(my_lib_beamprofile_e03)))
+
+#_____________________________________________________________________________
+my_obj_beamprofile_e40	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e40))
+my_obj_beamprofile_e40	:= $(my_obj_beamprofile_e40) \
+		  $(my_dir)/dict/HistMaker_Dict.o
+my_lib_beamprofile_e40 := libmybeamprofile_e40.so
+$(eval $(call make-lib,$(my_lib_beamprofile_e40),$(my_obj_beamprofile_e40)))
+$(eval $(call make-gui-target,$(my_tgt_beamprofile_e40),$(my_lib_beamprofile_e40)))
 
 #_____________________________________________________________________________
 my_obj_emc_ssd_monitor	:= $(addprefix $(my_dir)/src/,$(my_obj_emc_ssd_monitor))

@@ -15,9 +15,9 @@ ClassImp(MatrixParamMan)
 
 static const std::string class_name("MatrixParamMan");
 
-// initialize MatrixParamMan --------------------------------------------------
+//______________________________________________________________________________
 void
-ConfMan::initializeMatrixParamMan()
+ConfMan::initializeMatrixParamMan( void )
 {
   if( ( name_file_["MATRIX2D:"] != "" ) && ( name_file_["MATRIX3D:"] != "" ) ){
     MatrixParamMan& gMatrixParam = MatrixParamMan::GetInstance();
@@ -30,7 +30,6 @@ ConfMan::initializeMatrixParamMan()
     flag_.reset(kIsGood);
   }
 }
-// initialize MatrixParamMan --------------------------------------------------
 
 //_____________________________________________________________________
 MatrixParamMan::MatrixParamMan( void )
@@ -61,7 +60,7 @@ MatrixParamMan::Initialize( const std::string& filename_2d,
     for( int i=0; i<NumOfSegTOF; ++i ){
       m_enable_2d.at(i).resize( NumOfSegSCH );
     }
-  
+
     std::string line;
     int tofseg = 0;
     while( !ifs2d.eof() && std::getline( ifs2d, line ) ){
@@ -72,7 +71,7 @@ MatrixParamMan::Initialize( const std::string& filename_2d,
       iss >> param[0] >> param[1];
 
       if( param[0].at(0) == '#' ) continue;
-    
+
       if( param[0].substr(2).at(0)=='0' )
 	param[0] = param[0].substr(3);
       else
@@ -113,7 +112,7 @@ MatrixParamMan::Initialize( const std::string& filename_2d,
 	m_enable_3d[i][j].resize( NumOfSegClusteredFBH );
       }
     }
-  
+
     std::string line;
     int tofseg = 0;
     while( !ifs3d.eof() && std::getline( ifs3d, line ) ){
@@ -124,7 +123,7 @@ MatrixParamMan::Initialize( const std::string& filename_2d,
       iss >> param[0] >> param[1];
 
       if( param[0].at(0) == '#' ) continue;
-    
+
       if( param[0].substr(2).at(0)=='0' )
 	param[0] = param[0].substr(3);
       else

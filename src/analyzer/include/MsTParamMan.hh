@@ -15,8 +15,8 @@ class MsTParamMan
   std::vector< std::vector<double> > m_high_threshold;
 
 public:
-  ~MsTParamMan( void );
   static MsTParamMan& GetInstance( void );
+  virtual ~MsTParamMan( void );
 
   bool Initialize( const std::string& filename );
   bool IsAccept( int detA, int detB, int tdc );

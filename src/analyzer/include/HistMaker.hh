@@ -34,8 +34,8 @@ enum SubDetectorType {
   kSP0_L5, kSP0_L6, kSP0_L7, kSP0_L8,
   // Sub Detector ID in HUL
   kHulTOF,     kHulFBH,     kHulSCH,
-  kHulTOFxFBH, kHulTOFxSCH, kHulFBHxSCH,  
-  kHul2DHitPat, kHul3DHitPat, 
+  kHulTOFxFBH, kHulTOFxSCH, kHulFBHxSCH,
+  kHul2DHitPat, kHul3DHitPat,
   kHul2D, kHul3D,
   // DAQ unique sub ID
   kEB, kTKO, kVME, kCLite, kEASIROC, kCAMAC,
@@ -47,13 +47,13 @@ enum SubDetectorType {
 enum DataType{
   kDataTypeZero,
   // Usual data type
-  kADC,   kTDC,   kHitPat,   kMulti, 
-  kADC2D, kTDC2D, kHitPat2D, kMulti2D, 
+  kADC,   kTDC,   kHitPat,   kMulti,
+  kADC2D, kTDC2D, kHitPat2D, kMulti2D,
   kADCwTDC,
   // Extra data type for EMC
   kSerial, kXpos, kYpos, kXYpos, kTime,
   // Extra data type for Ge detector
-  kCRM,   kTFA,   kPUR,   kRST, 
+  kCRM,   kTFA,   kPUR,   kRST,
   kCRM2D, kTFA2D, kPUR2D, kRST2D,
   sizeDataType,
   factorDataType = 1000
@@ -67,8 +67,8 @@ class TList;
 
 class HistMaker {
   // Declaration of the private parameters ---------------------------------
-  // histogram unique and sequential ID 
-  int current_hist_id_; 
+  // histogram unique and sequential ID
+  int current_hist_id_;
   std::map<int, int>         idmap_seq_from_unique_;
   std::map<int, int>         idmap_unique_from_seq_;
   std::map<std::string, int> idmap_seq_from_name_;
@@ -79,20 +79,20 @@ class HistMaker {
 
   // return value of insert
   typedef std::pair<std::map<int, int>::iterator, bool> TypeRetInsert;
-  
+
 public:
   // Public functions ------------------------------------------------------
-  ~HistMaker();
-  static HistMaker& getInstance();
+  virtual ~HistMaker( void );
+  static HistMaker& getInstance( void );
   static void getListOfDetectors(std::vector<std::string>& vec);
   static void getListOfPsFiles(std::vector<std::string>& vec);
-  
+
   static int  getNofHist();
-  
+
   static int  getUniqueID(int detector_type, int subdetector_type,
 			 int data_type, int channel=1 );
   static int  getUniqueID(int sequential_id);
-  
+
   static int  getSequentialID(int detector_type, int subdetector_type,
 			     int data_type, int channel=1 );
   static int  getSequentialID(int unique_id);
@@ -104,7 +104,7 @@ public:
 		 int nbinx, int xmin, int xmax,
 		 const char* xtitle="", const char* ytitle=""
 		 );
-  
+
   TH2* createTH2(int unique_id, const char* title,
   		 int nbinx, int xmin, int xmax,
   		 int nbiny, int ymin, int ymax,
@@ -166,21 +166,21 @@ private:
   ClassDef(HistMaker, 0)
 };
 
-// getInstance -----------------------------------------------------------    
+// getInstance -----------------------------------------------------------
 inline HistMaker& HistMaker::getInstance()
 {
   static HistMaker object;
   return object;
 }
 
-// getNofHist ------------------------------------------------------------    
+// getNofHist ------------------------------------------------------------
 inline int HistMaker::getNofHist()
 {
   HistMaker& g= HistMaker::getInstance();
   return g.idmap_unique_from_seq_.size();
 }
 
-// getUniqueID -----------------------------------------------------------    
+// getUniqueID -----------------------------------------------------------
 inline int HistMaker::getUniqueID(int detector_type, int subdetector_type,
 				  int data_type, int channel)
 {
@@ -192,14 +192,14 @@ inline int HistMaker::getUniqueID(int detector_type, int subdetector_type,
   return unique_id;
 }
 
-// getUniqueID -----------------------------------------------------------    
+// getUniqueID -----------------------------------------------------------
 inline int HistMaker::getUniqueID(int sequential_id)
 {
   HistMaker& g= HistMaker::getInstance();
   return g.idmap_unique_from_seq_[sequential_id];
 }
 
-// getSequentialID -------------------------------------------------------    
+// getSequentialID -------------------------------------------------------
 inline int HistMaker::getSequentialID(int detector_type, int subdetector_type,
 				      int data_type, int channel)
 {
@@ -208,14 +208,14 @@ inline int HistMaker::getSequentialID(int detector_type, int subdetector_type,
   return g.idmap_seq_from_unique_[unique_id];
 }
 
-// getSequentialID -------------------------------------------------------    
+// getSequentialID -------------------------------------------------------
 inline int HistMaker::getSequentialID(int unique_id)
 {
   HistMaker& g= HistMaker::getInstance();
   return g.idmap_seq_from_unique_[unique_id];
 }
 
-// getSequentialID -------------------------------------------------------    
+// getSequentialID -------------------------------------------------------
 inline int HistMaker::getSequentialID(const char* name)
 {
   HistMaker& g= HistMaker::getInstance();

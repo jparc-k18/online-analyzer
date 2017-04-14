@@ -9,6 +9,3 @@
 #pragma link C++ class MatrixParamMan;
 
 #endif
-
-
-

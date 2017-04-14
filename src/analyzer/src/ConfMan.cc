@@ -31,7 +31,7 @@ ConfMan::ConfMan()
 {
   flag_.reset();
 }
- 
+
 // Destructor --------------------------------------------------------------
 ConfMan::~ConfMan()
 {
@@ -95,7 +95,7 @@ void ConfMan::initialize(const std::vector<std::string>& argv)
 	}
     }
 
-  // initialize unpacker system 
+  // initialize unpacker system
   UnpackerManager& g_unpacker = GUnpacker::get_instance();
   g_unpacker.set_config_file(name_file_["UNPACKER:"],
 			     name_file_["DIGIT:"],

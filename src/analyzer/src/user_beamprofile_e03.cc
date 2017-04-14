@@ -26,10 +26,10 @@ namespace analyzer
   using namespace hddaq;
 
   std::vector<TH1*> hptr_array;
-  
+
   enum HistName
     {
-      FF_200, FF_500, FF_680, FF_1000, FF_1200,
+      FF_000, FF_200, FF_360, FF_600, FF_800,
       NHist
     };
   static const double FF_plus[NHist] =
@@ -228,7 +228,7 @@ process_event()
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-  
+
   return 0;
 }
 

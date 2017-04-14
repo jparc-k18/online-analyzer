@@ -17,7 +17,7 @@
 ClassImp(HistMaker)
 
 // getStr_FromEnum ----------------------------------------------------------
-// The method to get std::string from enum value 
+// The method to get std::string from enum value
 #define CONV_STRING(x) getStr_FromEnum(#x)
 std::string getStr_FromEnum(const char* c){
   std::string str = c;
@@ -27,16 +27,14 @@ std::string getStr_FromEnum(const char* c){
 static const std::string MyName = "HistMaker::";
 
 // Constructor -------------------------------------------------------------
-HistMaker::HistMaker( void ):
-  current_hist_id_(0)
+HistMaker::HistMaker( void )
+  : current_hist_id_(0)
 {
-
 }
 
-// Destructor --------------------------------------------------------------
+// Destructor -------------------------------------------------------------
 HistMaker::~HistMaker( void )
 {
-
 }
 
 // -------------------------------------------------------------------------
@@ -49,7 +47,7 @@ void HistMaker::getListOfDetectors(std::vector<std::string>& vec)
 	    g.name_created_detectors_.end(),
 	    back_inserter(vec)
 	    );
-  
+
 }
 
 // -------------------------------------------------------------------------
@@ -62,7 +60,7 @@ void HistMaker::getListOfPsFiles(std::vector<std::string>& vec)
 	    g.name_ps_files_.end(),
 	    back_inserter(vec)
 	    );
-  
+
 }
 
 // -------------------------------------------------------------------------
@@ -71,7 +69,7 @@ void HistMaker::getListOfPsFiles(std::vector<std::string>& vec)
 int HistMaker::setHistPtr(std::vector<TH1*>& vec)
 {
   static const std::string MyFunc = "setHistPtr ";
-  
+
   vec.resize(current_hist_id_);
   for(int i = 0; i<current_hist_id_; ++i){
     int unique_id = getUniqueID(i);
@@ -90,7 +88,7 @@ int HistMaker::setHistPtr(std::vector<TH1*>& vec)
 }
 
 // -------------------------------------------------------------------------
-// CreateTH1 
+// CreateTH1
 // -------------------------------------------------------------------------
 TH1* HistMaker::createTH1(int unique_id, const char* title,
 			  int nbinx, int xmin, int xmax,
@@ -101,36 +99,36 @@ TH1* HistMaker::createTH1(int unique_id, const char* title,
 
   // Add information to dictionaries which will be used to find the histogram
   int sequential_id = current_hist_id_++;
-  TypeRetInsert ret =  
+  TypeRetInsert ret =
   idmap_seq_from_unique_.insert(std::make_pair(unique_id,     sequential_id));
   idmap_seq_from_name_.insert(  std::make_pair(title,         sequential_id));
   idmap_unique_from_seq_.insert(std::make_pair(sequential_id, unique_id));
   if(!ret.second){
-    std::cerr << "#E: " << MyName << MyFunc  
+    std::cerr << "#E: " << MyName << MyFunc
 	      << "The unique id overlaps with other id"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
     std::exit(-1);
   }
-			     
+
   // create histogram using the static method of HistHelper class
   TH1 *h = GHist::I1(unique_id, title, nbinx, xmin, xmax);
   if(!h){
-    std::cerr << "#E: " << MyName << MyFunc  
+    std::cerr << "#E: " << MyName << MyFunc
 	      << "Fail to create TH1"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
     std::exit(-1);
     //    return h;
   }
-  
+
   h->GetXaxis()->SetTitle(xtitle);
   h->GetYaxis()->SetTitle(ytitle);
   return h;
 }
 
 // -------------------------------------------------------------------------
-// CreateTH2 
+// CreateTH2
 // -------------------------------------------------------------------------
 TH2* HistMaker::createTH2(int unique_id, const char* title,
 			  int nbinx, int xmin, int xmax,
@@ -142,12 +140,12 @@ TH2* HistMaker::createTH2(int unique_id, const char* title,
 
   // Add information to dictionaries which will be used to find the histogram
   int sequential_id = current_hist_id_++;
-  TypeRetInsert ret =  
+  TypeRetInsert ret =
   idmap_seq_from_unique_.insert(std::make_pair(unique_id,     sequential_id));
   idmap_seq_from_name_.insert(  std::make_pair(title,         sequential_id));
   idmap_unique_from_seq_.insert(std::make_pair(sequential_id, unique_id));
   if(!ret.second){
-    std::cerr << "#E: " << MyName << MyFunc  
+    std::cerr << "#E: " << MyName << MyFunc
 	      << "The unique id overlaps with other id"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
@@ -166,7 +164,7 @@ TH2* HistMaker::createTH2(int unique_id, const char* title,
     std::exit(-1);
     //    return h;
   }
-  
+
   h->GetXaxis()->SetTitle(xtitle);
   h->GetYaxis()->SetTitle(ytitle);
   return h;
@@ -209,7 +207,7 @@ HistMaker::createTimeStamp( bool flag_ps )
 }
 
 // -------------------------------------------------------------------------
-// createBH1 
+// createBH1
 // -------------------------------------------------------------------------
 TList* HistMaker::createBH1(bool flag_ps)
 {
@@ -336,7 +334,7 @@ TList* HistMaker::createBH1(bool flag_ps)
 			   NumOfSegBH1, 0, NumOfSegBH1,
 			   "Multiplicity", ""));
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -349,12 +347,12 @@ TList* HistMaker::createBFT(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kBFT);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -458,7 +456,7 @@ TList* HistMaker::createBFT(bool flag_ps)
 			   30, 0, 30,
 			   "Multiplicity", ""));
   }
-  
+
   // TDC-2D (after cut) --------------------------------------------
   {
     int target_id = getUniqueID(kBFT, 0, kTDC2D, 0);
@@ -501,12 +499,12 @@ TList* HistMaker::createBC3(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kBC3);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -600,7 +598,7 @@ TList* HistMaker::createBC3(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -613,12 +611,12 @@ TList* HistMaker::createBC4(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kBC4);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -712,7 +710,7 @@ TList* HistMaker::createBC4(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -725,12 +723,12 @@ TList* HistMaker::createBMW(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kBMW);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -754,25 +752,25 @@ TList* HistMaker::createBMW(bool flag_ps)
 			   0x1000, 0, 0x1000,
 			   "TDC [ch]", ""));
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
 
 // -------------------------------------------------------------------------
-// createBH2 
+// createBH2
 // -------------------------------------------------------------------------
 TList* HistMaker::createBH2(bool flag_ps)
 {
   // Determine the detector name
   std::string strDet = CONV_STRING(kBH2);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -884,7 +882,7 @@ TList* HistMaker::createBH2(bool flag_ps)
 			   NumOfSegBH2+1, 0, NumOfSegBH2+1,
 			   "Multiplicity", ""));
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -897,7 +895,7 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
   std::string strDet = CONV_STRING(kBH2_E07);   // Determine the detector name
   name_created_detectors_.push_back(strDet);    // name list of crearted detector
   if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
-  
+
   const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
@@ -907,7 +905,7 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    
+
     int target_id = getUniqueID(kBH2_E07, 0, kADC, 0);
     for(int i = 0; i<NumOfSegBH2_E07*2; ++i){
       const char* title = NULL;
@@ -947,7 +945,7 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
     }
     top_dir->Add(sub_dir);
   }
-  
+
   { // Hit parttern -----------------------------------------------
     const char* title = "BH2_E07_hit_pattern";
     int target_id = getUniqueID(kBH2_E07, 0, kHitPat, 0);
@@ -955,7 +953,7 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
 			   NumOfSegBH2_E07, 0, NumOfSegBH2_E07,
 			   "Segment", ""));
   }
-  
+
   { // Multiplicity -----------------------------------------------
     const char* title = "BH2_E07_multiplicity";
     int target_id = getUniqueID(kBH2_E07, 0, kMulti, 0);
@@ -963,7 +961,7 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
 			   NumOfSegBH2_E07+1, 0, NumOfSegBH2_E07+1,
 			   "Multiplicity", ""));
   }
-  
+
   return top_dir;
 }
 
@@ -975,7 +973,7 @@ TList* HistMaker::createBAC(bool flag_ps)
   std::string strDet = CONV_STRING(kBAC);       // Determine the detector name
   name_created_detectors_.push_back(strDet);    // name list of crearted detector
   if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
-  
+
   const char* nameDetector = strDet.c_str(); // Declaration of the directory
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
@@ -1035,7 +1033,7 @@ TList* HistMaker::createBAC(bool flag_ps)
     }
     top_dir->Add(sub_dir);
   }
-  
+
   { // Hit parttern -----------------------------------------------
     int target_id = getUniqueID(kBAC, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "BAC_hit_pattern",
@@ -1061,7 +1059,7 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
   std::string strDet = CONV_STRING(kBAC_E07);   // Determine the detector name
   name_created_detectors_.push_back(strDet);    // name list of crearted detector
   if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
-  
+
   const char* nameDetector = strDet.c_str(); // Declaration of the directory
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
@@ -1069,7 +1067,7 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
   const char* name_acs[NumOfSegBAC_E07] = {
     "BAC1-SUM", "BAC2-SUM", "BAC1-1", "BAC1-2", "BAC2-1", "BAC2-2"
   };
-  
+
   { // ADC---------------------------------------------------------
     std::string strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
     const char* nameSubDir = strSubDir.c_str();
@@ -1086,7 +1084,7 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
     }
     top_dir->Add(sub_dir);
   }
-  
+
   { // TDC---------------------------------------------------------
     std::string strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
     const char* nameSubDir = strSubDir.c_str();
@@ -1103,7 +1101,7 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
     }
     top_dir->Add(sub_dir);
   }
-  
+
   { // Hit parttern -----------------------------------------------
     int target_id = getUniqueID(kBAC_E07, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "BAC_E07_hit_pattern",
@@ -1129,17 +1127,17 @@ TList* HistMaker::createFBH(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kFBH);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
-  
+
   // TDC---------------------------------------------------------
   {
     std::string strSubDir  = CONV_STRING(kTDC);
@@ -1563,9 +1561,9 @@ TList* HistMaker::createSSD2(bool flag_ps)
 TList* HistMaker::createPVAC(bool flag_ps)
 {
   std::string strDet = CONV_STRING(kPVAC);
-  name_created_detectors_.push_back(strDet); 
-  if(flag_ps) name_ps_files_.push_back(strDet); 
-  
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps) name_ps_files_.push_back(strDet);
+
   const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
@@ -1573,7 +1571,7 @@ TList* HistMaker::createPVAC(bool flag_ps)
   const char* name_acs[NumOfSegPVAC] = { "PVAC" };
 
   // ADC---------------------------------------------------------
-  { 
+  {
     std::string strSubDir  = CONV_STRING(kADC);
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
@@ -1590,7 +1588,7 @@ TList* HistMaker::createPVAC(bool flag_ps)
   }
 
   // ADC---------------------------------------------------------
-  { 
+  {
     std::string strSubDir  = CONV_STRING(kADCwTDC);
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
@@ -1623,7 +1621,7 @@ TList* HistMaker::createPVAC(bool flag_ps)
     }
     top_dir->Add(sub_dir);
   }
-  
+
   // Hit parttern -----------------------------------------------
   {
     int target_id = getUniqueID(kPVAC, 0, kHitPat, 0);
@@ -1649,8 +1647,8 @@ TList* HistMaker::createPVAC(bool flag_ps)
 TList* HistMaker::createFAC(bool flag_ps)
 {
   std::string strDet = CONV_STRING(kFAC);
-  name_created_detectors_.push_back(strDet); 
-  if(flag_ps) name_ps_files_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps) name_ps_files_.push_back(strDet);
 
   const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
@@ -1737,8 +1735,8 @@ TList* HistMaker::createFAC(bool flag_ps)
 TList* HistMaker::createSAC1(bool flag_ps)
 {
   std::string strDet = CONV_STRING(kSAC1);
-  name_created_detectors_.push_back(strDet); 
-  if(flag_ps) name_ps_files_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps) name_ps_files_.push_back(strDet);
 
   const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
@@ -1827,17 +1825,17 @@ TList* HistMaker::createSCH(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kSCH);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
-  
+
   // TDC---------------------------------------------------------
   {
     std::string strSubDir  = CONV_STRING(kTDC);
@@ -1922,12 +1920,12 @@ TList* HistMaker::createKFAC(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kKFAC);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -1957,7 +1955,7 @@ TList* HistMaker::createKFAC(bool flag_ps)
     sub_dir->Add(createTH2(++target_id, "KFAC_ADC_2D",
 			   0x1000, 0, 0x1000, 0x1000, 0, 0x1000,
 			   "ADC [ch]", "ADC [ch]"));
-    
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -2013,12 +2011,12 @@ TList* HistMaker::createKIC(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kKIC);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -2048,7 +2046,7 @@ TList* HistMaker::createKIC(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -2090,7 +2088,7 @@ TList* HistMaker::createKIC(bool flag_ps)
 			   NumOfSegKIC+1, 0, NumOfSegKIC+1,
 			   "Multiplicity", ""));
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -2103,12 +2101,12 @@ TList* HistMaker::createSDC1(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kSDC1);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -2202,7 +2200,7 @@ TList* HistMaker::createSDC1(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -2215,12 +2213,12 @@ TList* HistMaker::createSDC2(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kSDC2);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -2314,7 +2312,7 @@ TList* HistMaker::createSDC2(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -2327,12 +2325,12 @@ TList* HistMaker::createHDC(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kHDC);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -2426,7 +2424,7 @@ TList* HistMaker::createHDC(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -2439,12 +2437,12 @@ TList* HistMaker::createSP0(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kSP0);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -2499,10 +2497,10 @@ TList* HistMaker::createSP0(bool flag_ps)
       for(int i = 0; i<NumOfSegSP0*2; ++i){
 	const char* title = NULL;
 	if(i < NumOfSegSP0){
-	  int seg = i+1; // 1 origin 
+	  int seg = i+1; // 1 origin
 	  title = Form("%s_%s_%dU", nameSubDetector, nameSubDir, seg);
 	}else{
-	  int seg = i+1-NumOfSegSP0; // 1 origin 
+	  int seg = i+1-NumOfSegSP0; // 1 origin
 	  title = Form("%s_%s_%dD", nameSubDetector, nameSubDir, seg);
 	}
 
@@ -2535,7 +2533,7 @@ TList* HistMaker::createSP0(bool flag_ps)
 
     top_dir->Add(subdet_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -2548,12 +2546,12 @@ TList* HistMaker::createSDC3(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kSDC3);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -2630,9 +2628,9 @@ TList* HistMaker::createSDC3(bool flag_ps)
     // without TDC gate
     int target_id = getUniqueID(kSDC3, 0, kMulti, 0);
     for(int i = 0; i<NumOfLayersSDC3; ++i){
-      int nwire;
-      if( i==0 || i==1 ) nwire = NumOfWireSDC3Y;
-      if( i==2 || i==3 ) nwire = NumOfWireSDC3X;
+      // int nwire;
+      // if( i==0 || i==1 ) nwire = NumOfWireSDC3Y;
+      // if( i==2 || i==3 ) nwire = NumOfWireSDC3X;
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2653,7 +2651,7 @@ TList* HistMaker::createSDC3(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -2666,12 +2664,12 @@ TList* HistMaker::createSDC4(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kSDC4);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -2757,7 +2755,7 @@ TList* HistMaker::createSDC4(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -2770,12 +2768,12 @@ TList* HistMaker::createTOF(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kTOF);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -2853,10 +2851,10 @@ TList* HistMaker::createTOF(bool flag_ps)
     for(int i = 0; i<NumOfSegTOF*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegTOF){
-	int seg = i+1; // 1 origin 
+	int seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegTOF; // 1 origin 
+	int seg = i+1-NumOfSegTOF; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
@@ -2888,7 +2886,7 @@ TList* HistMaker::createTOF(bool flag_ps)
 			   NumOfSegTOF, 0, NumOfSegTOF,
 			   "Multiplicity", ""));
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -2901,12 +2899,12 @@ TList* HistMaker::createTOFMT(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kTOFMT);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -2925,7 +2923,7 @@ TList* HistMaker::createTOFMT(bool flag_ps)
     int target_id = getUniqueID(kTOFMT, 0, kTDC, 0);
     for(int i = 0; i<NumOfSegTOF; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin 
+      int seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
@@ -2955,7 +2953,7 @@ TList* HistMaker::createTOFMT(bool flag_ps)
 			   NumOfSegTOF, 0, NumOfSegTOF,
 			   "Multiplicity", ""));
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -2968,12 +2966,12 @@ TList* HistMaker::createLAC(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kLAC);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -3015,7 +3013,7 @@ TList* HistMaker::createLAC(bool flag_ps)
     for(int i = 0; i<NumOfSegLAC; ++i){
       const char* title = NULL;
       if(i < NumOfSegLAC){
-	int seg = i+1; // 1 origin 
+	int seg = i+1; // 1 origin
 	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       }
 
@@ -3047,7 +3045,7 @@ TList* HistMaker::createLAC(bool flag_ps)
 			   NumOfSegLAC, 0, NumOfSegLAC,
 			   "Multiplicity", ""));
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -3060,12 +3058,12 @@ TList* HistMaker::createLC(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kLC);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -3114,10 +3112,10 @@ TList* HistMaker::createLC(bool flag_ps)
     for(int i = 0; i<NumOfSegLC*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegLC){
-	int seg = i+1; // 1 origin 
+	int seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegLC; // 1 origin 
+	int seg = i+1-NumOfSegLC; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
@@ -3149,7 +3147,7 @@ TList* HistMaker::createLC(bool flag_ps)
 			   NumOfSegLC, 0, NumOfSegLC,
 			   "Multiplicity", ""));
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -3162,12 +3160,12 @@ TList* HistMaker::createMsT(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kMsT);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -3248,12 +3246,12 @@ TList* HistMaker::createMtx3D(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kMtx3D);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -3386,12 +3384,12 @@ TList* HistMaker::createTriggerFlag(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kTriggerFlag);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -3481,17 +3479,17 @@ TList* HistMaker::createCorrelation(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kCorrelation);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
 
   // Declaration of the directory
   // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str(); 
+  const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
-  top_dir->SetName(nameDetector);  
+  top_dir->SetName(nameDetector);
 
   {
     int target_id = getUniqueID(kCorrelation, 0, 0, 0);
@@ -3531,17 +3529,17 @@ TList* HistMaker::createDAQ(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kDAQ);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
 
   // Declaration of the directory
   // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str(); 
+  const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
-  top_dir->SetName(nameDetector);    
+  top_dir->SetName(nameDetector);
 
 
   // DAQ infomation --------------------------------------------------
@@ -3583,7 +3581,7 @@ TList* HistMaker::createDAQ(bool flag_ps)
 			   100, 0, 200,
 			   "Misc node ID", "Data size [words]"));
   }
-  
+
   // {
   //   // TKO box information
   //   // Declaration of the sub-directory
@@ -3597,15 +3595,15 @@ TList* HistMaker::createDAQ(bool flag_ps)
   //     const char* title = NULL;
   //     title = Form("TKO box%d", box);
   //     sub_dir->Add(createTH2(target_id + box+1, title, // 1 origin
-  // 			     24, 0, 24, 
+  // 			     24, 0, 24,
   // 			     40, 0, 40,
   // 			     "TKO MA", "N of decoded hits"));
-      
+
   //     top_dir->Add(sub_dir);
   //   }
   // }
 
-  return top_dir;  
+  return top_dir;
 }
 
 //_____________________________________________________________________
@@ -3632,12 +3630,12 @@ TList* HistMaker::createBAC_SAC(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kBAC_SAC);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -3690,7 +3688,7 @@ TList* HistMaker::createBAC_SAC(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -3700,12 +3698,12 @@ TList* HistMaker::createSFV_SAC3(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kSFV_SAC3);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -3731,7 +3729,7 @@ TList* HistMaker::createSFV_SAC3(bool flag_ps)
       }else{
 	title = Form("%s_%s", "SAC3", nameSubDir);
       }
-      
+
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
@@ -3759,7 +3757,7 @@ TList* HistMaker::createSFV_SAC3(bool flag_ps)
       }else{
 	title = Form("%s_%s", "SAC3", nameSubDir);
       }
-      
+
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));
@@ -3788,12 +3786,12 @@ TList* HistMaker::createGe(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kGe);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -3858,7 +3856,7 @@ TList* HistMaker::createGe(bool flag_ps)
     int target_id = getUniqueID(kGe, 0, kCRM, 0);
     for(int i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin 
+      int seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     2000, 0, 10000,
@@ -3888,7 +3886,7 @@ TList* HistMaker::createGe(bool flag_ps)
     int target_id = getUniqueID(kGe, 0, kTFA, 0);
     for(int i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin 
+      int seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     2000, 0, 10000,
@@ -3918,7 +3916,7 @@ TList* HistMaker::createGe(bool flag_ps)
     int target_id = getUniqueID(kGe, 0, kPUR, 0);
     for(int i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin 
+      int seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     2000, 0, 130000,
@@ -3948,7 +3946,7 @@ TList* HistMaker::createGe(bool flag_ps)
     int target_id = getUniqueID(kGe, 0, kRST, 0);
     for(int i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin 
+      int seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     100, 0, 130000,
@@ -3978,7 +3976,7 @@ TList* HistMaker::createGe(bool flag_ps)
     int target_id = getUniqueID(kGe, 0, kMulti, 0);
     for(int i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin 
+      int seg = i+1; // 1 origin
       title = Form("%s_MultiCRM_%d", nameDetector, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     16, 0, 16,
@@ -3988,7 +3986,7 @@ TList* HistMaker::createGe(bool flag_ps)
     target_id = getUniqueID(kGe, 0, kMulti, 0) + NumOfSegGe;
     for(int i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin 
+      int seg = i+1; // 1 origin
       title = Form("%s_MultiTFA_%d", nameDetector, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     16, 0, 16,
@@ -3998,7 +3996,7 @@ TList* HistMaker::createGe(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -4008,12 +4006,12 @@ TList* HistMaker::createPWO(bool flag_ps)
   // Determine the detector name
   std::string strDet = CONV_STRING(kPWO);
   // name list of crearted detector
-  name_created_detectors_.push_back(strDet); 
+  name_created_detectors_.push_back(strDet);
   if(flag_ps){
     // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet); 
+    name_ps_files_.push_back(strDet);
   }
-  
+
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
@@ -4031,7 +4029,7 @@ TList* HistMaker::createPWO(bool flag_ps)
     int target_id = getUniqueID(kPWO, 0, kADC2D, 0);
     for(int i = 0; i<NumOfBoxPWO; ++i){
       const char* title = NULL;
-      int box = i+1; // 1 origin 
+      int box = i+1; // 1 origin
       title = Form("%s_%s2d_Box%d", nameDetector, nameSubDir, box);
       sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
 			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
@@ -4050,12 +4048,12 @@ TList* HistMaker::createPWO(bool flag_ps)
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    
+
     // sum hist
     int target_id = getUniqueID(kPWO, 0, kTDC, 0);
     for(int i = 0; i<NumOfBoxPWO; ++i){
       const char* title = NULL;
-      int box = i+1; // 1 origin 
+      int box = i+1; // 1 origin
       title = Form("%s_%ssum_Box%d", nameDetector, nameSubDir, box);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
   			     0x1000, 0, 0x1000,
@@ -4065,7 +4063,7 @@ TList* HistMaker::createPWO(bool flag_ps)
     target_id = getUniqueID(kPWO, 0, kTDC2D, 0);
     for(int i = 0; i<NumOfBoxPWO; ++i){
       const char* title = NULL;
-      int box = i+1; // 1 origin 
+      int box = i+1; // 1 origin
       title = Form("%s_%s2d_Box%d", nameDetector, nameSubDir, box);
       sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
   			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
@@ -4084,11 +4082,11 @@ TList* HistMaker::createPWO(bool flag_ps)
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    
+
     int target_id = getUniqueID(kPWO, 0, kHitPat, 0);
     for(int i = 0; i<NumOfBoxPWO; ++i){
       const char* title = NULL;
-      int box = i+1; // 1 origin 
+      int box = i+1; // 1 origin
       title = Form("%s_%s_Box%d", nameDetector, nameSubDir, box);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
   			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
@@ -4106,11 +4104,11 @@ TList* HistMaker::createPWO(bool flag_ps)
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    
+
     int target_id = getUniqueID(kPWO, 0, kMulti, 0);
     for(int i = 0; i<NumOfBoxPWO; ++i){
       const char* title = NULL;
-      int box = i+1; // 1 origin 
+      int box = i+1; // 1 origin
       title = Form("%s_%s_Box%d", nameDetector, nameSubDir, box);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
   			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
@@ -4120,7 +4118,7 @@ TList* HistMaker::createPWO(bool flag_ps)
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }

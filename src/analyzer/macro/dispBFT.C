@@ -51,8 +51,8 @@ void dispBFT()
 	TH1 *h = (TH1*)GHist::get(bft_id_c1[i]);
 	h->Draw();
       }
+      c->Update();
     }
-    c->Update();
 
     // draw HitPat/Multi
     {
@@ -64,8 +64,8 @@ void dispBFT()
 	TH1 *h = (TH1*)GHist::get(bft_id_c2[i]);
 	h->Draw();
       }
+      c->Update();
     }
-    c->Update();
 
     // draw TDC/TOT 2D
     {
@@ -77,8 +77,8 @@ void dispBFT()
 	TH1 *h = (TH1*)GHist::get(bft_id_c3[i]);
 	h->Draw("colz");
       }
+      c->Update();
     }
-    c->Update();
   }
 
   // You must write these lines for the thread safe

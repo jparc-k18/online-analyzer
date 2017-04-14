@@ -17,10 +17,10 @@ void dispBeamProfile_e03()
 
   const double fit_width[2] = { 50., 50. };
 
-  const double ff[n_hist] = { 0., 200., 360, 600., 1000. };
+  const double ff[n_hist] = { 0., 200., 360, 600., 800. };
   double   rms[2][n_hist];
   double sigma[2][n_hist];
-    
+
   // XY position (dispRMS)
   {
     TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c1"));
@@ -58,7 +58,7 @@ void dispBeamProfile_e03()
 	sigma[xy][i] = f->GetParameter("Sigma");
 	h->Draw();
 	tex.DrawLatex(xpos, ypos, Form("%.2lf", sigma[xy][i]));
-      }    
+      }
     }
     c->Update();
   }

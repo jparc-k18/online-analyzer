@@ -105,9 +105,7 @@ process_begin(const std::vector<std::string>& argv)
 
 #if MODE_E07
   bool fl_ps_e07 = true;
-  bool fl_ps_e05 = false;
 #else
-  bool fl_ps_e07 = false;
   bool fl_ps_e05 = true;
 #endif
 

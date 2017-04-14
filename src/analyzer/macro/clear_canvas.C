@@ -9,7 +9,7 @@ void clear_canvas()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  TCanvas *c = (TCanvas*)gROOT->FindObject(gPad->GetName());
+  TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject(gPad->GetName()));
   c->Clear();
   c->cd(0);
 

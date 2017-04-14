@@ -15,7 +15,7 @@ class MatrixParamMan
   std::vector< std::vector< std::vector<double> > > m_enable_3d;
 
 public:
-  ~MatrixParamMan( void );
+  virtual ~MatrixParamMan( void );
   static MatrixParamMan& GetInstance( void );
 
   bool Initialize( const std::string& filename_2d,

@@ -10,7 +10,7 @@ void dispSCH()
   // ----------------------------------
 
   const int n_seg     = 64;
-    
+
   int sch_id_c1[] = {
     HistMaker::getUniqueID(kSCH, 0, kTDC,    1),
     HistMaker::getUniqueID(kSCH, 0, kADC,    1),
@@ -84,9 +84,9 @@ void dispSCH()
       TH1 *h = (TH1*)GHist::get( sch_id_c1[2+i] );
       h->Draw("colz");
     }
+    c->Update();
   }
-  c->Update();
-    
+
   // You must write these lines for the thread safe
   // ----------------------------------
   Updater::setUpdating(false);

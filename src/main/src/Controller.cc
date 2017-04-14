@@ -36,7 +36,7 @@ namespace hddaq
 {
   namespace gui
   {
-    namespace 
+    namespace
     {
       using analyzer::Main;
     }
@@ -51,13 +51,13 @@ UpdateInterval::UpdateInterval(const TGWindow* window)
   AddFrame(hf, new TGLayoutHints(kLHintsLeft));
 
   m_text = new TGTextEntry(hf);
-//   hf->AddFrame(new TGLabel(hf, "Interval: "), 
+//   hf->AddFrame(new TGLabel(hf, "Interval: "),
 // 	       new TGLayoutHints(kLHintsCenterY|kLHintsLeft));//, 2, 2, 2 ,2));
   hf->AddFrame(m_text,
 	       new TGLayoutHints(kLHintsLeft));//, 2, 2, 2 ,2));
   m_text->SetToolTipText("set update interval [second / event]");
   m_text->Resize(100, m_text->GetDefaultHeight());
-  m_text->Connect("ReturnPressed()", 
+  m_text->Connect("ReturnPressed()",
 		  "hddaq::gui::UpdateInterval", this, "setInterval()");
   double interval = Updater::getInstance().getInterval();
   m_text->SetText(d2a(interval).c_str());
@@ -73,7 +73,7 @@ UpdateInterval::UpdateInterval(const TGWindow* window)
 		   "hddaq::gui::UpdateInterval", this, "setMode()");
 //   m_combo->Select(Updater::k_seconds);
   m_combo->Select(Updater::k_clicked);
-  
+
 
 }
 
@@ -128,7 +128,7 @@ UpdateInterval::setTextColor(TColor* color)
 //______________________________________________________________________________
 //______________________________________________________________________________
 Controller::Controller()
-  : 
+  :
     m_frame(0),
     m_command(k_n_command),
     m_interval(0),
@@ -139,7 +139,7 @@ Controller::Controller()
   const std::string user = std::getenv("USER");
   const std::vector<std::string>& argv = Main::getInstance().getArgv();
   const std::string proc = hddaq::basename(argv[0]);
-  const std::string windowName 
+  const std::string windowName
     = proc + " " + user + "@" + host + "(pid = " + i2a(pid) + ")";
 
 //   m_browser = new TRootBrowser(0, windowName.c_str(), 1024, 738, "CI");
@@ -151,11 +151,11 @@ Controller::Controller()
   m_browser->StopEmbedding("control");
   //  m_browser->SetIconPixmap(axis_logo);
   m_frame->SetCleanup(kDeepCleanup);
-  
+
   TGFileBrowser* fb = makeFileBrowser("Files");
   fb->BrowseObj(gROOT);
   fb->Show();
-  
+
   m_browser->StartEmbedding(TRootBrowser::kRight);
   new TCanvas("c1");
   m_browser->StopEmbedding("c1");
@@ -181,7 +181,7 @@ Controller::~Controller()
 {
   delete m_frame;
   m_frame = 0;
-  
+
   std::exit(1);
 }
 
@@ -235,14 +235,14 @@ Controller::getInstance()
   static Controller g_instance;
   return g_instance;
 }
-    
+
 //______________________________________________________________________________
 void
 Controller::initialize()
 {
   // Command Button Widgets
   TGHorizontalFrame* h_frame = new TGHorizontalFrame(m_frame);
-  
+
   m_command[k_start] = new TGTextButton(h_frame, "Start");
   m_command[k_start]
     ->Connect("Clicked()", "hddaq::gui::Controller", this, "start()");
@@ -287,7 +287,7 @@ Controller::initialize()
   h_frame->AddFrame(m_command[k_exit],
 		    new TGLayoutHints(kLHintsLeft));//, 1, 1, 1, 1));
 
-  m_frame->AddFrame(h_frame, 
+  m_frame->AddFrame(h_frame,
 		    new TGLayoutHints(kLHintsLeft));//, 1, 1, 1, 1));
 
   // Update Interval Combo-Text widget
@@ -370,7 +370,7 @@ Controller::start() const
   m_command[k_suspend]->SetState(kButtonUp);
   Main::getInstance().start();
 //   m_command[k_start]->SetState(kButtonUp);
-  
+
   return;
 }
 

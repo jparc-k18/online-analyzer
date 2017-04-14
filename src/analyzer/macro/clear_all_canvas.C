@@ -11,7 +11,7 @@ void clear_all_canvas()
 
   const int canvas_num = 5;
   for(int i=0; i<canvas_num; i++){
-    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", i+1));
+    TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject(Form("c%d", i+1)));
     c->Clear();
     c->Update();
   }

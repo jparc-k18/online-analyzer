@@ -297,6 +297,15 @@ TObject* dispBcOutFF( void )
   return m;
 }
 
+// SSD1 Profile ---------------------------------------------------
+TObject* dispSSD1Profile( void )
+{
+  std::string path = getMacroPath() + "dispSSD1Profile.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispSSD1Profile");
+  return m;
+}
+
 // Mtx2D ---------------------------------------------------------
 TObject* dispMtx2D( void )
 {

@@ -119,12 +119,19 @@ Print( void )
 
   std::cout << "\033[2J" << std::endl;
 
+  std::string end_mark = g_spill_end ? "Spill End" : "";
+
   int event_number = gUnpacker.get_event_number();
   std::cout << std::left  << std::setw(12) << "RUN"
 	    << std::right << std::setw(16) << g_run_number << " : "
 	    << std::left  << std::setw(12) << "Event Number"
 	    << std::right << std::setw(16) << event_number
-	    << std::endl  << std::endl;
+	    << std::endl
+	    << std::left  << std::setw(12) << ""
+	    << std::right << std::setw(16) << "" << "   "
+	    << std::left  << std::setw(12) << ""
+	    << std::right << std::setw(16) << end_mark
+	    << std::endl;
 
   double real_time = (double)Get("Real_Time");
   double live_time = (double)Get("Live_Time");
@@ -254,10 +261,10 @@ PrintScalerSheet( void )
   DrawOneLine( "BH2", "pi_in", "L1_Acc" );
   DrawOneLine( "BAC1", "K_out", "MST_Acc" );
   DrawOneLine( "BAC2", "pi_out", "MST_Clear" );
-  DrawOneLine( "PVAC", "(ub)", "FBH" );
-  DrawOneLine( "FAC", "(ub,ub)", "MTX_Acc" );
-  DrawOneLine( "SCH", "(pi,TOF)", "L2_Req" );
-  DrawOneLine( "TOF", "(K,K)", "L2_Acc" );
+  DrawOneLine( "PVAC", "(ub)", "MTX_Acc" );
+  DrawOneLine( "FAC", "(ub,ub)", "L2_Req" );
+  DrawOneLine( "SCH", "(pi,TOF)", "L2_Acc" );
+  DrawOneLine( "TOF", "(K,K)", "FBH" );
 
   const std::string& scaler_sheet_pdf("/tmp/scaler_sheet.pdf");
 
@@ -483,7 +490,7 @@ process_event()
   if( flag_semi_online ){
     if( event_count%300 == 0 ) en_disp = true;
   } else {
-    if( event_count%1 == 0 ) en_disp = true;
+    if( event_count%10 == 0 ) en_disp = true;
   }
 
   if( flag_scaler_sheet && event_count==0 )
@@ -501,6 +508,8 @@ process_event()
 	g_spill_end = true;
       }
   }
+  if( g_spill_end )
+    en_disp = true;
 
   // EMC
   {

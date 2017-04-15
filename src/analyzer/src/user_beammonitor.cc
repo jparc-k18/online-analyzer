@@ -268,11 +268,8 @@ process_event()
     if( spill_inc ){
       double daq_eff = daq_pre[1]/daq_pre[0];
       double duty    = 0.;
-      if( 1-daq_eff==0. )
-	duty = 100.;
-      else
-	duty = daq_eff/(1-daq_eff)*(real_live_pre[0]/real_live_pre[1] - 1);
-      
+      duty = daq_eff/(1.-daq_eff)*(real_live_pre[0]/real_live_pre[1]-1.);
+      if( duty>1. ) duty = 1.;
       g_daq[kDAQEff]->SetPoint(spill, spill, daq_eff);
       g_daq[kDAQEff]->GetYaxis()->SetRangeUser(0, 1.0);
       g_daq[kDAQEff]->GetXaxis()->SetLimits(spill-90, spill+10);

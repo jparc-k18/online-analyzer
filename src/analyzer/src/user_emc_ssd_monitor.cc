@@ -25,7 +25,7 @@ namespace analyzer
   static const std::string& hostname = std::getenv("HOSTNAME");
   static const std::string& exechost = "sksterm4";
   static bool emc_alart[3] = { false, false, false };
-  static const double spill_prescale = 3.;
+  static const double spill_prescale = 1.;
   static const double emc_x_offset = 500000 - 303300;
   static const double emc_y_offset = 500000 + 164000;
   static const int NumOfAPVDAQ = 3;
@@ -223,16 +223,19 @@ process_event( void )
   }
     
   if( emc_state==0 ){
-    std::cout << "   EMC state : " << "\e[32;1m" << emc_state
+    std::string s("PowerOff");
+    std::cout << "   EMC state : " << "\e[32;1m" << s
 	      << "\e[m" << std::endl;
   }else if( emc_state==1 ){
-    std::cout << "   EMC state : " << "\e[35;1m" << emc_state
+    std::string s("PowerOn");
+    std::cout << "   EMC state : " << "\e[35;1m" << s
 	      << "\e[m" << std::endl;
-    system("sh /home/sks/bin/emc_state_alart.sh");
+    // system("sh /home/sks/bin/emc_state_alart.sh");
   }else{
-    std::cout << "   EMC state : " << "\e[31;1m" << emc_state
+    std::string s("Moving");
+    std::cout << "   EMC state : " << "\e[31;1m" << s
 	      << "\e[m" << std::endl;
-    system("sh /home/sks/bin/emc_state_alart.sh");
+    // system("sh /home/sks/bin/emc_state_alart.sh");
   }
 
   if( ssd_state==0xffffff )

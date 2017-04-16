@@ -302,7 +302,6 @@ process_event( void )
       for( int i=0; i<10; ++i ){
 	if( i==1 || i==5 ) continue;
 	int node_id = k_vme+i;
-	if( i==9 ) node_id = 0x210;
 	int data_size = gUnpacker.get_node_header( node_id, DAQNode::k_data_size);
 	h->Fill( i, data_size );
       }

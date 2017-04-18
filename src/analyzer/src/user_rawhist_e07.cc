@@ -99,6 +99,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(effSdcInOut());
   tab_macro->Add(dispMtx2D());
   tab_macro->Add(dispMtx3D());
+  tab_macro->Add(dispTriggerFlag());
   tab_macro->Add(dispDAQ());
   // tab_macro->Add(auto_monitor_all());
 

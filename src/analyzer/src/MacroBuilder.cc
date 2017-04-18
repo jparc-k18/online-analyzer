@@ -324,6 +324,15 @@ TObject* dispMtx3D( void )
   return m;
 }
 
+// TriggerFlag -----------------------------------------------------------
+TObject* dispTriggerFlag( void )
+{
+  std::string path = getMacroPath() + "dispTriggerFlag.C";
+  TMacro* m = new TMacro(path.c_str());
+  m->SetName("dispTriggerFlag");
+  return m;
+}
+
 // DAQ -----------------------------------------------------------
 TObject* dispDAQ( void )
 {

@@ -39,6 +39,7 @@ TObject* dispSSD1Profile( void );
 TObject* dispMtx2D( void );
 TObject* dispMtx3D( void );
 
+TObject* dispTriggerFlag( void );
 TObject* dispDAQ( void );
 
 /* old functions */

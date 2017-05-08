@@ -32,7 +32,7 @@ namespace analyzer
   static const int MaxEventBuffer = 100;
   int  event_buffer = 0;
   int  emc_state = -1;
-  int  ssd_state = -1;
+  std::bitset<NumOfAPVDAQ*(NumOfLayersSSD1+NumOfLayersSSD1)> ssd_bit;
   bool ssdt_flag = false;
   bool ssd1_flag[NumOfLayersSSD1][NumOfAPVDAQ][MaxEventBuffer];
   bool ssd2_flag[NumOfLayersSSD2][NumOfAPVDAQ][MaxEventBuffer];
@@ -172,16 +172,17 @@ process_event( void )
     }//for(l)
   }
 
-  ssd_state = 0;
+  ssd_bit.reset();
   for( int i=0; i<MaxEventBuffer; ++i ){
     for( int apv=0; apv<NumOfAPVDAQ; ++apv ){
       for( int l=0; l<NumOfLayersSSD1; ++l ){
-	if( ssd1_flag[l][apv][i] )
-	  ssd_state |= 0x1<<(apv+l*NumOfAPVDAQ);
+	if( ssd1_flag[l][apv][i] ){
+	  ssd_bit.set(apv+l*NumOfAPVDAQ);
+	}
       }
       for( int l=0; l<NumOfLayersSSD2; ++l ){
 	if( ssd2_flag[l][apv][i] ){
-	  ssd_state |= 0x1<<(apv+l*NumOfAPVDAQ+NumOfAPVDAQ*NumOfLayersSSD1);
+	  ssd_bit.set(apv+l*NumOfAPVDAQ+NumOfAPVDAQ*NumOfLayersSSD1);
 	}
       }
     }
@@ -238,12 +239,17 @@ process_event( void )
     // system("sh /home/sks/bin/emc_state_alart.sh");
   }
 
-  if( ssd_state==0xffffff )
-    std::cout << "   SSD state : " << "\e[32;1m" << static_cast< std::bitset<24> >(ssd_state) << "\e[m" << std::endl;
-  else if( ( ssd_state&0xfff )==0xfff )
-    std::cout << "   SSD state : " << "\e[33;1m" << static_cast< std::bitset<24> >(ssd_state) << "\e[m" << std::endl;
-  else
-    std::cout << "   SSD state : " << "\e[31;1m" << static_cast< std::bitset<24> >(ssd_state) << "\e[m" << std::endl;
+  {
+    TString s = ssd_bit.to_string();
+    s.ReplaceAll("1",".");
+    s.ReplaceAll("0","!");
+    if( ssd_bit.count()==ssd_bit.size() )
+      std::cout << "   SSD state : " << "\e[32;1m" << s << "\e[m" << std::endl;
+    else if( ( ssd_bit.to_ulong()&0xfff )==0xfff )
+      std::cout << "   SSD state : " << "\e[33;1m" << s << "\e[m" << std::endl;
+    else
+      std::cout << "   SSD state : " << "\e[31;1m" << s << "\e[m" << std::endl;
+  }
 
   return 0;
 }

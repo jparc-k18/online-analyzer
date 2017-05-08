@@ -56,14 +56,14 @@ process_begin(const std::vector<std::string>& argv)
   TGFileBrowser *tab_macro = gCon.makeFileBrowser("Macro");
 
   // Add macros to the Macro tab
-  tab_macro->Add(clear_all_canvas());
-  tab_macro->Add(clear_canvas());
-  tab_macro->Add(split22());
-  tab_macro->Add(split32());
-  tab_macro->Add(split33());
-  tab_macro->Add(dispBeamProfile_e03());
-  tab_macro->Add(dispBcOutFF());
-  tab_macro->Add(dispSSD1Profile());
+  tab_macro->Add(macro::Get("clear_all_canvas"));
+  tab_macro->Add(macro::Get("clear_canvas"));
+  tab_macro->Add(macro::Get("split22"));
+  tab_macro->Add(macro::Get("split32"));
+  tab_macro->Add(macro::Get("split33"));
+  tab_macro->Add(macro::Get("dispBeamProfile_e03"));
+  tab_macro->Add(macro::Get("dispBcOutFF"));
+  tab_macro->Add(macro::Get("dispSSD1Profile"));
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();

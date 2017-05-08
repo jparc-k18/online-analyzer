@@ -76,32 +76,32 @@ process_begin( const std::vector<std::string>& argv )
 
   // Add macros to the Macro tab
   //tab_macro->Add(hoge());
-  tab_macro->Add(clear_all_canvas());
-  tab_macro->Add(clear_canvas());
-  tab_macro->Add(split22());
-  tab_macro->Add(split32());
-  tab_macro->Add(split33());
-  tab_macro->Add(dispBH1());
-  tab_macro->Add(dispBFT());
-  tab_macro->Add(dispBH2());
-  tab_macro->Add(dispACs());
-  tab_macro->Add(dispFBH());
-  tab_macro->Add(dispSCH());
-  tab_macro->Add(dispTOF());  
-  tab_macro->Add(dispMsT());  
-  tab_macro->Add(dispBC3());
-  tab_macro->Add(dispBC4());
-  tab_macro->Add(dispSDC1());
-  tab_macro->Add(dispSDC2());
-  tab_macro->Add(dispSDC3());
-  tab_macro->Add(dispHitPat());
-  tab_macro->Add(effBcOut());
-  tab_macro->Add(effSdcInOut());
-  tab_macro->Add(dispMtx2D());
-  tab_macro->Add(dispMtx3D());
-  tab_macro->Add(dispTriggerFlag());
-  tab_macro->Add(dispDAQ());
-  // tab_macro->Add(auto_monitor_all());
+  tab_macro->Add(macro::Get("clear_all_canvas"));
+  tab_macro->Add(macro::Get("clear_canvas"));
+  tab_macro->Add(macro::Get("split22"));
+  tab_macro->Add(macro::Get("split32"));
+  tab_macro->Add(macro::Get("split33"));
+  tab_macro->Add(macro::Get("dispBH1"));
+  tab_macro->Add(macro::Get("dispBFT"));
+  tab_macro->Add(macro::Get("dispBH2"));
+  tab_macro->Add(macro::Get("dispACs"));
+  tab_macro->Add(macro::Get("dispFBH"));
+  tab_macro->Add(macro::Get("dispSCH"));
+  tab_macro->Add(macro::Get("dispTOF"));  
+  tab_macro->Add(macro::Get("dispMsT"));  
+  tab_macro->Add(macro::Get("dispBC3"));
+  tab_macro->Add(macro::Get("dispBC4"));
+  tab_macro->Add(macro::Get("dispSDC1"));
+  tab_macro->Add(macro::Get("dispSDC2"));
+  tab_macro->Add(macro::Get("dispSDC3"));
+  tab_macro->Add(macro::Get("dispHitPat"));
+  tab_macro->Add(macro::Get("effBcOut"));
+  tab_macro->Add(macro::Get("effSdcInOut"));
+  tab_macro->Add(macro::Get("dispMtx2D"));
+  tab_macro->Add(macro::Get("dispMtx3D"));
+  tab_macro->Add(macro::Get("dispTriggerFlag"));
+  tab_macro->Add(macro::Get("dispDAQ"));
+  // tab_macro->Add(macro::Get("auto_monitor_all"));
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
@@ -161,11 +161,11 @@ process_begin( const std::vector<std::string>& argv )
   tab_e07->Add(gHist.createSSDT());
   tab_e07->Add(gHist.createSSD1());
   tab_e07->Add(gHist.createSSD2());
-  tab_e07->Add(dispSSD1());
-  tab_e07->Add(dispSSD2());
-  tab_e07->Add(dispSSDHitPat());
-  tab_e07->Add(dispSSDMulti());
-  //tab_e07->Add(dispProfileSSD());
+  tab_e07->Add(macro::Get("dispSSD1"));
+  tab_e07->Add(macro::Get("dispSSD2"));
+  tab_e07->Add(macro::Get("dispSSDHitPat"));
+  tab_e07->Add(macro::Get("dispSSDMulti"));
+  //tab_e07->Add(macro::Get("dispProfileSSD"));
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.

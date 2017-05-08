@@ -1,4 +1,5 @@
-#ifdef __MAKECINT__
+
+#if defined(__MAKECINT__) || defined(__MAKECLING__)
 
 #pragma link C++ function a2s(const std::string& arg);
 #pragma link C++ function a2us(const std::string& arg);

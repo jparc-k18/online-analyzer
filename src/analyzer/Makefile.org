@@ -93,7 +93,8 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
  $(my_dir)/linkdef/%_LinkDef.hh
 	$(QUIET) $(ECHO) "$(blue)=== Generating dictionary $^ - > $@$(default_color)"
 	$(rootcint) -f $@ -c -p $^
-	$(QUIET) $(MV) $(subst .cc,_rdict.pcm,$@) $(lib_dir)
+	$(QUIET) if [ -f $(subst .cc,_rdict.pcm,$@) ]; then \
+	$(MV) $(subst .cc,_rdict.pcm,$@) $(lib_dir); fi
 
 #_____________________________________________________________________________
 my_obj_skeleton	:= $(addprefix $(my_dir)/src/,$(my_obj_skeleton))

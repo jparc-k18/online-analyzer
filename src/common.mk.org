@@ -10,7 +10,6 @@ CXX		:= g++
 OUT_PUT_OPT	:= -o
 LD		:= g++
 #LDFLAGS	:= -export-dynamic
-#CXXFLAGS	:= -O0 -Wall -fPIC
 CXXFLAGS	:= -O3 -Wall -fPIC
 #DEBUGFLAGS	:= -pg -g
 CXXFLAGS	+= -pg -p
@@ -183,7 +182,8 @@ $1:: \
  $(subst dict,linkdef,$(subst _Dict.cc,_LinkDef.hh,$1))
 	$(QUIET) $(ECHO) "$(blue)==== Generating dictionary $$@ $(default_color): $$^";
 	$(rootcint) -f $$@ -c -p $$^;
-	$(QUIET) $(MV) $(subst .cc,_rdict.pcm,$1) $(lib_dir)
+	$(QUIET) if [ -f $(subst .cc,_rdict.pcm,$1) ]; then \
+	$(MV) $(subst .cc,_rdict.pcm,$1) $(lib_dir); fi
 endef
 
 $(eval $(call make-dict))

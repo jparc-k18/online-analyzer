@@ -11,28 +11,26 @@ void dispTriggerFlag( void )
 
   {
     const Int_t n = 24;
-    TCanvas *c = dynamic_cast<TCanvas*>( gROOT->FindObject("c1") );
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
     c->Divide(6,4);
     Int_t id = HistMaker::getUniqueID( kTriggerFlag, 0, kTDC );
     for( int i=0; i<n; ++i ){
       c->cd(i+1)->SetLogy();
-      TH1 *h = dynamic_cast<TH1*>( GHist::get( id+i  ) );
-      if( !h ) continue;
-      h->Draw();
+      TH1 *h = GHist::get( id+i );
+      if( h ) h->Draw();
     }
     c->Update();
   }
 
   {
-    TCanvas *c = dynamic_cast<TCanvas*>( gROOT->FindObject("c2") );
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
     c->Clear();
     c->Divide(6,4);
     Int_t id = HistMaker::getUniqueID( kTriggerFlag, 0, kHitPat );
     c->cd();
-    TH1 *h = dynamic_cast<TH1*>( GHist::get( id ));
-    if( !h ) continue;
-    h->Draw();
+    TH1 *h = GHist::get( id );
+    if( h ) h->Draw();
     c->Update();
   }
 

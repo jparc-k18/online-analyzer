@@ -74,7 +74,7 @@ void dispMsT()
     }
     c->Update();
   }
-  
+
   // draw HitPat & Flag
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
@@ -94,8 +94,6 @@ void dispMsT()
     GHist::get(base_id)->Draw("text");
     c->Update();
   }
-
-  c->cd(0);
 
   // You must write these lines for the thread safe
   // ----------------------------------

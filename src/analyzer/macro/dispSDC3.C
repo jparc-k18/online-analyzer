@@ -1,7 +1,7 @@
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
-void dispSDC3()
+void dispSDC3( void )
 {
   // You must write these lines for the thread safe
   // ----------------------------------
@@ -27,6 +27,7 @@ void dispSDC3()
     }
     c->Update();
   }
+
   // draw TDC1st
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
@@ -42,6 +43,7 @@ void dispSDC3()
     }
     c->Update();
   }
+
   // draw HitPat
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
@@ -55,6 +57,7 @@ void dispSDC3()
     }
     c->Update();
   }
+
   // draw Multi
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
@@ -71,7 +74,6 @@ void dispSDC3()
       h_wt->Draw("same");
     }
     c->Update();
-    c->cd(0);
   }
 
   // You must write these lines for the thread safe

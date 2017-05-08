@@ -12,7 +12,7 @@ namespace analyzer
 namespace macro
 {
 
-  TObject* Get( TString key );
+  TObject* Get( TString name );
 
 }
 

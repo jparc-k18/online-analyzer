@@ -52,8 +52,10 @@ root_glibs += \
  -lGed \
  -lTreePlayer
 
-# -lEve 
-# -lRGL 
+# -lEve
+# -lRGL
+
+rootcint	:= rootcint
 
 #### HD DAQ Unpacker ####
 unpacker_config		:= unpacker-config
@@ -101,10 +103,10 @@ default_color	= \033[0m
 endif
 
 #_______________________________________________________________________________
-.PHONY: all lib show clean distclean 
+.PHONY: all lib show clean distclean
 
-#all:: $(top_headers) $(dict_objs) $(objects) lib $(target) 
-#all:: lib $(target) 
+#all:: $(top_headers) $(dict_objs) $(objects) lib $(target)
+#all:: lib $(target)
 
 all:: $(top_headers)
 #_______________________________________________________________________________
@@ -123,7 +125,7 @@ $(eval $(call copy-headers))
 #_______________________________________________________________________________
 %.o: %.cc
 	$(call make-depend,$<,$@,$(subst .o,.d,$@))
-	$(QUIET) $(ECHO) "$(yellow)=== compiling $@$(default_color)"
+	$(QUIET) $(ECHO) "$(green)=== compiling $@$(default_color)"
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OUT_PUT_OPT) $@ -c $<
 
 #_______________________________________________________________________________
@@ -180,7 +182,8 @@ $1:: \
  $(subst dict,include,$(subst _Dict.cc,.hh,$1)) \
  $(subst dict,linkdef,$(subst _Dict.cc,_LinkDef.hh,$1))
 	$(QUIET) $(ECHO) "$(blue)==== Generating dictionary $$@ $(default_color): $$^";
-	rootcint -f $$@ -c -p $$^;
+	$(rootcint) -f $$@ -c -p $$^;
+	$(QUIET) $(MV) $(subst .cc,_rdict.pcm,$1) $(lib_dir)
 endef
 
 $(eval $(call make-dict))
@@ -207,7 +210,7 @@ $(strip $1):: \
   $(src_top_dir)/main/src/nogui_main.o \
   $(lib_dir)/$(strip $2) \
   $(lib_dir)/libNoGuiMain.so \
-  $(lib_dir)/libHistHelper.so 
+  $(lib_dir)/libHistHelper.so
 	$(QUIET) $(ECHO) "$(magenta) ==== create program $$@ $(default_color): $$^"
 	$(LD) $(OUT_PUT_OPT) $$@ \
 	$(LDFLAGS) $(ext_libs) $(unpacker_libs) $(root_glibs) \

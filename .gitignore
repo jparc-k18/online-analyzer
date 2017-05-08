@@ -1,6 +1,7 @@
 # gitignore
 
 *.[doa]
+*.pcm
 *.so
 *~
 bin/*

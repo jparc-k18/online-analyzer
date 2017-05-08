@@ -25,12 +25,12 @@ all:: $(libraries)
 
 $(lib_dir)/libLexicalCast.so: \
  $(my_dir)/src/LexicalCast.o $(my_dir)/dict/LexicalCast_Dict.o
-	$(QUIET) $(ECHO) "=== create library with dict ($^ -> $@) ==="
+	$(QUIET) $(ECHO) "$(yellow)=== create library with dict ($^ -> $@) ===$(default_color)"
 	$(LD) $(SOFLAGS) $(LDFLAGS) $^ $(OUT_PUT_OPT) $@
 
 $(lib_dir)/libHistHelper.so: \
  $(my_dir)/src/HistHelper.o $(my_dir)/dict/HistHelper_Dict.o
-	$(QUIET) $(ECHO) "=== create library with dict ($^ -> $@) ==="
+	$(QUIET) $(ECHO) "$(yellow)=== create library with dict ($^ -> $@) ===$(default_color)"
 	$(LD) $(SOFLAGS) $(LDFLAGS) $^ $(OUT_PUT_OPT) $@
 
 $(lib_dir)/libMain.so: \
@@ -39,14 +39,14 @@ $(lib_dir)/libMain.so: \
  $(my_dir)/src/Controller.o $(my_dir)/dict/Controller_Dict.o \
  $(my_dir)/src/Updater.o $(my_dir)/dict/Updater_Dict.o \
  $(my_dir)/src/user_analyzer.o
-	$(QUIET) $(ECHO) "=== create library with dict ($^ -> $@) ==="
+	$(QUIET) $(ECHO) "$(yellow)=== create library with dict ($^ -> $@) ===$(default_color)"
 	$(LD) $(SOFLAGS) $(LDFLAGS) $^ $(OUT_PUT_OPT) $@
 
 $(lib_dir)/libNoGuiMain.so: \
  $(my_dir)/src/Main.o $(my_dir)/dict/Main_Dict.o \
  $(my_dir)/src/Sigwait.o \
  $(my_dir)/src/user_analyzer.o
-	$(QUIET) $(ECHO) "=== create library with dict ($^ -> $@) ==="
+	$(QUIET) $(ECHO) "$(yellow)=== create library with dict ($^ -> $@) ===$(default_color)"
 	$(LD) $(SOFLAGS) $(LDFLAGS) $^ $(OUT_PUT_OPT) $@
 
 $(lib_dir)/libGuiMain.so: \
@@ -55,6 +55,5 @@ $(lib_dir)/libGuiMain.so: \
  $(my_dir)/src/Main.o $(my_dir)/dict/Main_Dict.o \
  $(my_dir)/src/Sigwait.o \
  $(my_dir)/src/user_analyzer.o
-	$(QUIET) $(ECHO) "=== create library with dict ($^ -> $@) ==="
+	$(QUIET) $(ECHO) "$(yellow)=== create library with dict ($^ -> $@) ===$(default_color)"
 	$(LD) $(SOFLAGS) $(LDFLAGS) $^ $(OUT_PUT_OPT) $@
-

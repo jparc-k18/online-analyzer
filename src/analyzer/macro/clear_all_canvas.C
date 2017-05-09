@@ -1,7 +1,7 @@
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
-void clear_all_canvas()
+void clear_all_canvas( void )
 {
   // You must write these lines for the thread safe
   // ----------------------------------
@@ -9,9 +9,10 @@ void clear_all_canvas()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  const int canvas_num = 5;
-  for(int i=0; i<canvas_num; i++){
-    TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject(Form("c%d", i+1)));
+  const Int_t n_canvas = 5;
+  for( Int_t i=0; i<n_canvas; ++i ){
+    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", i+1));
+    if( !c ) continue;
     c->Clear();
     c->Update();
   }

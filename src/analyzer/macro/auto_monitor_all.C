@@ -17,7 +17,7 @@ void auto_monitor_all()
 
   std::vector<std::vector<int > > parent;
   initialize(parent);
-  
+
   TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
   c->Clear();
   c->cd(0);
@@ -36,7 +36,7 @@ void auto_monitor_all()
       sleep(10);
     }
   }
-  
+
   // You must write these lines for the thread safe
   // ----------------------------------
   Updater::setUpdating(false);
@@ -46,7 +46,7 @@ void auto_monitor_all()
 void initialize(std::vector<std::vector<int > >& parent)
 {
   std::vector<int> id;
-  
+
   // BH1
   id.push_back(HistMaker::getUniqueID(kBH1, 0, kHitPat));
   id.push_back(HistMaker::getUniqueID(kBH1, 0, kMulti));
@@ -124,64 +124,64 @@ void initialize(std::vector<std::vector<int > >& parent)
   id.push_back(HistMaker::getUniqueID(kGe, 0, kCRM2D));
   parent.push_back(id);
   id.clear();
-  
+
   // PWO 1
   for(int i = 0; i<6; ++i){
-    id.push_back(HistMaker::getUniqueID(kPWO, 0, kHitPat)+i);  
+    id.push_back(HistMaker::getUniqueID(kPWO, 0, kHitPat)+i);
   }
   parent.push_back(id);
   id.clear();
 
   // PWO 2
   for(int i = 0; i<6; ++i){
-    id.push_back(HistMaker::getUniqueID(kPWO, 0, kHitPat)+i+6);  
+    id.push_back(HistMaker::getUniqueID(kPWO, 0, kHitPat)+i+6);
   }
   parent.push_back(id);
   id.clear();
 
   // PWO 3
   for(int i = 0; i<6; ++i){
-    id.push_back(HistMaker::getUniqueID(kPWO, 0, kHitPat)+i+12);  
+    id.push_back(HistMaker::getUniqueID(kPWO, 0, kHitPat)+i+12);
   }
   parent.push_back(id);
   id.clear();
 
   // PWO 4
   for(int i = 0; i<4; ++i){
-    id.push_back(HistMaker::getUniqueID(kPWO, 0, kHitPat)+i+18);  
+    id.push_back(HistMaker::getUniqueID(kPWO, 0, kHitPat)+i+18);
   }
   parent.push_back(id);
   id.clear();
-  
+
   // SP0 1
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L1, kHitPat));  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L1, kHitPat)+1);  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L2, kHitPat));  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L2, kHitPat)+1);  
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L1, kHitPat));
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L1, kHitPat)+1);
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L2, kHitPat));
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L2, kHitPat)+1);
   parent.push_back(id);
   id.clear();
 
   // SP0 2
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L3, kHitPat));  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L3, kHitPat)+1);  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L4, kHitPat));  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L4, kHitPat)+1);  
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L3, kHitPat));
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L3, kHitPat)+1);
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L4, kHitPat));
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L4, kHitPat)+1);
   parent.push_back(id);
   id.clear();
 
   // SP0 3
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L5, kHitPat));  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L5, kHitPat)+1);  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L6, kHitPat));  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L6, kHitPat)+1);  
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L5, kHitPat));
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L5, kHitPat)+1);
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L6, kHitPat));
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L6, kHitPat)+1);
   parent.push_back(id);
   id.clear();
 
   // SP0 4
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L7, kHitPat));  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L7, kHitPat)+1);  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L8, kHitPat));  
-  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L8, kHitPat)+1);  
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L7, kHitPat));
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L7, kHitPat)+1);
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L8, kHitPat));
+  id.push_back(HistMaker::getUniqueID(kSP0, kSP0_L8, kHitPat)+1);
   parent.push_back(id);
   id.clear();
 
@@ -273,12 +273,12 @@ void initialize(std::vector<std::vector<int > >& parent)
   id.push_back(HistMaker::getUniqueID(kTOF, 0, kHitPat));
   id.push_back(HistMaker::getUniqueID(kTOF, 0, kMulti));
   parent.push_back(id);
-  id.clear();  
+  id.clear();
 
   // SFV SAC3
   id.push_back(HistMaker::getUniqueID(kSFV_SAC3, 0, kHitPat));
   parent.push_back(id);
-  id.clear();  
+  id.clear();
 
   // LC
   id.push_back(HistMaker::getUniqueID(kLC, 0, kHitPat));
@@ -311,4 +311,3 @@ void draw(TCanvas* c, std::vector<int>& id)
   c->Update();
   sleep(6);
 }
-

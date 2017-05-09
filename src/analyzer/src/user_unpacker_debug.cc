@@ -1,3 +1,5 @@
+// -*- C++ -*-
+
 // Author: Tomonori Takahashi
 
 #include <iostream>
@@ -5,6 +7,7 @@
 #include <unistd.h>
 #include <vector>
 
+#include "defines.hh"
 #include "user_analyzer.hh"
 #include "UnpackerManager.hh"
 #include "Unpacker.hh"
@@ -15,45 +18,55 @@ namespace analyzer
 {
   using namespace hddaq::unpacker;
   using namespace hddaq;
-  
-//____________________________________________________________________________
+
+  namespace
+  {
+    ConfMan& gConfMan = ConfMan::getInstance();
+    UnpackerManager& gUnpacker = GUnpacker::get_instance();
+    std::vector<std::string> target = { "hul01", "hul03" };
+  }
+
+//______________________________________________________________________________
 int
 process_begin(const std::vector<std::string>& argv)
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
   gConfMan.initialize(argv);
 
+  for( int i=0, n=target.size(); i<n; ++i ){
+    int node_id = gUnpacker.get_fe_id( target.at(i) );
+    Unpacker *node = gUnpacker.get_root()->get_child(node_id);
+    if( !node ) continue;
+    node->set_dump_mode(defines::k_hex);
+  }
+
   return 0;
 }
 
-//____________________________________________________________________________
+//______________________________________________________________________________
 int
-process_end()
+process_end( void )
 {
   return 0;
 }
 
-//____________________________________________________________________________
+//______________________________________________________________________________
 int
-process_event()
+process_event( void )
 {
-  ::sleep(1);
-  //  GUnpacker::get_instance().dump_data_fe(131);
-  UnpackerManager& g_unpacker = GUnpacker::get_instance();
-  //  int node_id = g_unpacker.get_fe_id("vme01");
-  int node_id = g_unpacker.get_fe_id("k18eb"); // Event builder
-  std::cout << std::hex;
-  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_magic) << std::dec << std::endl;
-  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_data_size) << std::endl;
-  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_event_number) << std::endl;
-  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_run_number) << std::hex <<std::endl;
-  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_node_id) << std::endl;
-  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_node_type) << std::dec <<std::endl;
-  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_number_of_blocks) << std::dec <<std::endl;
-  std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_unix_time) << std::dec <<std::endl;
+  /*
+    int node_id = gUnpacker.get_fe_id("k18eb"); // Event builder
+    std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_magic) << std::dec << std::endl;
+    std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_data_size) << std::endl;
+    std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_event_number) << std::endl;
+    std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_run_number) << std::hex <<std::endl;
+    std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_node_id) << std::endl;
+    std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_node_type) << std::dec <<std::endl;
+    std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_number_of_blocks) << std::dec <<std::endl;
+    std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_unix_time) << std::dec <<std::endl;
 
-  std::cout << "EEE" << std::endl;
-  std::cout << g_unpacker.get_root()->get_run_number() << std::endl;
+    std::cout << "EEE" << std::endl;
+    std::cout << g_unpacker.get_root()->get_run_number() << std::endl;
+  */
   return 0;
 }
 

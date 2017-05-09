@@ -1,3 +1,5 @@
+// -*- C++ -*-
+
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
@@ -85,10 +87,10 @@ void dispMsT()
     GHist::get(base_id)->Draw();
     c->cd(2);
     base_id = HistMaker::getUniqueID(kMsT, 0, kTDC2D);
-    GHist::get(base_id)->Draw("col");
+    GHist::get(base_id)->Draw("colz");
     c->cd(3);
-    base_id = HistMaker::getUniqueID(kMsT, kCAMAC, kHitPat2D, 0);
-    GHist::get(base_id)->Draw("text");
+    base_id = HistMaker::getUniqueID(kMsT, 0, kHitPat, 2);
+    GHist::get(base_id)->Draw("");
     c->cd(4);
     base_id = HistMaker::getUniqueID(kMsT, 0, kHitPat2D,0);
     GHist::get(base_id)->Draw("text");

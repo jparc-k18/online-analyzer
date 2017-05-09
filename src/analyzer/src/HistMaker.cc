@@ -1,18 +1,20 @@
-#include<iostream>
-#include<cstdlib>
-#include<string>
-#include<algorithm>
-#include<utility>
+// -*- C++ -*-
 
-#include"DetectorID.hh"
-#include"HistHelper.hh"
-#include"HistMaker.hh"
+#include <iostream>
+#include <cstdlib>
+#include <string>
+#include <algorithm>
+#include <utility>
 
-#include<TH1.h>
-#include<TH2.h>
-#include<TList.h>
-#include<TDirectory.h>
-#include<TString.h>
+#include "DetectorID.hh"
+#include "HistHelper.hh"
+#include "HistMaker.hh"
+
+#include <TH1.h>
+#include <TH2.h>
+#include <TList.h>
+#include <TDirectory.h>
+#include <TString.h>
 
 ClassImp(HistMaker)
 
@@ -24,7 +26,10 @@ std::string getStr_FromEnum(const char* c){
   return str.substr(1);
 }
 
-static const std::string MyName = "HistMaker::";
+namespace
+{
+  const std::string& MyName("HistMaker::");
+}
 
 // Constructor -------------------------------------------------------------
 HistMaker::HistMaker( void )
@@ -3215,23 +3220,16 @@ TList* HistMaker::createMsT(bool flag_ps)
     top_dir->Add(createTH1(target_id + 1, Form("%s_SCH_HitPat", nameDetector),
 			   NumOfSegSCH, 0, NumOfSegSCH,
 			   "Segment", ""));
-  }
-
-  // Hit parttern 2D --------------------------------------------
-  {
-    int target_id = getUniqueID(kMsT, kCAMAC, kHitPat2D, 0);
-    top_dir->Add(createTH2(target_id, "MsT_RM_Flag", // 1 origin
-			   3, 0., 3., 2, 0., 2.,
-			   "2nd Accept", "fast clear"));
-    GHist::get(target_id)->SetMarkerSize(6);
+    top_dir->Add(createTH1(target_id + 2, "MsT_Flag",
+			   10, 0., 10., ""));
   }
 
   // Hit parttern 2D Flag --------------------------------------------
   {
     int target_id = getUniqueID(kMsT, 0, kHitPat2D, 0);
-    top_dir->Add(createTH2(target_id, "MsT_Flag", // 1 origin
+    top_dir->Add(createTH2(target_id, "MsT_Flag_2D", // 1 origin
 			   3, 0., 3., 3, 0., 3.,
-			   "CAMAC-RM Flag", "MsT Accept"));
+			   "MsT Flag", "Flag Offline  "));
     GHist::get(target_id)->SetMarkerSize(6);
   }
 

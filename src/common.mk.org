@@ -10,7 +10,7 @@ CXX		:= g++
 OUT_PUT_OPT	:= -o
 LD		:= g++
 #LDFLAGS	:= -export-dynamic
-CXXFLAGS	:= -O3 -Wall -fPIC
+CXXFLAGS	:= -O3 -Wall -fPIC -std=c++0x
 #DEBUGFLAGS	:= -pg -g
 CXXFLAGS	+= -pg -p
 SOFLAGS		:= -shared
@@ -64,7 +64,7 @@ unpacker_lib_dir	:= $(shell $(unpacker_config) --libdir)
 unpacker_libs		:= $(shell $(unpacker_config) --libs)
 
 #### analyzer ####
-top_dir		:= $(HOME)/workgit
+top_dir		:= $(HOME)/online/dev
 src_top_dir	:= $(top_dir)/src
 bin_dir		:= $(top_dir)/bin
 include_top_dir	:= $(top_dir)/include

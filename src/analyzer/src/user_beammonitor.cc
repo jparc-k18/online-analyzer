@@ -1,4 +1,6 @@
-// Author: Tomonori Takahashi
+// -*- C++ -*-
+
+// Author: Shuhei Hayakawa
 
 #include <iostream>
 #include <string>
@@ -17,10 +19,9 @@
 #include "user_analyzer.hh"
 #include "UnpackerManager.hh"
 #include "ConfMan.hh"
-#include "DCAnalyzer.hh"
 #include "DetectorID.hh"
 #include "HistMaker.hh"
-#include "MacroBuilder.hh"
+#include "Updater.hh"
 
 namespace analyzer
 {
@@ -28,7 +29,7 @@ namespace analyzer
   using namespace hddaq;
 
   enum eBeam { kKbeam, kPibeam, nBeam };
-  enum eDAQ  { kDAQEff, kDuty, nDAQ   };
+  enum eDAQ  { kDAQEff, kL2Eff, kDuty, nDAQ };
   enum eSSD1 { kSSD1Y0, kSSD1X0, kSSD1Y1, kSSD1X1, nSSD1 };
   enum eSSD2 { kSSD2X0, kSSD2Y0, kSSD2X1, kSSD2Y1, nSSD2 };
 
@@ -41,7 +42,7 @@ namespace analyzer
   TLegend *leg_ssd1;
   TLegend *leg_ssd2;
   Color_t  col_beam[nBeam] = { kGreen, kBlue };
-  Color_t  col_daq[nDAQ]   = { kRed,   kBlue };
+  Color_t  col_daq[nDAQ]   = { kRed, kOrange, kBlue };
   Color_t  col_ssd1[nSSD1];
   Color_t  col_ssd2[nSSD2];
 
@@ -66,11 +67,10 @@ process_begin(const std::vector<std::string>& argv)
   double legX = 0.13;
   double legY = 0.13;
   double legW = 0.28;
-  double legH = 0.25;
+  double legH = 0.26;
 
   // Beam Monitor
   {
-    //TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
     for(int i=0; i<nBeam; ++i){
       c->cd(1)->SetGrid();
       g_beam[i] = new TGraph();
@@ -96,7 +96,6 @@ process_begin(const std::vector<std::string>& argv)
 
   // DAQ Monitor
   {
-    //TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
     for(int i=0; i<nDAQ; ++i){
       c->cd(2)->SetGrid();
       g_daq[i] = new TGraph();
@@ -115,6 +114,7 @@ process_begin(const std::vector<std::string>& argv)
     leg_daq->SetFillColor(0);
     leg_daq->SetBorderSize(4);
     leg_daq->AddEntry(g_daq[kDAQEff], "DAQ Eff.",    "P");
+    leg_daq->AddEntry(g_daq[kL2Eff],  "L2 Eff.",     "P");
     leg_daq->AddEntry(g_daq[kDuty],   "Duty Factor", "P");
     leg_daq->Draw();
   }
@@ -182,6 +182,9 @@ process_begin(const std::vector<std::string>& argv)
   gStyle->SetTitleW(.4);
   gStyle->SetTitleH(.11);
 
+  gui::Updater::getInstance().setUpdateMode(gui::Updater::k_seconds);
+  gui::Updater::getInstance().setInterval(6);
+
   return 0;
 }
 
@@ -245,40 +248,33 @@ process_event()
 
   // DAQ Monitor
   {
-    static const int module_id[2]  = {  0,  0 };
-    static const int channel_id[2] = { 38, 39 };
-    static double daq[2]     = {};
-    static double daq_pre[2] = {};
+    enum eVal { kL1Req, kL1Acc, kL2Acc, kRealTime, kLiveTime, nVal };
 
-    static const int rl_module_id[2]  = {  0,  0 };
-    static const int rl_channel_id[2] = { 36, 37 };
-    static double real_live[2]     = {};
-    static double real_live_pre[2] = {};
-    
-    for(int i=0; i<2; ++i){
+    static const int module_id[nVal]  = {  0,  0,  0,  0,  0 };
+    static const int channel_id[nVal] = { 38, 39, 49, 36, 37 };
+    static double val[nVal]     = {};
+    static double val_pre[nVal] = {};
+
+    for(int i=0; i<nVal; ++i){
       int hit = g_unpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
       if( hit==0 ) continue;
-      daq[i] = (double)g_unpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
-    }
-    for(int i=0; i<2; ++i){
-      int hit = g_unpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
-      if( hit==0 ) continue;
-      real_live[i] = (double)g_unpacker.get( scaler_id, rl_module_id[i], 0, rl_channel_id[i], 0 );
+      val[i] = (double)g_unpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
     }
     if( spill_inc ){
-      double daq_eff = daq_pre[1]/daq_pre[0];
+      double daq_eff = val_pre[kL1Acc]/val_pre[kL1Req];
+      double l2_eff  = val_pre[kL2Acc]/val_pre[kL1Acc];
       double duty    = 0.;
-      duty = daq_eff/(1.-daq_eff)*(real_live_pre[0]/real_live_pre[1]-1.);
+      duty = daq_eff/(1.-daq_eff)*(val_pre[kRealTime]/val_pre[kLiveTime]-1.);
       if( duty>1. ) duty = 1.;
       g_daq[kDAQEff]->SetPoint(spill, spill, daq_eff);
       g_daq[kDAQEff]->GetYaxis()->SetRangeUser(0, 1.0);
       g_daq[kDAQEff]->GetXaxis()->SetLimits(spill-90, spill+10);
+      g_daq[kL2Eff]->SetPoint(spill, spill, l2_eff);
       g_daq[kDuty]->SetPoint(spill, spill, duty);
       leg_daq->SetHeader( Form("  DAQ Eff. : %.3lf", daq_eff));
     }
-    for( int i=0; i<2; ++i ){
-      daq_pre[i] = daq[i];
-      real_live_pre[i] = real_live[i];
+    for( int i=0; i<nVal; ++i ){
+      val_pre[i] = val[i];
     }
   }
 

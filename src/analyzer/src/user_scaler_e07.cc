@@ -1,3 +1,5 @@
+// -*- C++ -*-
+
 // Author: Tomonori Takahashi
 
 #include <iomanip>
@@ -11,6 +13,7 @@
 #include <TCanvas.h>
 #include <TLatex.h>
 #include <TLine.h>
+#include <TSystem.h>
 #include <TTimeStamp.h>
 
 #include "DAQNode.hh"
@@ -36,7 +39,7 @@ namespace analyzer
   bool g_spill_end         = false;
   bool flag_spill_by_spill = false;
   bool flag_semi_online    = false;
-  
+
   static const std::size_t MaxRow = 32;
   enum eDisp { kLeft, kRight, MaxColumn };
 
@@ -119,7 +122,7 @@ Print( void )
 
   std::cout << "\033[2J" << std::endl;
 
-  std::string end_mark = g_spill_end ? "Spill End" : "";
+  TString end_mark = g_spill_end ? "Spill End" : "";
 
   int event_number = gUnpacker.get_event_number();
   std::cout << std::left  << std::setw(12) << "RUN"
@@ -266,13 +269,11 @@ PrintScalerSheet( void )
   DrawOneLine( "SCH", "(pi,TOF)", "L2_Acc" );
   DrawOneLine( "TOF", "(K,K)", "FBH" );
 
-  const std::string& scaler_sheet_pdf("/tmp/scaler_sheet.pdf");
+  const TString& scaler_sheet_pdf("/tmp/scaler_sheet.pdf");
+  c1.Print( scaler_sheet_pdf );
 
-  c1.Print( scaler_sheet_pdf.c_str() );
-
-  const std::string& print_command("lpr "+scaler_sheet_pdf);
-  ::system( print_command.c_str() );
-
+  const TString& print_command("lpr "+scaler_sheet_pdf);
+  gSystem->Exec( print_command );
 }
 
 //____________________________________________________________________________

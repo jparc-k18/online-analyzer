@@ -56,7 +56,7 @@ MsTParamMan::Initialize( const std::string& filename )
     }
 
     const int NumOfSegDetA = NumOfSegTOF+2;
-    const int NumOfSegDetB = NumOfSegSCH-5;
+    const int NumOfSegDetB = NumOfSegSCH;
 
     m_low_threshold.resize( NumOfSegDetA );
     m_high_threshold.resize( NumOfSegDetA );
@@ -78,12 +78,12 @@ MsTParamMan::Initialize( const std::string& filename )
 	iss >> param[i];
       }
       if( param[0].at(0) == '#' ) continue;
-      if( param[1] == "Mem_Thr_Low" ){
+      if( param[1] == "Mem_Thr_Low" || param[0]=="Low" ){
 	tofseg =  0;
 	LorH   = -1;
 	continue;
       }
-      if( param[1] == "Mem_Thr_Hi" ){
+      if( param[1] == "Mem_Thr_Hi" || param[0]=="Hi" ){
 	tofseg =  0;
 	LorH   =  1;
 	continue;
@@ -102,11 +102,11 @@ MsTParamMan::Initialize( const std::string& filename )
       ++tofseg;
     }
 
-#if 0
+#if 1
     // Low
     std::cout << "Low Threshold" << std::endl;
     for( int i=0; i<NumOfSegDetA; ++i ){
-      std::cout << i << "\t:";
+      std::cout << std::setw(2) << i << " :";
       for( int j=0; j<NumOfSegDetB; ++j ){
 	std::cout << " " << m_low_threshold[i][j];
       }
@@ -115,7 +115,7 @@ MsTParamMan::Initialize( const std::string& filename )
     // High
     std::cout << "High Threshold" << std::endl;
     for( int i=0; i<NumOfSegDetA; ++i ){
-      std::cout << i << "\t:";
+      std::cout << std::setw(2) << i << " :";
       for( int j=0; j<NumOfSegDetB; ++j ){
 	std::cout << " " << m_high_threshold[i][j];
       }

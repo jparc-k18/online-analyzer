@@ -1,13 +1,13 @@
-#include"PsMaker.hh"
-#include"GuiPs.hh"
-#include"HistMaker.hh"
-#include"DetectorID.hh"
-#include"HistHelper.hh"
-#include"UnpackerManager.hh"
-#include"Unpacker.hh"
+#include "PsMaker.hh"
+#include "GuiPs.hh"
+#include "HistMaker.hh"
+#include "DetectorID.hh"
+#include "HistHelper.hh"
+#include "UnpackerManager.hh"
+#include "Unpacker.hh"
 
-#include<iostream>
-#include<algorithm>
+#include <iostream>
+#include <algorithm>
 
 #include <TROOT.h>
 #include <TList.h>
@@ -17,6 +17,7 @@
 #include <TLatex.h>
 #include <TPad.h>
 #include <TPostScript.h>
+#include <TTimeStamp.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TText.h>
@@ -25,9 +26,11 @@
 
 #define CONV_STRING(x) getStr_FromEnum(#x)
 
-static const std::string MyName = "PsMaker::";
-
-using namespace hddaq::gui;
+namespace
+{
+  const std::string MyName = "PsMaker::";
+  using namespace hddaq::gui;
+}
 
 // Constructor --------------------------------------------------------------
 PsMaker::PsMaker():
@@ -35,7 +38,7 @@ PsMaker::PsMaker():
 {
   // Initialize option list
   name_option_.resize(sizeOptionList);
-  
+
   name_option_[kExpDataSheet]  = "ExpDataSheet";
   name_option_[kFixXaxis]      = "FixXaxis";
   name_option_[kLogyADC]       = "LogyADC";
@@ -47,7 +50,7 @@ PsMaker::PsMaker():
 // Destructor --------------------------------------------------------------
 PsMaker::~PsMaker()
 {
-  
+
 }
 
 // -------------------------------------------------------------------------
@@ -56,7 +59,7 @@ PsMaker::~PsMaker()
 void PsMaker::getListOfOption(std::vector<std::string>& vec)
 {
   PsMaker& g = PsMaker::getInstance();
-  std::copy(g.name_option_.begin(), 
+  std::copy(g.name_option_.begin(),
 	    g.name_option_.end(),
 	    back_inserter(vec)
 	    );
@@ -73,7 +76,7 @@ void PsMaker::makePs()
   gStyle->SetTitleH(.1);
   gStyle->SetStatW(.32);
   gStyle->SetStatH(.25);
-  
+
   // make ps file instance
   const std::string& filename = GuiPs::getFilename();
   ps_  = new TPostScript(filename.c_str(), 112);
@@ -145,7 +148,7 @@ void PsMaker::create(std::string& name)
     base_id = HistMaker::getUniqueID(kBH1, 0, kTDC);
     for(int i = 0; i<NumOfSegBH1; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
-    
+
     // TDC D
     base_id = HistMaker::getUniqueID(kBH1, 0, kTDC, NumOfSegBH1+1);
     for(int i = 0; i<NumOfSegBH1; ++i){id_list.push_back(base_id + i);}
@@ -300,7 +303,7 @@ void PsMaker::create(std::string& name)
     id_list.push_back(HistMaker::getUniqueID(kBH2, 0, kMulti));
     drawOneCanvas(id_list, par_list, false, false);
   }
-  
+
   // BAC ----------------------------------------------------------------
   if(name == CONV_STRING(kBAC)){
     int base_id = 0;
@@ -334,7 +337,7 @@ void PsMaker::create(std::string& name)
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
-    
+
     // ADC/TDC
     base_id = HistMaker::getUniqueID(kBH2_E07, 0, kADC);
     for(int i = 0; i<NumOfSegBH2_E07*2; ++i){id_list.push_back(base_id + i);}
@@ -359,7 +362,7 @@ void PsMaker::create(std::string& name)
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
-    
+
     // ADC/TDC
     base_id = HistMaker::getUniqueID(kBAC_E07, 0, kADC);
     id_list.push_back(base_id + 0);
@@ -529,7 +532,7 @@ void PsMaker::create(std::string& name)
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 4000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
-    
+
     // ADC/TDC
     base_id = HistMaker::getUniqueID(kPVAC, 0, kADC);
     for(int i = 0; i<NumOfSegPVAC; ++i){id_list.push_back(base_id + i);}
@@ -552,7 +555,7 @@ void PsMaker::create(std::string& name)
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 4000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
-    
+
     // ADC/TDC
     base_id = HistMaker::getUniqueID(kFAC, 0, kADC);
     for(int i = 0; i<NumOfSegFAC; ++i){id_list.push_back(base_id + i);}
@@ -574,7 +577,7 @@ void PsMaker::create(std::string& name)
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
-    
+
     // ADC/TDC
     id_list.push_back( HistMaker::getUniqueID(kSAC1, 0, kADC) );
     id_list.push_back( HistMaker::getUniqueID(kSAC1, 0, kTDC) );
@@ -634,7 +637,7 @@ void PsMaker::create(std::string& name)
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x1000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
-    
+
     // ADC/TDC
     base_id = HistMaker::getUniqueID(kKIC, 0, kADC);
     for(int i = 0; i<NumOfSegKIC; ++i){id_list.push_back(base_id + i);}
@@ -909,7 +912,7 @@ void PsMaker::create(std::string& name)
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
-    
+
     index = 0;
     base_id = HistMaker::getUniqueID(kLAC, 0, kADC);
     for(int i = 0; i<NumOfSegLAC/2; ++i){id_list.push_back(base_id + index++);}
@@ -1076,7 +1079,7 @@ void PsMaker::create(std::string& name)
   if(name == CONV_STRING(kTriggerFlag)){
     int base_id = 0;
     par_list[kXdiv] = 6; par_list[kYdiv] = 4;
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x1000;    
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 0x1000;
 
     base_id = HistMaker::getUniqueID( kTriggerFlag, 0, kTDC );
     for( int i=0; i<24; ++i){ id_list.push_back(base_id++); }
@@ -1137,7 +1140,7 @@ void PsMaker::drawOneCanvas(std::vector<int>& id_list,
 	      << " 1st unique ID: " << id_list[0] << std::endl;
     return;
   }
-  
+
   // make new ps page
   ps_->NewPage();
   cps_->Divide(par_list[kXdiv], par_list[kYdiv]);
@@ -1148,7 +1151,7 @@ void PsMaker::drawOneCanvas(std::vector<int>& id_list,
       // log scale flag
       cps_->GetPad(i + 1)->SetLogy(1);
     }
-    
+
     TH1* h = GHist::get(id_list[i]);
     if(!h){
       std::cerr << "#E: " << MyName << MyFunc
@@ -1163,7 +1166,7 @@ void PsMaker::drawOneCanvas(std::vector<int>& id_list,
 				  par_list[kXrange_max]);
     }
 
-    h->SetLineColor(1);    
+    h->SetLineColor(1);
     h->Draw(optDraw);
   }
 
@@ -1198,13 +1201,16 @@ void PsMaker::drawRunNumber()
   cps_->Divide(1,1);
   cps_->cd(1);
   cps_->GetPad(1)->Range(0,0,100,100);
-  
+
   TText text;
   text.SetTextSize(0.2);
   text.SetTextAlign(22);
-  text.SetText(50.,50., Form("Run# %d", runno));
-  text.Draw();
-  
+  text.DrawText(50.,65., Form("Run# %d", runno));
+  TTimeStamp stamp;
+  stamp.Add( -stamp.GetZoneOffset() );
+  text.SetTextSize(0.1);
+  text.DrawText(50.,40., stamp.AsString("s") );
+
   cps_->Update();
   cps_->cd();
   cps_->GetPad(1)->Close();

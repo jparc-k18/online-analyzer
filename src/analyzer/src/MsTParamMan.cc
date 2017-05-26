@@ -137,9 +137,9 @@ bool
 MsTParamMan::IsAccept( int detA, int detB, int tdc )
 {
   // for FERA
-  if( detA>=13 ) detA += 2;
+  int cdetA = detA>=13 ? detA + 2 : detA;
 
-  int low  = m_low_threshold[detA][detB];
-  int high = m_high_threshold[detA][detB];
+  int low  = m_low_threshold[cdetA][detB];
+  int high = m_high_threshold[cdetA][detB];
   return ( low < tdc && tdc < high );
 }

@@ -26,7 +26,7 @@
 #include "PsMaker.hh"
 #include "GuiPs.hh"
 #include "MacroBuilder.hh"
-
+#include "SsdAnalyzer.hh"
 #include "UserParamMan.hh"
 #include "HodoParamMan.hh"
 #include "MatrixParamMan.hh"
@@ -930,6 +930,11 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+  {
+    SsdAnalyzer SsdAna;
+    SsdAna.Calculate();
+  }
+
   // SSD1 ---------------------------------------------------------
   {
     // data type
@@ -1592,22 +1597,22 @@ process_event( void )
     for(int seg=0; seg<NumOfSegTOF; ++seg){
       // TDC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, 1);
-      if( nhit!=0 ){
-	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, 1);
-	hptr_array[tdc_id +seg]->Fill( tdc );
-	hptr_array[tdc2d_id]->Fill( seg, tdc );
-	if( flag_accept )
-	  hptr_array[tdc_id +NumOfSegTOF +seg]->Fill( tdc );
-	// HitPat
-	hptr_array[tof_hp_id]->Fill(seg);
-	for( int seg2=0; seg2<NumOfSegSCH; ++seg2 ){
-	  int nhit = gUnpacker.get_entries(k_device, 1, seg, 0, 1);
-	  if( nhit!=0 ){
-	    int hit = gUnpacker.get(k_device, 1, seg, 0, 1);
-	    if( hit && !flag_offline ){
-	      flag_offline = gMsT.IsAccept( seg, seg2, tdc );
-	    }
-	  }
+      if( nhit<=0 ) continue;
+      int tdc = gUnpacker.get(k_device, 0, seg, 0, 1);
+      if( tdc<=0 ) continue;
+      hptr_array[tdc_id +seg]->Fill( tdc );
+      hptr_array[tdc2d_id]->Fill( seg, tdc );
+      if( flag_accept )
+	hptr_array[tdc_id +NumOfSegTOF +seg]->Fill( tdc );
+      // HitPat
+      hptr_array[tof_hp_id]->Fill(seg);
+      for( int seg2=0; seg2<NumOfSegSCH; ++seg2 ){
+	int nhit2 = gUnpacker.get_entries(k_device, 1, seg2, 0, 1);
+	if( nhit2<=0 ) continue;
+	int hit2 = gUnpacker.get(k_device, 1, seg2, 0, 1);
+	if( hit2<=0 ) continue;
+	if( hit2>0 && !flag_offline ){
+	  flag_offline = gMsT.IsAccept( seg, seg2, tdc );
 	}
       }
     }

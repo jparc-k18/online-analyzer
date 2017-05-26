@@ -26,7 +26,6 @@
 #include "PsMaker.hh"
 #include "GuiPs.hh"
 #include "MacroBuilder.hh"
-#include "SsdAnalyzer.hh"
 #include "UserParamMan.hh"
 #include "HodoParamMan.hh"
 #include "MatrixParamMan.hh"
@@ -929,11 +928,6 @@ process_event( void )
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-
-  {
-    SsdAnalyzer SsdAna;
-    SsdAna.Calculate();
-  }
 
   // SSD1 ---------------------------------------------------------
   {

@@ -106,10 +106,11 @@ process_event( void )
     if( ypos_nhit!=0 ) ypos = g_unpacker.get( k_device, 0, 0, 0, k_ypos );
     xpos -= emc_x_offset;
     ypos -= emc_y_offset;
-    if( spill > emc_manager.Pos2Spill( xpos, ypos )*spill_prescale ){
+    double pos2spill = emc_manager.Pos2Spill( xpos, ypos )*spill_prescale;
+    if( spill > pos2spill && pos2spill > 0 ){
       emc_alart[0] = false; emc_alart[1] = false; emc_alart[2] = false;
     }
-    spill = emc_manager.Pos2Spill( xpos, ypos )*spill_prescale;
+    spill = pos2spill;
     rspill = nspill - spill;
 
     int nhit = g_unpacker.get_entries( k_device, 0, 0, 0, k_state );

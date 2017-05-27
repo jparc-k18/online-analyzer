@@ -1,3 +1,5 @@
+// -*- C++ -*-
+
 #include "PsMaker.hh"
 #include "GuiPs.hh"
 #include "HistMaker.hh"
@@ -1166,8 +1168,22 @@ void PsMaker::drawOneCanvas(std::vector<int>& id_list,
 				  par_list[kXrange_max]);
     }
 
-    h->SetLineColor(1);
-    h->Draw(optDraw);
+    // Rebin
+    TString hclass = h->ClassName();
+    TString hname  = Form("hclone_%d", id_list[i]);
+    if( hclass.Contains("TH2") &&
+	h->GetNbinsX() * h->GetNbinsY() > 100000 ){
+      if( gROOT->FindObject(hname) )
+	gROOT->FindObject(hname)->Delete();
+      TH2 *hclone = (TH2*)h->Clone(hname);
+      hclone->RebinX(h->GetNbinsX()/200);
+      hclone->RebinY(h->GetNbinsY()/200);
+      hclone->SetLineColor(1);
+      hclone->Draw(optDraw);
+    } else {
+      h->SetLineColor(1);
+      h->Draw(optDraw);
+    }
   }
 
   cps_->Update();

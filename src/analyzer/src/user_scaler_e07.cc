@@ -433,37 +433,37 @@ process_end()
 	    << std::right << std::setw(16) << separate_comma(spill) << " : "
 	    << std::left  << std::setw(20) << "FBH"
 	    << std::right << std::setw(16) << separate_comma(fbh) << std::endl
-	    << std::left  << std::setw(20) << "K beam"
+	    << std::left  << std::setw(20) << "K_beam"
 	    << std::right << std::setw(16) << separate_comma(kbeam) << " : "
-	    << std::left  << std::setw(20) << "K beam/TM"
+	    << std::left  << std::setw(20) << "K_beam/TM"
 	    << std::right << std::setw(16) << (double)kbeam/TM << std::endl
-	    << std::left  << std::setw(20) << "pi beam"
+	    << std::left  << std::setw(20) << "pi_beam"
 	    << std::right << std::setw(16) << separate_comma(pibeam) << " : "
-	    << std::left  << std::setw(20) << "K beam/BH1xBH2"
+	    << std::left  << std::setw(20) << "K_beam/BH1xBH2"
 	    << std::right << std::setw(16) << (double)kbeam/bh1xbh2 << std::endl
 	    << std::left  << std::setw(20) << "BH1xBH2"
 	    << std::right << std::setw(16) << separate_comma(bh1xbh2) << " : "
-	    << std::left  << std::setw(20) << "K beam/SCH"
+	    << std::left  << std::setw(20) << "K_beam/SCH"
 	    << std::right << std::setw(16) << (double)kbeam/sch << std::endl
 	    << std::left  << std::setw(20) << "(K,K)"
 	    << std::right << std::setw(16) << separate_comma(kk) << " : "
-	    << std::left  << std::setw(20) << "(K,K)/K beam"
+	    << std::left  << std::setw(20) << "(K,K)/K_beam"
 	    << std::right << std::setw(16) << (double)kk/kbeam << std::endl
-	    << std::left  << std::setw(20) << "L1 Req"
+	    << std::left  << std::setw(20) << "L1_Req"
 	    << std::right << std::setw(16) << separate_comma(l1_req) << " : "
 	    << std::left  << std::setw(20) << "Live/Real"
 	    << std::right << std::setw(16) << real_live << std::endl
-	    << std::left  << std::setw(20) << "L1 Acc"
+	    << std::left  << std::setw(20) << "L1_Acc"
 	    << std::right << std::setw(16) << separate_comma(l1_acc) << " : "
-	    << std::left  << std::setw(20) << "L1 Acc/L1 Req"
+	    << std::left  << std::setw(20) << "L1_Acc/L1_Req"
 	    << std::right << std::setw(16) << daq_eff << std::endl
-	    << std::left  << std::setw(20) << "L2 Clear"
+	    << std::left  << std::setw(20) << "L2_Clear"
 	    << std::right << std::setw(16) << separate_comma(clear) << " : "
-	    << std::left  << std::setw(20) << "L2 Acc/L1 Acc"
+	    << std::left  << std::setw(20) << "L2_Acc/L1_Acc"
 	    << std::right << std::setw(16) << (double)l2_acc/l1_acc << std::endl
-	    << std::left  << std::setw(20) << "L2 Acc"
+	    << std::left  << std::setw(20) << "L2_Acc"
 	    << std::right << std::setw(16) << separate_comma(l2_acc) << " : "
-	    << std::left  << std::setw(20) << "Duty Factor"
+	    << std::left  << std::setw(20) << "Duty_Factor"
 	    << std::right << std::setw(16) << duty_factor << std::endl
 	    << std::endl;
 
@@ -489,7 +489,7 @@ process_event()
   static int  scaler_id   = gUnpacker.get_device_id("Scaler");
 
   if( flag_semi_online ){
-    if( event_count%300 == 0 ) en_disp = true;
+    // if( event_count%300 == 0 ) en_disp = true;
   } else {
     if( event_count%10 == 0 ) en_disp = true;
   }

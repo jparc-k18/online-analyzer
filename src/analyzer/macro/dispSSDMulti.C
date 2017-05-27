@@ -12,7 +12,7 @@ dispSSDMulti( void )
   // ----------------------------------
 
   const int n_hist  = 8;
-  int hist_id[n_hist] = 
+  int hist_id[n_hist] =
     {
       hist_id[0] = HistMaker::getUniqueID(kSSD1, 0, kMulti, 1),
       hist_id[1] = HistMaker::getUniqueID(kSSD1, 0, kMulti, 3),
@@ -23,7 +23,7 @@ dispSSDMulti( void )
       hist_id[6] = HistMaker::getUniqueID(kSSD2, 0, kMulti, 5),
       hist_id[7] = HistMaker::getUniqueID(kSSD2, 0, kMulti, 7)
     };
-  int chist_id[n_hist] = 
+  int chist_id[n_hist] =
     {
       chist_id[0] = HistMaker::getUniqueID(kSSD1, 0, kMulti, 2),
       chist_id[1] = HistMaker::getUniqueID(kSSD1, 0, kMulti, 4),
@@ -37,32 +37,34 @@ dispSSDMulti( void )
 
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
-    if(!c) continue;
-    c->Clear();
-    c->Divide(4,2);
-    // draw SSD Multi
-    for(int i=0; i<n_hist; ++i){
-      c->cd(i+1)->SetGrid();
-      TH1 *h = (TH1*)GHist::get( hist_id[i] );
-      if( !h ) continue;
-      h->Draw();
+    if( c ){
+      c->Clear();
+      c->Divide(4,2);
+      // draw SSD Multi
+      for(int i=0; i<n_hist; ++i){
+	c->cd(i+1)->SetGrid();
+	TH1 *h = (TH1*)GHist::get( hist_id[i] );
+	if( !h ) continue;
+	h->Draw();
+      }
+      c->Update();
     }
-    c->Update();
   }
 
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
-    if(!c) continue;
-    c->Clear();
-    c->Divide(4,2);
-    // draw SSD CMulti
-    for(int i=0; i<n_hist; ++i){
-      c->cd(i+1)->SetGrid();
-      TH1 *h = (TH1*)GHist::get( chist_id[i] );
-      if( !h ) continue;
-      h->Draw();
+    if( c ){
+      c->Clear();
+      c->Divide(4,2);
+      // draw SSD CMulti
+      for(int i=0; i<n_hist; ++i){
+	c->cd(i+1)->SetGrid();
+	TH1 *h = (TH1*)GHist::get( chist_id[i] );
+	if( !h ) continue;
+	h->Draw();
+      }
+      c->Update();
     }
-    c->Update();
   }
 
   // You must write these lines for the thread safe

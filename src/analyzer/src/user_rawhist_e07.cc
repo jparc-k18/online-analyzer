@@ -12,6 +12,7 @@
 #include <TGFileBrowser.h>
 #include <TH1.h>
 #include <TH2.h>
+#include <TMath.h>
 #include <TStyle.h>
 
 #include "Controller.hh"
@@ -226,7 +227,7 @@ process_event( void )
     return 0;
 
   // TriggerFlag ---------------------------------------------------
-  bool scaler_flag   = false;
+  std::bitset<NumOfSegTFlag> trigger_flag;
   bool matrix2d_flag = false;
   bool matrix3d_flag = false;
   {
@@ -240,9 +241,9 @@ process_event( void )
       if( nhit>0 ){
 	int tdc = gUnpacker.get( k_device, 0, seg, 0, k_tdc );
 	if( tdc>0 ){
+	  trigger_flag.set(seg);
 	  hptr_array[tf_tdc_id+seg]->Fill( tdc );
 	  hptr_array[tf_hit_id]->Fill( seg );
-	  if( seg==SegIdScalerTrigger ) scaler_flag = true;
 	  if( seg==8 ) matrix2d_flag = true;
 	  if( seg==9 ) matrix3d_flag = true;
 	}
@@ -351,7 +352,7 @@ process_event( void )
 
 #endif
 
-  if( scaler_flag ) return 0;
+  if( trigger_flag[SegIdScalerTrigger] ) return 0;
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
@@ -1577,17 +1578,22 @@ process_event( void )
     int flag2d_id = gHist.getSequentialID(kMsT, 0, kHitPat2D, 0);
 
     // Flag
-    bool flag_accept  = false;
-    bool flag_offline = false;
+    int hul_flag  = -1;
+    int soft_flag =  1;
     {
       int nhit = gUnpacker.get_entries(k_device, 2, 0, 0, 1);
       if( nhit>0 ){
-	std::bitset<3> flag = gUnpacker.get(k_device, 2, 0, 0, 1);
-	hptr_array[flag_id]->Fill( flag.to_ulong() );
-	if( flag[0] ) flag_accept = true;
+	int flag = gUnpacker.get(k_device, 2, 0, 0, 1);
+	if( std::bitset<3>(flag).count() == 1 ){
+	  hptr_array[flag_id]->Fill( flag );
+	  hul_flag = TMath::Log2(flag); // 1,2,4 -> 0,1,2
+	} else {
+	  std::cerr << "#W Invalid MsTFlag : " << flag << std::endl;
+	}
       }
     }
 
+    int tof_nhits = 0;
     for(int seg=0; seg<NumOfSegTOF; ++seg){
       // TDC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, 1);
@@ -1596,7 +1602,7 @@ process_event( void )
       if( tdc<=0 ) continue;
       hptr_array[tdc_id +seg]->Fill( tdc );
       hptr_array[tdc2d_id]->Fill( seg, tdc );
-      if( flag_accept )
+      if( hul_flag==0 )
 	hptr_array[tdc_id +NumOfSegTOF +seg]->Fill( tdc );
       // HitPat
       hptr_array[tof_hp_id]->Fill(seg);
@@ -1605,13 +1611,19 @@ process_event( void )
 	if( nhit2<=0 ) continue;
 	int hit2 = gUnpacker.get(k_device, 1, seg2, 0, 1);
 	if( hit2<=0 ) continue;
-	if( hit2>0 && !flag_offline ){
-	  flag_offline = gMsT.IsAccept( seg, seg2, tdc );
+	if( hit2>0 && soft_flag!=0 ){
+	  if( gMsT.IsAccept( seg, seg2, tdc ) ){
+	    soft_flag = 0;
+	  }
 	}
       }
+      tof_nhits++;
     }
 
-    hptr_array[flag2d_id]->Fill( flag_accept, flag_offline );
+    if( !trigger_flag[7] || tof_nhits==0 )
+      soft_flag = 2;
+
+    hptr_array[flag2d_id]->Fill( hul_flag, soft_flag );
 
     for(int seg=0; seg<NumOfSegSCH; ++seg){
       // HitPat

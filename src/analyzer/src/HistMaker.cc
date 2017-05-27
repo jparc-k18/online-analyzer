@@ -3228,8 +3228,8 @@ TList* HistMaker::createMsT(bool flag_ps)
   {
     int target_id = getUniqueID(kMsT, 0, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id, "MsT_Flag_2D", // 1 origin
-			   3, 0., 3., 3, 0., 3.,
-			   "MsT Flag", "Flag Offline  "));
+			   4, 0., 4., 4, 0., 4.,
+			   "MsT Flag", "Soft Flag  "));
     GHist::get(target_id)->SetMarkerSize(6);
   }
 

@@ -488,6 +488,25 @@ void PsMaker::create(std::string& name)
       id_list.push_back(base_id+2*i+1);
     }
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+
+    // DeltaE
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kSSD1, 0, kDeltaE);
+    for(int i=0; i<NumOfLayersSSD1; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+    base_id = HistMaker::getUniqueID(kSSD1, 0, kDeltaE2D);
+    for(int i=0; i<NumOfLayersSSD1; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
+
+    // CTime
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kSSD1, 0, kCTime);
+    for(int i=0; i<NumOfLayersSSD1; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+    base_id = HistMaker::getUniqueID(kSSD1, 0, kCTime2D);
+    for(int i=0; i<NumOfLayersSSD1; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
+
   }
 
   // SSD2 ----------------------------------------------------------------
@@ -524,6 +543,24 @@ void PsMaker::create(std::string& name)
       id_list.push_back(base_id+2*i+1);
     }
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+
+    // DeltaE
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kSSD2, 0, kDeltaE);
+    for(int i=0; i<NumOfLayersSSD2; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+    base_id = HistMaker::getUniqueID(kSSD2, 0, kDeltaE2D);
+    for(int i=0; i<NumOfLayersSSD2; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
+
+    // CTime
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kSSD2, 0, kCTime);
+    for(int i=0; i<NumOfLayersSSD2; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+    base_id = HistMaker::getUniqueID(kSSD2, 0, kCTime2D);
+    for(int i=0; i<NumOfLayersSSD2; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
   }
 
   // PVAC ----------------------------------------------------------------

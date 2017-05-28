@@ -27,6 +27,7 @@
 #include "PsMaker.hh"
 #include "GuiPs.hh"
 #include "MacroBuilder.hh"
+#include "SsdAnalyzer.hh"
 #include "UserParamMan.hh"
 #include "HodoParamMan.hh"
 #include "MatrixParamMan.hh"
@@ -169,6 +170,10 @@ process_begin( const std::vector<std::string>& argv )
   tab_e07->Add(macro::Get("dispSSD2"));
   tab_e07->Add(macro::Get("dispSSDHitPat"));
   tab_e07->Add(macro::Get("dispSSDMulti"));
+  tab_e07->Add(macro::Get("dispSSD1DeltaE"));
+  tab_e07->Add(macro::Get("dispSSD1Time"));
+  tab_e07->Add(macro::Get("dispSSD2DeltaE"));
+  tab_e07->Add(macro::Get("dispSSD2Time"));
   //tab_e07->Add(macro::Get("dispProfileSSD"));
 
   // Set histogram pointers to the vector sequentially.
@@ -906,207 +911,140 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
-  // SSDT ---------------------------------------------------------
+  // SSD _______________________________________________________________________
   {
-    // data type
-    static const int k_device = gUnpacker.get_device_id("SSDT");
-    static const int k_tdc    = gUnpacker.get_data_id("SSDT","tdc");
-    // sequential id
-    static const int ssdt_id = gHist.getSequentialID(kSSDT, 0, kTDC, 1);
-    for(int seg=0; seg<NumOfSegSSDT*2; ++seg){
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      if(nhit==0) continue;
-      int tdc  = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
-      if(tdc>0) hptr_array[ssdt_id +seg/2]->Fill( tdc );
-    }//for(seg)
+    SsdAnalyzer ssdAna;
+    ssdAna.Calculate();
+    static const Double_t MinDe     = 2500.;
+    static const Double_t MaxChisqr =  300.;
 
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }
+    {
+      static const int id = gHist.getSequentialID(kSSDT, 0, kTDC, 1);
+      for(int seg=0; seg<NumOfSegSSDT; ++seg){
+	int tdc = ssdAna.GetSSDT(seg);
+	if(tdc>0) hptr_array[id+seg]->Fill( tdc );
+      }
+    }
 
-#if DEBUG
-  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-#endif
-
-  // SSD1 ---------------------------------------------------------
-  {
-    // data type
-    static const int k_device = gUnpacker.get_device_id("SSD1");
-    static const int k_adc    = gUnpacker.get_data_id("SSD1","adc");
-    static const int k_flag   = gUnpacker.get_data_id("SSD1","flag");
-    // sequential id
-    static const int ssd1adc_id = gHist.getSequentialID(kSSD1, 0, kADC2D,  1);
-    static const int ssd1tdc_id = gHist.getSequentialID(kSSD1, 0, kTDC2D,  1);
-    static const int ssd1hit_id = gHist.getSequentialID(kSSD1, 0, kHitPat, 1);
-    static const int ssd1mul_id = gHist.getSequentialID(kSSD1, 0, kMulti,  1);
-
-    bool chit_flag[NumOfLayersSSD1][NumOfSegSSD1];
-
-    for(int l=0; l<NumOfLayersSSD1; ++l){
-      int  multiplicity = 0;
-      int cmultiplicity = 0;
-      for(int seg=0; seg<NumOfSegSSD1; ++seg){
-	chit_flag[l][seg] = false;
-	// ADC
-	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
-	if( nhit_a==0 ) continue;
-	if( nhit_a != NumOfSamplesSSD ){
-	  std::cerr << "#W SSD1 layer:" << l << " seg:" << seg
-		    << " the number of samples is wrong : "
-		    << nhit_a << "/" << NumOfSamplesSSD << std::endl;
-	}
-	int  adc[nhit_a];
-	bool slope[nhit_a-1];
-	int  peak_height   = -1;
-	int  peak_position = -1;
-	for(int m=0; m<nhit_a; ++m){
-	  adc[m] = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
-	  if(m>0) slope[m] = adc[m]>adc[m-1];
-	  if(adc[m]>peak_height){
-	    peak_height   = adc[m];
-	    peak_position = m;
-	  }
-	}
-	// Zero Suppression Flag
-	int  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
-	bool  hit_flag = false;
-	if(nhit_flag != 0){
-	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
-	  if(flag==1) hit_flag = true;
-	}
-	chit_flag[l][seg] = hit_flag &&
-	  slope[0] && slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
-	if(peak_height>=0 && peak_position>=0){
-	  hptr_array[ssd1adc_id +l]->Fill( seg, peak_height );
-	  hptr_array[ssd1tdc_id +l]->Fill( seg, peak_position );
-	  if(hit_flag){
-	    hptr_array[ssd1hit_id +2*l]->Fill( seg );
+    // SSD1 ---------------------------------------------------------
+    {
+      // sequential id
+      static const int adc_id = gHist.getSequentialID(kSSD1, 0, kADC2D,  1);
+      static const int tdc_id = gHist.getSequentialID(kSSD1, 0, kTDC2D,  1);
+      static const int hit_id = gHist.getSequentialID(kSSD1, 0, kHitPat, 1);
+      static const int mul_id = gHist.getSequentialID(kSSD1, 0, kMulti,  1);
+      static const int de_id = gHist.getSequentialID(kSSD1, 0, kDeltaE, 1);
+      static const int ct_id = gHist.getSequentialID(kSSD1, 0, kCTime, 1);
+      static const int de2d_id = gHist.getSequentialID(kSSD1, 0, kDeltaE2D, 1);
+      static const int ct2d_id = gHist.getSequentialID(kSSD1, 0, kCTime2D, 1);
+      bool chit_flag[NumOfLayersSSD1][NumOfSegSSD1];
+      for(int l=0; l<NumOfLayersSSD1; ++l){
+	int  multiplicity = 0;
+	int cmultiplicity = 0;
+	for(int seg=0; seg<NumOfSegSSD1; ++seg){
+	  chit_flag[l][seg] = false;
+	  // ADC
+	  Double_t adc = ssdAna.GetAdc(l,seg);
+	  Double_t tdc = ssdAna.GetTdc(l,seg);
+	  if( adc>=0 && tdc>=0){
+	    hptr_array[adc_id +l]->Fill( seg, adc );
+	    hptr_array[tdc_id +l]->Fill( seg, tdc );
+	    hptr_array[hit_id +2*l]->Fill( seg );
 	    multiplicity++;
+	    Double_t de     = ssdAna.GetDe(l,seg);
+	    Double_t chisqr = ssdAna.GetChisqr(l,seg);
+	    Double_t time   = ssdAna.GetTime(l,seg);
+	    chit_flag[l][seg] = ( de>MinDe && chisqr<MaxChisqr );
+	    if( chit_flag[l][seg] ){
+	      hptr_array[hit_id +2*l+1]->Fill( seg );
+	      hptr_array[de_id +l]->Fill( de );
+	      hptr_array[ct_id +l]->Fill( time );
+	      hptr_array[de2d_id +l]->Fill( seg, de );
+	      hptr_array[ct2d_id +l]->Fill( seg, time );
+	      cmultiplicity++;
+	    }
 	  }
-	  if( chit_flag[l][seg] ){
-	    hptr_array[ssd1hit_id +2*l+1]->Fill( seg );
-	    cmultiplicity++;
-	  }
+	}//for(seg)
+	hptr_array[mul_id +2*l]->Fill( multiplicity );
+	hptr_array[mul_id +2*l+1]->Fill( cmultiplicity );
+      }//for(l)
+      // Correlation XY
+      static const int hit2d_id = gHist.getSequentialID(kSSD1, 0, kHitPat2D, 1);
+      for(int x_seg=0; x_seg<NumOfSegSSD1; ++x_seg){
+	if( !chit_flag[1][x_seg] ) continue;
+	for(int y_seg=0; y_seg<NumOfSegSSD1; ++y_seg){
+	  if( !chit_flag[0][y_seg] ) continue;
+	  hptr_array[hit2d_id]->Fill( x_seg, y_seg );
 	}
-      }//for(seg)
-      hptr_array[ssd1mul_id +2*l]->Fill( multiplicity );
-      hptr_array[ssd1mul_id +2*l+1]->Fill( cmultiplicity );
-    }//for(l)
-    // Correlation XY
-    static const int ssd1hit2d_id = gHist.getSequentialID(kSSD1, 0, kHitPat2D, 1);
-    for(int x_seg=0; x_seg<NumOfSegSSD1; ++x_seg){
-      if( !chit_flag[1][x_seg] ) continue;
-      for(int y_seg=0; y_seg<NumOfSegSSD1; ++y_seg){
-	if( !chit_flag[0][y_seg] ) continue;
-	hptr_array[ssd1hit2d_id]->Fill( x_seg, y_seg );
+      }
+      for(int x_seg=0; x_seg<NumOfSegSSD1; ++x_seg){
+	if( !chit_flag[3][x_seg] ) continue;
+	for(int y_seg=0; y_seg<NumOfSegSSD1; ++y_seg){
+	  if( !chit_flag[2][y_seg] ) continue;
+	  hptr_array[hit2d_id+1]->Fill( x_seg, y_seg );
+	}
       }
     }
-    for(int x_seg=0; x_seg<NumOfSegSSD1; ++x_seg){
-      if( !chit_flag[3][x_seg] ) continue;
-      for(int y_seg=0; y_seg<NumOfSegSSD1; ++y_seg){
-	if( !chit_flag[2][y_seg] ) continue;
-	hptr_array[ssd1hit2d_id+1]->Fill( x_seg, y_seg );
-      }
-    }
 
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }
-
-#if DEBUG
-  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-#endif
-
-  // SSD2 ---------------------------------------------------------
-  {
-    // data type
-    static const int k_device = gUnpacker.get_device_id("SSD2");
-    static const int k_adc    = gUnpacker.get_data_id("SSD2","adc");
-    static const int k_flag   = gUnpacker.get_data_id("SSD2","flag");
-    // sequential id
-    static const int ssd2adc_id = gHist.getSequentialID(kSSD2, 0, kADC2D,  1);
-    static const int ssd2tdc_id = gHist.getSequentialID(kSSD2, 0, kTDC2D,  1);
-    static const int ssd2hit_id = gHist.getSequentialID(kSSD2, 0, kHitPat, 1);
-    static const int ssd2mul_id = gHist.getSequentialID(kSSD2, 0, kMulti,  1);
-
-    bool chit_flag[NumOfLayersSSD2][NumOfSegSSD2];
-    for(int l=0; l<NumOfLayersSSD2; ++l){
-      int  multiplicity = 0;
-      int cmultiplicity = 0;
-      for(int seg=0; seg<NumOfSegSSD2; ++seg){
-	chit_flag[l][seg] = false;
-	// ADC
-	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
-	if( nhit_a==0 ) continue;
-	if( nhit_a != NumOfSamplesSSD ){
-	  std::cerr << "#W SSD2 layer:" << l << " seg:" << seg
-		    << " the number of samples is wrong : "
-		    << nhit_a << "/" << NumOfSamplesSSD << std::endl;
-	}
-	int  adc[nhit_a];
-	bool slope[nhit_a-1];
-	int  peak_height   = -1;
-	int  peak_position = -1;
-	for(int m=0; m<nhit_a; ++m){
-	  adc[m] = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
-	  if(m>0) slope[m] = adc[m]>adc[m-1];
-	  if(adc[m]>peak_height){
-	    peak_height   = adc[m];
-	    peak_position = m;
-	  }
-	}
-	// Zero Suppression Flag
-	int  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
-	bool  hit_flag = false;
-	if(nhit_flag != 0){
-	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
-	  if(flag==1) hit_flag = true;
-	}
-	chit_flag[l][seg] = hit_flag &&
-	  slope[0] && slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
-	if(peak_height>=0 && peak_position>=0){
-	  hptr_array[ssd2adc_id +l]->Fill( seg, peak_height );
-	  hptr_array[ssd2tdc_id +l]->Fill( seg, peak_position );
-	  if(hit_flag){
-	    hptr_array[ssd2hit_id +2*l]->Fill( seg );
+    // SSD1 ---------------------------------------------------------
+    {
+      static const int adc_id = gHist.getSequentialID(kSSD2, 0, kADC2D,  1);
+      static const int tdc_id = gHist.getSequentialID(kSSD2, 0, kTDC2D,  1);
+      static const int hit_id = gHist.getSequentialID(kSSD2, 0, kHitPat, 1);
+      static const int mul_id = gHist.getSequentialID(kSSD2, 0, kMulti,  1);
+      static const int de_id = gHist.getSequentialID(kSSD2, 0, kDeltaE, 1);
+      static const int ct_id = gHist.getSequentialID(kSSD2, 0, kCTime, 1);
+      static const int de2d_id = gHist.getSequentialID(kSSD2, 0, kDeltaE2D, 1);
+      static const int ct2d_id = gHist.getSequentialID(kSSD2, 0, kCTime2D, 1);
+      bool chit_flag[NumOfLayersSSD2][NumOfSegSSD2];
+      for(int l=0; l<NumOfLayersSSD2; ++l){
+	int  multiplicity = 0;
+	int cmultiplicity = 0;
+	for(int seg=0; seg<NumOfSegSSD2; ++seg){
+	  chit_flag[l][seg] = false;
+	  // ADC
+	  Double_t adc = ssdAna.GetAdc(l+NumOfLayersSSD1,seg);
+	  Double_t tdc = ssdAna.GetTdc(l+NumOfLayersSSD1,seg);
+	  if( adc>=0 && tdc>=0){
+	    hptr_array[adc_id +l]->Fill( seg, adc );
+	    hptr_array[tdc_id +l]->Fill( seg, tdc );
+	    hptr_array[hit_id +2*l]->Fill( seg );
 	    multiplicity++;
+	    Double_t de     = ssdAna.GetDe(l+NumOfLayersSSD1,seg);
+	    Double_t chisqr = ssdAna.GetChisqr(l+NumOfLayersSSD1,seg);
+	    Double_t time   = ssdAna.GetTime(l+NumOfLayersSSD1,seg);
+	    chit_flag[l][seg] = ( de>MinDe && chisqr<MaxChisqr );
+	    if( chit_flag[l][seg] ){
+	      hptr_array[hit_id +2*l+1]->Fill( seg );
+	      hptr_array[de_id +l]->Fill( de );
+	      hptr_array[ct_id +l]->Fill( time );
+	      hptr_array[de2d_id +l]->Fill( seg, de );
+	      hptr_array[ct2d_id +l]->Fill( seg, time );
+	      cmultiplicity++;
+	    }
 	  }
-	  if( chit_flag[l][seg] ){
-	    hptr_array[ssd2hit_id +2*l+1]->Fill( seg );
-	    cmultiplicity++;
-	  }
+	}//for(seg)
+	hptr_array[mul_id +2*l]->Fill( multiplicity );
+	hptr_array[mul_id +2*l+1]->Fill( cmultiplicity );
+      }//for(l)
+      // Correlation XY
+      static const int hit2d_id = gHist.getSequentialID(kSSD2, 0, kHitPat2D, 1);
+      for(int x_seg=0; x_seg<NumOfSegSSD2; ++x_seg){
+	if( !chit_flag[0][x_seg] ) continue;
+	for(int y_seg=0; y_seg<NumOfSegSSD2; ++y_seg){
+	  if( !chit_flag[1][y_seg] ) continue;
+	  hptr_array[hit2d_id]->Fill( x_seg, y_seg );
 	}
-      }//for(seg)
-      hptr_array[ssd2mul_id +2*l]->Fill( multiplicity );
-      hptr_array[ssd2mul_id +2*l+1]->Fill( cmultiplicity );
-    }//for(l)
-    // Correlation XY
-    static const int ssd2hit2d_id = gHist.getSequentialID(kSSD2, 0, kHitPat2D, 1);
-    for(int x_seg=0; x_seg<NumOfSegSSD2; ++x_seg){
-      if( !chit_flag[0][x_seg] ) continue;
-      for(int y_seg=0; y_seg<NumOfSegSSD2; ++y_seg){
-	if( !chit_flag[1][y_seg] ) continue;
-	hptr_array[ssd2hit2d_id]->Fill( x_seg, y_seg );
+      }
+      for(int x_seg=0; x_seg<NumOfSegSSD2; ++x_seg){
+	if( !chit_flag[2][x_seg] ) continue;
+	for(int y_seg=0; y_seg<NumOfSegSSD2; ++y_seg){
+	  if( !chit_flag[3][y_seg] ) continue;
+	  hptr_array[hit2d_id+1]->Fill( x_seg, y_seg );
+	}
       }
     }
-    for(int x_seg=0; x_seg<NumOfSegSSD2; ++x_seg){
-      if( !chit_flag[2][x_seg] ) continue;
-      for(int y_seg=0; y_seg<NumOfSegSSD2; ++y_seg){
-	if( !chit_flag[3][y_seg] ) continue;
-	hptr_array[ssd2hit2d_id+1]->Fill( x_seg, y_seg );
-      }
-    }
-
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
   }
-
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif

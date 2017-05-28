@@ -1458,6 +1458,68 @@ TList* HistMaker::createSSD1(bool flag_ps)
     top_dir->Add(sub_dir);
   }
 
+  // DeltaE --------------------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kDeltaE);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD1, 0, kDeltaE, 0);
+    for(int l=0; l<NumOfLayersSSD1; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     200, 0., 40000., "DeltaE  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // DeltaE2D --------------------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kDeltaE2D);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD1, 0, kDeltaE2D, 0);
+    for(int l=0; l<NumOfLayersSSD1; ++l){
+      sub_dir->Add(createTH2(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD1/4, 0, NumOfSegSSD1, 200, 0., 40000.,
+			     "Segment", "DeltaE  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // Time --------------------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kCTime);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD1, 0, kCTime, 0);
+    for(int l=0; l<NumOfLayersSSD1; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     200., 0, 200., "Peak Time  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // Time2D --------------------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kCTime2D);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD1, 0, kCTime2D, 0);
+    for(int l=0; l<NumOfLayersSSD1; ++l){
+      sub_dir->Add(createTH2(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD1/4, 0, NumOfSegSSD1, 200., 0, 200.,
+			     "Segment", "Peak Time  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
   return top_dir;
 }
 
@@ -1553,6 +1615,68 @@ TList* HistMaker::createSSD2(bool flag_ps)
 			     Form("%s_C%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     100, 0., 100.,
 			     "CMultiplicity", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // DeltaE --------------------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kDeltaE);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD2, 0, kDeltaE, 0);
+    for(int l=0; l<NumOfLayersSSD2; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     200, 0., 40000., "DeltaE  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // DeltaE2D --------------------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kDeltaE2D);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD2, 0, kDeltaE2D, 0);
+    for(int l=0; l<NumOfLayersSSD2; ++l){
+      sub_dir->Add(createTH2(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD2/4, 0, NumOfSegSSD2, 200, 0., 40000.,
+			     "Segment", "DeltaE  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // Time --------------------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kCTime);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD2, 0, kCTime, 0);
+    for(int l=0; l<NumOfLayersSSD2; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     200., 0, 200., "Peak Time  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // Time2D --------------------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kCTime2D);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD2, 0, kCTime2D, 0);
+    for(int l=0; l<NumOfLayersSSD2; ++l){
+      sub_dir->Add(createTH2(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     NumOfSegSSD2/4, 0, NumOfSegSSD2, 200., 0, 200.,
+			     "Segment", "Peak Time  "));
     }
     top_dir->Add(sub_dir);
   }

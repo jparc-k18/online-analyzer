@@ -507,6 +507,11 @@ void PsMaker::create(std::string& name)
     for(int i=0; i<NumOfLayersSSD1; ++i){ id_list.push_back(base_id++); }
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
 
+    // Chisqr
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kSSD1, 0, kChisqr);
+    for(int i=0; i<NumOfLayersSSD1; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
 
   // SSD2 ----------------------------------------------------------------
@@ -561,6 +566,12 @@ void PsMaker::create(std::string& name)
     base_id = HistMaker::getUniqueID(kSSD2, 0, kCTime2D);
     for(int i=0; i<NumOfLayersSSD2; ++i){ id_list.push_back(base_id++); }
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
+
+    // Chisqr
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kSSD2, 0, kChisqr);
+    for(int i=0; i<NumOfLayersSSD2; ++i){ id_list.push_back(base_id++); }
+    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
 
   // PVAC ----------------------------------------------------------------

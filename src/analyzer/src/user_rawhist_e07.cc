@@ -172,8 +172,10 @@ process_begin( const std::vector<std::string>& argv )
   tab_e07->Add(macro::Get("dispSSDMulti"));
   tab_e07->Add(macro::Get("dispSSD1DeltaE"));
   tab_e07->Add(macro::Get("dispSSD1Time"));
+  tab_e07->Add(macro::Get("dispSSD1Chisqr"));
   tab_e07->Add(macro::Get("dispSSD2DeltaE"));
   tab_e07->Add(macro::Get("dispSSD2Time"));
+  tab_e07->Add(macro::Get("dispSSD2Chisqr"));
   //tab_e07->Add(macro::Get("dispProfileSSD"));
 
   // Set histogram pointers to the vector sequentially.
@@ -937,6 +939,7 @@ process_event( void )
       static const int ct_id = gHist.getSequentialID(kSSD1, 0, kCTime, 1);
       static const int de2d_id = gHist.getSequentialID(kSSD1, 0, kDeltaE2D, 1);
       static const int ct2d_id = gHist.getSequentialID(kSSD1, 0, kCTime2D, 1);
+      static const int chi2_id = gHist.getSequentialID(kSSD1, 0, kChisqr, 1);
       bool chit_flag[NumOfLayersSSD1][NumOfSegSSD1];
       for(int l=0; l<NumOfLayersSSD1; ++l){
 	int  multiplicity = 0;
@@ -961,6 +964,7 @@ process_event( void )
 	      hptr_array[ct_id +l]->Fill( time );
 	      hptr_array[de2d_id +l]->Fill( seg, de );
 	      hptr_array[ct2d_id +l]->Fill( seg, time );
+	      hptr_array[chi2_id +l]->Fill( chisqr );
 	      cmultiplicity++;
 	    }
 	  }
@@ -996,6 +1000,7 @@ process_event( void )
       static const int ct_id = gHist.getSequentialID(kSSD2, 0, kCTime, 1);
       static const int de2d_id = gHist.getSequentialID(kSSD2, 0, kDeltaE2D, 1);
       static const int ct2d_id = gHist.getSequentialID(kSSD2, 0, kCTime2D, 1);
+      static const int chi2_id = gHist.getSequentialID(kSSD2, 0, kChisqr, 1);
       bool chit_flag[NumOfLayersSSD2][NumOfSegSSD2];
       for(int l=0; l<NumOfLayersSSD2; ++l){
 	int  multiplicity = 0;
@@ -1020,6 +1025,7 @@ process_event( void )
 	      hptr_array[ct_id +l]->Fill( time );
 	      hptr_array[de2d_id +l]->Fill( seg, de );
 	      hptr_array[ct2d_id +l]->Fill( seg, time );
+	      hptr_array[chi2_id +l]->Fill( chisqr );
 	      cmultiplicity++;
 	    }
 	  }

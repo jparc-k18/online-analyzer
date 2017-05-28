@@ -1520,6 +1520,21 @@ TList* HistMaker::createSSD1(bool flag_ps)
     top_dir->Add(sub_dir);
   }
 
+  // Chisqr --------------------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kChisqr);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD1, 0, kChisqr, 0);
+    for(int l=0; l<NumOfLayersSSD1; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     500., 0, 500., "Chisqr  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
   return top_dir;
 }
 
@@ -1677,6 +1692,21 @@ TList* HistMaker::createSSD2(bool flag_ps)
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD2/4, 0, NumOfSegSSD2, 200., 0, 200.,
 			     "Segment", "Peak Time  "));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // Chisqr --------------------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kChisqr);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    int target_id = getUniqueID(kSSD2, 0, kChisqr, 0);
+    for(int l=0; l<NumOfLayersSSD2; ++l){
+      sub_dir->Add(createTH1(++target_id,
+			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
+			     500., 0, 500., "Chisqr  "));
     }
     top_dir->Add(sub_dir);
   }

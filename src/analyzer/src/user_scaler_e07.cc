@@ -549,6 +549,7 @@ process_event()
   if(g_run_number != gUnpacker.get_root()->get_run_number()){
     g_run_number = gUnpacker.get_root()->get_run_number();
     g_spill = 0;
+    info[kRight][0].data = 0;
     for( std::size_t i=0; i<MaxColumn; ++i ){
       for( std::size_t j=0; j<MaxRow; ++j ){
 	if( i==kRight && j==0 ) continue;

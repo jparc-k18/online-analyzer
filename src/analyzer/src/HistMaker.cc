@@ -1499,7 +1499,7 @@ TList* HistMaker::createSSD1(bool flag_ps)
     for(int l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
-			     200., 0, 200., "Peak Time  "));
+			     200., 0, 200., "Peak Time [ns] "));
     }
     top_dir->Add(sub_dir);
   }
@@ -1515,7 +1515,7 @@ TList* HistMaker::createSSD1(bool flag_ps)
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD1/4, 0, NumOfSegSSD1, 200., 0, 200.,
-			     "Segment", "Peak Time  "));
+			     "Segment", "Peak Time [ns] "));
     }
     top_dir->Add(sub_dir);
   }
@@ -1675,7 +1675,7 @@ TList* HistMaker::createSSD2(bool flag_ps)
     for(int l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
-			     200., 0, 200., "Peak Time  "));
+			     200., 0, 200., "Peak Time [ns] "));
     }
     top_dir->Add(sub_dir);
   }
@@ -1691,7 +1691,7 @@ TList* HistMaker::createSSD2(bool flag_ps)
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD2/4, 0, NumOfSegSSD2, 200., 0, 200.,
-			     "Segment", "Peak Time  "));
+			     "Segment", "Peak Time [ns] "));
     }
     top_dir->Add(sub_dir);
   }

@@ -176,6 +176,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_e07->Add(macro::Get("dispSSD2DeltaE"));
   tab_e07->Add(macro::Get("dispSSD2Time"));
   tab_e07->Add(macro::Get("dispSSD2Chisqr"));
+  tab_e07->Add(macro::Get("effSSD"));
   //tab_e07->Add(macro::Get("dispProfileSSD"));
 
   // Set histogram pointers to the vector sequentially.

@@ -1421,4 +1421,56 @@ void PsMaker::drawDCEff( void )
     clearOneCanvas( x*y );
   }
 
+  // SSD
+  {
+    ps_->NewPage();
+    int x = 4; int y = 2;
+    cps_->Divide( x, y );
+    int ssd1_id = HistMaker::getUniqueID( kSSD1, 0, kMulti );
+    for( int i=0; i<NumOfLayersSSD1; ++i ){
+      cps_->cd( i+1 );
+      TH1* h = GHist::get( ssd1_id+i*2+1 );
+      if( !h ){
+	std::cerr << "#E: " << MyName << MyFunc
+		  << "Pointer is NULL\n"
+		  << " Unique ID: " << ssd1_id+i*2+1 << std::endl;
+	continue;
+      }
+      h->SetLineColor(1);
+      h->GetXaxis()->SetRangeUser(0,30);
+      h->Draw();
+      double nof0   = h->GetBinContent(1);
+      double nofall = h->GetEntries();
+      double eff    = 1. - nof0/nofall;
+      double xpos   = 0.35;
+      double ypos   = 0.5;
+      text.SetTextSize( 0.08 );
+      text.DrawLatex( xpos, ypos, Form("plane eff. %.2f", eff ) );
+    }
+    int ssd2_id = HistMaker::getUniqueID( kSSD2, 0, kMulti );
+    for( int i=0; i<NumOfLayersSSD2; ++i ){
+      cps_->cd( i+1+NumOfLayersSSD1 );
+      TH1* h = GHist::get( ssd2_id+i*2+1 );
+      if( !h ){
+	std::cerr << "#E: " << MyName << MyFunc
+		  << "Pointer is NULL\n"
+		  << " Unique ID: " << ssd2_id+i*2+1 << std::endl;
+	continue;
+      }
+      h->SetLineColor(1);
+      h->GetXaxis()->SetRangeUser(0,30);
+      h->Draw();
+      double nof0   = h->GetBinContent(1);
+      double nofall = h->GetEntries();
+      double eff    = 1. - nof0/nofall;
+      double xpos   = 0.35;
+      double ypos   = 0.5;
+      text.SetTextSize( 0.08 );
+      text.DrawLatex( xpos, ypos, Form("plane eff. %.2f", eff ) );
+    }
+    cps_->Update();
+    cps_->cd();
+    clearOneCanvas( x*y );
+  }
+
 }

@@ -109,11 +109,16 @@ SsdAnalyzer::Calculate( void )
 	    }
 	  }
 
+	  static TGraph graph;
+	  graph.Set(0);
+	  //( NumOfSamplesSSD, &(tdc[0]), &(adc[0]) );
+
 	  m_adc[l+i*NumOfLayersSSD1][seg] = peak_height;
 	  m_tdc[l+i*NumOfLayersSSD1][seg] = peak_sample;
 	  Double_t pedestal = adc[0];
 	  for(Int_t m=0; m<NumOfSamplesSSD; ++m){
 	    adc[m] -= pedestal;
+	    graph.SetPoint(m, tdc[m], adc[m]);
 	  }
 
 	  /*** SSD Waveform Fitting ***************************
@@ -134,10 +139,9 @@ SsdAnalyzer::Calculate( void )
 	   *
 	   ****************************************************/
 
-	  TGraph graph( NumOfSamplesSSD, &(tdc[0]), &(adc[0]) );
 	  Double_t xmin =  40.;
 	  Double_t xmax = 210.;
-	  TF1 func("func", "[0]*(x-[1])*exp(-(x-[1])/[2])", xmin, xmax);
+	  static TF1 func("func", "[0]*(x-[1])*exp(-(x-[1])/[2])", xmin, xmax);
 	  func.SetParameter( 0, adc[3]*std::exp(1)/60. );
 	  func.SetParLimits( 0, 0., 50000.*std::exp(-1.) );
 	  func.SetParameter( 1, 40. );

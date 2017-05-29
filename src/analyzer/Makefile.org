@@ -34,6 +34,9 @@ my_tgt_rawhist_e0705	:= $(bin_dir)/raw_hist_e0705
 my_obj_rawhist_e07	:= $(core_obj) user_rawhist_e07.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o MsTParamMan.o MatrixParamMan.o
 my_tgt_rawhist_e07	:= $(bin_dir)/raw_hist_e07
 
+my_obj_emc_position	:= $(core_obj) user_emc_position.o HistMaker.o
+my_tgt_emc_position	:= $(bin_dir)/emc_position
+
 my_obj_beammonitor	:= $(core_obj) user_beammonitor.o
 my_tgt_beammonitor	:= $(bin_dir)/beammonitor
 
@@ -80,6 +83,7 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_rawhist_e07) \
+	$(my_tgt_emc_position) \
 	$(my_tgt_beammonitor) \
 	$(my_tgt_beamprofile_e07) \
 	$(my_tgt_beamprofile_e03) \
@@ -142,6 +146,14 @@ my_obj_rawhist_e07	:= $(my_obj_rawhist_e07) \
 my_lib_rawhist_e07	:= libmyrawhist_e07.so
 $(eval $(call make-lib,$(my_lib_rawhist_e07),$(my_obj_rawhist_e07)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e07),$(my_lib_rawhist_e07)))
+
+#_____________________________________________________________________________
+my_obj_emc_position := $(addprefix $(my_dir)/src/,$(my_obj_emc_position))
+my_obj_emc_position := $(my_obj_emc_position) \
+		$(my_dir)/dict/HistMaker_Dict.o
+my_lib_emc_position := libmyemc_position.so
+$(eval $(call make-lib,$(my_lib_emc_position),$(my_obj_emc_position)))
+$(eval $(call make-gui-target,$(my_tgt_emc_position),$(my_lib_emc_position)))
 
 #_____________________________________________________________________________
 my_obj_beammonitor := $(addprefix $(my_dir)/src/,$(my_obj_beammonitor))

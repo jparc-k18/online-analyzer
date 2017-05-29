@@ -79,12 +79,12 @@ MsTParamMan::Initialize( const std::string& filename )
 	iss >> param[i];
       }
       if( param[0].at(0) == '#' ) continue;
-      if( param[1] == "Mem_Thr_Low" || param[0]=="Low" ){
+      if( param[1] == "Mem_Thr_Low" || param[0]=="Low" || param[1]=="Low" ){
 	tofseg =  0;
 	LorH   = -1;
 	continue;
       }
-      if( param[1] == "Mem_Thr_Hi" || param[0]=="Hi" ){
+      if( param[1] == "Mem_Thr_Hi" || param[0]=="Hi" || param[1]=="Hi" ){
 	tofseg =  0;
 	LorH   =  1;
 	continue;

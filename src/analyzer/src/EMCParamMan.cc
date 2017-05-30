@@ -67,7 +67,7 @@ EMCParamMan::Initialize( const std::string& filename )
     iss >> param[0] >> param[1] >> param[2];
 
     if( param[0].at(0) == '#' ) continue;
-    
+
     double spill = std::strtod( param[0].c_str(), NULL );
     double x     = std::strtod( param[1].c_str(), NULL );
     double y     = std::strtod( param[2].c_str(), NULL );
@@ -100,8 +100,8 @@ int
 EMCParamMan::Pos2Spill( double x, double y )
 {
   for( int i=0; i<m_nspill; ++i ){
-    if( abs( m_x[i] - x ) < 1000. &&
-	abs( m_y[i] - y ) < 1000. ){
+    if( TMath::Abs( m_x[i] - x ) < 1000. &&
+	TMath::Abs( m_y[i] - y ) < 1000. ){
       return m_spill[i];
     }
   }

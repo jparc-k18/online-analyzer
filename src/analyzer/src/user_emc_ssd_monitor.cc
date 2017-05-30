@@ -47,7 +47,7 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.initialize( argv );
   gConfMan.initializeEMCParamMan();
   if( !gConfMan.isGood() ) return -1;
-  
+
   for( int i=0; i<MaxEventBuffer; ++i ){
     for( int apv=0; apv<NumOfAPVDAQ; ++apv ){
       for( int l=0; l<NumOfLayersSSD1; ++l )
@@ -75,10 +75,10 @@ process_event( void )
 
   static UnpackerManager& g_unpacker  = GUnpacker::get_instance();
   static EMCParamMan&     emc_manager = EMCParamMan::GetInstance();
-  
+
   const int run_number   = g_unpacker.get_root()->get_run_number();
   const int event_number = g_unpacker.get_event_number();
- 
+
   event_buffer++;
   event_buffer = event_buffer%MaxEventBuffer;
 
@@ -107,7 +107,7 @@ process_event( void )
     xpos -= emc_x_offset;
     ypos -= emc_y_offset;
     double pos2spill = emc_manager.Pos2Spill( xpos, ypos )*spill_prescale;
-    if( spill > pos2spill && pos2spill > 0 ){
+    if( spill > pos2spill ){
       emc_alart[0] = false; emc_alart[1] = false; emc_alart[2] = false;
     }
     spill = pos2spill;
@@ -223,7 +223,7 @@ process_event( void )
     std::cout << std::setw(4) << rspill << " : "
 	      << rhour << "h " << rmin << "m " << rsec << "s\e[m" << std::endl;
   }
-    
+
   if( emc_state==0 ){
     std::string s("PowerOff");
     std::cout << "   EMC state : " << "\e[32;1m" << s

@@ -11,6 +11,7 @@
 #include <TGFileBrowser.h>
 #include <TGraph.h>
 #include <TLegend.h>
+#include <TMath.h>
 #include <TPaveText.h>
 #include <TStyle.h>
 #include <TString.h>
@@ -42,7 +43,7 @@ namespace analyzer
   TLegend *leg_ssd1;
   TLegend *leg_ssd2;
   Color_t  col_beam[nBeam] = { kGreen, kBlue };
-  Color_t  col_daq[nDAQ]   = { kRed, kOrange, kBlue };
+  Color_t  col_daq[nDAQ]   = { kRed, kOrange+1, kBlue };
   Color_t  col_ssd1[nSSD1];
   Color_t  col_ssd2[nSSD2];
 
@@ -83,7 +84,7 @@ process_begin(const std::vector<std::string>& argv)
       g_beam[i]->SetLineColor(col_beam[i]);
       if(i==0) g_beam[i]->Draw("AL");
       else     g_beam[i]->Draw("L");
-      g_beam[i]->SetPoint(1,0,0);
+      g_beam[i]->SetPoint(0,0,0);
     }
     leg_beam = new TLegend( legX, legY, legX+legW, legY+legH );
     leg_beam->SetTextSize(0.05);
@@ -107,7 +108,7 @@ process_begin(const std::vector<std::string>& argv)
       g_daq[i]->SetLineColor(col_daq[i]);
       if(i==0) g_daq[i]->Draw("AL");
       else     g_daq[i]->Draw("L");
-      g_daq[i]->SetPoint(1,0,0);
+      g_daq[i]->SetPoint(0,0,0);
     }
     leg_daq = new TLegend( legX, legY, legX+legW, legY+legH );
     leg_daq->SetTextSize(0.05);
@@ -138,7 +139,7 @@ process_begin(const std::vector<std::string>& argv)
       g_ssd1[i]->SetLineColor(col_ssd1[i]);
       if(i==0) g_ssd1[i]->Draw("AL");
       else     g_ssd1[i]->Draw("L");
-      g_ssd1[i]->SetPoint(1,0,0);
+      g_ssd1[i]->SetPoint(0,0,0);
     }
     leg_ssd1 = new TLegend( legX, legY, legX+legW, legY+legH );
     leg_ssd1->SetTextSize(0.05);
@@ -165,7 +166,7 @@ process_begin(const std::vector<std::string>& argv)
       g_ssd2[i]->SetLineColor(col_ssd2[i]);
       if(i==0) g_ssd2[i]->Draw("AL");
       else     g_ssd2[i]->Draw("L");
-      g_ssd2[i]->SetPoint(1,0,0);
+      g_ssd2[i]->SetPoint(0,0,0);
     }
     leg_ssd2 = new TLegend( legX, legY, legX+legW, legY+legH );
     leg_ssd2->SetTextSize(0.05);
@@ -263,9 +264,15 @@ process_event()
     if( spill_inc ){
       double daq_eff = val_pre[kL1Acc]/val_pre[kL1Req];
       double l2_eff  = val_pre[kL2Acc]/val_pre[kL1Acc];
-      double duty    = 0.;
-      duty = daq_eff/(1.-daq_eff)*(val_pre[kRealTime]/val_pre[kLiveTime]-1.);
-      if( duty>1. ) duty = 1.;
+      double real    = val_pre[kRealTime];
+      double live    = val_pre[kLiveTime];
+      double duty    = daq_eff/(1.-daq_eff)*(real/live-1.);
+      if( TMath::IsNaN(daq_eff) )
+	daq_eff = 1.;
+      if( TMath::IsNaN(l2_eff) )
+	l2_eff = 1.;
+      if( duty>1. || TMath::IsNaN(duty) )
+	duty = 1.;
       g_daq[kDAQEff]->SetPoint(spill, spill, daq_eff);
       g_daq[kDAQEff]->GetYaxis()->SetRangeUser(0, 1.0);
       g_daq[kDAQEff]->GetXaxis()->SetLimits(spill-90, spill+10);
@@ -300,7 +307,7 @@ process_event()
 	double multiplicity = multi[i]/event[i];
 	max = std::max( max, multiplicity );
 	g_ssd1[i]->SetPoint( spill, spill, multiplicity );
-	g_ssd1[i]->GetYaxis()->SetRangeUser( 0., max+20 );
+	g_ssd1[i]->GetYaxis()->SetRangeUser( 0., max+1. );
 	g_ssd1[i]->GetXaxis()->SetLimits( spill-90, spill+10 );
 	multi[i] = 0.;
 	event[i] = 0.;
@@ -330,7 +337,7 @@ process_event()
 	double multiplicity = multi[i]/event[i];
 	max = std::max( max, multiplicity );
 	g_ssd2[i]->SetPoint( spill, spill, multiplicity );
-	g_ssd2[i]->GetYaxis()->SetRangeUser( 0., max+20 );
+	g_ssd2[i]->GetYaxis()->SetRangeUser( 0., max+1. );
 	g_ssd2[i]->GetXaxis()->SetLimits( spill-90, spill+10 );
 	multi[i] = 0.;
 	event[i] = 0.;

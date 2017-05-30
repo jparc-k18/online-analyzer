@@ -302,12 +302,13 @@ process_event()
     } // for(l)
 
     if( spill_inc ){
-      static double max = 0.;
+      //static double max = 0.;
       for( int i=0; i<NumOfLayersSSD1; ++i ){
 	double multiplicity = multi[i]/event[i];
-	max = std::max( max, multiplicity );
+	//max = std::max( max, multiplicity );
 	g_ssd1[i]->SetPoint( spill, spill, multiplicity );
-	g_ssd1[i]->GetYaxis()->SetRangeUser( 0., max+1. );
+	g_ssd1[i]->GetYaxis()->SetRangeUser( 0., 10. );
+	//g_ssd1[i]->GetYaxis()->SetRangeUser( 0., max+1. );
 	g_ssd1[i]->GetXaxis()->SetLimits( spill-90, spill+10 );
 	multi[i] = 0.;
 	event[i] = 0.;
@@ -332,12 +333,13 @@ process_event()
     } // for(l)
 
     if( spill_inc ){
-      static double max = 0.;
+      // static double max = 0.;
       for( int i=0; i<NumOfLayersSSD2; ++i ){
 	double multiplicity = multi[i]/event[i];
-	max = std::max( max, multiplicity );
+	// max = std::max( max, multiplicity );
 	g_ssd2[i]->SetPoint( spill, spill, multiplicity );
-	g_ssd2[i]->GetYaxis()->SetRangeUser( 0., max+1. );
+	g_ssd2[i]->GetYaxis()->SetRangeUser( 0., 10. );
+	// g_ssd2[i]->GetYaxis()->SetRangeUser( 0., max+1. );
 	g_ssd2[i]->GetXaxis()->SetLimits( spill-90, spill+10 );
 	multi[i] = 0.;
 	event[i] = 0.;

@@ -307,7 +307,7 @@ process_event()
 	double multiplicity = multi[i]/event[i];
 	//max = std::max( max, multiplicity );
 	g_ssd1[i]->SetPoint( spill, spill, multiplicity );
-	g_ssd1[i]->GetYaxis()->SetRangeUser( 0., 15. );
+	g_ssd1[i]->GetYaxis()->SetRangeUser( 0., 20. );
 	//g_ssd1[i]->GetYaxis()->SetRangeUser( 0., max+1. );
 	g_ssd1[i]->GetXaxis()->SetLimits( spill-90, spill+10 );
 	multi[i] = 0.;
@@ -338,7 +338,7 @@ process_event()
 	double multiplicity = multi[i]/event[i];
 	// max = std::max( max, multiplicity );
 	g_ssd2[i]->SetPoint( spill, spill, multiplicity );
-	g_ssd2[i]->GetYaxis()->SetRangeUser( 0., 15. );
+	g_ssd2[i]->GetYaxis()->SetRangeUser( 0., 20. );
 	// g_ssd2[i]->GetYaxis()->SetRangeUser( 0., max+1. );
 	g_ssd2[i]->GetXaxis()->SetLimits( spill-90, spill+10 );
 	multi[i] = 0.;

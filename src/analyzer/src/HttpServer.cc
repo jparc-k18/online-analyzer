@@ -75,10 +75,12 @@ HttpServer::Register( TList *list, TList *parent )
 void
 HttpServer::Register( TMacro *macro )
 {
-  if( !macro ) return;
-  macro->Load();
-  m_server->RegisterCommand( Form("/%s", macro->GetName()),
-  			     Form("%s()", macro->GetName()) );
+  std::cerr << "#W HttpServer::Register(TMacro) is not supported yet"
+	    << std::endl;
+  // if( !macro ) return;
+  // macro->Load();
+  // m_server->RegisterCommand( Form("/%s", macro->GetName()),
+  // 			     Form("%s()", macro->GetName()) );
   // m_server->Register("/", macro);
 }
 

@@ -10,7 +10,7 @@ CXX		:= g++
 OUT_PUT_OPT	:= -o
 LD		:= g++
 #LDFLAGS	:= -export-dynamic
-CXXFLAGS	:= -O3 -Wall -fPIC -std=c++0x
+CXXFLAGS	:= -std=c++0x -O3 -Wall -fPIC
 #DEBUGFLAGS	:= -pg -g
 CXXFLAGS	+= -pg -p
 SOFLAGS		:= -shared
@@ -43,6 +43,8 @@ root_libs		:= $(shell $(root_config) --libs)
 root_glibs		:= $(shell $(root_config) --glibs)
 #root_libs		:= $(shell $(root_config) --new --libs)
 #root_glibs		:= $(shell $(root_config) --new --glibs)
+
+root_glibs	+= -lRHTTP
 
 # for TEveBrowser
 root_glibs += \

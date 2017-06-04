@@ -3,6 +3,7 @@
 // Author: Shuhei Hayakawa
 
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -96,9 +97,6 @@ process_event( void )
   static UnpackerManager& gUnpacker = GUnpacker::get_instance();
   static HistMaker&       gHist     = HistMaker::getInstance();
 
-  static int run_number = gUnpacker.get_root()->get_run_number();
-  const int event_number = gUnpacker.get_event_number();
-
   // EMC -----------------------------------------------------------
   static const int nspill = gEMC.NSpill();
   static int spill  = 0;
@@ -140,7 +138,7 @@ process_event( void )
       ypos = gUnpacker.get(k_device, 0, 0, 0, k_ypos)
 	- emc_y_offset;
       double pos2spill = gEMC.Pos2Spill( xpos, ypos );
-      if( spill > pos2spill ){
+      if( spill > pos2spill || spill == 1){
 	hptr_array[xypos_id + seg]->Reset();
       }
       spill = pos2spill;

@@ -7,6 +7,8 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TDirectory.h>
+#include <TROOT.h>
+
 #include "lexical_cast.hh"
 
 ClassImp(GHist)
@@ -116,13 +118,13 @@ GHist::fill1(TH1* h,
 
   if (h)
     {
-//       std::cout << "#D H1::fill() \n" 
-// 		<< h->GetName() << " x = " << x << " w = " << w 
+//       std::cout << "#D H1::fill() \n"
+// 		<< h->GetName() << " x = " << x << " w = " << w
 // 		<< std::endl;
       return h->Fill(x, w);
     }
   else
-    std::cerr << "#E GHist::fill()\n" 
+    std::cerr << "#E GHist::fill()\n"
 	      << " got null pointer" << std::endl;
   return 0;
 }
@@ -204,7 +206,7 @@ GHist::I2(int id,
     return NULL;
   }
   g_h.m_index[id] = name;
-  return new TH2I(name.c_str(), title.c_str(), 
+  return new TH2I(name.c_str(), title.c_str(),
 		  nbinsx, xlow, xup,
 		  nbinsy, ylow, yup);
 }
@@ -252,7 +254,7 @@ GHist::fill2(TH2* h,
 TH1*
 GHist::get(const std::string& name)
 {
-  TObject *ptr = gDirectory->Get(name.c_str());
+  TObject *ptr = gROOT->FindObject(name.c_str());
   if(ptr == NULL){
     std::cerr << "#E HistHelper::get" << std::endl;
     std::cerr << " NULL pointer is returned" << std::endl;
@@ -261,7 +263,7 @@ GHist::get(const std::string& name)
   }
   return dynamic_cast<TH1*>(ptr);
 }
-	   
+
 //______________________________________________________________________________
 TH1*
 GHist::get(int id)
@@ -275,7 +277,7 @@ GHist::get(int id)
   }
   return ptr;
 }
-	   
+
 //______________________________________________________________________________
 GHist&
 GHist::getInstance()

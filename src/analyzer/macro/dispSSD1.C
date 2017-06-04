@@ -11,7 +11,7 @@ void dispSSD1()
 
   const int n_layer = 4;
   const int n_hist  = 5;
-  
+
   int ssd1_id[n_hist][n_layer];
   for( int l=0; l<n_layer; ++l ){
     ssd1_id[0][l] = HistMaker::getUniqueID(kSSD1, 0, kADC2D,  l+1);
@@ -28,7 +28,7 @@ void dispSSD1()
     c->Divide(2,2);
     for(int l=0; l<n_layer; ++l){
       c->cd(l+1)->SetGrid();
-      TH1 *h = (TH1*)GHist::get(ssd1_id[i][l]);
+      TH1 *h = GHist::get(ssd1_id[i][l]);
       if(!h) continue;
       h->Draw("colz");
     }

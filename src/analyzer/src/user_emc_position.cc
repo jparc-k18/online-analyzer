@@ -2,7 +2,9 @@
 
 // Author: Shuhei Hayakawa
 
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -13,9 +15,13 @@
 #include <TH2.h>
 #include <TStyle.h>
 #include <TString.h>
+#include <TSystem.h>
+#include <TText.h>
 
 #include "Controller.hh"
+#include "EMCParamMan.hh"
 #include "user_analyzer.hh"
+#include "Unpacker.hh"
 #include "UnpackerManager.hh"
 #include "ConfMan.hh"
 #include "DetectorID.hh"
@@ -30,6 +36,10 @@ namespace analyzer
   namespace
   {
     std::vector<TH1*> hptr_array;
+    EMCParamMan& gEMC = EMCParamMan::GetInstance();
+    const double emc_x_offset = 500000 - 303300;
+    const double emc_y_offset = 500000 + 164000;
+    TText text;
   }
 
 //____________________________________________________________________________
@@ -38,6 +48,7 @@ process_begin(const std::vector<std::string>& argv)
 {
   ConfMan& gConfMan = ConfMan::getInstance();
   gConfMan.initialize(argv);
+  gConfMan.initializeEMCParamMan();
   if(!gConfMan.isGood()){return -1;}
   // unpacker and all the parameter managers are initialized at this stage
 
@@ -61,9 +72,12 @@ process_begin(const std::vector<std::string>& argv)
   hptr_array[gHist.getSequentialID(kEMC, 0, kXYpos)]->Draw("colz");
   c->Update();
 
-
   gui::Updater::getInstance().setUpdateMode(gui::Updater::k_seconds);
   gui::Updater::getInstance().setInterval(2);
+
+  text.SetNDC();
+  text.SetTextSize(0.040);
+  text.Draw();
 
   return 0;
 }
@@ -81,9 +95,14 @@ process_event( void )
 {
   static UnpackerManager& gUnpacker = GUnpacker::get_instance();
   static HistMaker&       gHist     = HistMaker::getInstance();
-  // static int run_number = g_unpacker.get_root()->get_run_number();
+
+  static int run_number = gUnpacker.get_root()->get_run_number();
+  const int event_number = gUnpacker.get_event_number();
 
   // EMC -----------------------------------------------------------
+  static const int nspill = gEMC.NSpill();
+  static int spill  = 0;
+  static int rspill = 0;
   {
     // data type
     static const int k_device = gUnpacker.get_device_id("EMC");
@@ -115,8 +134,49 @@ process_event( void )
       if(xpos_nhit !=0 && ypos_nhit != 0){
 	hptr_array[xypos_id + seg]->Fill(xpos, ypos);
       }
+
+      xpos = gUnpacker.get(k_device, 0, 0, 0, k_xpos)
+	- emc_x_offset;
+      ypos = gUnpacker.get(k_device, 0, 0, 0, k_ypos)
+	- emc_y_offset;
+      double pos2spill = gEMC.Pos2Spill( xpos, ypos );
+      if( spill > pos2spill ){
+	hptr_array[xypos_id + seg]->Reset();
+      }
+      spill = pos2spill;
+      rspill = nspill - spill;
+
+      if( spill>=0 ){
+	std::stringstream ss;
+	ss << "Spill# " << std::setw(4) << spill << "/" << nspill;
+	int rsec  = int(rspill*5.52);
+	int rhour = rsec/3600;
+	int rmin  = rsec/60 - rhour*60;
+	rsec = rsec%60; ss << " -> ";
+	ss << std::setw(4) << rspill << " : "
+	   << rhour << "h " << rmin << "m " << rsec << "s" << std::endl;
+	text.SetText( 0.500, 0.930, ss.str().c_str() );
+      }
     }
   }
+
+  // // TriggerFlag ---------------------------------------------------
+  // std::bitset<NumOfSegTFlag> trigger_flag;
+  // {
+  //   static const int k_device = gUnpacker.get_device_id("TFlag");
+  //   static const int k_tdc    = gUnpacker.get_data_id("TFlag", "tdc");
+  //   for( int seg=0; seg<NumOfSegTFlag; ++seg ){
+  //     int nhit = gUnpacker.get_entries( k_device, 0, seg, 0, k_tdc );
+  //     if( nhit>0 ){
+  // 	int tdc = gUnpacker.get( k_device, 0, seg, 0, k_tdc );
+  // 	if( tdc>0 ) trigger_flag.set(seg);
+  //     }
+  //   }
+  // }
+
+  // if( trigger_flag[SegIdScalerTrigger] ){
+  //   ((TCanvas*)gROOT->FindObject("c5"))->Print("/tmp/c1.png");
+  // }
 
   return 0;
 }

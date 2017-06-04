@@ -20,7 +20,7 @@ namespace analyzer
   {
     typedef hddaq::unpacker::UnpackerManager UnpackerManager;
     typedef hddaq::unpacker::GUnpacker       GUnpacker;
-    
+
     void
     thread_function(void* arg)
     {
@@ -29,7 +29,7 @@ namespace analyzer
     }
   }
 //______________________________________________________________________________
-Main& 
+Main&
 Main::getInstance()
 {
   static Main g_main;
@@ -103,7 +103,7 @@ void
 Main::initialize(const std::vector<std::string>& argV)
 {
 //   std::cout << "Main::initialize()" << std::endl;
-//   std::copy(argV.begin(), argV.end(), 
+//   std::copy(argV.begin(), argV.end(),
 // 	    std::ostream_iterator<std::string>(std::cout, " " ));
 //   std::cout << std::endl;
   m_argv = argV;
@@ -165,7 +165,7 @@ Main::join()
 }
 
 //______________________________________________________________________________
-double 
+double
 Main::get_dtime()
 {
   struct timeval tv;
@@ -198,7 +198,7 @@ Main::run()
 	      //	      d3_last = d0_last;
 	      if (isZombie())
 		break;
-	      
+
 	      if (isIdle())
 		{
 		  for(;;)
@@ -208,7 +208,7 @@ Main::run()
 		      continue;
 		    }
 		}
-	      
+
 	      if (isRunning())
 		{
 		  // TThread::Lock();
@@ -237,7 +237,7 @@ Main::run()
 //		}
 	      //	      std::cout<<"time2:" <<d1 - d0<<std::endl;
 	    }
-	  
+
 	  std::cout << "#D1 Main::run() exit loop"  << std::endl;
 	  if (isZombie())
 	    break;
@@ -249,7 +249,9 @@ Main::run()
   else
     {
       g_unpacker.initialize();
-      for (;!g_unpacker.eof();++g_unpacker){
+      for (; !g_unpacker.eof()
+	     && !gSystem->ProcessEvents()
+	     ;++g_unpacker){
 	int ret = process_event();
 	if( ret!=0 ){
 	  std::cout << "#D2 analyzer::process_event() return " << ret << std::endl;
@@ -291,7 +293,7 @@ Main::start()
 			     reinterpret_cast<void*>(0U));
       m_thread->Run();
     }
-  
+
   m_state = k_running;
 
   return;
@@ -303,7 +305,7 @@ Main::stat()
 {
   std::cout << "#D Main::stat()" << std::endl;
   UnpackerManager& g_unpacker = GUnpacker::get_instance();
-//   std::cout << "#D " << g_unpacker.get_counter() 
+//   std::cout << "#D " << g_unpacker.get_counter()
 // 	    << " events unpacked" << std::endl;
 //  TThread::Lock();
   g_unpacker.show_event_number();
@@ -329,4 +331,3 @@ Main::suspend()
 }
 
 }
-

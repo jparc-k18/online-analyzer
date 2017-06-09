@@ -20,6 +20,7 @@
 #include <TStyle.h>
 #include <TSystem.h>
 #include <TText.h>
+#include <TTimeStamp.h>
 
 #include "Controller.hh"
 #include "HttpServer.hh"
@@ -57,9 +58,11 @@ namespace analyzer
     EMCParamMan& gEMC  = EMCParamMan::GetInstance();
     HistMaker&   gHist = HistMaker::getInstance();
     HttpServer&  gHttp = HttpServer::GetInstance();
-    TText *text;
     const Double_t emc_x_offset = 500000 - 303300;
     const Double_t emc_y_offset = 500000 + 164000;
+    TText text;
+    TText end;
+    const TString comment_txt("/data1/e07_2017/misc/comment.txt");
   }
 
 //____________________________________________________________________________
@@ -136,10 +139,12 @@ process_begin( const std::vector<std::string>& argv )
   gPad->SetGrid();
   hptr_array[gHist.getSequentialID(kEMC, 0, kXYpos)]->SetStats(0);
   hptr_array[gHist.getSequentialID(kEMC, 0, kXYpos)]->Draw("colz");
-  text = new TText;
-  text->SetNDC();
-  text->SetTextSize(0.040);
-  text->Draw();
+  text.SetNDC();
+  text.SetTextSize(0.040);
+  text.Draw();
+  end.SetNDC();
+  end.SetTextSize(0.040);
+  end.Draw();
   gPad->Update();
 
   return 0;
@@ -169,7 +174,7 @@ process_event( void )
   static const Int_t nspill = gEMC.NSpill();
   static Int_t spill  = 0;
   static Int_t rspill = 0;
-  static int run_number = gUnpacker.get_root()->get_run_number();
+  static int run_number = -1;
   if( run_number != gUnpacker.get_root()->get_run_number() ){
     for( Int_t i=0, n=hptr_array.size(); i<n; ++i ){
       if( i==gHist.getSequentialID(kEMC, 0, kXYpos) )
@@ -177,6 +182,23 @@ process_event( void )
       hptr_array[i]->Reset();
     }
     run_number = gUnpacker.get_root()->get_run_number();
+
+    std::ifstream ifs( comment_txt );
+    TString line;
+    while( ifs.good() && line.ReadLine(ifs) ){
+      if( line.IsNull() || line[0]=='#' ) continue;
+      std::istringstream iss( line.Data() );
+      TString buf[5];
+      iss >> buf[0] >> buf[1] >> buf[2] >> buf[3] >> buf[4];
+      TString num = buf[4];
+      num.ReplaceAll("]","");
+      line.Remove(0,40);
+      if( run_number == num.Atoi() ){
+	static const int xypos_id = gHist.getSequentialID(kEMC, 0, kXYpos);
+      	hptr_array[xypos_id]->SetTitle( line );
+	break;
+      }
+    }
   }
 
   // TriggerFlag ---------------------------------------------------
@@ -1762,9 +1784,13 @@ process_event( void )
 	int rhour = rsec/3600;
 	int rmin  = rsec/60 - rhour*60;
 	rsec = rsec%60; ss << " -> ";
+	TTimeStamp stamp;
+	stamp.Add( -TTimeStamp::GetZoneOffset() );
+	stamp.Add( Int_t(rspill*5.52) );
 	ss << std::setw(4) << rspill << " : "
-	   << rhour << "h " << rmin << "m " << rsec << "s" << std::endl;
-	text->SetText( 0.120, 0.860, ss.str().c_str() );
+	   << rhour << "h " << rmin << "m " << rsec << "s";
+	text.SetText( 0.120, 0.860, ss.str().c_str() );
+	end.SetText( 0.120, 0.800, "End Time : "+TString(stamp.AsString("s")) );
       }
     }
 

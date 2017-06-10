@@ -43,6 +43,9 @@ HttpServer::Register( TObject *obj )
       TString(obj->ClassName()).Contains("TCanvas") )
     return;
 
+  if( TString(obj->ClassName()).Contains("TMacro") )
+    Register((TMacro*)obj);
+
   m_server->Register( "/", obj );
 }
 
@@ -76,12 +79,13 @@ HttpServer::Register( TList *list, TList *parent )
 void
 HttpServer::Register( TMacro *macro )
 {
-  std::cerr << "#W HttpServer::Register(TMacro) is not supported yet"
-	    << std::endl;
+  std::cerr << "#W HttpServer::Register(TMacro) is not supported"
+  	    << std::endl;
   // if( !macro ) return;
   // macro->Load();
   // m_server->RegisterCommand( Form("/%s", macro->GetName()),
   // 			     Form("%s()", macro->GetName()) );
+  // std::cout << "  Macro : " << macro->GetName() << std::endl;
   // m_server->Register("/", macro);
 }
 

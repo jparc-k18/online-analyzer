@@ -69,7 +69,15 @@ namespace analyzer
 int
 process_begin( const std::vector<std::string>& argv )
 {
-  gROOT->SetBatch(kTRUE);
+  // gROOT->SetBatch(kTRUE);
+  gStyle->SetOptStat(1110);
+  gStyle->SetTitleW(.4);
+  gStyle->SetTitleH(.1);
+  // gStyle->SetStatW(.42);
+  // gStyle->SetStatH(.35);
+  gStyle->SetStatW(.32);
+  gStyle->SetStatH(.25);
+  gStyle->SetPalette(55);
 
   ConfMan& gConfMan = ConfMan::getInstance();
   gConfMan.initialize(argv);
@@ -87,7 +95,6 @@ process_begin( const std::vector<std::string>& argv )
 
   gHttp.SetPort(9090);
   gHttp.Open();
-  gHttp.Register( new TCanvas );
   gHttp.Register(gHist.createBH1());
   gHttp.Register(gHist.createBFT());
   gHttp.Register(gHist.createBC3());
@@ -113,16 +120,6 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(gHist.createSSDT());
   gHttp.Register(gHist.createSSD1());
   gHttp.Register(gHist.createSSD2());
-
-  gStyle->SetOptStat(1110);
-  gStyle->SetTitleW(.4);
-  gStyle->SetTitleH(.1);
-  // gStyle->SetStatW(.42);
-  // gStyle->SetStatH(.35);
-  gStyle->SetStatW(.32);
-  gStyle->SetStatH(.25);
-  gStyle->SetPalette(55);
-
   {
     int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
     gHttp.Register( gHist.createTH1(btof_id, "BTOF",
@@ -132,20 +129,59 @@ process_begin( const std::vector<std::string>& argv )
 
   if(0 != gHist.setHistPtr(hptr_array)){ return -1; }
 
+  // Macro for HttpServer
+  gHttp.Register(http::BH1ADC());
+  gHttp.Register(http::BH1TDC());
+  gHttp.Register(http::BFT());
+  gHttp.Register(http::BH2());
+  gHttp.Register(http::ACs());
+  gHttp.Register(http::FBHTDC());
+  gHttp.Register(http::FBHTOT());
+  gHttp.Register(http::FBHHitMulti());
+  gHttp.Register(http::SCHTDC());
+  gHttp.Register(http::SCHTOT());
+  gHttp.Register(http::SCHHitMulti());
+  gHttp.Register(http::TOFADC());
+  gHttp.Register(http::TOFTDC());
+  gHttp.Register(http::MsTTDC());
+  gHttp.Register(http::BC3TDC());
+  gHttp.Register(http::BC3HitMulti());
+  gHttp.Register(http::BC4TDC());
+  gHttp.Register(http::BC4HitMulti());
+  gHttp.Register(http::SDC1TDC());
+  gHttp.Register(http::SDC1HitMulti());
+  gHttp.Register(http::SDC2TDC());
+  gHttp.Register(http::SDC2HitMulti());
+  gHttp.Register(http::SDC3TDC());
+  gHttp.Register(http::SDC3HitMulti());
+  gHttp.Register(http::BcOutEfficiency());
+  gHttp.Register(http::SdcInOutEfficiency());
+
+  gHttp.Register(http::EMC());
+  {
+    ((TCanvas*)gROOT->FindObject("EMC"))->cd();
+    text.SetNDC();
+    text.SetTextSize(0.040);
+    text.Draw();
+    end.SetNDC();
+    end.SetTextSize(0.040);
+    end.Draw();
+  }
+  gHttp.Register(http::SSD1ADCTDC());
+  gHttp.Register(http::SSD2ADCTDC());
+  gHttp.Register(http::SSD1HitMulti());
+  gHttp.Register(http::SSD2HitMulti());
+  gHttp.Register(http::SSD1CHitMulti());
+  gHttp.Register(http::SSD2CHitMulti());
+  gHttp.Register(http::SSD1dETime());
+  gHttp.Register(http::SSD2dETime());
+  gHttp.Register(http::SSD12Chisqr());
+
+  gHttp.Register(http::SSDEfficiency());
+
   for( Int_t i=0, n=hptr_array.size(); i<n; ++i ){
     hptr_array[i]->SetDirectory(0);
   }
-
-  gPad->SetGrid();
-  hptr_array[gHist.getSequentialID(kEMC, 0, kXYpos)]->SetStats(0);
-  hptr_array[gHist.getSequentialID(kEMC, 0, kXYpos)]->Draw("colz");
-  text.SetNDC();
-  text.SetTextSize(0.040);
-  text.Draw();
-  end.SetNDC();
-  end.SetTextSize(0.040);
-  end.Draw();
-  gPad->Update();
 
   return 0;
 }
@@ -1804,6 +1840,10 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+  // Efficiency
+  http::UpdateBcOutEfficiency();
+  http::UpdateSdcInOutEfficiency();
+  http::UpdateSSDEfficiency();
 
   return 0;
 }

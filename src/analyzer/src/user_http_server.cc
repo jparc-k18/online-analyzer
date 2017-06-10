@@ -85,7 +85,7 @@ process_begin( const std::vector<std::string>& argv )
   if(!gConfMan.isGood()) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
-  gHttp.SetPort(8080);
+  gHttp.SetPort(9090);
   gHttp.Open();
   gHttp.Register( new TCanvas );
   gHttp.Register(gHist.createBH1());
@@ -1771,7 +1771,7 @@ process_event( void )
 	- emc_y_offset;
       double pos2spill = gEMC.Pos2Spill( xpos, ypos );
       //if( spill > pos2spill ){
-      if( spill > pos2spill || spill == 1 ){
+      if( pos2spill == nspill || pos2spill == 1 ){
       	hptr_array[xypos_id + seg]->Reset();
       }
       spill = pos2spill;

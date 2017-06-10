@@ -29,7 +29,8 @@ void
 HttpServer::Open( void )
 {
   m_server = new THttpServer(Form("http:%d?loopback?thrds=5", m_port));
-  m_server->SetReadOnly(kFALSE);
+  m_server->Restrict("/", "allow=all");
+  m_server->SetReadOnly(kTRUE);
   std::cout << "#D HttpServer::Open()" << std::endl
 	    << "   Port : " << m_port << std::endl;
 }

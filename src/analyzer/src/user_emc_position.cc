@@ -138,7 +138,8 @@ process_event( void )
       ypos = gUnpacker.get(k_device, 0, 0, 0, k_ypos)
 	- emc_y_offset;
       double pos2spill = gEMC.Pos2Spill( xpos, ypos );
-      if( spill > pos2spill || spill == 1){
+      // if( spill>pos2spill || ( pos2spill>spill && spill==1 ) ){
+      if( spill==1 ){
 	hptr_array[xypos_id + seg]->Reset();
       }
       spill = pos2spill;

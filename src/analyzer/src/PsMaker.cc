@@ -167,26 +167,30 @@ void PsMaker::create(std::string& name)
   // BFT ----------------------------------------------------------------
   if(name == CONV_STRING(kBFT)){
     // TDC
-    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 1000; // for TDC
+    par_list[kXdiv] = 2; par_list[kYdiv] = 3;
+    // par_list[kXrange_min] = 0; par_list[kXrange_max] = 1000; // for TDC
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
 
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,      1));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,      2));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,     11));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,     12));
-    drawOneCanvas(id_list, par_list, flag_xaxis, false);
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC2D,    1));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC2D,    2));
+    drawOneCanvas(id_list, par_list, flag_xaxis, false, "colz");
 
     // TOT
-    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
-    par_list[kXrange_min] = -50; par_list[kXrange_max] = 150; // for TOT
+    par_list[kXdiv] = 2; par_list[kYdiv] = 3;
+    // par_list[kXrange_min] = -50; par_list[kXrange_max] = 150; // for TOT
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
 
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,      1));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,      2));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,     11));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC,     12));
-    drawOneCanvas(id_list, par_list, flag_xaxis, false);
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC2D,    1));
+    id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kADC2D,    2));
+    drawOneCanvas(id_list, par_list, flag_xaxis, false, "colz");
 
     // HitPat & multi
     par_list[kXdiv] = 3; par_list[kYdiv] = 2;
@@ -1224,8 +1228,10 @@ void PsMaker::drawOneCanvas(std::vector<int>& id_list,
       if( gROOT->FindObject(hname) )
 	gROOT->FindObject(hname)->Delete();
       TH2 *hclone = (TH2*)h->Clone(hname);
-      hclone->RebinX(h->GetNbinsX()/200);
-      hclone->RebinY(h->GetNbinsY()/200);
+      if( h->GetNbinsX() > 200 )
+	hclone->RebinX(h->GetNbinsX()/200);
+      if( h->GetNbinsY() > 200 )
+	hclone->RebinY(h->GetNbinsY()/200);
       hclone->SetLineColor(1);
       hclone->Draw(optDraw);
     } else {

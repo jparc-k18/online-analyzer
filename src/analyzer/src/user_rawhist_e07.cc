@@ -204,7 +204,7 @@ process_begin( const std::vector<std::string>& argv )
   // gStyle->SetStatW(.42);
   // gStyle->SetStatH(.35);
   gStyle->SetStatW(.32);
-  gStyle->SetStatH(.25);
+  gStyle->SetStatH(.22);
 
   return 0;
 }

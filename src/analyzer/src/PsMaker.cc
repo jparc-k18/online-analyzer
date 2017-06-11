@@ -84,6 +84,9 @@ void PsMaker::makePs()
   ps_  = new TPostScript(filename.c_str(), 112);
   cps_ = new TCanvas("cps","");
 
+  std::cout << std::endl << "PSFile = " << filename
+	    << std::endl << std::endl;
+
   // Make title page with run number
   drawRunNumber();
 
@@ -177,6 +180,10 @@ void PsMaker::create(std::string& name)
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC,     12));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC2D,    1));
     id_list.push_back(HistMaker::getUniqueID(kBFT, 0, kTDC2D,    2));
+    GHist::get( HistMaker::getUniqueID(kBFT, 0, kTDC2D, 1) )
+      ->GetYaxis()->SetRangeUser( 400., 1000. );
+    GHist::get( HistMaker::getUniqueID(kBFT, 0, kTDC2D, 2) )
+      ->GetYaxis()->SetRangeUser( 400., 1000. );
     drawOneCanvas(id_list, par_list, flag_xaxis, false, "colz");
 
     // TOT
@@ -1224,7 +1231,7 @@ void PsMaker::drawOneCanvas(std::vector<int>& id_list,
     TString hclass = h->ClassName();
     TString hname  = Form("hclone_%d", id_list[i]);
     if( hclass.Contains("TH2") &&
-	h->GetNbinsX() * h->GetNbinsY() > 100000 ){
+	h->GetNbinsX() * h->GetNbinsY() > 200000 ){
       if( gROOT->FindObject(hname) )
 	gROOT->FindObject(hname)->Delete();
       TH2 *hclone = (TH2*)h->Clone(hname);

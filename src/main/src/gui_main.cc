@@ -52,20 +52,27 @@ int main(int argc, char* argv[])
   gSystem->ResetSignal(kSigInterrupt);
 
   g_main.initialize(argV);
+  gSystem->Sleep(200);
 
   // ______ construct GUI ______
   Controller::getInstance();
+  gSystem->Sleep(200);
 
   g_main.setBatchMode(false);
 
-  g_updater.start();
-
   g_main.start();
+  gSystem->Sleep(200);
+
+  g_updater.start();
+  gSystem->Sleep(200);
 
   cint.Run();
 
   g_updater.join();
+  gSystem->Sleep(200);
+
   g_main.join();
+  gSystem->Sleep(200);
 
   return 0;
 }

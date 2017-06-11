@@ -445,8 +445,12 @@ Updater::update()
   g_controller.setIntervalTextColor(c);
 
   TIter canvas_iterator(gROOT->GetListOfCanvases());
-  for (int i=0;;++i)
+  while( true )
     {
+      if( gSystem->ProcessEvents() ){
+	gSystem->Sleep(100);
+	continue;
+      }
       //      std::cout << "#D " << i <<  " Updater::update()" << std::endl;
       TCanvas* canvas = dynamic_cast<TCanvas*>(canvas_iterator.Next());
       if (!canvas){ break; }
@@ -455,15 +459,19 @@ Updater::update()
       //      std::cout << "#C " << i << " " << canvas->GetName() << std::endl;
 
       TIter pad_iterator(canvas->GetListOfPrimitives());
-      for (;;)
+      while( true )
 	{
+	  if( gSystem->ProcessEvents() ){
+	    gSystem->Sleep(100);
+	    continue;
+	  }
+
 	  TPad* pad = dynamic_cast<TPad*>(pad_iterator.Next());
 	  if (!pad){ break; }
 	  //	  std::cout << "#pad " << pad->GetName() << std::endl;
 	  pad->Modified();
 	  pad->Update();
 	}
-
 
       canvas->Modified();
       canvas->Update();

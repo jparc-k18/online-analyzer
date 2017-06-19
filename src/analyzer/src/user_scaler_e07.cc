@@ -266,7 +266,7 @@ PrintScalerSheet( void )
   DrawOneLine( "BAC2", "pi_out", "MST_Clear" );
   DrawOneLine( "PVAC", "(ub)", "MTX_Acc" );
   DrawOneLine( "FAC", "(ub,ub)", "L2_Req" );
-  DrawOneLine( "SCH", "(pi,TOF)", "L2_Acc" );
+  DrawOneLine( "SCH", "(K,pi)", "L2_Acc" );
   DrawOneLine( "TOF", "(K,K)", "FBH" );
 
   const TString& scaler_sheet_pdf("/tmp/scaler_sheet.pdf");
@@ -360,11 +360,11 @@ process_begin(const std::vector<std::string>& argv)
     info[kRight][index++] = ScalerInfo("L2_Acc",       0, 49, true);
     info[kRight][index++] = ScalerInfo("(ub)",         0, 50, true);
     info[kRight][index++] = ScalerInfo("(ub,ub)",      0, 51, true);
-    info[kRight][index++] = ScalerInfo("(pi,TOF)",     0, 52, true);
+    info[kRight][index++] = ScalerInfo("(K,pi)",       0, 52, true);
     info[kRight][index++] = ScalerInfo("(K,K)",        0, 53, true);
     info[kRight][index++] = ScalerInfo("(ub)PS",       0, 54, true);
     info[kRight][index++] = ScalerInfo("(ub,ub)PS",    0, 55, true);
-    info[kRight][index++] = ScalerInfo("(pi,TOF)PS",   0, 56, true);
+    info[kRight][index++] = ScalerInfo("(K,pi)PS",     0, 56, true);
     info[kRight][index++] = ScalerInfo("(K,K)PS",      0, 57, true);
     info[kRight][index++] = ScalerInfo("K_in",         0, 25, true);
     info[kRight][index++] = ScalerInfo("pi_in",        0, 26, true);

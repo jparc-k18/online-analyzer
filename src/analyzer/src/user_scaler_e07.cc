@@ -122,6 +122,8 @@ Print( void )
 
   std::cout << "\033[2J" << std::endl;
 
+  double kpi_ratio = (double)Get("K_beam")/Get("pi_beam");
+
   TString end_mark = g_spill_end ? "Spill End" : "";
 
   int event_number = gUnpacker.get_event_number();
@@ -129,9 +131,9 @@ Print( void )
 	    << std::right << std::setw(16) << g_run_number << " : "
 	    << std::left  << std::setw(12) << "Event Number"
 	    << std::right << std::setw(16) << event_number
-	    << std::endl
-	    << std::left  << std::setw(12) << ""
-	    << std::right << std::setw(16) << "" << "   "
+	    << std::endl  << std::endl
+	    << std::left  << std::setw(12) << "K/pi"
+	    << std::right << std::setw(16) << kpi_ratio << "   "
 	    << std::left  << std::setw(12) << ""
 	    << std::right << std::setw(16) << end_mark
 	    << std::endl;
@@ -318,7 +320,7 @@ process_begin(const std::vector<std::string>& argv)
     info[kLeft][index++] = ScalerInfo("K_beam",  0, 19, true);
     info[kLeft][index++] = ScalerInfo("pi_beam", 0, 20, true);
     info[kLeft][index++] = ScalerInfo("/p_beam", 0, 21, true);
-    info[kLeft][index++] = ScalerInfo("BH1",  0,  0, true);
+    info[kLeft][index++] = ScalerInfo("BH1",     0,  0, true);
     info[kLeft][index++] = ScalerInfo("BH1-1",   0,  1, true);
     info[kLeft][index++] = ScalerInfo("BH1-2",   0,  2, true);
     info[kLeft][index++] = ScalerInfo("BH1-3",   0,  3, true);
@@ -330,7 +332,7 @@ process_begin(const std::vector<std::string>& argv)
     info[kLeft][index++] = ScalerInfo("BH1-9",   0,  9, true);
     info[kLeft][index++] = ScalerInfo("BH1-10",  0, 10, true);
     info[kLeft][index++] = ScalerInfo("BH1-11",  0, 11, true);
-    info[kLeft][index++] = ScalerInfo("BH2",  0, 12, true);
+    info[kLeft][index++] = ScalerInfo("BH2",     0, 12, true);
     info[kLeft][index++] = ScalerInfo("BAC1",    0, 13, true);
     info[kLeft][index++] = ScalerInfo("BAC2",    0, 14, true);
     info[kLeft][index++] = ScalerInfo("FBH",     0, 42, true);

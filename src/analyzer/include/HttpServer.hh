@@ -23,7 +23,6 @@ private:
 private:
   THttpServer           *m_server;
   Int_t                  m_port;
-  std::vector<TCanvas*>  m_canvas;
 
 public:
   void Open( void );

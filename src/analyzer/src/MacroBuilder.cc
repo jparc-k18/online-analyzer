@@ -618,6 +618,7 @@ EMC( void )
   if( !h ) return 0;
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->cd();
+  h->SetStats(kFALSE);
   h->Draw("colz");
   return c1;
 }

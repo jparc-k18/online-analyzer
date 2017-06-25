@@ -1807,7 +1807,8 @@ process_event( void )
 	- emc_y_offset;
       double pos2spill = gEMC.Pos2Spill( xpos, ypos );
       //if( spill > pos2spill ){
-      if( pos2spill == nspill || pos2spill == 1 ){
+      if( // pos2spill == nspill ||
+	  pos2spill == 1 ){
       	hptr_array[xypos_id + seg]->Reset();
       }
       spill = pos2spill;

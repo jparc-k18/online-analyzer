@@ -9,26 +9,26 @@ void dispBeamProfile_e07()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  const int n_hist = 5;
+  const Int_t n_hist = 5;
   TLatex tex;
   tex.SetNDC();
   tex.SetTextSize(0.14);
-  double xpos = 0.15, ypos = 0.75;
+  Double_t xpos = 0.15, ypos = 0.75;
 
-  const double fit_width[2] = { 50., 50. };
+  const Double_t fit_width[2] = { 50., 50. };
 
-  const double ff[n_hist] = { 200., 500., 680, 1000., 1200. };
-  double   rms[2][n_hist];
-  double sigma[2][n_hist];
-    
+  const Double_t ff[] = { 200., 500., 680, 1000., 1200. };
+  Double_t   rms[2][n_hist];
+  Double_t sigma[2][n_hist];
+
   // XY position (dispRMS)
   {
     TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c1"));
     c->Clear();
     c->Divide(5,2);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat);
-    for(int xy=0; xy<2; xy++){
-      for(int i=0; i<n_hist; i++){
+    Int_t base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat);
+    for( Int_t xy=0; xy<2; ++xy ){
+      for(Int_t i=0; i<n_hist; i++){
 	c->cd(i+1+xy*n_hist);
 	TH1 *h = (TH1*)GHist::get(base_id +i +xy*n_hist)->Clone();
 	h->GetXaxis()->SetRangeUser(-200,200);
@@ -39,34 +39,36 @@ void dispBeamProfile_e07()
     }
     c->Update();
   }
+
   // XY position (dispSigma)
   {
     TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c2"));
     c->Clear();
     c->Divide(5,2);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat);
+    Int_t base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat);
     TF1 *f = new TF1("f", "gaus");
     f->SetLineColor(kBlue);
-    for(int xy=0; xy<2; xy++){
-      for(int i=0; i<n_hist; i++){
+    for( Int_t xy=0; xy<2; ++xy ){
+      for( Int_t i=0; i<n_hist; ++i ){
 	c->cd(i+1+xy*n_hist);
 	TH1 *h = (TH1*)GHist::get(base_id +i +xy*n_hist)->Clone();
 	h->GetXaxis()->SetRangeUser(-200,200);
-	// double max = h->GetBinCenter(h->GetMaximumBin());
-	double max = 0.;
+	// Double_t max = h->GetBinCenter(h->GetMaximumBin());
+	Double_t max = 0.;
 	h->Fit("f", "Q", "", max-fit_width[xy], max+fit_width[xy]);
 	sigma[xy][i] = f->GetParameter("Sigma");
 	h->Draw();
 	tex.DrawLatex(xpos, ypos, Form("%.2lf", sigma[xy][i]));
-      }    
+      }
     }
     c->Update();
   }
+
   // X(RMS)%FFpos & X(sigma)%FFpos
   {
     TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c3"));
     c->Clear();
-    c->Divide(2,1);
+    c->Divide(2,2);
     {
       c->cd(1)->SetGrid();
       TGraph *gr = new TGraph(n_hist, ff, rms[0] );
@@ -75,7 +77,7 @@ void dispBeamProfile_e07()
       gr->GetYaxis()->SetTitle("[mm]  ");
       gr->GetYaxis()->SetTitleOffset(1.2);
       gr->SetMarkerStyle(8);
-      gr->SetMarkerSize(4);
+      gr->SetMarkerSize(3);
       gr->SetMarkerColor(kRed);
       gr->Draw("AP");
       c->cd(2)->SetGrid();
@@ -85,41 +87,35 @@ void dispBeamProfile_e07()
       gs->GetYaxis()->SetTitle("[mm]  ");
       gs->GetYaxis()->SetTitleOffset(1.2);
       gs->SetMarkerStyle(8);
-      gs->SetMarkerSize(4);
+      gs->SetMarkerSize(3);
       gs->SetMarkerColor(kBlue);
       gs->Draw("AP");
     }
-    c->Update();
-  }
-  // Y(RMS)%FFpos & Y(sigma)%FFpos
-  {
-    TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c4"));
-    c->Clear();
-    c->Divide(2,1);
     {
-      c->cd(1)->SetGrid();
+      c->cd(3)->SetGrid();
       TGraph *gr = new TGraph(n_hist, ff, rms[1] );
       gr->SetTitle("BeamProfile Y (RMS)");
       gr->GetXaxis()->SetTitle("FF+[mm]");
       gr->GetYaxis()->SetTitle("[mm]  ");
       gr->GetYaxis()->SetTitleOffset(1.2);
       gr->SetMarkerStyle(8);
-      gr->SetMarkerSize(4);
+      gr->SetMarkerSize(3);
       gr->SetMarkerColor(kRed);
       gr->Draw("AP");
-      c->cd(2)->SetGrid();
+      c->cd(4)->SetGrid();
       TGraph *gs = new TGraph(n_hist, ff, sigma[1] );
       gs->SetTitle("BeamProfile Y (sigma)");
       gs->GetXaxis()->SetTitle("FF+[mm]");
       gs->GetYaxis()->SetTitle("[mm]  ");
       gs->GetYaxis()->SetTitleOffset(1.2);
       gs->SetMarkerStyle(8);
-      gs->SetMarkerSize(4);
+      gs->SetMarkerSize(3);
       gs->SetMarkerColor(kBlue);
       gs->Draw("AP");
     }
     c->Update();
   }
+
   // You must write these lines for the thread safe
   // ----------------------------------
   Updater::setUpdating(false);

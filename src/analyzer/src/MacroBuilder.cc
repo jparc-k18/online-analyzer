@@ -585,6 +585,32 @@ SDC3HitMulti( void )
 
 //____________________________________________________________________________
 TCanvas*
+HitPattern( void )
+{
+  std::vector<Int_t> id = {
+    HistMaker::getUniqueID(kBH1,  0, kHitPat),
+    HistMaker::getUniqueID(kBFT,  0, kHitPat),
+    HistMaker::getUniqueID(kBC4,  0, kHitPat, 6),
+    HistMaker::getUniqueID(kFBH,  0, kHitPat),
+    HistMaker::getUniqueID(kSDC1, 0, kHitPat, 1),
+    HistMaker::getUniqueID(kSCH,  0, kHitPat),
+    HistMaker::getUniqueID(kSDC2, 0, kHitPat, 1),
+    HistMaker::getUniqueID(kTOF,  0, kHitPat)
+  };
+
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4,2);
+  for( Int_t i=0, n=id.size(); i<n; ++i ){
+    c1->cd(i+1);
+    TH1* h = GHist::get( id[i] );
+    h->SetMinimum(0);
+    h->Draw();
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
 EMC( void )
 {
   Int_t id = HistMaker::getUniqueID(kEMC, 0, kXYpos);

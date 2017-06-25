@@ -1,4 +1,7 @@
+// -*- C++ -*-
+
 // Author : Hitoshi Sugimura
+
 #include "DCAnalyzer.hh"
 
 #include <iostream>
@@ -14,21 +17,25 @@
 #include "DCGeomMan.hh"
 #include "DCDriftParamMan.hh"
 
-#define DEBUG 0
+#define DEBUG  0
+#define TDC1st 1
 
-using namespace hddaq::unpacker;
-using namespace hddaq;
+namespace
+{
+  using namespace hddaq::unpacker;
+  using namespace hddaq;
 
-UnpackerManager& g_unpacker = GUnpacker::get_instance();
+  UnpackerManager& g_unpacker = GUnpacker::get_instance();
 
-DCTdcCalibMan&   t0man    = DCTdcCalibMan::GetInstance();
-DCDriftParamMan& driftman = DCDriftParamMan::GetInstance();
-DCGeomMan&       geomman  = DCGeomMan::GetInstance();
-// tdc cut
-const int tdc_min = 550;
-const int tdc_max = 700;
-const int sdc2_tdc_min = 550;
-const int sdc2_tdc_max = 700;
+  DCTdcCalibMan&   t0man    = DCTdcCalibMan::GetInstance();
+  DCDriftParamMan& driftman = DCDriftParamMan::GetInstance();
+  DCGeomMan&       geomman  = DCGeomMan::GetInstance();
+  // tdc cut
+  const int tdc_min = 550;
+  const int tdc_max = 700;
+  const int sdc2_tdc_min = 550;
+  const int sdc2_tdc_max = 700;
+}
 
 //______________________________________________________________________________
 DCRHC::DCRHC( int DetectorID )
@@ -187,12 +194,25 @@ void DCRHC::pushback_BcOut( void )
     for( int wire=0; wire<NumOfWireBC3; ++wire ){
       int nhits = g_unpacker.get_entries( DetIdBC3, layer, 0, wire, 0 );
       if( nhits==0 ) continue;
+#if TDC1st
+      int tdc1st = 0;
+#endif
       for( int i=0; i<nhits; ++i ){
 	int tdc = g_unpacker.get(DetIdBC3,layer,0,wire,0,i);
 	if( tdc<MinTdcBC3 || MaxTdcBC3<tdc ) continue;
+#if TDC1st
+	if( tdc1st < tdc ) tdc1st = tdc;
+#else
 	m_hitwire[layer].push_back(wire);
 	m_tdc[layer].push_back(tdc);
+#endif
       }
+#if TDC1st
+      if( tdc1st>0 ){
+	m_hitwire[layer].push_back(wire);
+	m_tdc[layer].push_back(tdc1st);
+      }
+#endif
     }
   }
 
@@ -200,12 +220,25 @@ void DCRHC::pushback_BcOut( void )
     for( int wire=0; wire<NumOfWireBC4; ++wire ){
       int nhits = g_unpacker.get_entries( DetIdBC4, layer, 0, wire, 0 );
       if( nhits==0 ) continue;
+#if TDC1st
+      int tdc1st = 0;
+#endif
       for( int i=0; i<nhits; ++i ){
 	int tdc = g_unpacker.get( DetIdBC4, layer, 0, wire, 0, i );
 	if( tdc<MinTdcBC4 && MaxTdcBC4<tdc ) continue;
+#if TDC1st
+	if( tdc1st < tdc ) tdc1st = tdc;
+#else
 	m_hitwire[layer + NumOfLayersBC3].push_back(wire);
 	m_tdc[layer + NumOfLayersBC3].push_back(tdc);
+#endif
       }
+#if TDC1st
+      if( tdc1st>0 ){
+	m_hitwire[layer + NumOfLayersBC3].push_back(wire);
+	m_tdc[layer + NumOfLayersBC3].push_back(tdc1st);
+      }
+#endif
     }
   }
 
@@ -232,12 +265,25 @@ void DCRHC::pushback_SdcIn( void )
     for( int wire=0; wire<NumOfWireSDC1; ++wire ){
       int nhits = g_unpacker.get_entries( DetIdSDC1, layer, 0, wire, 0 );
       if(nhits==0) continue;
+#if TDC1st
+      int tdc1st = 0;
+#endif
       for( int i=0; i<nhits; ++i ){
 	int tdc = g_unpacker.get( DetIdSDC1, layer, 0, wire, 2, i );
 	if( tdc<MinTdcSDC1 && MaxTdcSDC1<tdc ) continue;
+#if TDC1st
+	if( tdc1st < tdc ) tdc1st = tdc;
+#else
 	m_hitwire[layer].push_back(wire);
 	m_tdc[layer].push_back(tdc);
+#endif
       }
+#if TDC1st
+      if( tdc1st>0 ){
+	m_hitwire[layer].push_back(wire);
+	m_tdc[layer].push_back(tdc1st);
+      }
+#endif
     }
   }
 }
@@ -450,7 +496,7 @@ void DCRHC::makeAvector( void )
     {
       std::cout<<A[i]<<" "<<std::endl;
     }
-#endif  
+#endif
   return;
 }
 //______________________________________________________________________________
@@ -463,7 +509,7 @@ void DCRHC::makeMatrix( void )
   // D G F H
   double paraA,paraB,paraC,paraD,paraE,paraF,paraG,paraH,paraI;
   paraA=paraB=paraC=paraD=paraE=paraF=paraG=paraH=paraI=0;
-  
+
   for(unsigned int i=0;i<m_hitwire.size();++i)
     {
       paraA += H[i]*cosvector[i]*cosvector[i];
@@ -542,7 +588,7 @@ bool DCRHC::make_MinimumPoint( double& dxdZ,double& dydZ,double& x0,double& y0 )
       c += inv_matrix[2][i] * A[i];
       d += inv_matrix[3][i] * A[i];
     }
-  
+
   dXdZ = b;
   dYdZ = d;
   X0 = a;
@@ -753,7 +799,7 @@ std::vector<double> DCRHC::resolveLR( double left1,double right1,
   else
     {
       lr.push_back(1);
-      lr.push_back(-1);      
+      lr.push_back(-1);
       return RightLeft;
     }
 }
@@ -887,7 +933,7 @@ void DCRHC::FullTrackSearch( void )
 			      c += H[plane] * buf_hitpos[plane] * sinvector[plane];
 			      d += H[plane] * buf_hitpos[plane] * z[plane] * sinvector[plane];
 			    }
-    
+
 			  A.push_back(a);
 			  A.push_back(b);
 			  A.push_back(c);
@@ -942,7 +988,7 @@ void DCRHC::FullTrackSearch( void )
       std::cout<<"]"<<std::endl;
     }
 
-#endif  
+#endif
 }
 //______________________________________________________________________________
 double DCRHC::GetResidualSdcOut( int plane )
@@ -1043,7 +1089,7 @@ angle( int degree )
   ragian = degree*unit;
   //  ragian_30 = 30*unit;
   std::vector<double> tilt;
-  
+
   tilt.push_back(sin(ragian));
   tilt.push_back(cos(ragian));
   tilt.push_back(tan(ragian));

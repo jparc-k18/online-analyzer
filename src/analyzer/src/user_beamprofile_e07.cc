@@ -22,20 +22,25 @@
 
 namespace analyzer
 {
-  using namespace hddaq::unpacker;
-  using namespace hddaq;
+  namespace
+  {
+    using namespace hddaq::unpacker;
+    using namespace hddaq;
 
-  std::vector<TH1*> hptr_array;
-  
-  enum HistName
-    {
-      FF_200, FF_500, FF_680, FF_1000, FF_1200,
-      size_HistName
-    };
-  static const double FF_plus[] =
-    {
-      200., 500., 680, 1000., 1200.
-    };
+    std::vector<TH1*> hptr_array;
+
+    const double dist_FF = 1200.;
+
+    enum HistName
+      {
+	FF_200, FF_500, FF_680, FF_1000, FF_1200,
+	NHist
+      };
+    const double FF_plus[] =
+      {
+	200., 500., 680, 1000., 1200.
+      };
+  }
 
 //____________________________________________________________________________
 int
@@ -74,14 +79,14 @@ process_begin(const std::vector<std::string>& argv)
     sub_dir->SetName(nameSubDir);
     int unique_id = gHist.getUniqueID(kMisc, 0, kHitPat);
     // Profile X
-    for(int i = 0; i<size_HistName; ++i){
+    for(int i = 0; i<NHist; ++i){
       char* title = Form("%s FF %d_X", nameSubDir, (int)FF_plus[i]);
       sub_dir->Add(gHist.createTH1(unique_id++, title,
 				    400,-200,200,
 				    "x position [mm]", ""));
     }
     // Profile Y
-    for(int i = 0; i<size_HistName; ++i){
+    for(int i = 0; i<NHist; ++i){
       char* title = Form("%s FF %d_Y", nameSubDir, (int)FF_plus[i]);
       sub_dir->Add(gHist.createTH1(unique_id++, title,
 				    200,-100,100,
@@ -89,7 +94,7 @@ process_begin(const std::vector<std::string>& argv)
     }
     tab_hist->Add(sub_dir);
     // Profile XY
-    for(int i = 0; i<size_HistName; ++i){
+    for(int i = 0; i<NHist; ++i){
       char* title = Form("%s FF %d_XY", nameSubDir, (int)FF_plus[i]);
       sub_dir->Add(gHist.createTH2(unique_id++, title,
 				   400,-200,200, 200,-100,100,
@@ -120,10 +125,10 @@ process_begin(const std::vector<std::string>& argv)
   if(0 != gHist.setHistPtr(hptr_array)){return -1;}
 
   gStyle->SetOptStat(1110);
-  gStyle->SetTitleW(.4);
-  gStyle->SetTitleH(.1);
-  gStyle->SetStatW(.42);
-  gStyle->SetStatH(.3);
+  gStyle->SetTitleW(.400);
+  gStyle->SetTitleH(.100);
+  gStyle->SetStatW(.150);
+  gStyle->SetStatH(.180);
 
   return 0;
 }
@@ -143,8 +148,6 @@ process_event()
   static UnpackerManager& gUnpacker = GUnpacker::get_instance();
   static DCGeomMan&       gGeom     = DCGeomMan::GetInstance();
 
-  static const double dist_FF = 1200.;
-
   /////////// BcOut
   {
     DCRHC BcOutAna(DetIdBcOut);
@@ -152,10 +155,10 @@ process_event()
 
     if(BcOutTrack){
       static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat);
-      static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, size_HistName+1);
-      static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, size_HistName*2+1);
+      static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist+1);
+      static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
 
-      for(int i = 0; i<size_HistName; ++i){
+      for(int i = 0; i<NHist; ++i){
 	double xpos = BcOutAna.GetPosX(dist_FF+FF_plus[i]);
 	double ypos = BcOutAna.GetPosY(dist_FF+FF_plus[i]);
 	hptr_array[xpos_id+i]->Fill(xpos);
@@ -228,7 +231,7 @@ process_event()
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-  
+
   return 0;
 }
 

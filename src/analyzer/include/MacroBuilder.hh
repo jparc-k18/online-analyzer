@@ -44,6 +44,7 @@ namespace http
   TCanvas* SDC2HitMulti( void );
   TCanvas* SDC3TDC( void );
   TCanvas* SDC3HitMulti( void );
+  TCanvas* HitPattern( void );
 
   // E07
   TCanvas* SSD1ADCTDC( void );

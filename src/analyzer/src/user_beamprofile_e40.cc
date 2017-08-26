@@ -19,6 +19,7 @@
 #include "DetectorID.hh"
 #include "HistMaker.hh"
 #include "MacroBuilder.hh"
+#include "UserParamMan.hh"
 
 namespace analyzer
 {
@@ -29,13 +30,35 @@ namespace analyzer
   
   enum HistName
     {
-      FF_n300, FF_n100, FF_100, FF_300, FF_500,
+      // Inside Target
+      i_Zn495, i_Zn338, i_Zn167_5, i_Z0, i_Z150, i_Z240, 
+      // Detector positions
+      i_SFT, i_EG, i_DC1, i_SAC,
       NHist
     };
-  static const double FF_plus[] =
+  static const double TgtOrg_plus[] =
     {
-      -300., -100., 100, 300., 500.
+      // Inside Target
+      -495., -338., -167.5, 0, 150., 240.,
+      // Detector
+      400., 540., 733., 866.
     };
+
+  static const std::string posName[] =
+    {
+      // Inside Target
+      "Tgt Z=-495", "Tgt Z=-338", "Tgt Z=-167.5", "Tgt Z=0", 
+      "Tgt Z=150",  "Tgt Z=240",  
+      // Detectors
+      "SFT", "End guard", "DC1", "KbAC"
+    };
+
+  static const double posSSD[] =
+    {
+      -100, 100, 100, 100
+    };
+
+  static double FF_plus = 0;
 
 //____________________________________________________________________________
 int
@@ -49,6 +72,9 @@ process_begin(const std::vector<std::string>& argv)
   gConfMan.initializeUserParamMan();
   if(!gConfMan.isGood()){return -1;}
   // unpacker and all the parameter managers are initialized at this stage
+
+  FF_plus = UserParamMan::getInstance().getParameter("FF_PLUS", 0);
+  std::cout << "#D : FF+" << FF_plus << std::endl;
 
   // Make tabs
   hddaq::gui::Controller& gCon = hddaq::gui::Controller::getInstance();
@@ -75,14 +101,18 @@ process_begin(const std::vector<std::string>& argv)
     int unique_id = gHist.getUniqueID(kMisc, 0, kHitPat);
     // Profile X
     for(int i = 0; i<NHist; ++i){
-      char* title = Form("%s FF %d_X", nameSubDir, (int)FF_plus[i]);
+      char* title = i==i_Z0?
+	Form("%s_X %s (FF+%d)", nameSubDir, posName[i].c_str(), (int)FF_plus) :
+	Form("%s_X %s", nameSubDir, posName[i].c_str());
       sub_dir->Add(gHist.createTH1(unique_id++, title,
 				    400,-200,200,
 				    "x position [mm]", ""));
     }
     // Profile Y
     for(int i = 0; i<NHist; ++i){
-      char* title = Form("%s FF %d_Y", nameSubDir, (int)FF_plus[i]);
+      char* title = i==i_Z0?
+	Form("%s_Y %s (FF+%d)", nameSubDir, posName[i].c_str(), (int)FF_plus) :
+	Form("%s_Y %s", nameSubDir, posName[i].c_str());
       sub_dir->Add(gHist.createTH1(unique_id++, title,
 				    200,-100,100,
 				    "y position [mm]", ""));
@@ -90,7 +120,9 @@ process_begin(const std::vector<std::string>& argv)
     tab_hist->Add(sub_dir);
     // Profile XY
     for(int i = 0; i<NHist; ++i){
-      char* title = Form("%s FF %d_XY", nameSubDir, (int)FF_plus[i]);
+      char* title = i==i_Z0?
+	Form("%s_XY %s (FF+%d)", nameSubDir, posName[i].c_str(), (int)FF_plus) :
+	Form("%s_YY %s", nameSubDir, posName[i].c_str());
       sub_dir->Add(gHist.createTH2(unique_id++, title,
 				   400,-200,200, 200,-100,100,
 				   "x position [mm]", "y position [mm]"));
@@ -106,7 +138,7 @@ process_begin(const std::vector<std::string>& argv)
     int unique_id = gHist.getUniqueID(kMisc, 0, kHitPat2D);
     const char* nameLayer[] = { "Y0", "X0", "Y1", "X1" };
     for(int l=0; l<NumOfLayersSSD1; ++l){
-      char* title = Form("%s_HitPos_%s", nameSubDir, nameLayer[l]);
+      char* title = Form("%s_HitPos_%s FF+%d", nameSubDir, nameLayer[l], (int)posSSD[l]);
       sub_dir->Add(gHist.createTH1(unique_id++, title,
 				   200,-100,100,
 				   "Position [mm]", ""));
@@ -145,6 +177,7 @@ process_event()
 
   static const double dist_FF = 1200.;
 
+
   /////////// BcOut
   {
     DCRHC BcOutAna(DetIdBcOut);
@@ -156,8 +189,8 @@ process_event()
       static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
 
       for(int i = 0; i<NHist; ++i){
-	double xpos = BcOutAna.GetPosX(dist_FF+FF_plus[i]);
-	double ypos = BcOutAna.GetPosY(dist_FF+FF_plus[i]);
+	double xpos = BcOutAna.GetPosX(dist_FF+FF_plus+TgtOrg_plus[i]);
+	double ypos = BcOutAna.GetPosY(dist_FF+FF_plus+TgtOrg_plus[i]);
 	hptr_array[xpos_id+i]->Fill(xpos);
 	hptr_array[ypos_id+i]->Fill(ypos);
 	hptr_array[xypos_id+i]->Fill(xpos, ypos);

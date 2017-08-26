@@ -15,13 +15,13 @@ ana_dir=$(dirname $(readlink -f $0))/..
 bin_dir=$ana_dir/bin
 
 ##### execute file
-exe_file=$bin_dir/raw_hist_e07
+exe_file=$bin_dir/raw_hist_e40
 
 ##### data directory
 data_dir=$ana_dir/data
 
 ##### configure file
-conf_file=/param/conf/analyzer.conf
+conf_file=/param/conf/analyzer_20170630.conf
 
 #######################################################################
 if [ ! -f $exe_file ]; then

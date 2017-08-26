@@ -9,6 +9,38 @@ void dispHitPat()
   Updater::setUpdating(true);
   // ----------------------------------
 
+  // Return to the initial position
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
+    c->cd();
+  }
+
+  gROOT->SetStyle("Plain");
+  TPDF *pdf = new TPDF("/home/sks/PSFile/e40_2017/hitpat_e40.pdf", 112);
+
+  // Title
+  {
+    //    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
+    TCanvas *c = new TCanvas("c0", "c0");
+    //    pdf->NewPage();
+    c->UseCurrentStyle();
+    c->Divide(1,1);
+    c->cd(1);
+    c->GetPad(1)->Range(0,0,100,100);
+    TText text;
+    text.SetTextSize(0.2);
+    text.SetTextAlign(22);
+    TTimeStamp stamp;
+    stamp.Add( -stamp.GetZoneOffset() );
+    text.SetTextSize(0.1);
+    text.DrawText(50.,50., stamp.AsString("s") );
+    c->Update();
+    c->cd();
+    c->GetPad(1)->Close();
+    delete c;
+    c = NULL;
+  }
+
   // draw ADC
   TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
   c->Clear();
@@ -68,6 +100,10 @@ void dispHitPat()
   c->Update();
 
   c->cd(0);
+
+  pdf->Close();
+
+  gROOT->SetStyle("Classic");
 
   // You must write these lines for the thread safe
   // ----------------------------------

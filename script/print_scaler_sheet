@@ -15,7 +15,7 @@ ana_dir=$(dirname $(readlink -f $0))/..
 bin_dir=$ana_dir/bin
 
 ##### execute file
-exe_file=$bin_dir/scaler_e07
+exe_file=$bin_dir/scaler_e40
 
 ##### data directory
 data_dir=$ana_dir/data

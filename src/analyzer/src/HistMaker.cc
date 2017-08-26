@@ -322,20 +322,26 @@ TList* HistMaker::createBH1(bool flag_ps)
 
   // Hit parttern -----------------------------------------------
   {
-    const char* title = "BH1_hit_pattern";
     int target_id = getUniqueID(kBH1, 0, kHitPat, 0);
     // Add to the top directory
-    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+    top_dir->Add(createTH1(++target_id, "BH1_hit_pattern", // 1 origin
+			   NumOfSegBH1, 0, NumOfSegBH1,
+			   "Segment", ""));
+
+    top_dir->Add(createTH1(++target_id, "BH1_chit_pattern", // 1 origin
 			   NumOfSegBH1, 0, NumOfSegBH1,
 			   "Segment", ""));
   }
 
   // Multiplicity -----------------------------------------------
   {
-    const char* title = "BH1_multiplicity";
     int target_id = getUniqueID(kBH1, 0, kMulti, 0);
     // Add to the top directory
-    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+    top_dir->Add(createTH1(++target_id, "BH1_multiplicity", // 1 origin
+			   NumOfSegBH1, 0, NumOfSegBH1,
+			   "Multiplicity", ""));
+
+    top_dir->Add(createTH1(++target_id, "BH1_cmultiplicity", // 1 origin
 			   NumOfSegBH1, 0, NumOfSegBH1,
 			   "Multiplicity", ""));
   }

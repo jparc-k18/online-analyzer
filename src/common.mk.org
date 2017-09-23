@@ -23,7 +23,7 @@ CPPFLAGS	+= $(addprefix -I,\
 
 #AR	:= ar
 CP	:= cp -vf
-ECHO	:= echo -e
+ECHO	:= /bin/echo -e
 MV	:= mv -vf
 RM	:= rm -vf
 SED	:= sed
@@ -45,7 +45,7 @@ root_glibs		:= $(shell $(root_config) --glibs)
 #root_libs		:= $(shell $(root_config) --new --libs)
 #root_glibs		:= $(shell $(root_config) --new --glibs)
 
-root_glibs	+= -lRHTTP
+#root_glibs	+= -lRHTTP
 
 # for TEveBrowser
 root_glibs += \

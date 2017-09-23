@@ -90,7 +90,6 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_rawhist_e07) \
 	$(my_tgt_rawhist_e40) \
-	$(my_tgt_http_server) \
 	$(my_tgt_emc_position) \
 	$(my_tgt_beammonitor) \
 	$(my_tgt_beamprofile_e07) \
@@ -98,6 +97,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_beamprofile_e40) \
 	$(my_tgt_emc_ssd_monitor) \
 	$(my_tgt_scaler_e07)
+#	$(my_tgt_http_server) 
 #	$(my_old_tgt)
 
  $(my_dir)/dict/%_Dict.cc: \

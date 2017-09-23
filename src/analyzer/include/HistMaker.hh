@@ -11,11 +11,15 @@
 enum DetectorType {
   kDetectorZero,
   // Detector unique ID in the beam line
-  kBH1, kBFT, kBC3, kBC4, kBH2, kBAC, kFBH,
+  kBH1, kBFT, kBC3, kBC4, kBH2, 
+  kMsT, kMtx3D,
+  // Detector unique ID in the KURAMA system
+  kSFT, kSDC1, kSAC, kSCH, kFBT1,
+  kSDC2, kSDC3, kFBT2, kTOF,
+  // Old detectors E07
+  kBAC, kFBH,
   kSSDT, kSSD1, kSSD2,
-  kPVAC, kFAC, kSCH, kEMC, kMsT, kMtx3D,
-  // Detector unique ID in the SKS system
-  kSDC1, kSDC2, kSDC3, kTOF,
+  kPVAC, kFAC, kEMC, 
   // Old detectors
   kBMW, kBAC_SAC, kSFV_SAC3, kGe, kPWO, kSP0,
   kBH2_E07, kBAC_E07, kSSD0, kSAC1, kKFAC,
@@ -29,6 +33,8 @@ enum DetectorType {
 
 enum SubDetectorType {
   kSubDetectorZero,
+  // FBT Layers
+  kFBT_L1, kFBT_L2,
   // Detector unique sub ID in Counters
   kSP0_L1, kSP0_L2, kSP0_L3, kSP0_L4,
   kSP0_L5, kSP0_L6, kSP0_L7, kSP0_L8,
@@ -119,19 +125,19 @@ public:
   TList* createBC3(bool flag_ps=true);
   TList* createBC4(bool flag_ps=true);
   TList* createBH2(bool flag_ps=true);
-  TList* createBAC(bool flag_ps=true);
-  TList* createFBH(bool flag_ps=true);
-  TList* createSSDT(bool flag_ps=true);
-  TList* createSSD1(bool flag_ps=true);
-  TList* createSSD2(bool flag_ps=true);
-  TList* createPVAC(bool flag_ps=true);
-  TList* createFAC(bool flag_ps=true);
-  TList* createSCH(bool flag_ps=true);
-  TList* createEMC(bool flag_ps=true);
+  TList* createSFT(bool flag_ps=true);
   TList* createSDC1(bool flag_ps=true);
+  TList* createSAC(bool flag_ps=true);
+  TList* createSCH(bool flag_ps=true);
+//  TList* createFBT(bool flag_ps=true);
+  TList* createFBT1(bool flag_ps=true);
+  TList* createFBT2(bool flag_ps=true);
   TList* createSDC2(bool flag_ps=true);
   TList* createSDC3(bool flag_ps=true);
+//  TList* createFBT3(bool flag_ps=true);
+//  TList* createFBT4(bool flag_ps=true);
   TList* createTOF(bool flag_ps=true);
+//  TList* createLC(bool flag_ps=true);
   TList* createMsT(bool flag_ps=true);
   TList* createMtx3D(bool flag_ps=false);
   TList* createTriggerFlag(bool flag_ps=true);
@@ -139,6 +145,15 @@ public:
   TList* createDAQ(bool flag_ps=true);
   TList* createDCEff(bool flag_ps=true);
 
+  // Old functions E07
+  TList* createBAC(bool flag_ps=true);
+  TList* createFBH(bool flag_ps=true);
+  TList* createSSDT(bool flag_ps=true);
+  TList* createSSD1(bool flag_ps=true);
+  TList* createSSD2(bool flag_ps=true);
+  TList* createPVAC(bool flag_ps=true);
+  TList* createFAC(bool flag_ps=true);
+  TList* createEMC(bool flag_ps=true);
   // Old functions
   TList* createBMW(bool flag_ps=true);
   TList* createBAC_SAC(bool flag_ps=true);

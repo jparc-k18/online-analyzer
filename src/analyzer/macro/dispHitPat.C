@@ -40,11 +40,11 @@ void dispHitPat()
     delete c;
     c = NULL;
   }
-
+{
   // draw ADC
   TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
   c->Clear();
-  c->Divide(4,2);
+  c->Divide(3,2);
 
   TH1* h = NULL;
 
@@ -62,46 +62,93 @@ void dispHitPat()
   h->Draw();
 
   c->cd(3);
-  base_id = HistMaker::getUniqueID(kBC4, 0, kHitPat, 6);
+  base_id = HistMaker::getUniqueID(kBFT, 0, kHitPat,1);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
   c->cd(4);
-  base_id = HistMaker::getUniqueID(kFBH, 0, kHitPat);
+  base_id = HistMaker::getUniqueID(kBC3, 0, kHitPat, 1);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
   c->cd(5);
-  base_id = HistMaker::getUniqueID(kSDC1, 0, kHitPat, 1);
+  base_id = HistMaker::getUniqueID(kBC4, 0, kHitPat, 5);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
   c->cd(6);
+  base_id = HistMaker::getUniqueID(kBH2, 0, kHitPat,1);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
+  c->Update();
+
+  c->cd(0);
+}
+
+  pdf->Close();
+
+
+{
+  // draw ADC
+  TCanvas *c2 = (TCanvas*)gROOT->FindObject("c2");
+  c2->Clear();
+  c2->Divide(4,2);
+
+  TH1* h = NULL;
+
+  // Scattering  
+  c2->cd(1);
+  int base_id = HistMaker::getUniqueID(kSDC1, 0, kHitPat, 1);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
+
+  c2->cd(2);
+  base_id = HistMaker::getUniqueID(kSFT, 0, kHitPat,1);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
+
+  c2->cd(3);
   base_id = HistMaker::getUniqueID(kSCH, 0, kHitPat);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
-  c->cd(7);
+  c2->cd(4);
+  base_id = HistMaker::getUniqueID(kFBT1, 0, kHitPat,1);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
+
+  c2->cd(5);
   base_id = HistMaker::getUniqueID(kSDC2, 0, kHitPat, 1);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
-  c->cd(8);
-  base_id = HistMaker::getUniqueID(kTOF, 0, kHitPat);
+  c2->cd(6);
+  base_id = HistMaker::getUniqueID(kSDC3, 0, kHitPat, 3);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
-  c->Update();
+  c2->cd(7);
+  base_id = HistMaker::getUniqueID(kFBT2, 0, kHitPat,1);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
 
-  c->cd(0);
-
-  pdf->Close();
+  c2->cd(8);
+  base_id = HistMaker::getUniqueID(kTOF, 0, kHitPat);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
+}
 
   gROOT->SetStyle("Classic");
 

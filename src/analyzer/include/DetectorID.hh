@@ -8,30 +8,24 @@ const int AorT = 2;
 const int DetIdBH1  =  1;
 const int DetIdBH2  =  2;
 const int DetIdBAC  =  3;
-const int DetIdFBH  =  4;
-const int DetIdPVAC =  5;
-const int DetIdFAC  =  6;
+const int DetIdSAC  =  9;
 const int DetIdSCH  =  7;
 const int DetIdTOF  =  8;
 const int NumOfSegBH1  = 11;
-const int NumOfSegBH2  =  1;
+const int NumOfSegBH2  =  8; //New
 const int NumOfSegBAC  =  2;
 const int NumOfSegFBH  = 16;
-const int NumOfSegPVAC =  1;
-const int NumOfSegFAC  =  1;
+const int NumOfSegSAC  = 16; // 12 readout & 4 rooms //New
 const int NumOfSegSCH  = 64;
 const int NumOfSegTOF  = 24;
 const int NumOfSegClusteredFBH = 31;
+const int NumOfRoomsSAC  = 4; 
 
 // Misc
 const int DetIdTFlag    = 21;
 const int DetIdScaler   = 22;
-const int DetIdEMC      = 23;
-const int DetIdSSDT     = 24;
 const int NumOfSegTFlag    = 32;
 const int NumOfSegScaler   = 32;
-const int NumOfSegEMC      =  1;
-const int NumOfSegSSDT     = 16;
 const int SegIdScalerTrigger = 20; // 0-based
 const int NumOfVmeRm = 10;
 
@@ -43,8 +37,8 @@ const int DetIdSDC2 = 106;
 const int DetIdSDC3 = 107;
 const int DetIdBFT  = 110;
 const int DetIdSFT  = 111;
-const int DetIdSSD1 = 121;
-const int DetIdSSD2 = 122;
+const int DetIdFBT1 = 131; //New
+const int DetIdFBT2 = 132; //New
 const int DetIdBcOut  = 20;
 const int DetIdSdcIn  = 30;
 const int DetIdSdcOut = 40;
@@ -57,14 +51,11 @@ const int NumOfLayersSsdIn  =  4;
 const int NumOfLayersSsdOut =  4;
 const int NumOfLayersBC3  = 6;
 const int NumOfLayersBC4  = 6;
+const int NumOfLayersSFT  = 4; //New
+const int NumOfLayersFBT = 2; //New
 const int NumOfLayersSDC1 = 6;
 const int NumOfLayersSDC2 = 4;
 const int NumOfLayersSDC3 = 4;
-const int NumOfLayersSsd  = 8;
-const int NumOfLayersSSD1 = 4;
-const int NumOfLayersSSD2 = 4;
-const int NumOfSamplesSSD = 8;
-
 const int NumOfWireBC3   =  64;
 const int NumOfWireBC4   =  64;
 const int NumOfWireSDC1  =  64;
@@ -79,11 +70,34 @@ const int PlMaxSdcIn  =  6;
 const int PlMinSdcOut = 31;
 const int PlMaxSdcOut = 38;
 
+const int NumOfSegBFT  =  160;
+const int NumOfSegSFT_X =  256; //New
+const int NumOfSegSFT_UV =  320; //New
+const int NumOfSegFBT1 =  48; //New
+const int NumOfSegFBT2 =  64; //New
+
+// Tracker const
+const int FBTOffset = 200; 
+const int NumOfUDStructureFBT = 2;
+// Old Detectors
+// E07 Detectors
+const int DetIdFBH  =  4;
+const int DetIdPVAC =  5;
+const int DetIdFAC  =  6;
+const int DetIdEMC      = 23;
+const int DetIdSSDT     = 24;
+const int NumOfSegPVAC =  1;
+const int NumOfSegFAC  =  1;
+const int NumOfSegEMC      =  1;
+const int NumOfSegSSDT     = 16;
+const int DetIdSSD1 = 121;
+const int DetIdSSD2 = 122;
+const int NumOfLayersSsd  = 8;
+const int NumOfLayersSSD1 = 4;
+const int NumOfLayersSSD2 = 4;
+const int NumOfSamplesSSD = 8;
 const int NumOfSegSSD1 = 1536;
 const int NumOfSegSSD2 = 1536;
-const int NumOfSegBFT  =  160;
-
-// Old Detectors
 const int DetIdLAC  =  6;
 const int DetIdLC   =  7;
 const int DetIdGC   =  8;

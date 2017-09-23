@@ -594,12 +594,20 @@ HitPattern( void )
     HistMaker::getUniqueID(kFBH,  0, kHitPat),
     HistMaker::getUniqueID(kSDC1, 0, kHitPat, 1),
     HistMaker::getUniqueID(kSCH,  0, kHitPat),
+    HistMaker::getUniqueID(kFBT1,  0, kHitPat),
+    HistMaker::getUniqueID(kFBT1,  0, kHitPat,FBTOffset),
+    HistMaker::getUniqueID(kFBT1,  1, kHitPat),
+    HistMaker::getUniqueID(kFBT1,  1, kHitPat,FBTOffset),
     HistMaker::getUniqueID(kSDC2, 0, kHitPat, 1),
+    HistMaker::getUniqueID(kFBT2,  0, kHitPat),
+    HistMaker::getUniqueID(kFBT2,  0, kHitPat,FBTOffset),
+    HistMaker::getUniqueID(kFBT2,  1, kHitPat),
+    HistMaker::getUniqueID(kFBT2,  1, kHitPat,FBTOffset),
     HistMaker::getUniqueID(kTOF,  0, kHitPat)
   };
 
   TCanvas *c1 = new TCanvas(__func__, __func__);
-  c1->Divide(4,2);
+  c1->Divide(4,4);
   for( Int_t i=0, n=id.size(); i<n; ++i ){
     c1->cd(i+1);
     TH1* h = GHist::get( id[i] );

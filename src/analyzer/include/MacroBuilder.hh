@@ -40,6 +40,7 @@ namespace http
   TCanvas* BC4HitMulti( void );
   TCanvas* SDC1TDC( void );
   TCanvas* SDC1HitMulti( void );
+  TCanvas* SAC( void );
   TCanvas* SDC2TDC( void );
   TCanvas* SDC2HitMulti( void );
   TCanvas* SDC3TDC( void );
@@ -60,6 +61,15 @@ namespace http
   TCanvas* SdcInOutEfficiency( void );
   TCanvas* SSDEfficiency( void );
   TCanvas* EMC( void );
+
+  // E40
+  TCanvas* SFT( void );
+  TCanvas* FBT1TDC( void );
+  TCanvas* FBT1TOT( void );
+  TCanvas* FBT1HitMulti( void );
+  TCanvas* FBT2TDC( void );
+  TCanvas* FBT2TOT( void );
+  TCanvas* FBT2HitMulti( void );
 
   void     UpdateBcOutEfficiency( void );
   void     UpdateSdcInOutEfficiency( void );

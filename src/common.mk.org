@@ -10,7 +10,8 @@ CXX		:= g++
 OUT_PUT_OPT	:= -o
 LD		:= g++
 #LDFLAGS	:= -export-dynamic
-CXXFLAGS	:= -std=c++0x -O3 -Wall -fPIC
+#CXXFLAGS	:= -std=c++0x -O3 -Wall -fPIC
+CXXFLAGS	:= -std=c++11 -O3 -Wall -fPIC
 #DEBUGFLAGS	:= -pg -g
 CXXFLAGS	+= -pg -p
 SOFLAGS		:= -shared
@@ -22,7 +23,7 @@ CPPFLAGS	+= $(addprefix -I,\
 
 #AR	:= ar
 CP	:= cp -vf
-ECHO	:= /bin/echo -e
+ECHO	:= echo -e
 MV	:= mv -vf
 RM	:= rm -vf
 SED	:= sed
@@ -44,7 +45,7 @@ root_glibs		:= $(shell $(root_config) --glibs)
 #root_libs		:= $(shell $(root_config) --new --libs)
 #root_glibs		:= $(shell $(root_config) --new --glibs)
 
-# root_glibs	+= -lRHTTP
+root_glibs	+= -lRHTTP
 
 # for TEveBrowser
 root_glibs += \
@@ -137,6 +138,7 @@ define make-depend
 	-MF $3      \
 	-MP         \
 	-MT $2      \
+	-std=c++11  \
 	$(CFLAGS)   \
 	$(CPPFLAGS) \
 	$1

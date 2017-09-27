@@ -1449,11 +1449,9 @@ process_event( void )
 
           // TDC gate range
           UserParamMan& gPar = UserParamMan::getInstance();
-//          static const int tdc_min = gPar.getParameter("FBT1_TDC", 0);
-//          static const int tdc_max = gPar.getParameter("FBT1_TDC", 1);
+          static const int tdc_min = gPar.getParameter("FBT1_TDC", 0);
+          static const int tdc_max = gPar.getParameter("FBT1_TDC", 1);
 
-          static const int tdc_min = gPar.getParameter("FBH_TDC", 0);
-          static const int tdc_max = gPar.getParameter("FBH_TDC", 1);
 
           // sequential id
           for( int l=0; l<NumOfLayersFBT; ++l ){

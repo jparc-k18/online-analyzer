@@ -21,7 +21,7 @@ exe_file=$bin_dir/beamprofile_e40
 data_dir=$ana_dir/data
 
 ##### configure file
-conf_file=/param/conf/analyzer_20170630.conf
+conf_file=/param/conf/analyzer_20170901.conf
 
 #######################################################################
 if [ ! -f $exe_file ]; then

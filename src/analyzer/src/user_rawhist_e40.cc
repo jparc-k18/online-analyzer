@@ -563,11 +563,12 @@ process_event( void )
 
 	// This wire fired at least one times.
 	++multiplicity;
-	hptr_array[bc3hit_id + l]->Fill(w, nhit);
+//	hptr_array[bc3hit_id + l]->Fill(w, nhit);
 
 	bool flag_hit_wt = false;
 	int  tdc1st = 0;
 	for(int m = 0; m<nhit; ++m){
+       	  hptr_array[bc3hit_id + l]->Fill(w);
 	  int tdc = gUnpacker.get(k_device, l, 0, w, k_tdc, m);
 	  hptr_array[bc3t_id + l]->Fill(tdc);
 	  if( tdc1st<tdc ) tdc1st = tdc;
@@ -626,11 +627,12 @@ process_event( void )
 
 	// This wire fired at least one times.
 	++multiplicity;
-	hptr_array[bc4hit_id + l]->Fill(w, nhit);
+//	hptr_array[bc4hit_id + l]->Fill(w, nhit);
 
 	bool flag_hit_wt = false;
 	int  tdc1st = 0;
 	for(int m = 0; m<nhit; ++m){
+	  hptr_array[bc4hit_id + l]->Fill(w);
 	  int tdc = gUnpacker.get(k_device, l, 0, w, k_tdc, m);
 	  hptr_array[bc4t_id + l]->Fill(tdc);
 	  if( tdc1st<tdc ) tdc1st = tdc;

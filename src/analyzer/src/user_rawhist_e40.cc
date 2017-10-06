@@ -78,7 +78,7 @@ process_begin( const std::vector<std::string>& argv )
   hddaq::gui::Controller& gCon = hddaq::gui::Controller::getInstance();
   TGFileBrowser *tab_hist  = gCon.makeFileBrowser("Hist");
   TGFileBrowser *tab_macro = gCon.makeFileBrowser("Macro");
-//  TGFileBrowser *tab_e40   = gCon.makeFileBrowser("E40");
+  TGFileBrowser *tab_e40   = gCon.makeFileBrowser("E40");
 
   // Add macros to the Macro tab
   //tab_macro->Add(hoge());
@@ -125,10 +125,39 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createFBT2());
   tab_hist->Add(gHist.createTOF());
   tab_hist->Add(gHist.createCorrelation());
+  tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createDAQ(false));
   tab_hist->Add(gHist.createTimeStamp(false));
   tab_hist->Add(gHist.createDCEff());
 
+  //e40 tab
+  int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
+  tab_e40->Add(gHist.createTH1(btof_id, "BTOF",
+                               300, -10, 5,
+                               "BTOF [ns]", ""
+                               ));
+  // Matrix pattern
+  // Mtx2D
+  {
+    int mtx2d_id = gHist.getUniqueID(kMisc, kHul2D, kHitPat2D);
+    gHist.createTH2(mtx2d_id, "Mtx2D pattern",
+                    NumOfSegSCH,   0, NumOfSegSCH,
+                    NumOfSegTOF+1, 0, NumOfSegTOF+1,
+                    "SCH seg", "TOF seg"
+                    );
+  }// Mtx2D
+  
+  // Mtx3D
+//  {
+//    int mtx3d_id = gHist.getUniqueID(kMisc, kHul3D, kHitPat2D);
+//    for(int i = 0; i<NumOfSegClusteredFBH; ++i){
+//      gHist.createTH2(mtx3d_id+i, Form("Mtx3D pattern_FBH%d",i),
+//                      NumOfSegSCH,   0, NumOfSegSCH,
+//                      NumOfSegTOF+1, 0, NumOfSegTOF+1,
+//                      "SCH seg", "TOF seg"
+//                      );
+//    }// for(i)
+//  }// Mtx3D
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -426,6 +455,7 @@ process_event( void )
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
+
 
   // BFT -----------------------------------------------------------
   {
@@ -1457,37 +1487,37 @@ process_event( void )
 
           // sequential id
           for( int l=0; l<NumOfLayersFBT; ++l ){
-          for( int v=0; v<NumOfUDStructureFBT; ++v ){
-          int fbt1_tdc_id     = gHist.getSequentialID(kFBT1, l, kTDC,    1+ v*FBTOffset);
-          int fbt1_tot_id     = gHist.getSequentialID(kFBT1, l, kADC,    1+ v*FBTOffset);
+          for( int ud=0; ud<NumOfUDStructureFBT; ++ud ){
+//          int fbt1_tdc_id     = gHist.getSequentialID(kFBT1, l, kTDC,    1+ ud*FBTOffset);
+//          int fbt1_tot_id     = gHist.getSequentialID(kFBT1, l, kADC,    1+ ud*FBTOffset);
           int fbt1_t_all_id   = gHist.getSequentialID(kFBT1, l, kTDC,
-                                                         NumOfSegFBT1+1+ v*FBTOffset);
+                                                         NumOfSegFBT1+1+ ud*FBTOffset);
           int fbt1_tot_all_id = gHist.getSequentialID(kFBT1, l, kADC, 
-                                                         NumOfSegFBT1+1+ v*FBTOffset);
-          int fbt1_hit_id     = gHist.getSequentialID(kFBT1, l, kHitPat, 1+ v*FBTOffset);
-          int fbt1_mul_id     = gHist.getSequentialID(kFBT1, l, kMulti,  1+ v*FBTOffset);
+                                                         NumOfSegFBT1+1+ ud*FBTOffset);
+          int fbt1_hit_id     = gHist.getSequentialID(kFBT1, l, kHitPat, 1+ ud*FBTOffset);
+          int fbt1_mul_id     = gHist.getSequentialID(kFBT1, l, kMulti,  1+ ud*FBTOffset);
      
-          int fbt1_t_2d_id   = gHist.getSequentialID(kFBT1, l, kTDC2D, 1+ v*FBTOffset);
-          int fbt1_tot_2d_id = gHist.getSequentialID(kFBT1, l, kADC2D, 1+ v*FBTOffset);
+          int fbt1_t_2d_id   = gHist.getSequentialID(kFBT1, l, kTDC2D, 1+ ud*FBTOffset);
+          int fbt1_tot_2d_id = gHist.getSequentialID(kFBT1, l, kADC2D, 1+ ud*FBTOffset);
 
           int multiplicity  = 0;
 
-          for( int i=0; i<NumOfSegFBT1; ++i ){
-                  int nhit = gUnpacker.get_entries(k_device, l, v, i, k_leading);
+          for( int seg=0; seg<NumOfSegFBT1; ++seg ){
+                  int nhit = gUnpacker.get_entries(k_device, l, seg, ud, k_leading);
 
                   for(int m = 0; m<nhit; ++m){
-                          int tdc      = gUnpacker.get(k_device, l, v, i, k_leading,  m);
-                          int trailing = gUnpacker.get(k_device, l, v, i, k_trailing, m);
+                          int tdc      = gUnpacker.get(k_device, l, seg, ud, k_leading,  m);
+                          int trailing = gUnpacker.get(k_device, l, seg, ud, k_trailing, m);
                           int tot      = tdc - trailing;
-                          hptr_array[fbt1_tdc_id +i]->Fill(tdc);
-                          hptr_array[fbt1_tot_id +i]->Fill(tot);
+//                          hptr_array[fbt1_tdc_id +i]->Fill(tdc);
+//                          hptr_array[fbt1_tot_id +i]->Fill(tot);
                           hptr_array[fbt1_t_all_id]->Fill(tdc);
                           hptr_array[fbt1_tot_all_id]->Fill(tot);
-                          hptr_array[fbt1_t_2d_id]->Fill(i, tdc);
-                          hptr_array[fbt1_tot_2d_id]->Fill(i, tot);
+                          hptr_array[fbt1_t_2d_id]->Fill(seg, tdc);
+                          hptr_array[fbt1_tot_2d_id]->Fill(seg, tot);
                           if( tdc_min<tdc && tdc<tdc_max ){
                                   ++multiplicity;
-                                  hptr_array[fbt1_hit_id]->Fill(i);
+                                  hptr_array[fbt1_hit_id]->Fill(seg);
                           }
                   }
           }
@@ -1522,43 +1552,43 @@ process_event( void )
           static const int tdc_min = gPar.getParameter("FBT2_TDC", 0);
           static const int tdc_max = gPar.getParameter("FBT2_TDC", 1);
 
+
           // sequential id
           for( int l=0; l<NumOfLayersFBT; ++l ){
-          for( int v=0; v<NumOfUDStructureFBT; ++v ){
-          int fbt2_tdc_id     = gHist.getSequentialID(kFBT2, l, kTDC,    1+ v*FBTOffset);
-          int fbt2_tot_id     = gHist.getSequentialID(kFBT2, l, kADC,    1+ v*FBTOffset);
+          for( int ud=0; ud<NumOfUDStructureFBT; ++ud ){
+//          int fbt1_tdc_id     = gHist.getSequentialID(kFBT2, l, kTDC,    1+ ud*FBTOffset);
+//          int fbt1_tot_id     = gHist.getSequentialID(kFBT2, l, kADC,    1+ ud*FBTOffset);
           int fbt2_t_all_id   = gHist.getSequentialID(kFBT2, l, kTDC,
-                                                            NumOfSegFBT2+1+ v*FBTOffset);
+                                                         NumOfSegFBT2+1+ ud*FBTOffset);
           int fbt2_tot_all_id = gHist.getSequentialID(kFBT2, l, kADC, 
-                                                            NumOfSegFBT2+1+ v*FBTOffset);
-          int fbt2_hit_id     = gHist.getSequentialID(kFBT2, l, kHitPat, 1+ v*FBTOffset);
-          int fbt2_mul_id     = gHist.getSequentialID(kFBT2, l, kMulti,  1+ v*FBTOffset);
+                                                         NumOfSegFBT2+1+ ud*FBTOffset);
+          int fbt2_hit_id     = gHist.getSequentialID(kFBT2, l, kHitPat, 1+ ud*FBTOffset);
+          int fbt2_mul_id     = gHist.getSequentialID(kFBT2, l, kMulti,  1+ ud*FBTOffset);
      
-          int fbt2_t_2d_id   = gHist.getSequentialID(kFBT2, l, kTDC2D, 1+ v*FBTOffset);
-          int fbt2_tot_2d_id = gHist.getSequentialID(kFBT2, l, kADC2D, 1+ v*FBTOffset);
+          int fbt2_t_2d_id   = gHist.getSequentialID(kFBT2, l, kTDC2D, 1+ ud*FBTOffset);
+          int fbt2_tot_2d_id = gHist.getSequentialID(kFBT2, l, kADC2D, 1+ ud*FBTOffset);
 
           int multiplicity  = 0;
 
-          for( int i=0; i<NumOfSegFBT2; ++i ){
-                  int nhit = gUnpacker.get_entries(k_device, l, v, i, k_leading);
+          for( int seg=0; seg<NumOfSegFBT2; ++seg ){
+                  int nhit = gUnpacker.get_entries(k_device, l, seg, ud, k_leading);
 
                   for(int m = 0; m<nhit; ++m){
-                          int tdc      = gUnpacker.get(k_device, l, v, i, k_leading,  m);
-                          int trailing = gUnpacker.get(k_device, l, v, i, k_trailing, m);
+                          int tdc      = gUnpacker.get(k_device, l, seg, ud, k_leading,  m);
+                          int trailing = gUnpacker.get(k_device, l, seg, ud, k_trailing, m);
                           int tot      = tdc - trailing;
-                          hptr_array[fbt2_tdc_id +i]->Fill(tdc);
-                          hptr_array[fbt2_tot_id +i]->Fill(tot);
+//                          hptr_array[fbt2_tdc_id +i]->Fill(tdc);
+//                          hptr_array[fbt2_tot_id +i]->Fill(tot);
                           hptr_array[fbt2_t_all_id]->Fill(tdc);
                           hptr_array[fbt2_tot_all_id]->Fill(tot);
-                          hptr_array[fbt2_t_2d_id]->Fill(i, tdc);
-                          hptr_array[fbt2_tot_2d_id]->Fill(i, tot);
+                          hptr_array[fbt2_t_2d_id]->Fill(seg, tdc);
+                          hptr_array[fbt2_tot_2d_id]->Fill(seg, tot);
                           if( tdc_min<tdc && tdc<tdc_max ){
                                   ++multiplicity;
-                                  hptr_array[fbt2_hit_id]->Fill(i);
+                                  hptr_array[fbt2_hit_id]->Fill(seg);
                           }
                   }
           }
-
 
           hptr_array[fbt2_mul_id]->Fill(multiplicity);
           }

@@ -447,10 +447,6 @@ Updater::update()
   TIter canvas_iterator(gROOT->GetListOfCanvases());
   while( true )
     {
-      if( gSystem->ProcessEvents() ){
-	gSystem->Sleep(100);
-	continue;
-      }
       //      std::cout << "#D " << i <<  " Updater::update()" << std::endl;
       TCanvas* canvas = dynamic_cast<TCanvas*>(canvas_iterator.Next());
       if (!canvas){ break; }
@@ -461,11 +457,6 @@ Updater::update()
       TIter pad_iterator(canvas->GetListOfPrimitives());
       while( true )
 	{
-	  if( gSystem->ProcessEvents() ){
-	    gSystem->Sleep(100);
-	    continue;
-	  }
-
 	  TPad* pad = dynamic_cast<TPad*>(pad_iterator.Next());
 	  if (!pad){ break; }
 	  //	  std::cout << "#pad " << pad->GetName() << std::endl;

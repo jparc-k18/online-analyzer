@@ -249,9 +249,7 @@ Main::run()
   else
     {
       g_unpacker.initialize();
-      for (; !g_unpacker.eof()
-	     && !gSystem->ProcessEvents()
-	     ;++g_unpacker){
+      for ( ; !g_unpacker.eof(); ++g_unpacker ){
 	int ret = process_event();
 	if( ret!=0 ){
 	  std::cout << "#D2 analyzer::process_event() return " << ret << std::endl;

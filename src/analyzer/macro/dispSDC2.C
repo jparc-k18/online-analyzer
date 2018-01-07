@@ -62,12 +62,15 @@ void dispSDC2( void )
     int base_id = HistMaker::getUniqueID(kSDC2, 0, kMulti);
     for( int i=0; i<n_layer; ++i ){
       c->cd(i+1);
-      TH1 *h_wot = (TH1*)GHist::get(base_id + i)->Clone();
-      TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer)->Clone();
-      h_wot->SetMaximum(h_wt->GetMaximum()*1.1);
-      h_wot->Draw();
+      TH1 *h_wot = (TH1*)GHist::get(base_id + i);//->Clone();
+      TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer);//->Clone();
+      if( !h_wot || !h_wt ) continue;
       h_wt->SetLineColor(2);
+//      h_wt->Draw();
+//      h_wot->Draw("same");
+      h_wot->Draw();
       h_wt->Draw("same");
+//      h_wot->SetMaximum(h_wt->GetMaximum()*1.1);
     }
     c->Update();
   }

@@ -24,7 +24,7 @@ namespace analyzer
     ConfMan& gConfMan = ConfMan::getInstance();
     UnpackerManager& gUnpacker = GUnpacker::get_instance();
     //std::vector<std::string> target = { "hul01", "hul03" };
-    std::vector<std::string> target = { "hul03" };
+    std::vector<std::string> target = { "vme01" };
   }
 
 //______________________________________________________________________________
@@ -33,12 +33,12 @@ process_begin(const std::vector<std::string>& argv)
 {
   gConfMan.initialize(argv);
 
-  for( int i=0, n=target.size(); i<n; ++i ){
-    int node_id = gUnpacker.get_fe_id( target.at(i) );
-    Unpacker *node = gUnpacker.get_root()->get_child(node_id);
-    if( !node ) continue;
-    node->set_dump_mode(defines::k_hex);
-  }
+  // for( int i=0, n=target.size(); i<n; ++i ){
+  //   int node_id = gUnpacker.get_fe_id( target.at(i) );
+  //   Unpacker *node = gUnpacker.get_root()->get_child(node_id);
+  //   if( !node ) continue;
+  //   node->set_dump_mode(defines::k_hex);
+  // }
 
   return 0;
 }
@@ -54,6 +54,8 @@ process_end( void )
 int
 process_event( void )
 {
+  int node_id = gUnpacker.get_fe_id( target.at(0) );
+  gUnpacker.dump_data_fe(node_id, 0xff010000);
   /*
     int node_id = gUnpacker.get_fe_id("k18eb"); // Event builder
     std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_magic) << std::dec << std::endl;

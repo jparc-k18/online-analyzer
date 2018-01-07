@@ -962,7 +962,7 @@ process_event( void )
 
 #if 0
     // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device,0);
+    gUnpacker.dump_data_device(k_device);
 #endif
   }
 
@@ -1003,6 +1003,7 @@ process_event( void )
       for( int w=0 ; w<sdc3_nwire; ++w ){
 	int nhit = gUnpacker.get_entries(k_device, l, 0, w, k_tdc);
 	if( nhit == 0 ) continue;
+	//	std::cout << "w " << w << ", nhit " << nhit  << std::endl;
 
 	// This wire fired at least one times.
 	++multiplicity;

@@ -24,6 +24,7 @@ data_dir=$ana_dir/data
 #conf_file=/param/conf/analyzer_20171217.conf
 conf_file=/param/conf/analyzer_20180111.conf
 
+
 #######################################################################
 if [ ! -f $exe_file ]; then
     echo "#E [$(basename $0)] no such file: $exe_file"

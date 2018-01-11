@@ -2460,7 +2460,8 @@ TList* HistMaker::createSDC2(bool flag_ps)
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     20, 0, 20,
+//			     20, 0, 20,
+			     128, 0, 128,
 			     "Multiplicity", ""));
     }
 
@@ -2470,7 +2471,8 @@ TList* HistMaker::createSDC2(bool flag_ps)
       const char* title = NULL;
       title = Form("%s_%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     20, 0, 20,
+//			     20, 0, 20,
+			     128, 0, 128,
 			     "Multiplicity", ""));
     }
 
@@ -2799,7 +2801,8 @@ TList* HistMaker::createSDC3(bool flag_ps)
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     20, 0, 20,
+//			     20, 0, 20,
+			     100, 0, 100,
 			     "Multiplicity", ""));
     }
 
@@ -2809,7 +2812,8 @@ TList* HistMaker::createSDC3(bool flag_ps)
       const char* title = NULL;
       title = Form("%s_%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     20, 0, 20,
+//			     20, 0, 20,
+			     100, 0, 100,
 			     "Multiplicity", ""));
     }
 

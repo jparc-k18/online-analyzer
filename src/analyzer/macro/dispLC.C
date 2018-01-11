@@ -30,7 +30,7 @@ void dispLC()
   c = (TCanvas*)gROOT->FindObject("c2");
   c->Clear();
   c->Divide(8,4);
-  int base_id = HistMaker::getUniqueID(kLC, 0, kADC, 1+n_seg);
+  base_id = HistMaker::getUniqueID(kLC, 0, kADC, 1+n_seg);
   for(int i = 0; i<n_seg; ++i){
     c->cd(i+1);
     gPad->SetLogy();
@@ -45,7 +45,7 @@ void dispLC()
   c = (TCanvas*)gROOT->FindObject("c3");
   c->Clear();
   c->Divide(8,4);
-  int base_id = HistMaker::getUniqueID(kLC, 0, kTDC, 1);
+  base_id = HistMaker::getUniqueID(kLC, 0, kTDC, 1);
   for(int i = 0; i<n_seg; ++i){
     c->cd(i+1);
     GHist::get(base_id + i)->Draw();
@@ -57,7 +57,7 @@ void dispLC()
   c = (TCanvas*)gROOT->FindObject("c4");
   c->Clear();
   c->Divide(8,4);
-  int base_id = HistMaker::getUniqueID(kLC, 0, kTDC, 1+n_seg);
+  base_id = HistMaker::getUniqueID(kLC, 0, kTDC, 1+n_seg);
   for(int i = 0; i<n_seg; ++i){
     c->cd(i+1);
     GHist::get(base_id + i)->Draw();

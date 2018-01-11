@@ -15,7 +15,7 @@ enum DetectorType {
   kMsT, kMtx3D,
   // Detector unique ID in the KURAMA system
   kSFT, kSDC1, kSAC, kSCH, kFBT1,
-  kSDC2, kSDC3, kFBT2, kTOF,
+  kSDC2, kSDC3, kFBT2, kTOF,kLC,
   // Old detectors E07
   kBAC, kFBH,
   kSSDT, kSSD1, kSSD2,
@@ -23,7 +23,7 @@ enum DetectorType {
   // Old detectors
   kBMW, kBAC_SAC, kSFV_SAC3, kGe, kPWO, kSP0,
   kBH2_E07, kBAC_E07, kSSD0, kSAC1, kKFAC,
-  kKIC, kHDC, kSDC4, kTOFMT, kLAC, kLC,
+  kKIC, kHDC, kSDC4, kTOFMT, kLAC, 
   // Others
   kTriggerFlag, kDAQ, kCorrelation, kMisc,
   kTimeStamp, kDCEff,
@@ -134,7 +134,7 @@ public:
   TList* createSDC3(bool flag_ps=true);
   TList* createFBT2(bool flag_ps=true);
   TList* createTOF(bool flag_ps=true);
-//  TList* createLC(bool flag_ps=true);
+  TList* createLC(bool flag_ps=true);
   TList* createMsT(bool flag_ps=true);
   TList* createMtx3D(bool flag_ps=false);
   TList* createTriggerFlag(bool flag_ps=true);
@@ -168,7 +168,6 @@ public:
   TList* createSDC4(bool flag_ps=true);
   TList* createTOFMT(bool flag_ps=true);
   TList* createLAC(bool flag_ps=true);
-  TList* createLC(bool flag_ps=true);
   TList* createTriggerFlag_E07(bool flag_ps=true);
   TList* createPWO_E05(bool flag_ps=true);
 

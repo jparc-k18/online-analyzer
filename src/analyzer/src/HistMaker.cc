@@ -4386,8 +4386,8 @@ TList* HistMaker::createSFT(bool flag_ps)
   const char* nameDetector = strDet.c_str();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
-  const char* name_Layer[] = { "XU", "XD", "U", "V" };
-  const char* name_Layer_1[] = { "X", "U", "V" };
+  const char* name_Layer[] = { "X", "XP", "V", "U" };
+  const char* name_Layer_1[] = { "X", "V", "U" };
 //  const int NumOfSegSFT;
 
   // TDC---------------------------------------------------------

@@ -14,7 +14,7 @@ my_dir  = $(src_top_dir)/$(my_name)
 
 include ../common.mk
 
-core_obj = SsdAnalyzer.o EMCParamMan.o UserParamMan.o HodoParamMan.o HodoPHCMan.o DCGeomMan.o DCTdcCalibMan.o DCDriftParamMan.o DCGeomRecord.o ConfMan.o
+core_obj = SsdAnalyzer.o EMCParamMan.o UserParamMan.o HodoParamMan.o HodoPHCMan.o DCGeomMan.o DCTdcCalibMan.o DCDriftParamMan.o DCGeomRecord.o ConfMan.o ProcInfo.o
 
 my_obj_skeleton	:= $(core_obj) user_skeleton.o
 my_tgt_skeleton	:= $(bin_dir)/skeleton
@@ -97,7 +97,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_beamprofile_e40) \
 	$(my_tgt_emc_ssd_monitor) \
 	$(my_tgt_scaler_e07)
-#	$(my_tgt_http_server) 
+#	$(my_tgt_http_server)
 #	$(my_old_tgt)
 
  $(my_dir)/dict/%_Dict.cc: \

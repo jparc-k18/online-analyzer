@@ -21,9 +21,7 @@ exe_file=$bin_dir/raw_hist_e40
 data_dir=$ana_dir/data
 
 ##### configure file
-#conf_file=/param/conf/analyzer_20171217.conf
-conf_file=/param/conf/analyzer_20180111.conf
-
+conf_file=/param/conf/analyzer.conf
 
 #######################################################################
 if [ ! -f $exe_file ]; then
@@ -46,7 +44,7 @@ elif [ $# = 1 ]; then
     fi
 
     $exe_file $conf_file $data_file
-    
+
 elif [ $# = 2 ]; then
     data_file=$data_dir/run$1.dat.gz
     if [ ! -f $data_file ]; then

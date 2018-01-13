@@ -15,7 +15,7 @@ enum DetectorType {
   kMsT, kMtx3D,
   // Detector unique ID in the KURAMA system
   kSFT, kSDC1, kSAC, kSCH, kFBT1,
-  kSDC2, kSDC3, kFBT2, kTOF,kLC,
+  kSDC2, kSDC3, kFBT2, kTOF,kTOF_HT,kLC,
   // Old detectors E07
   kBAC, kFBH,
   kSSDT, kSSD1, kSSD2,
@@ -134,6 +134,7 @@ public:
   TList* createSDC3(bool flag_ps=true);
   TList* createFBT2(bool flag_ps=true);
   TList* createTOF(bool flag_ps=true);
+  TList* createTOF_HT(bool flag_ps=true);
   TList* createLC(bool flag_ps=true);
   TList* createMsT(bool flag_ps=true);
   TList* createMtx3D(bool flag_ps=false);

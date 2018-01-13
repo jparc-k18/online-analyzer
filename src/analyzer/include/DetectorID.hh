@@ -11,7 +11,8 @@ const int DetIdBAC  =  3;
 const int DetIdSAC  =  9;
 const int DetIdSCH  =  7;
 const int DetIdTOF  =  8;
-const int DetIdLC   = 10; //add 
+const int DetIdTOF_HT  =  11;
+const int DetIdLC   = 10; //add
 const int NumOfSegBH1  = 11;
 const int NumOfSegBH2  =  8; //add
 const int NumOfSegBAC  =  2;
@@ -19,17 +20,19 @@ const int NumOfSegFBH  = 16;
 const int NumOfSegSAC  = 16; // 12 readout & 4 rooms //add
 const int NumOfSegSCH  = 64;
 const int NumOfSegTOF  = 24;
+//const int NumOfSegTOF_HT  = 24;
+const int NumOfSegTOF_HT  = 16;
 const int NumOfSegClusteredFBH = 31;
-const int NumOfRoomsSAC  = 4; 
+const int NumOfRoomsSAC  = 4;
 const int NumOfSegLC  = 28;
 
 // Misc
-const int DetIdTFlag    = 21;
-const int DetIdScaler   = 22;
-const int NumOfSegTFlag    = 32;
-const int NumOfSegScaler   = 32;
-const int SegIdScalerTrigger = 20; // 0-based
-const int NumOfVmeRm = 10;
+const int DetIdTFlag     = 21;
+const int DetIdScaler    = 22;
+const int NumOfSegTFlag  = 32;
+const int NumOfSegScaler = 32;
+const int SpillEndFlag   = 20; // 0-based
+const int NumOfVmeRm     = 10;
 
 // Trackers
 const int DetIdBC3  = 103;
@@ -78,7 +81,7 @@ const int NumOfSegFBT1 =  48; //add
 const int NumOfSegFBT2 =  64; //add
 
 // Tracker const
-const int FBTOffset = 200; 
+const int FBTOffset = 200;
 const int NumOfUDStructureFBT = 2;
 // Old Detectors
 // E07 Detectors

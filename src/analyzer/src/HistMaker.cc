@@ -320,6 +320,35 @@ TList* HistMaker::createBH1(bool flag_ps)
     top_dir->Add(sub_dir);
   }
 
+  // TDC (FPGA)----------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = "FPGA_TDC";
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    int target_id = getUniqueID(kBH1, 0, kTDC, NumOfSegBH1*2);
+    for(int i = 0; i<NumOfSegBH1*2; ++i){
+      const char* title = NULL;
+      if(i < NumOfSegBH1){
+	int seg = i+1; // 1 origin
+	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+      }else{
+	int seg = i+1-NumOfSegBH1; // 1 origin
+	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }
+
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     50000, 0, 2000000,
+			     "TDC [ch]", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
   // Hit parttern -----------------------------------------------
   {
     int target_id = getUniqueID(kBH1, 0, kHitPat, 0);
@@ -867,6 +896,35 @@ TList* HistMaker::createBH2(bool flag_ps)
       }
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
 			     0x1000, 0, 0x1000,
+			     "TDC [ch]", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // TDC (FPGA)----------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = "FPGA_TDC";
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    int target_id = getUniqueID(kBH2, 0, kTDC, NumOfSegBH2*2);
+    for(int i = 0; i<NumOfSegBH2*2; ++i){
+      const char* title = NULL;
+      if(i < NumOfSegBH2){
+	int seg = i+1; // 1 origin
+	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+      }else{
+	int seg = i+1-NumOfSegBH2; // 1 origin
+	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }
+
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     50000, 0, 2000000,
 			     "TDC [ch]", ""));
     }
 
@@ -3514,8 +3572,8 @@ TList* HistMaker::createMsT(bool flag_ps)
     int target_id = getUniqueID(kMsT, 0, kTDC, 0);
     for(int seg=0; seg<NumOfSegTOF; ++seg){
       sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d", nameDetector, seg+1),
-			     0x800, 0, 0x800,
-			     "Segment", ""));
+			     50000, 0, 2000000,
+			     "TDC", ""));
     }
     top_dir->Add(sub_dir);
   }
@@ -3527,8 +3585,8 @@ TList* HistMaker::createMsT(bool flag_ps)
     int target_id = getUniqueID(kMsT, 0, kTDC, NumOfSegTOF);
     for(int seg=0; seg<NumOfSegTOF; ++seg){
       sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d_Acc", nameDetector, seg+1),
-			     0x800, 0, 0x800,
-			     "Segment", ""));
+			     50000, 0, 2000000,
+			     "TDC", ""));
     }
     top_dir->Add(sub_dir);
   }
@@ -3537,7 +3595,7 @@ TList* HistMaker::createMsT(bool flag_ps)
   {
     int target_id = getUniqueID(kMsT, 0, kTDC2D, 0);
     top_dir->Add(createTH2(++target_id, Form("%s_TOF_TDC_2D", nameDetector),
-			   NumOfSegTOF, 0, NumOfSegTOF, 0x800, 0, 0x800,
+			   NumOfSegTOF, 0, NumOfSegTOF, 50000, 0, 2000000,
 			   "Segment", ""));
   }
 
@@ -4565,7 +4623,7 @@ TList* HistMaker::createSFT(bool flag_ps)
     int target_id = getUniqueID(kSFT, 0, kTDC, 0);
     const char* sub_name = "TDC";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){  
+    for(int i=0; i<NumOfLayersSFT; ++i){
     const char* title = NULL;
     title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
             top_dir->Add(createTH1( ++target_id, title , // 1 origin
@@ -4579,7 +4637,7 @@ TList* HistMaker::createSFT(bool flag_ps)
     int target_id = getUniqueID(kSFT, 0, kTDC, 10);
     const char* sub_name = "CTDC";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){  
+    for(int i=0; i<NumOfLayersSFT; ++i){
     const char* title = NULL;
     title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
     top_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -4593,7 +4651,7 @@ TList* HistMaker::createSFT(bool flag_ps)
     int target_id = getUniqueID(kSFT, 0, kADC, 0);
     const char* sub_name = "TOT";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){  
+    for(int i=0; i<NumOfLayersSFT; ++i){
     const char* title = NULL;
     title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
     top_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -4607,7 +4665,7 @@ TList* HistMaker::createSFT(bool flag_ps)
     int target_id = getUniqueID(kSFT, 0, kADC, 10);
     const char* sub_name = "CTOT";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){  
+    for(int i=0; i<NumOfLayersSFT; ++i){
     const char* title = NULL;
     title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
     top_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -4621,10 +4679,10 @@ TList* HistMaker::createSFT(bool flag_ps)
     int target_id = getUniqueID(kSFT, 0, kHitPat, 0);
     const char* sub_name = "HitPat";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){  
+    for(int i=0; i<NumOfLayersSFT; ++i){
     const char* title = NULL;
     title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-    if( i==0 || i==1 ){  
+    if( i==0 || i==1 ){
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   NumOfSegSFT_X, 0, NumOfSegSFT_X,
 			   "Segment", ""));
@@ -4632,7 +4690,7 @@ TList* HistMaker::createSFT(bool flag_ps)
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
 			   "Segment", ""));
-            } 
+            }
    }
   }
 
@@ -4641,10 +4699,10 @@ TList* HistMaker::createSFT(bool flag_ps)
     int target_id = getUniqueID(kSFT, 0, kHitPat, 10);
     const char* sub_name = "CHitPat";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){  
+    for(int i=0; i<NumOfLayersSFT; ++i){
     const char* title = NULL;
     title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-    if( i==0 || i==1 ){  
+    if( i==0 || i==1 ){
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   NumOfSegSFT_X, 0, NumOfSegSFT_X,
 			   "Segment", ""));
@@ -4652,7 +4710,7 @@ TList* HistMaker::createSFT(bool flag_ps)
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
 			   "Segment", ""));
-            } 
+            }
    }
   }
 
@@ -4662,7 +4720,7 @@ TList* HistMaker::createSFT(bool flag_ps)
     int target_id = getUniqueID(kSFT, 0, kMulti, 0);
     const char* sub_name = "multiplicity";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT-1; ++i){  
+    for(int i=0; i<NumOfLayersSFT-1; ++i){
     const char* title = NULL;
     title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer_1[i] );
     top_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -4677,7 +4735,7 @@ TList* HistMaker::createSFT(bool flag_ps)
     int target_id = getUniqueID(kSFT, 0, kMulti, 10);
     const char* sub_name = "CMulti";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT-1; ++i){  
+    for(int i=0; i<NumOfLayersSFT-1; ++i){
     const char* title = NULL;
     title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer_1[i] );
     top_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -4691,15 +4749,15 @@ TList* HistMaker::createSFT(bool flag_ps)
     int target_id = getUniqueID(kSFT, 0, kTDC2D, 0);
     const char* sub_name = "CTDC";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){  
+    for(int i=0; i<NumOfLayersSFT; ++i){
     const char* title = NULL;
     title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-    if( i==0 || i==1 ){  
+    if( i==0 || i==1 ){
             top_dir->Add(createTH2(++target_id, title, // 1 origin
                                     NumOfSegSFT_X, 0, NumOfSegSFT_X,
                                     1024, 0, 1024,
                                     "Segment", "TDC [ch]"));
-    }else{ 
+    }else{
             top_dir->Add(createTH2(++target_id, title, // 1 origin
                                     NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
                                     1024, 0, 1024,
@@ -4713,15 +4771,15 @@ TList* HistMaker::createSFT(bool flag_ps)
     int target_id = getUniqueID(kSFT, 0, kADC2D, 0);
     const char* sub_name = "CTOT";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){  
+    for(int i=0; i<NumOfLayersSFT; ++i){
     const char* title = NULL;
     title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-    if( i==0 || i==1 ){  
+    if( i==0 || i==1 ){
             top_dir->Add(createTH2(++target_id, title, // 1 origin
                                     NumOfSegSFT_X, 0, NumOfSegSFT_X,
                                     200, -50, 150,
                                     "Segment", "TOT [ch]"));
-    }else{ 
+    }else{
             top_dir->Add(createTH2(++target_id, title, // 1 origin
                                     NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
                                     200, -50, 150,
@@ -4852,7 +4910,7 @@ TList* HistMaker::createFBT1(bool flag_ps)
 //       for(int v=0; v<NumOfUDStructureFBT; ++v){
 //       int target_id = getUniqueID(kFBT1, l, kTDC, v*FBTOffset);
 //          for(int i=0; i<NumOfSegFBT1; ++i){
-//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s", 
+//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
 //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
 //			       1024, 0, 1024,
 //			       "TDC [ch]", ""));
@@ -4870,7 +4928,7 @@ TList* HistMaker::createFBT1(bool flag_ps)
 //    for(int v=0; v<NumOfUDStructureFBT; ++v){
 //       int target_id = getUniqueID(kFBT1, l, kADC, v*FBTOffset);
 //    for(int i=0; i<NumOfSegFBT1; ++i){
-//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s", 
+//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
 //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
 //			       200, -50, 150,
 //			       "TOT [ch]", ""));
@@ -4901,7 +4959,7 @@ TList* HistMaker::createFBT1(bool flag_ps)
   for(int l=0; l<NumOfLayersFBT; ++l){
   for(int v=0; v<NumOfUDStructureFBT; ++v){
     int target_id = getUniqueID(kFBT1, l, kTDC2D, v*FBTOffset);
-    top_dir->Add(createTH2(++target_id, 
+    top_dir->Add(createTH2(++target_id,
                            Form("FBT1_Layer%d_TDC2D_%s",l+1, UD[v]), // 1 origin
 			   NumOfSegFBT1, 0, NumOfSegFBT1,
 			   1024, 0, 1024,
@@ -4914,7 +4972,7 @@ TList* HistMaker::createFBT1(bool flag_ps)
   for(int l=0; l<NumOfLayersFBT; ++l){
   for(int v=0; v<NumOfUDStructureFBT; ++v){
     int target_id = getUniqueID(kFBT1, l, kADC2D, v*FBTOffset);
-    top_dir->Add(createTH2(++target_id, 
+    top_dir->Add(createTH2(++target_id,
           		   Form("FBT1_Layer%d_TOT2D_%s",l+1, UD[v]), // 1 origin
 			   NumOfSegFBT1, 0, NumOfSegFBT1,
 			   200, -50, 150,
@@ -4927,7 +4985,7 @@ TList* HistMaker::createFBT1(bool flag_ps)
   for(int l=0; l<NumOfLayersFBT; ++l){
   for(int v=0; v<NumOfUDStructureFBT; ++v){
     int target_id = getUniqueID(kFBT1, l, kHitPat, v*FBTOffset);
-    top_dir->Add(createTH1(++target_id, 
+    top_dir->Add(createTH1(++target_id,
                            Form("FBT1_Layer%d_HitPat_%s",l+1, UD[v]), // 1 origin
 			   NumOfSegFBT1, 0, NumOfSegFBT1,
 			   "Segment", ""));
@@ -4939,7 +4997,7 @@ TList* HistMaker::createFBT1(bool flag_ps)
   for(int l=0; l<NumOfLayersFBT; ++l){
   for(int v=0; v<NumOfUDStructureFBT; ++v){
     int target_id = getUniqueID(kFBT1, l, kMulti, v*FBTOffset);
-    top_dir->Add(createTH1(++target_id, 
+    top_dir->Add(createTH1(++target_id,
                            Form("FBT1_Layer%d_multiplicity_%s",l+1, UD[v]), // 1 origin
 			   NumOfSegFBT1, 0, NumOfSegFBT1,
 			   "Multiplicity", ""));
@@ -4980,7 +5038,7 @@ TList* HistMaker::createFBT2(bool flag_ps)
 //       for(int v=0; v<NumOfUDStructureFBT; ++v){
 //       int target_id = getUniqueID(kFBT2, l, kTDC, v*FBTOffset);
 //          for(int i=0; i<NumOfSegFBT2; ++i){
-//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s", 
+//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
 //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
 //			       1024, 0, 1024,
 //			       "TDC [ch]", ""));
@@ -4998,7 +5056,7 @@ TList* HistMaker::createFBT2(bool flag_ps)
 //    for(int v=0; v<NumOfUDStructureFBT; ++v){
 //       int target_id = getUniqueID(kFBT2, l, kADC, v*FBTOffset);
 //    for(int i=0; i<NumOfSegFBT2; ++i){
-//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s", 
+//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
 //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
 //			       200, -50, 150,
 //			       "TOT [ch]", ""));
@@ -5029,7 +5087,7 @@ TList* HistMaker::createFBT2(bool flag_ps)
   for(int l=0; l<NumOfLayersFBT; ++l){
   for(int v=0; v<NumOfUDStructureFBT; ++v){
     int target_id = getUniqueID(kFBT2, l, kTDC2D, v*FBTOffset);
-    top_dir->Add(createTH2(++target_id, 
+    top_dir->Add(createTH2(++target_id,
                            Form("FBT2_Layer%d_TDC2D_%s",l+1, UD[v]), // 1 origin
 			   NumOfSegFBT2, 0, NumOfSegFBT2,
 			   1024, 0, 1024,
@@ -5042,7 +5100,7 @@ TList* HistMaker::createFBT2(bool flag_ps)
   for(int l=0; l<NumOfLayersFBT; ++l){
   for(int v=0; v<NumOfUDStructureFBT; ++v){
     int target_id = getUniqueID(kFBT2, l, kADC2D, v*FBTOffset);
-    top_dir->Add(createTH2(++target_id, 
+    top_dir->Add(createTH2(++target_id,
           		   Form("FBT2_Layer%d_TOT2D_%s",l+1, UD[v]), // 1 origin
 			   NumOfSegFBT2, 0, NumOfSegFBT2,
 			   200, -50, 150,
@@ -5055,7 +5113,7 @@ TList* HistMaker::createFBT2(bool flag_ps)
   for(int l=0; l<NumOfLayersFBT; ++l){
   for(int v=0; v<NumOfUDStructureFBT; ++v){
     int target_id = getUniqueID(kFBT2, l, kHitPat, v*FBTOffset);
-    top_dir->Add(createTH1(++target_id, 
+    top_dir->Add(createTH1(++target_id,
                            Form("FBT2_Layer%d_HitPat_%s",l+1, UD[v]), // 1 origin
 			   NumOfSegFBT2, 0, NumOfSegFBT2,
 			   "Segment", ""));
@@ -5067,7 +5125,7 @@ TList* HistMaker::createFBT2(bool flag_ps)
   for(int l=0; l<NumOfLayersFBT; ++l){
   for(int v=0; v<NumOfUDStructureFBT; ++v){
     int target_id = getUniqueID(kFBT2, l, kMulti, v*FBTOffset);
-    top_dir->Add(createTH1(++target_id, 
+    top_dir->Add(createTH1(++target_id,
                            Form("FBT2_Layer%d_multiplicity_%s",l+1, UD[v]), // 1 origin
 			   NumOfSegFBT2, 0, NumOfSegFBT2,
 			   "Multiplicity", ""));
@@ -5076,4 +5134,3 @@ TList* HistMaker::createFBT2(bool flag_ps)
   }
   return top_dir;
 }
-

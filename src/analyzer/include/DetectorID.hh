@@ -31,7 +31,7 @@ const int DetIdTFlag     = 21;
 const int DetIdScaler    = 22;
 const int NumOfSegTFlag  = 32;
 const int NumOfSegScaler = 32;
-const int SpillEndFlag   = 20; // 0-based
+const int SpillEndFlag   = 27; // 0-based
 const int NumOfVmeRm     = 10;
 
 // Trackers

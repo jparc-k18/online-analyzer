@@ -140,18 +140,22 @@ ScalerAnalyzer::Decode( void )
   //////////////////// for BH1 SUM
   {
     static std::pair<Int_t,Int_t> p = Find("BH1-SUM");
-    m_info[p.first][p.second].data = 0;
-    for( Int_t i=0; i<NumOfSegBH1; ++i ){
-      m_info[p.first][p.second].data += Get( Form("BH1-%02d", i+1) );
+    if( p.first == 0 && p.second >= 0 ){
+      m_info[p.first][p.second].data = 0;
+      for( Int_t i=0; i<NumOfSegBH1; ++i ){
+	m_info[p.first][p.second].data += Get( Form("BH1-%02d", i+1) );
+      }
     }
   }
 
   //////////////////// for BH2 SUM
   {
     static std::pair<Int_t,Int_t> p = Find("BH2-SUM");
-    m_info[p.first][p.second].data = 0;
-    for( Int_t i=0; i<NumOfSegBH2; ++i ){
-      m_info[p.first][p.second].data += Get( Form("BH2-%02d", i+1) );
+    if( p.first == 0 && p.second >= 0 ){
+      m_info[p.first][p.second].data = 0;
+      for( Int_t i=0; i<NumOfSegBH2; ++i ){
+	m_info[p.first][p.second].data += Get( Form("BH2-%02d", i+1) );
+      }
     }
   }
 
@@ -159,13 +163,15 @@ ScalerAnalyzer::Decode( void )
   {
     static Bool_t first = true;
     static std::pair<Int_t,Int_t> p = Find("Spill");
-    if( first && !m_flag[kScalerSheet] ){
-      m_info[p.first][p.second].data++;
-      first = false;
-    }
-    if( m_spill_increment ||
-	( m_flag[kScalerSheet] && m_is_spill_end ) ){
-      m_info[p.first][p.second].data++;
+    if( p.first == 0 && p.second >= 0 ){
+      if( first && !m_flag[kScalerSheet] ){
+	m_info[p.first][p.second].data++;
+	first = false;
+      }
+      if( m_spill_increment ||
+	  ( m_flag[kScalerSheet] && m_is_spill_end ) ){
+	m_info[p.first][p.second].data++;
+      }
     }
   }
   return true;

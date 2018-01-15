@@ -291,9 +291,9 @@ ScalerAnalyzer::Print( const TString& arg ) const
 
   Int_t event_number = gUnpacker.get_event_number();
   std::cout << std::left  << std::setw(16) << "RUN"
-	    << std::right << std::setw(16) << m_run_number << " : "
+	    << std::right << std::setw(16) << SeparateComma( m_run_number ) << " : "
 	    << std::left  << std::setw(16) << "Event Number"
-	    << std::right << std::setw(16) << event_number << " : "
+	    << std::right << std::setw(16) << SeparateComma( event_number ) << " : "
 	    << std::left  << std::setw(16) << ""
 	    << std::right << std::setw(16) << end_mark
 	    << std::endl << std::endl;

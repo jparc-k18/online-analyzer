@@ -415,8 +415,8 @@ ScalerAnalyzer::PrintScalerSheet( void )
   const TString& scaler_sheet_pdf("/tmp/scaler_sheet.pdf");
   m_canvas->Print( scaler_sheet_pdf );
 
-  // const TString& print_command("lpr "+scaler_sheet_pdf);
-  // gSystem->Exec( print_command );
+  const TString& print_command("lpr "+scaler_sheet_pdf);
+  gSystem->Exec( print_command );
 }
 
 //______________________________________________________________________________

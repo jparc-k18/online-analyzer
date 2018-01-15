@@ -105,6 +105,7 @@ process_begin( const std::vector<std::string>& argv )
   {
     Int_t c = ScalerAnalyzer::kCenter;
     Int_t r = 0;
+    gScaler.Set( c, r++, ScalerInfo( "BGO",            1, 54 ) );
     gScaler.Set( c, r++, ScalerInfo( "BGO-03",         1, 32 ) );
     gScaler.Set( c, r++, ScalerInfo( "BGO-04",         1, 33 ) );
     gScaler.Set( c, r++, ScalerInfo( "BGO-05",         1, 34 ) );
@@ -127,16 +128,14 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "BGO-22",         1, 51 ) );
     gScaler.Set( c, r++, ScalerInfo( "BGO-23",         1, 52 ) );
     gScaler.Set( c, r++, ScalerInfo( "BGO-24",         1, 53 ) );
-    gScaler.Set( c, r++, ScalerInfo( "BGO-OR",         1, 54 ) );
     gScaler.Set( c, r++, ScalerInfo( "CFT-Phi1",       1, 55 ) );
     gScaler.Set( c, r++, ScalerInfo( "CFT-Phi2",       1, 56 ) );
     gScaler.Set( c, r++, ScalerInfo( "CFT-Phi3",       1, 57 ) );
     gScaler.Set( c, r++, ScalerInfo( "CFT-Phi4",       1, 58 ) );
     gScaler.Set( c, r++, ScalerInfo( "PiID",           1, 59 ) );
-    gScaler.Set( c, r++, ScalerInfo( "PiScat",         1, 60 ) );
-    gScaler.Set( c, r++, ScalerInfo( "pScat",          1, 61 ) );
+    gScaler.Set( c, r++, ScalerInfo( "pi-Scat",        1, 60 ) );
+    gScaler.Set( c, r++, ScalerInfo( "p-Scat",         1, 61 ) );
   }
-
 
   {
     Int_t c = ScalerAnalyzer::kRight;
@@ -168,7 +167,7 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "Coin1-PS",      0, 45 ) );
     gScaler.Set( c, r++, ScalerInfo( "Coin2-PS",      0, 46 ) );
     gScaler.Set( c, r++, ScalerInfo( "CoinE03-PS",    0, 47 ) );
-    gScaler.Set( c, r++, ScalerInfo( "Kscat",         0, 48 ) );
+    gScaler.Set( c, r++, ScalerInfo( "K-Scat",        0, 48 ) );
     gScaler.Set( c, r++, ScalerInfo( "Other1",        0, 29 ) );
     gScaler.Set( c, r++, ScalerInfo( "Other2",        0, 30 ) );
     gScaler.Set( c, r++, ScalerInfo( "Other3",        0, 31 ) );

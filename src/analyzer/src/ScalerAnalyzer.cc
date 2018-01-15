@@ -219,7 +219,7 @@ ScalerAnalyzer::DrawOneLine( const TString& title1, const TString& val1,
   line.SetLineColor(kBlack);
   line.DrawLine( 0.34, y-0.5*ystep, 0.34, y+0.5*ystep );
   line.DrawLine( 0.66, y-0.5*ystep, 0.66, y+0.5*ystep );
-  if( i==1 || i==5 || i==12 )
+  if( i==1 || i==5 || i==15 )
     line.DrawLine( 0.05, y-0.5*ystep, 0.95, y-0.5*ystep );
 
   ++i;
@@ -396,12 +396,14 @@ ScalerAnalyzer::PrintScalerSheet( void )
 
   DrawOneLine( "BH1",    "BH1-SUM",  "L1-Req"  );
   DrawOneLine( "BH2",    "BH2-SUM",  "L1-Acc"  );
-  DrawOneLine( "SAC",    "(pi,pi)",  "Mst-Acc" );
-  DrawOneLine( "SCH",    "(pi,p)",   "Mst-Clr" );
-  DrawOneLine( "TOF",    "Kscat",    "Clear"   );
-  DrawOneLine( "TOF-HT", "Matrix",   "L2-Req"  );
-  DrawOneLine( "LC",     "(BH2,K)",  "L2-Acc"  );
-  //  DrawOneLine( "TOF-24",      );
+  DrawOneLine( "SAC",    "(pi,pi)",  "Matrix"  );
+  DrawOneLine( "SCH",    "(pi,p)",   "Mst-Acc" );
+  DrawOneLine( "TOF",    "K-Scat",   "Mst-Clr" );
+  DrawOneLine( "TOF-HT", "(BH2,K)",  "Clear"   );
+  DrawOneLine( "TOF-24", "CFT-Phi1", "L2-Req"  );
+  DrawOneLine( "LC",     "CFT-Phi2", "L2-Acc"  );
+  DrawOneLine( "BGO",    "CFT-Phi3", "pi-Scat" );
+  DrawOneLine( "PiID",   "CFT-Phi4", "p-Scat"  );
 
   DrawOneLine( "Beam/TM",   Form("%.6lf", Fraction("Beam","TM")),
 	       "Live/Real", Form("%.6lf", Fraction("Live-Time","Real-Time")),
@@ -410,7 +412,7 @@ ScalerAnalyzer::PrintScalerSheet( void )
 	       "L2 Eff",       Form("%.6lf", Fraction("L2-Acc","L1-Acc")),
 	       "Duty Factor",  Form("%.6lf", Duty()) );
 
-  TString scaler_sheet_pdf("/tmp/scaler_sheet.pdf");
+  const TString& scaler_sheet_pdf("/tmp/scaler_sheet.pdf");
   m_canvas->Print( scaler_sheet_pdf );
 
   // const TString& print_command("lpr "+scaler_sheet_pdf);

@@ -13,6 +13,7 @@
 #include <TCanvas.h>
 #include <TLatex.h>
 #include <TLine.h>
+#include <TMath.h>
 #include <TSystem.h>
 #include <TTimeStamp.h>
 
@@ -140,8 +141,8 @@ ScalerAnalyzer::Decode( void )
 
   //////////////////// for BH1 SUM
   {
-    static std::pair<Int_t,Int_t> p = Find("BH1-SUM");
-    if( p.first == 0 && p.second >= 0 ){
+    if( Has("BH1-SUM") ){
+      static std::pair<Int_t,Int_t> p = Find("BH1-SUM");
       m_info[p.first][p.second].data = 0;
       for( Int_t i=0; i<NumOfSegBH1; ++i ){
 	m_info[p.first][p.second].data += Get( Form("BH1-%02d", i+1) );
@@ -151,8 +152,8 @@ ScalerAnalyzer::Decode( void )
 
   //////////////////// for BH2 SUM
   {
-    static std::pair<Int_t,Int_t> p = Find("BH2-SUM");
-    if( p.first == 0 && p.second >= 0 ){
+    if( Has("BH2-SUM") ){
+      static std::pair<Int_t,Int_t> p = Find("BH2-SUM");
       m_info[p.first][p.second].data = 0;
       for( Int_t i=0; i<NumOfSegBH2; ++i ){
 	m_info[p.first][p.second].data += Get( Form("BH2-%02d", i+1) );
@@ -162,9 +163,9 @@ ScalerAnalyzer::Decode( void )
 
   //////////////////// Spill
   {
-    static Bool_t first = true;
-    static std::pair<Int_t,Int_t> p = Find("Spill");
-    if( p.first == 0 && p.second >= 0 ){
+    if( Has("Spill") ){
+      static Bool_t first = true;
+      static std::pair<Int_t,Int_t> p = Find("Spill");
       if( first && !m_flag[kScalerSheet] ){
 	m_info[p.first][p.second].data++;
 	first = false;
@@ -185,7 +186,7 @@ ScalerAnalyzer::Duty( void ) const
   Double_t daq_eff  = Fraction("L1-Acc","L1-Req");
   Double_t live_eff = Fraction("Live-Time","Real-Time");
   Double_t duty = daq_eff/(1.-daq_eff)*(1./live_eff-1.);
-  if( duty > 1. )
+  if( duty > 1. || TMath::IsNaN(duty) )
     return 1.;
   else
     return duty;
@@ -284,6 +285,21 @@ ScalerAnalyzer::Get( const TString& name ) const
 	<< "no such ScalerInfo : " << name << std::endl;
 
   return 0;
+}
+
+//______________________________________________________________________________
+Bool_t
+ScalerAnalyzer::Has( const TString& name ) const
+{
+  for( Int_t i=0; i<MaxColumn; ++i ){
+    for( Int_t j=0; j<MaxRow; ++j ){
+      if( m_info[i][j].name.EqualTo( name ) ){
+	return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 //______________________________________________________________________________

@@ -63,7 +63,7 @@ process_begin( const std::vector<std::string>& argv )
   //                       Int_t raw,
   //                       ScalerInfo( name, module, channel ) );
   // scaler information is defined from here.
-  // using a space character is not recommended.
+  // please do not use a white space character.
   {
     Int_t c = ScalerAnalyzer::kLeft;
     Int_t r = 0;
@@ -141,7 +141,7 @@ process_begin( const std::vector<std::string>& argv )
     Int_t c = ScalerAnalyzer::kRight;
     Int_t r = 0;
     gScaler.Set( c, r++, ScalerInfo( "Spill",         0, 49 ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH1 1/100 PS",  0, 51 ) );
+    gScaler.Set( c, r++, ScalerInfo( "BH1-1/100-PS",  0, 51 ) );
     gScaler.Set( c, r++, ScalerInfo( "TM",            0, 52 ) );
     gScaler.Set( c, r++, ScalerInfo( "Real-Time",     0, 53 ) );
     gScaler.Set( c, r++, ScalerInfo( "Live-Time",     0, 54 ) );

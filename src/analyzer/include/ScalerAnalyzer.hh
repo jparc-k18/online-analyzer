@@ -106,6 +106,7 @@ public:
   TString                GetName( Int_t i, Int_t j ) const { return m_info[i][j].name; }
   Int_t                  GetRunNumber( void ) const { return m_run_number; }
   ScalerInfo             GetScalerInfo( Int_t i, Int_t j ) const { return m_info[i][j]; }
+  Bool_t                 Has( const TString& key ) const;
   Bool_t                 IsSpillEnd( void ) const { return m_is_spill_end; }
   Int_t                  ModuleId( Int_t i, Int_t j ) const { return m_info[i][j].module_id; }
   void                   Print( const TString& arg="" ) const;

@@ -340,13 +340,13 @@ ScalerAnalyzer::Print( const TString& arg ) const
 	<< std::right << std::setw(16) << beam/tm << " : "
 	<< std::left  << std::setw(16) << "Live/Real"
 	<< std::right << std::setw(16) << Fraction("Live-Time","Real-Time") << " : "
-	<< std::left  << std::setw(16) << "DAQ Eff"
+	<< std::left  << std::setw(16) << "DAQ-Eff"
 	<< std::right << std::setw(16) << Fraction("L1-Acc","L1-Req") << std::endl
 	<< std::left  << std::setw(16) << "(BH2,K)/Beam"
 	<< std::right << std::setw(16) << bh2k/beam << " : "
-	<< std::left  << std::setw(16) << "L2 Eff"
+	<< std::left  << std::setw(16) << "L2-Eff"
 	<< std::right << std::setw(16) << Fraction("L2-Acc","L1-Acc") << " : "
-	<< std::left  << std::setw(16) << "Duty Factor"
+	<< std::left  << std::setw(16) << "Duty-Factor"
 	<< std::right << std::setw(16) << Duty() << std::endl
 	<< std::endl;
 }

@@ -16,7 +16,7 @@ void dispHitPat()
   }
 
   gROOT->SetStyle("Plain");
-  TPDF *pdf = new TPDF("/home/sks/PSFile/e40_2017/hitpat_e40.pdf", 112);
+  // TPDF *pdf = new TPDF("/home/sks/PSFile/pro/hitpat_e40.pdf", 112);
 
   // Title
   {
@@ -62,7 +62,7 @@ void dispHitPat()
   h->Draw();
 
   c->cd(3);
-  base_id = HistMaker::getUniqueID(kBFT, 0, kHitPat,1);
+  base_id = HistMaker::getUniqueID(kBFT, 0, kHitPat,2);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
@@ -89,7 +89,7 @@ void dispHitPat()
   c->cd(0);
 }
 
-  pdf->Close();
+  // pdf->Close();
 
 
 {
@@ -100,7 +100,7 @@ void dispHitPat()
 
   TH1* h = NULL;
 
-  // Scattering  
+  // Scattering
   c2->cd(1);
   int base_id = HistMaker::getUniqueID(kSDC1, 0, kHitPat, 1);
   h = (TH1*)GHist::get(base_id);
@@ -137,14 +137,20 @@ void dispHitPat()
   h->SetMinimum(0);
   h->Draw();
 
+  // c2->cd(7);
+  // base_id = HistMaker::getUniqueID(kFBT2, 0, kHitPat,1);
+  // h = (TH1*)GHist::get(base_id);
+  // h->SetMinimum(0);
+  // h->Draw();
+
   c2->cd(7);
-  base_id = HistMaker::getUniqueID(kFBT2, 0, kHitPat,1);
+  base_id = HistMaker::getUniqueID(kTOF, 0, kHitPat);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
   c2->cd(8);
-  base_id = HistMaker::getUniqueID(kTOF, 0, kHitPat);
+  base_id = HistMaker::getUniqueID(kLC, 0, kHitPat);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();

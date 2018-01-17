@@ -117,8 +117,8 @@ void dispSFT()
       HistMaker::getUniqueID(kSFT, 0, kTDC2D,   4), // U 
       HistMaker::getUniqueID(kSFT, 0, kTDC2D,   1), // X
       HistMaker::getUniqueID(kSFT, 0, kTDC2D,   2), // X'
-      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   3), // V 
-      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   4), // U 
+      HistMaker::getUniqueID(kSFT, 0, kADC2D,   3), // V 
+      HistMaker::getUniqueID(kSFT, 0, kADC2D,   4), // U 
       HistMaker::getUniqueID(kSFT, 0, kADC2D,   1), // X
       HistMaker::getUniqueID(kSFT, 0, kADC2D,   2), // X'
     };

@@ -633,10 +633,11 @@ bool DCRHC::TrackSearch(int min_plane)
       double dxdZ,dydZ,x0,y0;
       make_MinimumPoint(dxdZ,dydZ,x0,y0);
       makeChisquare(detid);
-      return true;
+      if( chi2 < 10. )
+	return true;
     }
-  else
-    return false;
+
+  return false;
 }
 //______________________________________________________________________________
 double DCRHC::GetPosX( int PosZ )

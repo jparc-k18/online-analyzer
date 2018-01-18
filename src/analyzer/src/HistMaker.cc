@@ -341,7 +341,7 @@ TList* HistMaker::createBH1(bool flag_ps)
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     50000, 0, 2000000,
+			     10000, 0, 400000,
 			     "TDC [ch]", ""));
     }
 
@@ -924,7 +924,7 @@ TList* HistMaker::createBH2(bool flag_ps)
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     50000, 0, 2000000,
+			     10000, 0, 400000,
 			     "TDC [ch]", ""));
     }
 
@@ -3565,7 +3565,7 @@ TList* HistMaker::createMsT(bool flag_ps)
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  // Timing Counter TDC ---------------------------------------------------------
+  // HR-TDC ---------------------------------------------------------
   {
     TList *sub_dir = new TList;
     sub_dir->SetName("MsT_TOF_TDC");
@@ -3578,14 +3578,27 @@ TList* HistMaker::createMsT(bool flag_ps)
     top_dir->Add(sub_dir);
   }
 
-  // Timing Counter TDC (accept) ---------------------------------------------------------
+  // HR-TDC (accept) ---------------------------------------------------------
   {
     TList *sub_dir = new TList;
     sub_dir->SetName("MsT_TOF_TDC_Acc");
     int target_id = getUniqueID(kMsT, 0, kTDC, NumOfSegTOF);
     for(int seg=0; seg<NumOfSegTOF; ++seg){
       sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d_Acc", nameDetector, seg+1),
-			     50000, 0, 2000000,
+			     10000, 0, 400000,
+			     "TDC", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // LR-TDC ---------------------------------------------------------
+  {
+    TList *sub_dir = new TList;
+    sub_dir->SetName("MsT_SCH_TDC");
+    int target_id = getUniqueID(kMsT, 0, kTDC, NumOfSegTOF*2);
+    for(int seg=0; seg<NumOfSegSCH; ++seg){
+      sub_dir->Add(createTH1(++target_id, Form("%s_SCH_TDC_%d", nameDetector, seg+1),
+			     50, 0, 50,
 			     "TDC", ""));
     }
     top_dir->Add(sub_dir);

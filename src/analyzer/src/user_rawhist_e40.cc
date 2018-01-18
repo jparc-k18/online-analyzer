@@ -340,6 +340,7 @@ process_event( void )
     static const int k_n_flag = 7;
 
     static const int toft_id     = gHist.getSequentialID(kMsT, 0, kTDC);
+    static const int scht_id     = gHist.getSequentialID(kMsT, 0, kTDC, NumOfSegTOF*2 +1);
     static const int toft_2d_id  = gHist.getSequentialID(kMsT, 0, kTDC2D);
 
     static const int tofhit_id   = gHist.getSequentialID(kMsT, 0, kHitPat, 0);
@@ -352,7 +353,7 @@ process_event( void )
       for(int m = 0; m<nhit; ++m){
 	hptr_array[tofhit_id]->Fill(seg);
 
-	unsigned int tdc = gUnpacker.get(k_device, k_tof, seg, k_ch, k_tdc);
+	unsigned int tdc = gUnpacker.get(k_device, k_tof, seg, k_ch, k_tdc, m);
 	if(tdc!=0){
 	  hptr_array[toft_id + seg]->Fill(tdc);
 	  hptr_array[toft_2d_id]->Fill(seg, tdc);
@@ -365,6 +366,12 @@ process_event( void )
       int nhit = gUnpacker.get_entries(k_device, k_sch, seg, k_ch, k_tdc);
       if(nhit!=0){
 	hptr_array[schhit_id]->Fill(seg);
+      }
+      for(int m = 0; m<nhit; ++m){
+	unsigned int tdc = gUnpacker.get(k_device, k_sch, seg, k_ch, k_tdc, m);
+	if(tdc!=0){
+	  hptr_array[scht_id + seg]->Fill(tdc);
+	}
       }
     }// SCH
 

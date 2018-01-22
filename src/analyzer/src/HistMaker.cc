@@ -3136,6 +3136,10 @@ TList* HistMaker::createTOF_HT(bool flag_ps)
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
+  const char* name_ch[] = { "12", "13", "14", "15", "16", "17", "18", "19",
+                            "(1,11)", "(2,20)", "(3,10)", "(4,21)", "(5,9)",
+                            "(6,22)", "(7,23)", "(8,24)" };
+
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -3204,7 +3208,6 @@ TList* HistMaker::createTOF_HT(bool flag_ps)
     const char* nameSubDir = strSubDir.c_str();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-
     // Make histogram and add it
     int target_id = getUniqueID(kTOF_HT, 0, kTDC, 0);
 //    for(int i = 0; i<NumOfSegTOF_HT*2; ++i){
@@ -3214,7 +3217,8 @@ TList* HistMaker::createTOF_HT(bool flag_ps)
 //	int seg = i+1; // 1 origin
 	int seg = i+1; // 1 origin
 //	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+//	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg;
+	title = Form("%s_%s_%s", nameDetector, nameSubDir, name_ch[i]);
 //      }else{
 //	int seg = i+1-NumOfSegTOF_HT; // 1 origin
 //	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);

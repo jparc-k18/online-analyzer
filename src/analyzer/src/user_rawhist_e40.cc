@@ -785,6 +785,12 @@ process_event( void )
     static const int k_adc    = gUnpacker.get_data_id("BH2", "adc");
     static const int k_tdc    = gUnpacker.get_data_id("BH2", "tdc");
 
+    // TDC gate range
+    static const unsigned int tdc_min
+      = UserParamMan::getInstance().getParameter("BH2_TDC", 0);
+    static const unsigned int tdc_max
+      = UserParamMan::getInstance().getParameter("BH2_TDC", 1);
+
     // UP
     int bh2a_id   = gHist.getSequentialID(kBH2, 0, kADC);
     int bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC);
@@ -803,7 +809,7 @@ process_event( void )
 	if( tdc!=0 ){
 	  hptr_array[bh2t_id + seg]->Fill(tdc);
 	  // ADC w/TDC
-	  if( gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
+	  if( tdc_min < tdc && tdc < tdc_max ){
 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
 	    hptr_array[bh2awt_id + seg]->Fill(adc);
 	  }
@@ -829,7 +835,7 @@ process_event( void )
 	if( tdc!=0 ){
 	  hptr_array[bh2t_id + seg]->Fill(tdc);
 	  // ADC w/TDC
-	  if( gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
+	  if( tdc_min < tdc && tdc < tdc_max ){
 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
 	    hptr_array[bh2awt_id + seg]->Fill( adc );
 	  }

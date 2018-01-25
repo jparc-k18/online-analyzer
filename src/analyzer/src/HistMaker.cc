@@ -3136,9 +3136,10 @@ TList* HistMaker::createTOF_HT(bool flag_ps)
   // Declaration of the directory
   // Just type conversion from std::string to char*
   const char* nameDetector = strDet.c_str();
-  const char* name_ch[] = { "12", "13", "14", "15", "16", "17", "18", "19",
-                            "(1,11)", "(2,20)", "(3,10)", "(4,21)", "(5,9)",
-                            "(6,22)", "(7,23)", "(8,24)" };
+  const char* name_ch[] = { "(1,11)", "(2,20)", "(3,18)", "(4,21)", "(5,9)",
+                            "(6,22)", "(7,23)", "(8,24)", "(10,19)",
+                            "12", "13", "14", "15", "16", "17"}; 
+                            
 
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
@@ -3215,7 +3216,6 @@ TList* HistMaker::createTOF_HT(bool flag_ps)
       const char* title = NULL;
       if(i < NumOfSegTOF_HT){
 //	int seg = i+1; // 1 origin
-	int seg = i+1; // 1 origin
 //	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
 //	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg;
 	title = Form("%s_%s_%s", nameDetector, nameSubDir, name_ch[i]);
@@ -4809,7 +4809,7 @@ TList* HistMaker::createSFT(bool flag_ps)
 }
 
 // -------------------------------------------------------------------------
-// createSAC
+// createSAC_for_E40
 // -------------------------------------------------------------------------
 TList* HistMaker::createSAC(bool flag_ps)
 {

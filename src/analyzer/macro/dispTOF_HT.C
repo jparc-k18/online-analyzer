@@ -10,7 +10,7 @@ void dispTOF_HT()
   // ----------------------------------
 
 //  const int n_seg = 24;
-  const int n_seg = 16;
+  const int n_seg = 15;
 
 //  // draw ADC U
 //  {
@@ -63,7 +63,8 @@ void dispTOF_HT()
 //    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(6,4);
+//    c->Divide(6,4);
+    c->Divide(5,3);
     int tdc_id = HistMaker::getUniqueID( kTOF_HT, 0, kTDC, 1 );
     for( int i=0; i<n_seg; ++i ){
       c->cd(i+1);

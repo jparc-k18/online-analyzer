@@ -1806,26 +1806,26 @@ process_event( void )
     static const int sacm_id   = gHist.getSequentialID(kSAC, 0, kMulti,   1);
 
     int multiplicity = 0;
-    for(int ch = 0; ch<NumOfRoomsSAC; ++ch){
+    for(int seg = 0; seg<NumOfRoomsSAC; ++seg){
       // ADC
-      int nhit_a = gUnpacker.get_entries(k_device, 0, 0, ch, k_adc);
+      int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
       if( nhit_a!=0 ){
-	int adc = gUnpacker.get(k_device, 0, 0, ch, k_adc);
-	hptr_array[saca_id + ch]->Fill( adc );
+	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	hptr_array[saca_id + seg]->Fill( adc );
       }
       // TDC
-      int nhit_t = gUnpacker.get_entries(k_device, 0, 0, ch, k_tdc);
+      int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
       if( nhit_t!=0 ){
-	int tdc = gUnpacker.get(k_device, 0, 0, ch, k_tdc);
+	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
 	if( tdc!=0 ){
-	  hptr_array[sact_id + ch]->Fill( tdc );
+	  hptr_array[sact_id + seg]->Fill( tdc );
 	  // ADC w/TDC
-	  if( gUnpacker.get_entries(k_device, 0, 0, ch, k_adc)>0 ){
-	    int adc = gUnpacker.get(k_device, 0, 0, ch, k_adc);
-	    hptr_array[sacawt_id + ch]->Fill( adc );
+	  if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
+	    int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	    hptr_array[sacawt_id + seg]->Fill( adc );
 	  }
 	}
-	hptr_array[sach_id]->Fill(ch);
+	hptr_array[sach_id]->Fill(seg);
 	++multiplicity;
       }
     }

@@ -341,7 +341,8 @@ TList* HistMaker::createBH1(bool flag_ps)
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     10000, 0, 400000,
+			     //			     10000, 0, 400000,
+     			     50000, 0, 2000000,
 			     "TDC [ch]", ""));
     }
 
@@ -924,7 +925,8 @@ TList* HistMaker::createBH2(bool flag_ps)
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     10000, 0, 400000,
+			     //			     10000, 0, 400000,
+			     50000, 0, 2000000,
 			     "TDC [ch]", ""));
     }
 

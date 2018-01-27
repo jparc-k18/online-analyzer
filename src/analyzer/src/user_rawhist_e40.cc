@@ -1887,6 +1887,7 @@ process_event( void )
 	sft_fiber = NumOfSegSFT_X;
 
 	for(int i = 0; i<sft_fiber; ++i){
+	  // X
 	  int nhit_l = gUnpacker.get_entries(k_device, l, 0, i, k_leading);
 	  int nhit_t = gUnpacker.get_entries(k_device, l, 0, i, k_trailing);
 
@@ -1904,7 +1905,6 @@ process_event( void )
 	    hit_t_max = 0;
 	  }
 
-	  // X
 	  for(int m = 0; m<nhit_l; ++m){
 	    int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
 	    hptr_array[sft_t_id+l]->Fill(tdc);
@@ -1914,6 +1914,8 @@ process_event( void )
 	    }
 	    if(tdc_prev==tdc) continue;
 	    tdc_prev = tdc;
+	      hptr_array[sft_ct_id+l]->Fill(tdc);
+	      hptr_array[sft_ct_2d_id+l]->Fill(i, tdc);
 	    if(tdc_min < tdc && tdc < tdc_max){
 	      ++cmultiplicity;
 	      hptr_array[sft_chit_id+l]->Fill(i);
@@ -1925,14 +1927,11 @@ process_event( void )
 	      int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
 	      int tdc_t = gUnpacker.get(k_device, l, 0, i, k_trailing, m);
 	      int tot = tdc - tdc_t;
-	      hptr_array[sft_t_id+l]->Fill(tdc);
 	      hptr_array[sft_tot_id+l]->Fill(tot);
 	      if(tdc_prev==tdc) continue;
 	      tdc_prev = tdc;
 	      if(tot==0) continue;
-	      hptr_array[sft_ct_id+l]->Fill(tdc);
 	      hptr_array[sft_ctot_id+l]->Fill(tot);
-	      hptr_array[sft_ct_2d_id+l]->Fill(i, tdc);
 	      hptr_array[sft_ctot_2d_id+l]->Fill(i, tot);
 	    }
 	  }
@@ -1961,7 +1960,9 @@ process_event( void )
 	      hptr_array[sft_hit_id+l+1]->Fill(i);
 	    }
 	    if(tdc_prev==tdc) continue;
-	    tdc_prev = tdc;
+	      tdc_prev = tdc;
+	      hptr_array[sft_ct_id+l+1]->Fill(tdc);
+	      hptr_array[sft_ct_2d_id+l+1]->Fill(i, tdc);
 	    if(tdc_min < tdc && tdc < tdc_max){
 	       ++cmultiplicity;
 	       hptr_array[sft_chit_id+l+1]->Fill(i);
@@ -1969,6 +1970,7 @@ process_event( void )
 	  }
 
 	  if(nhit_l == nhit_t && hit_l_max > hit_t_max){
+	    tdc_prev = 0;
 	    for(int m = 0; m<nhit_l; ++m){
 	      int tdc = gUnpacker.get(k_device, l+1, 0, i, k_leading, m);
 	      int tdc_t = gUnpacker.get(k_device, l+1, 0, i, k_trailing, m);
@@ -1977,9 +1979,7 @@ process_event( void )
 	      if(tdc_prev==tdc) continue;
 	      tdc_prev = tdc;
 	      if(tot==0) continue;
-	      hptr_array[sft_ct_id+l+1]->Fill(tdc);
 	      hptr_array[sft_ctot_id+l+1]->Fill(tot);
-	      hptr_array[sft_ct_2d_id+l+1]->Fill(i, tdc);
 	      hptr_array[sft_ctot_2d_id+l+1]->Fill(i, tot);
 	    }
 	  }
@@ -2010,6 +2010,7 @@ process_event( void )
 	    hit_t_max = 0;
 	  }
 
+	  tdc_prev = 0;
 	  for(int m = 0; m<nhit_l; ++m){
 	    int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
 	    hptr_array[sft_t_id+l]->Fill(tdc);
@@ -2018,7 +2019,9 @@ process_event( void )
 	      hptr_array[sft_hit_id+l]->Fill(i);
 	    }
 	    if(tdc_prev==tdc) continue;
-	    tdc_prev = tdc;
+	      tdc_prev = tdc;
+	      hptr_array[sft_ct_id+l]->Fill(tdc);
+	      hptr_array[sft_ct_2d_id+l]->Fill(i, tdc);
 	    if(tdc_min < tdc && tdc < tdc_max){
 	      ++cmultiplicity;
 	      hptr_array[sft_chit_id+l]->Fill(i);
@@ -2026,22 +2029,19 @@ process_event( void )
 	  }
 
 	  if(nhit_l == nhit_t && hit_l_max > hit_t_max){
+	    tdc_prev = 0;
 	    for(int m = 0; m<nhit_l; ++m){
 	      int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
 	      int tdc_t = gUnpacker.get(k_device, l, 0, i, k_trailing, m);
 	      int tot = tdc - tdc_t;
-	      hptr_array[sft_t_id+l]->Fill(tdc);
 	      hptr_array[sft_tot_id+l]->Fill(tot);
 	      if(tdc_min < tdc && tdc < tdc_max){
-		++multiplicity;
 		hptr_array[sft_hit_id+l]->Fill(i);
 	      }
 	      if(tdc_prev==tdc) continue;
 	      tdc_prev = tdc;
 	      if(tot==0) continue;
-	      hptr_array[sft_ct_id+l]->Fill(tdc);
 	      hptr_array[sft_ctot_id+l]->Fill(tot);
-	      hptr_array[sft_ct_2d_id+l]->Fill(i, tdc);
 	      hptr_array[sft_ctot_2d_id+l]->Fill(i, tot);
 	    }
 	  }

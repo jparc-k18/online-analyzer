@@ -117,11 +117,11 @@ void dispFBT1( void )
     c->Divide(3,2);
     for( int i=0; i<6; ++i ){
      if(i<3){
-      c->cd(i+1)->SetGrid();
+      c->cd(i+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( fbt1_1_U_id[i] );
       h->Draw("colz");
     }else{
-      c->cd(i+1)->SetGrid();
+      c->cd(i+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( fbt1_1_D_id[i-3] );
       h->Draw("colz");
     }
@@ -135,11 +135,11 @@ void dispFBT1( void )
     c->Divide(3,2);
     for( int i=0; i<6; ++i ){
      if(i<3){
-      c->cd(i+1)->SetGrid();
+      c->cd(i+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( fbt1_1_U_id[i+3] );
       h->Draw("colz");
     }else{
-      c->cd(i+1)->SetGrid();
+      c->cd(i+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( fbt1_1_D_id[i] );
       h->Draw("colz");
     }
@@ -153,11 +153,11 @@ void dispFBT1( void )
     c->Divide(3,2);
     for( int i=0; i<6; ++i ){
      if(i<3){
-      c->cd(i+1)->SetGrid();
+      c->cd(i+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( fbt1_2_U_id[i] );
       h->Draw("colz");
     }else{
-      c->cd(i+1)->SetGrid();
+      c->cd(i+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( fbt1_2_D_id[i-3] );
       h->Draw("colz");
     }
@@ -171,11 +171,11 @@ void dispFBT1( void )
     c->Divide(3,2);
     for( int i=0; i<6; ++i ){
      if(i<3){
-      c->cd(i+1)->SetGrid();
+      c->cd(i+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( fbt1_2_U_id[i+3] );
       h->Draw("colz");
     }else{
-      c->cd(i+1)->SetGrid();
+      c->cd(i+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( fbt1_2_D_id[i] );
       h->Draw("colz");
     }

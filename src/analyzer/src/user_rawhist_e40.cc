@@ -1656,199 +1656,6 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
-//  //------------------------------------------------------------------
-//  // SFT
-//  //------------------------------------------------------------------
-//  {
-//    // data type
-//    static const int k_device  = gUnpacker.get_device_id("SFT");
-//    static const int k_leading = gUnpacker.get_data_id("SFT", "leading");
-//    static const int k_trailing = gUnpacker.get_data_id("SFT", "trailing");
-//
-//    // TDC gate range
-//    UserParamMan& gPar = UserParamMan::getInstance();
-//    static const int tdc_min = gPar.getParameter("SFT_TDC", 0);
-//    static const int tdc_max = gPar.getParameter("SFT_TDC", 1);
-//
-//    // SequentialID
-//    int sft_t_id    = gHist.getSequentialID(kSFT, 0, kTDC,     1);
-//    int sft_ct_id   = gHist.getSequentialID(kSFT, 0, kTDC,    11);
-//    int sft_tot_id  = gHist.getSequentialID(kSFT, 0, kADC,     1);
-//    int sft_ctot_id = gHist.getSequentialID(kSFT, 0, kADC,    11);
-//    int sft_hit_id  = gHist.getSequentialID(kSFT, 0, kHitPat,  1);
-//    int sft_chit_id = gHist.getSequentialID(kSFT, 0, kHitPat, 11);
-//    int sft_mul_id   = gHist.getSequentialID(kSFT, 0, kMulti,   1);
-//    int sft_cmul_id  = gHist.getSequentialID(kSFT, 0, kMulti,  11);
-//
-//    int sft_ct_2d_id = gHist.getSequentialID(kSFT, 0, kTDC2D,   1);
-//    int sft_ctot_2d_id = gHist.getSequentialID(kSFT, 0, kADC2D, 1);
-//
-//    for(int l=0; l<NumOfLayersSFT; ++l){
-//      int sft_fiber = 0;
-//      int multiplicity  = 0; // includes each layers.
-//      int cmultiplicity = 0; // includes each layers.
-//      int tdc_prev      = 0;
-//
-//      if( l==1 ) continue ;
-//      if( l==0 ){
-//	sft_fiber = NumOfSegSFT_X;
-//
-//	for(int i = 0; i<sft_fiber; ++i){
-//	  int nhit_l = gUnpacker.get_entries(k_device, l, 0, i, k_leading);
-//	  int nhit_t = gUnpacker.get_entries(k_device, l, 0, i, k_trailing);
-//
-//	  int hit_l_max ;
-//	  int hit_t_max ;
-//
-//	  if(nhit_l != 0){
-//	    hit_l_max = gUnpacker.get(k_device, l, 0, i, k_leading,  nhit_l - 1);
-//	  }else{
-//	    hit_l_max = 0;
-//	  }
-//	  if(nhit_t != 0){
-//	    hit_t_max = gUnpacker.get(k_device, l, 0, i, k_trailing, nhit_t - 1);
-//	  }else{
-//	    hit_t_max = 0;
-//	  }
-//
-//	  if(nhit_l == nhit_t && hit_l_max > hit_t_max){
-//	    // X
-//	    tdc_prev = 0;
-//	    for(int m = 0; m<nhit_l; ++m){
-//	      int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
-//	      int tdc_t = gUnpacker.get(k_device, l, 0, i, k_trailing, m);
-//	      int tot = tdc - tdc_t;
-//	      hptr_array[sft_t_id+l]->Fill(tdc);
-//	      hptr_array[sft_tot_id+l]->Fill(tot);
-//	      if(tdc_min < tdc && tdc < tdc_max){
-//		++multiplicity;
-//		hptr_array[sft_hit_id+l]->Fill(i);
-//	      }
-//	      if(tdc_prev==tdc) continue;
-//	      tdc_prev = tdc;
-//	      if(tot==0) continue;
-//	      hptr_array[sft_ct_id+l]->Fill(tdc);
-//	      hptr_array[sft_ctot_id+l]->Fill(tot);
-//	      hptr_array[sft_ct_2d_id+l]->Fill(i, tdc);
-//	      hptr_array[sft_ctot_2d_id+l]->Fill(i, tot);
-//	      if(tdc_min < tdc && tdc < tdc_max){
-//		++cmultiplicity;
-//		hptr_array[sft_chit_id+l]->Fill(i);
-//	      }
-//	    }
-//	  }
-//	  // X prime
-//
-//	  tdc_prev = 0;
-//	  nhit_l = gUnpacker.get_entries(k_device, l+1, 0, i, k_leading);
-//	  nhit_t = gUnpacker.get_entries(k_device, l+1, 0, i, k_trailing);
-//
-//	  if(nhit_l != 0){
-//	    hit_l_max = gUnpacker.get(k_device, l+1, 0, i, k_leading,  nhit_l - 1);
-//	  }else{
-//	    hit_l_max = 0;
-//	  }
-//	  if(nhit_t != 0){
-//	    hit_t_max = gUnpacker.get(k_device, l+1, 0, i, k_trailing, nhit_t - 1);
-//	  }else{
-//	    hit_t_max = 0;
-//	  }
-//
-//	  if(nhit_l == nhit_t && hit_l_max > hit_t_max){
-//	    for(int m = 0; m<nhit_l; ++m){
-//
-//	      int tdc = gUnpacker.get(k_device, l+1, 0, i, k_leading, m);
-//	      int tdc_t = gUnpacker.get(k_device, l+1, 0, i, k_trailing, m);
-//	      int tot = tdc - tdc_t;
-//	      hptr_array[sft_t_id+l+1]->Fill(tdc);
-//	      hptr_array[sft_tot_id+l+1]->Fill(tot);
-//	      if(tdc_min < tdc && tdc < tdc_max){
-//		++multiplicity;
-//		hptr_array[sft_hit_id+l+1]->Fill(i);
-//	      }
-//	      if(tdc_prev==tdc) continue;
-//	      tdc_prev = tdc;
-//	      if(tot==0) continue;
-//	      hptr_array[sft_ct_id+l+1]->Fill(tdc);
-//	      hptr_array[sft_ctot_id+l+1]->Fill(tot);
-//	      hptr_array[sft_ct_2d_id+l+1]->Fill(i, tdc);
-//	      hptr_array[sft_ctot_2d_id+l+1]->Fill(i, tot);
-//	      if(tdc_min < tdc && tdc < tdc_max){
-//	         ++cmultiplicity;
-//	         hptr_array[sft_chit_id+l+1]->Fill(i);
-//	      }
-//	    }
-//	  }
-//	}
-//	hptr_array[sft_mul_id]->Fill(multiplicity);
-//	hptr_array[sft_cmul_id]->Fill(cmultiplicity);
-//	++l;
-//
-//      }else{
-//	// V & U
-//	sft_fiber = NumOfSegSFT_UV;
-//	for(int i = 0; i<sft_fiber; ++i){
-//
-//	  int nhit_l = gUnpacker.get_entries(k_device, l, 0, i, k_leading);
-//	  int nhit_t = gUnpacker.get_entries(k_device, l, 0, i, k_trailing);
-//
-//	  int hit_l_max ;
-//	  int hit_t_max ;
-//
-//	  if(nhit_l != 0){
-//	    hit_l_max = gUnpacker.get(k_device, l, 0, i, k_leading,  nhit_l - 1);
-//	  }else{
-//	    hit_l_max = 0;
-//	  }
-//	  if(nhit_t != 0){
-//	    hit_t_max = gUnpacker.get(k_device, l, 0, i, k_trailing, nhit_t - 1);
-//	  }else{
-//	    hit_t_max = 0;
-//	  }
-//
-//	  if(nhit_l == nhit_t && hit_l_max > hit_t_max){
-//	    for(int m = 0; m<nhit_l; ++m){
-//
-//	      int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
-//	      int tdc_t = gUnpacker.get(k_device, l, 0, i, k_trailing, m);
-//	      int tot = tdc - tdc_t;
-//	      hptr_array[sft_t_id+l]->Fill(tdc);
-//	      hptr_array[sft_tot_id+l]->Fill(tot);
-//	      if(tdc_min < tdc && tdc < tdc_max){
-//		++multiplicity;
-//		hptr_array[sft_hit_id+l]->Fill(i);
-//	      }
-//	      if(tdc_prev==tdc) continue;
-//	      tdc_prev = tdc;
-//	      if(tot==0) continue;
-//
-//	      hptr_array[sft_ct_id+l]->Fill(tdc);
-//	      hptr_array[sft_ctot_id+l]->Fill(tot);
-//	      hptr_array[sft_ct_2d_id+l]->Fill(i, tdc);
-//	      hptr_array[sft_ctot_2d_id+l]->Fill(i, tot);
-//	      if(tdc_min < tdc && tdc < tdc_max){
-//		++cmultiplicity;
-//		hptr_array[sft_chit_id+l]->Fill(i);
-//	      }
-//	    }
-//	  }
-//	}
-//	hptr_array[sft_mul_id+l-1]->Fill(multiplicity);
-//	hptr_array[sft_cmul_id+l-1]->Fill(cmultiplicity);
-//
-//      }
-//    }
-//
-//#if 0
-//    // Debug, dump data relating this detector
-//    gUnpacker.dump_data_device(k_device);
-//#endif
-//  }//SFT
-//
-//#if DEBUG
-//  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-//#endif
-//
   //------------------------------------------------------------------
   // SFT
   //------------------------------------------------------------------
@@ -1876,182 +1683,79 @@ process_event( void )
     int sft_ct_2d_id = gHist.getSequentialID(kSFT, 0, kTDC2D,   1);
     int sft_ctot_2d_id = gHist.getSequentialID(kSFT, 0, kADC2D, 1);
 
+    int multiplicity[4] ; // includes each layers.
+    int cmultiplicity[4]; // includes each layers.
+
     for(int l=0; l<NumOfLayersSFT; ++l){
       int sft_fiber = 0;
-      int multiplicity  = 0; // includes each layers.
-      int cmultiplicity = 0; // includes each layers.
+      multiplicity[l]  = 0; // includes each layers.
+      cmultiplicity[l] = 0; // includes each layers.
       int tdc_prev      = 0;
 
-      if( l==1 ) continue ;
-      if( l==0 ){
+      if( l==0 || l==1 ){
+	// X & X'
 	sft_fiber = NumOfSegSFT_X;
-
-	for(int i = 0; i<sft_fiber; ++i){
-	  // X
-	  int nhit_l = gUnpacker.get_entries(k_device, l, 0, i, k_leading);
-	  int nhit_t = gUnpacker.get_entries(k_device, l, 0, i, k_trailing);
-
-	  int hit_l_max ;
-	  int hit_t_max ;
-
-	  if(nhit_l != 0){
-	    hit_l_max = gUnpacker.get(k_device, l, 0, i, k_leading,  nhit_l - 1);
-	  }else{
-	    hit_l_max = 0;
-	  }
-	  if(nhit_t != 0){
-	    hit_t_max = gUnpacker.get(k_device, l, 0, i, k_trailing, nhit_t - 1);
-	  }else{
-	    hit_t_max = 0;
-	  }
-
-	  for(int m = 0; m<nhit_l; ++m){
-	    int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
-	    hptr_array[sft_t_id+l]->Fill(tdc);
-	    if(tdc_min < tdc && tdc < tdc_max){
-	      ++multiplicity;
-	      hptr_array[sft_hit_id+l]->Fill(i);
-	    }
-	    if(tdc_prev==tdc) continue;
-	    tdc_prev = tdc;
-	      hptr_array[sft_ct_id+l]->Fill(tdc);
-	      hptr_array[sft_ct_2d_id+l]->Fill(i, tdc);
-	    if(tdc_min < tdc && tdc < tdc_max){
-	      ++cmultiplicity;
-	      hptr_array[sft_chit_id+l]->Fill(i);
-	    }
-	  }
-	  if(nhit_l == nhit_t && hit_l_max > hit_t_max){
-	    tdc_prev = 0;
-	    for(int m = 0; m<nhit_l; ++m){
-	      int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
-	      int tdc_t = gUnpacker.get(k_device, l, 0, i, k_trailing, m);
-	      int tot = tdc - tdc_t;
-	      hptr_array[sft_tot_id+l]->Fill(tot);
-	      if(tdc_prev==tdc) continue;
-	      tdc_prev = tdc;
-	      if(tot==0) continue;
-	      hptr_array[sft_ctot_id+l]->Fill(tot);
-	      hptr_array[sft_ctot_2d_id+l]->Fill(i, tot);
-	    }
-	  }
-	  // X prime
-
-	  tdc_prev = 0;
-	  nhit_l = gUnpacker.get_entries(k_device, l+1, 0, i, k_leading);
-	  nhit_t = gUnpacker.get_entries(k_device, l+1, 0, i, k_trailing);
-
-	  if(nhit_l != 0){
-	    hit_l_max = gUnpacker.get(k_device, l+1, 0, i, k_leading,  nhit_l - 1);
-	  }else{
-	    hit_l_max = 0;
-	  }
-	  if(nhit_t != 0){
-	    hit_t_max = gUnpacker.get(k_device, l+1, 0, i, k_trailing, nhit_t - 1);
-	  }else{
-	    hit_t_max = 0;
-	  }
-
-	  for(int m = 0; m<nhit_l; ++m){
-	    int tdc = gUnpacker.get(k_device, l+1, 0, i, k_leading, m);
-	    hptr_array[sft_t_id+l+1]->Fill(tdc);
-	    if(tdc_min < tdc && tdc < tdc_max){
-	      ++multiplicity;
-	      hptr_array[sft_hit_id+l+1]->Fill(i);
-	    }
-	    if(tdc_prev==tdc) continue;
-	      tdc_prev = tdc;
-	      hptr_array[sft_ct_id+l+1]->Fill(tdc);
-	      hptr_array[sft_ct_2d_id+l+1]->Fill(i, tdc);
-	    if(tdc_min < tdc && tdc < tdc_max){
-	       ++cmultiplicity;
-	       hptr_array[sft_chit_id+l+1]->Fill(i);
-	    }
-	  }
-
-	  if(nhit_l == nhit_t && hit_l_max > hit_t_max){
-	    tdc_prev = 0;
-	    for(int m = 0; m<nhit_l; ++m){
-	      int tdc = gUnpacker.get(k_device, l+1, 0, i, k_leading, m);
-	      int tdc_t = gUnpacker.get(k_device, l+1, 0, i, k_trailing, m);
-	      int tot = tdc - tdc_t;
-	      hptr_array[sft_tot_id+l+1]->Fill(tot);
-	      if(tdc_prev==tdc) continue;
-	      tdc_prev = tdc;
-	      if(tot==0) continue;
-	      hptr_array[sft_ctot_id+l+1]->Fill(tot);
-	      hptr_array[sft_ctot_2d_id+l+1]->Fill(i, tot);
-	    }
-	  }
-	}
-	hptr_array[sft_mul_id]->Fill(multiplicity);
-	hptr_array[sft_cmul_id]->Fill(cmultiplicity);
-	++l;
-
       }else{
 	// V & U
 	sft_fiber = NumOfSegSFT_UV;
-	for(int i = 0; i<sft_fiber; ++i){
-
-	  int nhit_l = gUnpacker.get_entries(k_device, l, 0, i, k_leading);
-	  int nhit_t = gUnpacker.get_entries(k_device, l, 0, i, k_trailing);
-
-	  int hit_l_max ;
-	  int hit_t_max ;
-
-	  if(nhit_l != 0){
-	    hit_l_max = gUnpacker.get(k_device, l, 0, i, k_leading,  nhit_l - 1);
-	  }else{
-	    hit_l_max = 0;
-	  }
-	  if(nhit_t != 0){
-	    hit_t_max = gUnpacker.get(k_device, l, 0, i, k_trailing, nhit_t - 1);
-	  }else{
-	    hit_t_max = 0;
-	  }
-
-	  tdc_prev = 0;
-	  for(int m = 0; m<nhit_l; ++m){
-	    int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
-	    hptr_array[sft_t_id+l]->Fill(tdc);
-	    if(tdc_min < tdc && tdc < tdc_max){
-	      ++multiplicity;
-	      hptr_array[sft_hit_id+l]->Fill(i);
-	    }
-	    if(tdc_prev==tdc) continue;
-	      tdc_prev = tdc;
-	      hptr_array[sft_ct_id+l]->Fill(tdc);
-	      hptr_array[sft_ct_2d_id+l]->Fill(i, tdc);
-	    if(tdc_min < tdc && tdc < tdc_max){
-	      ++cmultiplicity;
-	      hptr_array[sft_chit_id+l]->Fill(i);
-	    }
-	  }
-
-	  if(nhit_l == nhit_t && hit_l_max > hit_t_max){
-	    tdc_prev = 0;
-	    for(int m = 0; m<nhit_l; ++m){
-	      int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
-	      int tdc_t = gUnpacker.get(k_device, l, 0, i, k_trailing, m);
-	      int tot = tdc - tdc_t;
-	      hptr_array[sft_tot_id+l]->Fill(tot);
-	      if(tdc_min < tdc && tdc < tdc_max){
-		hptr_array[sft_hit_id+l]->Fill(i);
-	      }
-	      if(tdc_prev==tdc) continue;
-	      tdc_prev = tdc;
-	      if(tot==0) continue;
-	      hptr_array[sft_ctot_id+l]->Fill(tot);
-	      hptr_array[sft_ctot_2d_id+l]->Fill(i, tot);
-	    }
-	  }
-	}
-	hptr_array[sft_mul_id+l-1]->Fill(multiplicity);
-	hptr_array[sft_cmul_id+l-1]->Fill(cmultiplicity);
-
       }
-    }
 
+      for(int i = 0; i<sft_fiber; ++i){
+
+        int nhit_l = gUnpacker.get_entries(k_device, l, 0, i, k_leading);
+        int nhit_t = gUnpacker.get_entries(k_device, l, 0, i, k_trailing);
+
+        int hit_l_max = 0;
+        int hit_t_max = 0;
+
+        if(nhit_l != 0){
+          hit_l_max = gUnpacker.get(k_device, l, 0, i, k_leading,  nhit_l - 1);
+        }
+        if(nhit_t != 0){
+          hit_t_max = gUnpacker.get(k_device, l, 0, i, k_trailing, nhit_t - 1);
+        }
+
+        for(int m = 0; m<nhit_l; ++m){
+          int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
+          hptr_array[sft_t_id+l]->Fill(tdc);
+          if(tdc_min < tdc && tdc < tdc_max){
+            ++multiplicity[l];
+            hptr_array[sft_hit_id+l]->Fill(i);
+          }
+          if(tdc_prev==tdc) continue;
+          tdc_prev = tdc;
+            hptr_array[sft_ct_id+l]->Fill(tdc);
+            hptr_array[sft_ct_2d_id+l]->Fill(i, tdc);
+          if(tdc_min < tdc && tdc < tdc_max){
+            ++cmultiplicity[l];
+            hptr_array[sft_chit_id+l]->Fill(i);
+          }
+        }
+        if(nhit_l == nhit_t && hit_l_max > hit_t_max){
+          tdc_prev = 0;
+          for(int m = 0; m<nhit_l; ++m){
+            int tdc = gUnpacker.get(k_device, l, 0, i, k_leading, m);
+            int tdc_t = gUnpacker.get(k_device, l, 0, i, k_trailing, m);
+            int tot = tdc - tdc_t;
+            hptr_array[sft_tot_id+l]->Fill(tot);
+            if(tdc_prev==tdc) continue;
+            tdc_prev = tdc;
+            if(tot==0) continue;
+            hptr_array[sft_ctot_id+l]->Fill(tot);
+            hptr_array[sft_ctot_2d_id+l]->Fill(i, tot);
+          }
+        }
+     }
+   }
+   // X & X'
+      hptr_array[sft_mul_id]->Fill(multiplicity[0] + multiplicity[1]);
+      hptr_array[sft_cmul_id]->Fill(cmultiplicity[0] + cmultiplicity[1]);
+   // V 
+      hptr_array[sft_mul_id+1]->Fill(multiplicity[2]);
+      hptr_array[sft_cmul_id+1]->Fill(cmultiplicity[2]);
+   // U
+      hptr_array[sft_mul_id+2]->Fill(multiplicity[3]);
+      hptr_array[sft_cmul_id+2]->Fill(cmultiplicity[3]);
 #if 0
     // Debug, dump data relating this detector
     gUnpacker.dump_data_device(k_device);

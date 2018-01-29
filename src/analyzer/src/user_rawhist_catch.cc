@@ -88,7 +88,6 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("split22"));
   tab_macro->Add(macro::Get("split32"));
   tab_macro->Add(macro::Get("split33"));
-  tab_macro->Add(macro::Get("dispCFT"));
   tab_macro->Add(macro::Get("dispBGO"));
   tab_macro->Add(macro::Get("dispPiID"));
   tab_macro->Add(macro::Get("dispDAQ"));

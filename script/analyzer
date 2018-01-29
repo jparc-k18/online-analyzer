@@ -21,7 +21,8 @@ exe_file=$bin_dir/raw_hist_e40
 data_dir=$ana_dir/data
 
 ##### configure file
-conf_file=/param/conf/analyzer.conf
+#conf_file=/param/conf/analyzer.conf
+conf_file=/param/conf/analyzer_20180129.conf
 
 #######################################################################
 if [ ! -f $exe_file ]; then

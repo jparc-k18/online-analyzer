@@ -16,8 +16,8 @@ void dispPiID()
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
     c->Divide(4,4);
-    int adc_id     = HistMaker::getUniqueID(kPiID, 0, kADC, 1);
-    int adcwtdc_id = HistMaker::getUniqueID(kPiID, 0, kADCwTDC, 1);
+    int adc_id     = HistMaker::getUniqueID(kPiID, 0, kADC);
+    int adcwtdc_id = HistMaker::getUniqueID(kPiID, 0, kADCwTDC);
     for( int i=0; i<n_seg; ++i ){
       c->cd(i+1);
       gPad->SetLogy();
@@ -38,8 +38,8 @@ void dispPiID()
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
     c->Clear();
     c->Divide(4,4);
-    int adc_id     = HistMaker::getUniqueID(kPiID, 0, kADC, 1);
-    int adcwtdc_id = HistMaker::getUniqueID(kPiID, 0, kADCwTDC, 1);
+    int adc_id     = HistMaker::getUniqueID(kPiID, 0, kADC);
+    int adcwtdc_id = HistMaker::getUniqueID(kPiID, 0, kADCwTDC);
     for( int i=0; i<n_seg; ++i ){
       c->cd(i+1);
       gPad->SetLogy();
@@ -61,7 +61,7 @@ void dispPiID()
     TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
     c->Clear();
     c->Divide(4,4);
-    int tdc_id = HistMaker::getUniqueID(kPiID, 0, kTDC, 1);
+    int tdc_id = HistMaker::getUniqueID(kPiID, 0, kTDC);
     for( int i=0; i<n_seg; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( tdc_id + i );
@@ -75,12 +75,35 @@ void dispPiID()
     TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
     c->Clear();
     c->Divide(4,4);
-    int tdc_id = HistMaker::getUniqueID(kPiID, 0, kTDC, 1);
+    int tdc_id = HistMaker::getUniqueID(kPiID, 0, kTDC);
     for( int i=0; i<n_seg; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( tdc_id + i + 16 );
       if( !h ) continue;
       h->Draw();
+    }
+    c->Update();
+  }
+
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
+    c->Clear();
+    c->Divide(2,2);
+    int hitpat_id = HistMaker::getUniqueID(kPiID, 0, kHitPat);
+    int multi_id = HistMaker::getUniqueID(kPiID, 0, kMulti);
+    for( int i=0; i<4; ++i ){
+     if(i <= 1){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get( hitpat_id + i);
+      if( !h ) continue;
+      h->Draw();
+     }
+     if(i > 1){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get( multi_id + i -2);
+      if( !h ) continue;
+      h->Draw();
+     }
     }
     c->Update();
   }

@@ -14,7 +14,7 @@ enum DetectorType {
   kBH1, kBFT, kBC3, kBC4, kBH2, 
   kMsT, kMtx3D,
   // Detector unique ID in the KURAMA system
-  kSFT, kSDC1, kSAC, kSCH, kFBT1,
+  kCFT,kBGO,kPiID,kSFT, kSDC1, kSAC, kSCH, kFBT1,
   kSDC2, kSDC3, kFBT2, kTOF,kTOF_HT,kLC,
   // Old detectors E07
   kBAC, kFBH,
@@ -55,9 +55,11 @@ enum DataType{
   // Usual data type
   kADC,   kTDC,   kHitPat,   kMulti,
   kADC2D, kTDC2D, kHitPat2D, kMulti2D,
-  kADCwTDC,
+  kADCwTDC, kFADC,
   kDeltaE, kCTime, kDeltaE2D, kCTime2D,
   kChisqr,
+  // Extra data type for CFT 
+  kHighGain,kLowGain,kPede,
   // Extra data type for EMC
   kSerial, kXpos, kYpos, kXYpos, kTime,
   // Extra data type for Ge detector
@@ -126,6 +128,9 @@ public:
   TList* createBC4(bool flag_ps=true);
   TList* createBH2(bool flag_ps=true);
   TList* createSFT(bool flag_ps=true);
+  TList* createCFT(bool flag_ps=true);
+  TList* createBGO(bool flag_ps=true);
+  TList* createPiID(bool flag_ps=true);
   TList* createSDC1(bool flag_ps=true);
   TList* createSAC(bool flag_ps=true);
   TList* createSCH(bool flag_ps=true);

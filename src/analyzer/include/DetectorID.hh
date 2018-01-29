@@ -10,6 +10,8 @@ const int DetIdBH2  =  2;
 const int DetIdBAC  =  3;
 const int DetIdSAC  =  9;
 const int DetIdSCH  =  7;
+const int DetIdBGO  = 114;
+const int DetIdPiID = 115;
 const int DetIdTOF  =  8;
 const int DetIdTOF_HT  =  11;
 const int DetIdLC   = 10; //add
@@ -19,6 +21,8 @@ const int NumOfSegBAC  =  2;
 const int NumOfSegFBH  = 16;
 //const int NumOfSegSAC  = 16; // 12 readout & 4 rooms //add
 const int NumOfSegSCH  = 64;
+const int NumOfSegBGO  = 24;
+const int NumOfSegPiID = 32;
 const int NumOfSegTOF  = 24;
 //const int NumOfSegTOF_HT  = 24;
 const int NumOfSegTOF_HT  = 15;
@@ -42,6 +46,7 @@ const int DetIdSDC2 = 106;
 const int DetIdSDC3 = 107;
 const int DetIdBFT  = 110;
 const int DetIdSFT  = 111;
+const int DetIdCFT  = 113;
 const int DetIdFBT1 = 131; //add
 const int DetIdFBT2 = 132; //add
 const int DetIdBcOut  = 20;
@@ -56,6 +61,7 @@ const int NumOfLayersSsdOut =  4;
 const int NumOfLayersBC3  = 6;
 const int NumOfLayersBC4  = 6;
 const int NumOfLayersSFT  = 4; //add
+const int NumOfLayersCFT  =8;
 const int NumOfLayersFBT = 2; //add
 const int NumOfLayersSDC1 = 6;
 const int NumOfLayersSDC2 = 4;
@@ -77,6 +83,23 @@ const int PlMaxSdcOut = 38;
 const int NumOfSegBFT  =  160;
 const int NumOfSegSFT_X =  256; //add
 const int NumOfSegSFT_UV =  320; //add
+const int NumOfSegCFT_UV1   = 426;
+const int NumOfSegCFT_PHI1  = 584;
+const int NumOfSegCFT_UV2   = 472 + 10; //471
+const int NumOfSegCFT_PHI2  = 692;
+const int NumOfSegCFT_UV3   = 510;
+const int NumOfSegCFT_PHI3  = 800;
+const int NumOfSegCFT_UV4   = 538;
+const int NumOfSegCFT_PHI4  = 928;//910
+const int NumOfSegCFT[NumOfLayersCFT] = {
+                            NumOfSegCFT_UV1  , 
+                            NumOfSegCFT_PHI1 , 
+                            NumOfSegCFT_UV2  , 
+                            NumOfSegCFT_PHI2 , 
+                            NumOfSegCFT_UV3  , 
+                            NumOfSegCFT_PHI3 , 
+                            NumOfSegCFT_UV4  , 
+                            NumOfSegCFT_PHI4 }; 
 const int NumOfSegFBT1 =  48; //add
 const int NumOfSegFBT2 =  64; //add
 

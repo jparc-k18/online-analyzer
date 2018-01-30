@@ -389,11 +389,10 @@ process_event( void )
 
       // FADC
       int nhit_f = gUnpacker.get_entries(k_device, 0, seg, 0, k_fadc);
-      if(nhit_f>0){
-          for (int i=0; i<nhit_f; ++i) {
-	      unsigned int fadc = gUnpacker.get(k_device, 0, seg, 0, k_fadc ,i);
-	      hptr_array[bgofa_id + seg]->Fill( i+1, fadc);
-          }
+      if(nhit_f==0) continue;
+      for (int i=0; i<nhit_f; ++i) {
+          unsigned int fadc = gUnpacker.get(k_device, 0, seg, 0, k_fadc ,i);
+          hptr_array[bgofa_id + seg]->Fill( i+1, fadc);
       }
 
 

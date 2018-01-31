@@ -105,6 +105,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispTOF"));
   tab_macro->Add(macro::Get("dispTOF_HT"));
   tab_macro->Add(macro::Get("dispLC"));
+  tab_macro->Add(macro::Get("dispTriggerFlag"));
   tab_macro->Add(macro::Get("dispHitPat"));
   tab_macro->Add(macro::Get("effBcOut"));
   tab_macro->Add(macro::Get("effSdcInOut"));

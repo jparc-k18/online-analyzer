@@ -3,10 +3,10 @@
 #  shell script for CATCH online/semi CATCH  online analyzer
 ##
 
-#ebhost=eb0
+ebhost=eb0
 
-#dis_port=8901
-#rec_port=8902
+dis_port=8901
+rec_port=8902
 
 #port=$rec_port
 port=$dis_port

@@ -4615,6 +4615,97 @@ TList* HistMaker::createPWO_E05(bool flag_ps)
 }
 
 // -------------------------------------------------------------------------
+// createVMEEASIROC
+// -------------------------------------------------------------------------
+TList* HistMaker::createVMEEASIROC(bool flag_ps)
+{
+  // Determine the detector name
+  std::string strDet = CONV_STRING(kVMEEASIROC);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
+
+  // Declaration of the directory
+  // Just type conversion from std::string to char*
+  const char* nameDetector = strDet.c_str();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // TDC-2D -------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    std::string strSubDir  = CONV_STRING(kTDC2D);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    int target_id = getUniqueID(kVMEEASIROC, 0, kTDC2D  , 0);
+    const char* sub_name = "TDC";
+    // Add to the top directory
+    for(int i=0; i<NumOfLayersVMEEASIROC; ++i){
+        const char* title = NULL;
+        title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
+        sub_dir->Add(createTH2(++target_id, title, // 1 origin
+                                NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
+                                1024, 0, 1024,
+                                "ch", "TDC [ch]"));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC-2D HighGain ----------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kHighGain_2D);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    int target_id = getUniqueID(kVMEEASIROC, 0, kHighGain, 10);
+    const char* sub_name = "HighGain";
+    // Add to the top directory
+    for(int i=0; i<NumOfLayersVMEEASIROC; ++i){
+        const char* title = NULL;
+        title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
+        sub_dir->Add(createTH2(++target_id, title, // 1 origin
+                                NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
+                                4096, 0, 4096,
+                                "ch", "ADC [ch]"));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC-2D LowGain -----------------------------------------------
+  {
+    std::string strSubDir  = CONV_STRING(kLowGain_2D);
+    const char* nameSubDir = strSubDir.c_str();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    int target_id = getUniqueID(kVMEEASIROC, 0, kLowGain, 10);
+    const char* sub_name = "LowGain";
+    // Add to the top directory
+    for(int i=0; i<NumOfLayersVMEEASIROC; ++i){
+        const char* title = NULL;
+        title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
+        sub_dir->Add(createTH2(++target_id, title, // 1 origin
+                                NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
+                                4096, 0, 4096,
+                                "ch", "ADC [ch]"));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // Return the TList pointer which is added into TGFileBrowser
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
 // createCFT
 // -------------------------------------------------------------------------
 TList* HistMaker::createCFT(bool flag_ps)

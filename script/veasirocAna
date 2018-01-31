@@ -15,14 +15,15 @@ ana_dir=$(dirname $(readlink -f $0))/..
 bin_dir=$ana_dir/bin
 
 ##### execute file
-exe_file=$bin_dir/raw_hist_catch
+exe_file=$bin_dir/raw_hist_vmeeasiroc
 
 ##### data directory
 #data_dir=$ana_dir/data
 data_dir=/home/sks/work/suharu/data/catch_data
 
 ##### configure file
-conf_file=/param/conf/analyzer.conf
+#conf_file=/param/conf/analyzer.conf
+conf_file=/param/conf/analyzer_vmeeasiroc.conf
 
 #######################################################################
 if [ ! -f $exe_file ]; then

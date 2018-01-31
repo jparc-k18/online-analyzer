@@ -16,6 +16,8 @@ enum DetectorType {
   // Detector unique ID in the KURAMA system
   kCFT,kBGO,kPiID,kSFT, kSDC1, kSAC, kSCH, kFBT1,
   kSDC2, kSDC3, kFBT2, kTOF,kTOF_HT,kLC,
+  // VMEEASIROC unique ID 
+  kVMEEASIROC,
   // Old detectors E07
   kBAC, kFBH,
   kSSDT, kSSD1, kSSD2,
@@ -128,6 +130,7 @@ public:
   TList* createBC4(bool flag_ps=true);
   TList* createBH2(bool flag_ps=true);
   TList* createSFT(bool flag_ps=true);
+  TList* createVMEEASIROC(bool flag_ps=true);
   TList* createCFT(bool flag_ps=true);
   TList* createBGO(bool flag_ps=true);
   TList* createPiID(bool flag_ps=true);

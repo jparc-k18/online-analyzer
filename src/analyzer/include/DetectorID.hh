@@ -102,6 +102,10 @@ const int NumOfSegCFT[NumOfLayersCFT] = {
                             NumOfSegCFT_PHI4 }; 
 const int NumOfSegFBT1 =  48; //add
 const int NumOfSegFBT2 =  64; //add
+// VMEEASIROC Board 
+const int DetIdVEASIROC  =116;
+const int NumOfLayersVMEEASIROC  =95;
+const int NumOfSegVMEEASIROC  =64;
 
 // Tracker const
 const int FBTOffset = 200;

@@ -1216,6 +1216,7 @@ process_event( void )
       = gHist.getSequentialID(kSDC2, 0, kMulti, 1+NumOfLayersSDC2);
 
     static const int sdc2t_ctot_id    = gHist.getSequentialID(kSDC2, 0, kTDC, 11);
+    static const int sdc2tot_ctot_id  = gHist.getSequentialID(kSDC2, 0, kADC, 11);
     static const int sdc2t1st_ctot_id = gHist.getSequentialID(kSDC2, 0, kTDC2D, 11);
     static const int sdc2hit_ctot_id  = gHist.getSequentialID(kSDC2, 0, kHitPat, 11);
     static const int sdc2mul_ctot_id  = gHist.getSequentialID(kSDC2, 0, kMulti, 11);
@@ -1280,6 +1281,7 @@ process_event( void )
             hptr_array[sdc2tot_id+l]->Fill(tot);
             if(tot < tot_min) continue;
 	       hptr_array[sdc2t_ctot_id + l]->Fill(tdc);
+               hptr_array[sdc2tot_ctot_id+l]->Fill(tot);
 	       if( tdc1st<tdc ) tdc1st = tdc;
 	       if( tdc_min < tdc && tdc < tdc_max ){
 	         flag_hit_wt_ctot = true;
@@ -1342,6 +1344,7 @@ process_event( void )
       = gHist.getSequentialID(kSDC3, 0, kMulti, 1+NumOfLayersSDC3);
 
     static const int sdc3t_ctot_id    = gHist.getSequentialID(kSDC3, 0, kTDC, 11);
+    static const int sdc3tot_ctot_id  = gHist.getSequentialID(kSDC3, 0, kADC, 11);
     static const int sdc3t1st_ctot_id = gHist.getSequentialID(kSDC3, 0, kTDC2D, 11);
     static const int sdc3hit_ctot_id  = gHist.getSequentialID(kSDC3, 0, kHitPat, 11);
     static const int sdc3mul_ctot_id  = gHist.getSequentialID(kSDC3, 0, kMulti, 11);
@@ -1412,6 +1415,7 @@ process_event( void )
             hptr_array[sdc3tot_id+l]->Fill(tot);
             if(tot < tot_min || tot >tot_max) continue;
 	       hptr_array[sdc3t_ctot_id + l]->Fill(tdc);
+               hptr_array[sdc3tot_ctot_id+l]->Fill(tot);
 	       if( tdc1st<tdc ) tdc1st = tdc;
 	       if( tdc_min < tdc && tdc < tdc_max ){
 	         flag_hit_wt_ctot = true;

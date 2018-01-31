@@ -23,29 +23,7 @@ void dispSAC()
     HistMaker::getUniqueID(kSAC,  0, kADC, 3),
     HistMaker::getUniqueID(kSAC,  0, kADC, 4),
   };
-
-  for(int i = 0; i<n_seg_ac; ++i){
-    c->cd(i+1);
-    gPad->SetLogy();
-    TH1 *h = (TH1*)GHist::get(idac[i]);
-    h->GetXaxis()->SetRangeUser(0,4000);
-    h->Draw();
-  }
-
-  c->Update();
-
-  c->cd(0);
-}
-
-
-{
-  const int n_seg_ac = 4;
-  
-  // draw SAC ADCwTDC
-  TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
-  c->Clear();
-  c->Divide(2,2);
-  int idac[n_seg_ac] = {
+  int idac_wtdc[n_seg_ac] = {
     HistMaker::getUniqueID(kSAC,  0, kADCwTDC, 1),
     HistMaker::getUniqueID(kSAC,  0, kADCwTDC, 2),
     HistMaker::getUniqueID(kSAC,  0, kADCwTDC, 3),
@@ -58,6 +36,9 @@ void dispSAC()
     TH1 *h = (TH1*)GHist::get(idac[i]);
     h->GetXaxis()->SetRangeUser(0,4000);
     h->Draw();
+    TH1 *hh = (TH1*)GHist::get(idac_wtdc[i]);
+    hh->SetLineColor( kRed );
+    hh->Draw("same");
   }
 
   c->Update();
@@ -65,11 +46,39 @@ void dispSAC()
   c->cd(0);
 }
 
+
+//{
+//  const int n_seg_ac = 4;
+//  
+//  // draw SAC ADCwTDC
+//  TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
+//  c->Clear();
+//  c->Divide(2,2);
+//  int idac[n_seg_ac] = {
+//    HistMaker::getUniqueID(kSAC,  0, kADCwTDC, 1),
+//    HistMaker::getUniqueID(kSAC,  0, kADCwTDC, 2),
+//    HistMaker::getUniqueID(kSAC,  0, kADCwTDC, 3),
+//    HistMaker::getUniqueID(kSAC,  0, kADCwTDC, 4),
+//  };
+//
+//  for(int i = 0; i<n_seg_ac; ++i){
+//    c->cd(i+1);
+//    gPad->SetLogy();
+//    TH1 *h = (TH1*)GHist::get(idac[i]);
+//    h->GetXaxis()->SetRangeUser(0,4000);
+//    h->Draw();
+//  }
+//
+//  c->Update();
+//
+//  c->cd(0);
+//}
+
 {
   const int n_seg_ac = 4;
   
   // draw SAC TDC for Rooms
-  TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
+  TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
   c->Clear();
   c->Divide(2,2);
   int idac[n_seg_ac] = {

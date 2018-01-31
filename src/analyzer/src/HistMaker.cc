@@ -2516,13 +2516,22 @@ TList* HistMaker::createSDC2(bool flag_ps)
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			   300, 0, 300,
+			   500, 0, 500,
+			     "TOT [ch]", ""));
+    }
+
+  // CTOT---------------------------------------------------------
+    target_id = getUniqueID(kSDC2, 0, kADC, 10);
+    for(int i = 0; i<NumOfLayersSDC2; ++i){
+      const char* title = NULL;
+      title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			   500, 0, 500,
 			     "TOT [ch]", ""));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-
 
   // HitPat------------------------------------------------------
   {
@@ -3047,7 +3056,16 @@ TList* HistMaker::createSDC3(bool flag_ps)
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			   1000, 0, 1000,
+			   800, 0, 800,
+			     "TOT [ch]", ""));
+    }
+  // CTOT---------------------------------------------------------
+    target_id = getUniqueID(kSDC3, 0, kADC, 10);
+    for(int i = 0; i<NumOfLayersSDC3; ++i){
+      const char* title = NULL;
+      title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			   800, 0, 800,
 			     "TOT [ch]", ""));
     }
     // insert sub directory

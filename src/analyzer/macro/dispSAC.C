@@ -92,7 +92,7 @@ void dispSAC()
     c->cd(i+1);
     gPad->SetLogy();
     TH1 *h = (TH1*)GHist::get(idac[i]);
-    h->GetXaxis()->SetRangeUser(0,4000);
+    h->GetXaxis()->SetRangeUser(0,1500);
     h->Draw();
   }
 

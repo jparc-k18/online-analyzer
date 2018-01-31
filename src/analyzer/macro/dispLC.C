@@ -44,7 +44,7 @@ void dispLC()
   // draw TDC U
 //  c = (TCanvas*)gROOT->FindObject("c3");
 //  c->Clear();
-  c->Divide(8,4);
+  c->Divide(7,4);
 //  base_id = HistMaker::getUniqueID(kLC, 0, kTDC, 1);
   int  base_id = HistMaker::getUniqueID(kLC, 0, kTDC, 1);
   for(int i = 0; i<n_seg; ++i){

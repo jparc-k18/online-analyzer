@@ -383,7 +383,12 @@ process_event( void )
 	if(flag) hptr_array[flag_id]->Fill(i);
       }
     }// FLAG
-  }
+
+#if 1
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }// MsT
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
@@ -1096,7 +1101,7 @@ process_event( void )
       hptr_array[sdc2mulwt_id + l]->Fill(multiplicity_wt);
     }
 
-#if 0
+#if 1
     // Debug, dump data relating this detector
     gUnpacker.dump_data_device(k_device);
 #endif

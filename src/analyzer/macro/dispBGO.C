@@ -1,7 +1,7 @@
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
-void dispTriggerFlag()
+void dispBGO()
 {
   // You must write these lines for the thread safe
   // ----------------------------------
@@ -9,25 +9,37 @@ void dispTriggerFlag()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  int n_seg = 30;
+  int n_seg = 12;
+
+  // draw ADC  1-12
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(6,5);
-    int  base_id = HistMaker::getUniqueID(kTriggerFlag, 0, kTDC, 1);
-    for(int i = 0; i<n_seg; ++i){
+    c->Divide(4,3);
+    int fadc_id     = HistMaker::getUniqueID(kBGO, 0, kFADC);
+    for( int i=0; i<n_seg; ++i ){
       c->cd(i+1);
       gPad->SetLogy();
-      GHist::get(base_id + i)->Draw();
+      TH1 *h = (TH1*)GHist::get( fadc_id + i );
+      if( !h ) continue;
+      h->Draw();
     }
     c->Update();
   }
 
+  // draw ADC 13-24
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
     c->Clear();
-    int  base_id = HistMaker::getUniqueID(kTriggerFlag, 0, kHitPat, 1);
-    GHist::get(base_id)->Draw();
+    c->Divide(4,3);
+    int fadc_id     = HistMaker::getUniqueID(kBGO, 0, kFADC, 12);
+    for( int i=0; i<n_seg; ++i ){
+      c->cd(i+1);
+      gPad->SetLogy();
+      TH1 *h = (TH1*)GHist::get( fadc_id + i );
+      if( !h ) continue;
+      h->Draw();
+    }
     c->Update();
   }
 

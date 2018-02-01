@@ -80,7 +80,7 @@ void dispSCH()
     c->Clear();
     c->Divide(3,2);
     for(int i=0; i<6; i++){
-      c->cd(i+1)->SetGrid();
+      c->cd(i+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( sch_id_c1[2+i] );
       h->Draw("colz");
     }

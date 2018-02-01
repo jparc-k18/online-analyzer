@@ -17,7 +17,6 @@ void dispTriggerFlag()
     int  base_id = HistMaker::getUniqueID(kTriggerFlag, 0, kTDC, 1);
     for(int i = 0; i<n_seg; ++i){
       c->cd(i+1);
-      gPad->SetLogy();
       GHist::get(base_id + i)->Draw();
     }
     c->Update();

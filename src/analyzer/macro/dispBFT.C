@@ -47,7 +47,7 @@ void dispBFT()
       c->Clear();
       c->Divide(4,2);
       for(int i=0; i<n_hist_c1; i++){
-	c->cd(i+1)->SetGrid();
+	c->cd(i+1);//->SetGrid(2,2);
 	TH1 *h = (TH1*)GHist::get(bft_id_c1[i]);
 	h->Draw();
       }
@@ -60,7 +60,7 @@ void dispBFT()
       c->Clear();
       c->Divide(3,2);
       for(int i=0; i<n_hist_c2; i++){
-	c->cd(i+1)->SetGrid();
+	c->cd(i+1);//->SetGrid();
 	TH1 *h = (TH1*)GHist::get(bft_id_c2[i]);
 	h->Draw();
       }
@@ -73,7 +73,7 @@ void dispBFT()
       c->Clear();
       c->Divide(2,2);
       for(int i=0; i<n_hist_c3; i++){
-	c->cd(i+1)->SetGrid();
+	c->cd(i+1);//->SetGrid();
 	TH1 *h = (TH1*)GHist::get(bft_id_c3[i]);
 	h->Draw("colz");
       }

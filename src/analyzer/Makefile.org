@@ -38,6 +38,12 @@ my_tgt_rawhist_e07	:= $(bin_dir)/raw_hist_e07
 my_obj_rawhist_e40	:= $(core_obj) user_rawhist_e40.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o MsTParamMan.o MatrixParamMan.o
 my_tgt_rawhist_e40	:= $(bin_dir)/raw_hist_e40
 
+my_obj_rawhist_catch	:= $(core_obj) user_rawhist_catch.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o MsTParamMan.o MatrixParamMan.o
+my_tgt_rawhist_catch	:= $(bin_dir)/raw_hist_catch
+
+my_obj_rawhist_vmeeasiroc	:= $(core_obj) user_rawhist_vmeeasiroc.o HistMaker.o GuiPs.o PsMaker.o MacroBuilder.o MsTParamMan.o MatrixParamMan.o
+my_tgt_rawhist_vmeeasiroc	:= $(bin_dir)/raw_hist_vmeeasiroc
+
 my_obj_http_server	:= $(core_obj) user_http_server.o HistMaker.o HttpServer.o MacroBuilder.o MsTParamMan.o MatrixParamMan.o
 my_tgt_http_server	:= $(bin_dir)/http_server
 
@@ -97,6 +103,8 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_rawhist_e40) \
+	$(my_tgt_rawhist_catch) \
+	$(my_tgt_rawhist_vmeeasiroc) \
 	$(my_tgt_beammonitor) \
 	$(my_tgt_beamprofile_e07) \
 	$(my_tgt_beamprofile_e03) \
@@ -171,6 +179,28 @@ my_lib_rawhist_e40	:= libmyrawhist_e40.so
 $(eval $(call make-lib,$(my_lib_rawhist_e40),$(my_obj_rawhist_e40)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e40),$(my_lib_rawhist_e40)))
 
+#_____________________________________________________________________________
+my_obj_rawhist_catch	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_catch))
+my_obj_rawhist_catch	:= $(my_obj_rawhist_catch) \
+		$(my_dir)/dict/HistMaker_Dict.o \
+		$(my_dir)/dict/GuiPs_Dict.o \
+		$(my_dir)/dict/MatrixParamMan_Dict.o \
+		$(my_dir)/dict/MsTParamMan_Dict.o
+my_lib_rawhist_catch	:= libmyrawhist_catch.so
+$(eval $(call make-lib,$(my_lib_rawhist_catch),$(my_obj_rawhist_catch)))
+$(eval $(call make-gui-target,$(my_tgt_rawhist_catch),$(my_lib_rawhist_catch)))
+#
+#_____________________________________________________________________________
+my_obj_rawhist_vmeeasiroc	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_vmeeasiroc))
+my_obj_rawhist_vmeeasiroc	:= $(my_obj_rawhist_vmeeasiroc) \
+		$(my_dir)/dict/HistMaker_Dict.o \
+		$(my_dir)/dict/GuiPs_Dict.o \
+		$(my_dir)/dict/MatrixParamMan_Dict.o \
+		$(my_dir)/dict/MsTParamMan_Dict.o
+my_lib_rawhist_vmeeasiroc	:= libmyrawhist_vmeeasiroc.so
+$(eval $(call make-lib,$(my_lib_rawhist_vmeeasiroc),$(my_obj_rawhist_vmeeasiroc)))
+$(eval $(call make-gui-target,$(my_tgt_rawhist_vmeeasiroc),$(my_lib_rawhist_vmeeasiroc)))
+#
 #_____________________________________________________________________________
 my_obj_http_server	:= $(addprefix $(my_dir)/src/,$(my_obj_http_server))
 my_obj_http_server	:= $(my_obj_http_server) \

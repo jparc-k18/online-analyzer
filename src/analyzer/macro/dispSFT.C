@@ -129,7 +129,7 @@ void dispSFT()
       c->Clear();
       c->Divide(4,2);
       for(int i=0; i<n_hist_c1; i++){
-	c->cd(i+1)->SetGrid();
+	c->cd(i+1);//->SetGrid();
 	TH1 *h = (TH1*)GHist::get(sft_id_c1[i]);
 	h->Draw();
       }
@@ -141,7 +141,7 @@ void dispSFT()
       c->Clear();
       c->Divide(4,2);
       for(int i=0; i<n_hist_c2; i++){
-	c->cd(i+1)->SetGrid();
+	c->cd(i+1);//->SetGrid();
 	TH1 *h = (TH1*)GHist::get(sft_id_c2[i]);
 	h->Draw();
       }
@@ -154,7 +154,7 @@ void dispSFT()
       c->Clear();
       c->Divide(4,2);
       for(int i=0; i<n_hist_c3; i++){
-	c->cd(i+1)->SetGrid();
+	c->cd(i+1);//->SetGrid();
 	TH1 *h = (TH1*)GHist::get(sft_id_c3[i]);
 	h->Draw();
       }
@@ -167,7 +167,7 @@ void dispSFT()
       c->Clear();
       c->Divide(3,2);
       for(int i=0; i<n_hist_c4; i++){
-	c->cd(i+1)->SetGrid();
+	c->cd(i+1);//->SetGrid();
 	TH1 *h = (TH1*)GHist::get(sft_id_c4[i]);
 	h->Draw();
       }
@@ -179,7 +179,7 @@ void dispSFT()
       c->Clear();
       c->Divide(4,2);
       for(int i=0; i<n_hist_c5; i++){
-	c->cd(i+1)->SetGrid();
+	c->cd(i+1);//->SetGrid();
 	TH1 *h = (TH1*)GHist::get(sft_id_c5[i]);
 	h->Draw("colz");
       }

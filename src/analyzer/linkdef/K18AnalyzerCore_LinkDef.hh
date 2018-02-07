@@ -15,6 +15,7 @@
 #pragma link C++ class HttpServer;
 #pragma link C++ class MatrixParamMan;
 #pragma link C++ class MsTParamMan;
+#pragma link C++ class debug::ObjectCounter;
 #pragma link C++ class std::vector< std::vector<Int_t> >;
 #pragma link C++ class std::vector< std::vector<Double_t> >;
 #pragma link C++ class std::vector< std::vector< std::vector<Double_t> > >;

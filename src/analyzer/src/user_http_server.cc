@@ -289,7 +289,7 @@ process_event( void )
     }
   }
 
-  if( trigger_flag[SegIdScalerTrigger] ) return 0;
+  if( trigger_flag[SpillEndFlag] ) return 0;
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;

@@ -10,8 +10,7 @@ CXX		:= g++
 OUT_PUT_OPT	:= -o
 LD		:= g++
 #LDFLAGS	:= -export-dynamic
-#CXXFLAGS	:= -std=c++0x -O3 -Wall -fPIC
-CXXFLAGS	:= -std=c++11 -O3 -Wall -fPIC
+CXXFLAGS	:= -O3 -Wall -fPIC
 #DEBUGFLAGS	:= -pg -g
 CXXFLAGS	+= -pg -p
 SOFLAGS		:= -shared
@@ -45,7 +44,7 @@ root_glibs		:= $(shell $(root_config) --glibs)
 #root_libs		:= $(shell $(root_config) --new --libs)
 #root_glibs		:= $(shell $(root_config) --new --glibs)
 
-#root_glibs	+= -lRHTTP
+root_glibs	+= -lRHTTP
 
 # for TEveBrowser
 root_glibs += \
@@ -59,6 +58,8 @@ root_glibs += \
 
 rootcint	:= rootcint
 
+CXXFLAGS	+= $(root_cflags)
+
 #### HD DAQ Unpacker ####
 unpacker_config		:= unpacker-config
 unpacker_include_dir	:= $(shell $(unpacker_config) --incdir)
@@ -67,7 +68,7 @@ unpacker_lib_dir	:= $(shell $(unpacker_config) --libdir)
 unpacker_libs		:= $(shell $(unpacker_config) --libs)
 
 #### analyzer ####
-top_dir		:= $(HOME)/online/dev
+top_dir		:= $(CURDIR)/../..
 src_top_dir	:= $(top_dir)/src
 bin_dir		:= $(top_dir)/bin
 include_top_dir	:= $(top_dir)/include
@@ -75,9 +76,9 @@ lib_dir		:= $(top_dir)/lib
 link_opt	:= -Wl,-rpath,$(lib_dir) -L$(lib_dir)
 
 #my_name	:=
-headers		:= $(filter %.hh,$(wildcard $(PWD)/include/*))
+headers		:= $(filter %.hh,$(wildcard $(CURDIR)/include/*))
 top_headers	:= $(addprefix $(include_top_dir)/,$(notdir $(headers)))
-sources		:= $(filter %.cc,$(wildcard $(PWD)/src/*))
+sources		:= $(filter %.cc,$(wildcard $(CURDIR)/src/*))
 objects		:= $(subst .cc,.o,$(sources))
 linkdefs	:=
 #libraries	=

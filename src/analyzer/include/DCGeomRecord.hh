@@ -59,7 +59,7 @@ public:
   DCGeomRecord & operator=( const DCGeomRecord );
 public:
   const ThreeVector & Position( void ) const { return pos_; }
-  ThreeVector NormalVector( void ) const 
+  ThreeVector NormalVector( void ) const
   { return ThreeVector( dxdu_, dydu_, dzdu_ ); }
   ThreeVector UnitVector( void ) const
   { return ThreeVector( dxds_, dyds_, dzds_ ); }
@@ -84,9 +84,9 @@ public:
   double dzdt( void ) const { return dzdt_; }
   double dzdu( void ) const { return dzdu_; }
 
-  double WirePos( double wire ) const { return dd_*(wire - w0_)+ofs_; }   
+  double WirePos( double wire ) const { return dd_*(wire - w0_)+ofs_; }
 
-  int WireNumber( double pos ) const; 
+  int WireNumber( double pos ) const;
 
 private:
   void calcVectors( void );
@@ -107,13 +107,13 @@ private:
   double dsdx_, dsdy_, dsdz_;
   double dtdx_, dtdy_, dtdz_;
   double dudx_, dudy_, dudz_;
- 
+
   friend class DCGeomMan;
-  friend class DCGeomRecordComp;
+  friend struct DCGeomRecordComp;
 };
 
-struct DCGeomRecordComp 
-  : public std::binary_function <DCGeomRecord *, DCGeomRecord *, bool> 
+struct DCGeomRecordComp
+  : public std::binary_function <DCGeomRecord *, DCGeomRecord *, bool>
 {
   bool operator()( const DCGeomRecord * const p1,
 		   const DCGeomRecord * const p2 ) const

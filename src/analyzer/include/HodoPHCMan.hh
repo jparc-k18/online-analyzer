@@ -8,7 +8,8 @@
 #define HODO_PHC_MAN_H
 
 #include <map>
-#include <string>
+
+#include <TString.h>
 
 class HodoPHCParam
 {
@@ -33,18 +34,18 @@ private:
 class HodoPHCMan
 {
 private:
-  std::string PHCFileName;
+  TString PHCFileName;
 public:
   HodoPHCMan();
   ~HodoPHCMan();
   static HodoPHCMan& GetInstance(){static HodoPHCMan obj; return obj;}
-  
+
 private:
   HodoPHCMan( const HodoPHCMan & );
   HodoPHCMan & operator = ( const HodoPHCMan & );
-  
+
 public:
-  void SetFileName( const std::string & filename ) { PHCFileName=filename; } 
+  void SetFileName( const TString& filename ) { PHCFileName=filename; }
 
 private:
   typedef std::map <int, HodoPHCParam *> PhcPContainer;
@@ -59,7 +60,7 @@ public:
   bool doRCorrection( int cid, int plid, int seg, int ud, double time,
                       double de, double &ctime );
 private:
-  HodoPHCParam * GetMap( int cid, int plid, int seg, int ud ); 
+  HodoPHCParam * GetMap( int cid, int plid, int seg, int ud );
   void clearMap( void );
 };
 

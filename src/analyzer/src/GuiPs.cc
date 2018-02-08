@@ -1,6 +1,4 @@
-#include "GuiPs.hh"
-#include "Controller.hh"
-#include "PsMaker.hh"
+// -*- C++ -*-
 
 #include <iostream>
 
@@ -9,6 +7,10 @@
 #include <TGButton.h>
 #include <TGTextEntry.h>
 #include <TRootBrowser.h>
+
+#include "Controller.hh"
+#include "GuiPs.hh"
+#include "PsMaker.hh"
 
 ClassImp(hddaq::gui::GuiPs)
 
@@ -68,8 +70,8 @@ GuiPs::initialize(const std::vector<std::string>& optList,
   browser->StartEmbedding(0);
   m_frame = new TGMainFrame(gClient->GetRoot());
   browser->StopEmbedding("Ps");
-  
-  
+
+
   // check button of "Option"
   TGGroupFrame* optFrame = new TGGroupFrame(m_frame, "Option");
   optFrame->SetTitlePos(TGGroupFrame::kCenter);
@@ -85,7 +87,7 @@ GuiPs::initialize(const std::vector<std::string>& optList,
     }
   m_frame->AddFrame(optFrame, new TGLayoutHints(kLHintsExpandX));
 
-  
+
   // check button of "Device"
   TGGroupFrame* devFrame = new TGGroupFrame(m_frame, "Device");
   devFrame->SetTitlePos(TGGroupFrame::kCenter);
@@ -134,7 +136,7 @@ GuiPs::initialize(const std::vector<std::string>& optList,
   m_frame->MapSubwindows();
   m_frame->Resize(m_frame->GetDefaultSize());
   m_frame->MapWindow();
-  
+
   return;
 }
 
@@ -158,7 +160,7 @@ GuiPs::isOptOn(int i)
 void
 GuiPs::print()
 {
-  std::cout << "\n#D GuiPs::print()" << std::endl;  
+  std::cout << "\n#D GuiPs::print()" << std::endl;
   std::string command = "lpr " + m_filename;
   std::cout << "#D " << command << std::endl;
 //   print(command);
@@ -169,7 +171,7 @@ GuiPs::print()
 void
 GuiPs::save()
 {
-  std::cout << "\n#D GuiPs::save()" << std::endl;  
+  std::cout << "\n#D GuiPs::save()" << std::endl;
   const std::vector<TGCheckButton*>& oB = m_optButton;
   const std::vector<TGCheckButton*>& dB = m_devButton;
 
@@ -187,7 +189,7 @@ GuiPs::save()
 		<< "\n";
     }
   std::cout.flush();
-  
+
   PsMaker::getInstance().makePs();
 
   return;
@@ -221,7 +223,7 @@ GuiPs::toggleAllDevice()
   // else
   //   for (int i=0; i<k_nDevice; ++i)
   //     m_devButton[i]->SetOn(false);
-    
+
   return;
 }
 

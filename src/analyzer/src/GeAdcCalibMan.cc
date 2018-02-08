@@ -1,6 +1,4 @@
-/*
-  GeAdcCalibMan.cc
-*/
+// -*- C++ -*-
 
 #include "GeAdcCalibMan.hh"
 #include "ConfMan.hh"
@@ -10,15 +8,17 @@
 #include <iomanip>
 #include <cstdlib>
 
+ClassImp(GeAdcCalibMan);
+
 // initialize GeAdcCalibMan ----------------------------------------------
-void ConfMan::initializeGeAdcCalibMan()
+void ConfMan::InitializeGeAdcCalibMan( void )
 {
   if(name_file_["GEADC:"] != ""){
     GeAdcCalibMan& gGeAdcCalib = GeAdcCalibMan::GetInstance();
     flag_[kIsGood] = gGeAdcCalib.Initialize(name_file_["GEADC:"]);
   }else{
     std::cout << "#E ConfMan"
-	      << " File path does not exist in " << name_file_["GEADC:"] 
+	      << " File path does not exist in " << name_file_["GEADC:"]
 	      << std::endl;
     flag_.reset(kIsGood);
   }
@@ -34,12 +34,12 @@ struct GeAdcCalibMap {
   GeAdcCalibMap( double q0, double q1, double q2, double q3, double q4 )
     : p0(q0), p1(q1), p2(q2), p3(q3), p4(q4)
   {}
-  double p0, p1, p2, p3, p4; 
+  double p0, p1, p2, p3, p4;
 };
 
 GeAdcCalibMan::GeAdcCalibMan()
+  : TObject()
 {
-  
 }
 
 GeAdcCalibMan::~GeAdcCalibMan()
@@ -63,9 +63,9 @@ inline unsigned int SortKey( int seg )
 }
 
 
-bool GeAdcCalibMan::Initialize( const std::string& filename)
+bool GeAdcCalibMan::Initialize( const TString& filename)
 {
-  static const std::string funcname = "[GeAdcCalibMan::Initialize]";
+  static const TString funcname = "[GeAdcCalibMan::Initialize]";
 
   ParamFileName_ = filename;
 
@@ -74,7 +74,7 @@ bool GeAdcCalibMan::Initialize( const std::string& filename)
   FILE *fp;
   char buf[BufSize];
 
-  if((fp=fopen(ParamFileName_.c_str(),"r"))==0){
+  if((fp=fopen(ParamFileName_.Data(),"r"))==0){
     std::cerr << funcname << ": file open fail" << std::endl;
     exit(-1);
   }
@@ -91,13 +91,13 @@ bool GeAdcCalibMan::Initialize( const std::string& filename)
 	}
 	else{
 	  std::cerr << funcname << ": new fail. "
-		    << " Seg=" << std::setw(3) << std::dec << seg 
+		    << " Seg=" << std::setw(3) << std::dec << seg
 		    << std::endl;
 	}
       }
       else{
 	std::cerr << funcname << ": Bad format => "
-		  << std::string(buf) << std::endl;
+		  << TString(buf) << std::endl;
       }
     }
   }
@@ -111,11 +111,11 @@ GeAdcCalibMap * GeAdcCalibMan::getMap( int seg ) const
 {
   unsigned int key=SortKey( seg );
   return Cont_[key];
-}  
+}
 
-double GeAdcCalibMan::CalibAdc( int seg, int adc, double &a_ ) 
+double GeAdcCalibMan::CalibAdc( int seg, int adc, double &a_ )
 {
-  static const std::string funcname = "[GeAdcCalibMan::CalibAdc]";
+  static const TString funcname = "[GeAdcCalibMan::CalibAdc]";
   GeAdcCalibMap *p=getMap( seg );
   if(p){
     double adcCH=adc+frand();

@@ -27,14 +27,15 @@
 #include "ScalerAnalyzer.hh"
 #include "UserParamMan.hh"
 
+ClassImp(ScalerAnalyzer);
+
 namespace
 {
   using namespace hddaq::unpacker;
   const UnpackerManager& gUnpacker = GUnpacker::get_instance();
+  const std::vector<TString> sFlag =
+    { "SeparateComma", "SpillBySpill", "SemiOnline", "ScalerSheet" };
 }
-
-const std::vector<TString> ScalerAnalyzer::sFlag =
-  { "SeparateComma", "SpillBySpill", "SemiOnline", "ScalerSheet" };
 
 //______________________________________________________________________________
 ScalerAnalyzer::ScalerAnalyzer( void )
@@ -60,7 +61,7 @@ ScalerAnalyzer::~ScalerAnalyzer( void )
 
 //______________________________________________________________________________
 void
-ScalerAnalyzer::Clear( void )
+ScalerAnalyzer::Clear( Option_t* )
 {
   for( Int_t i=0; i<MaxColumn; ++i ){
     for( Int_t j=0; j<MaxRow; ++j ){
@@ -304,10 +305,9 @@ ScalerAnalyzer::Has( const TString& name ) const
 
 //______________________________________________________________________________
 void
-ScalerAnalyzer::Print( const TString& arg ) const
+ScalerAnalyzer::Print( Option_t* ) const
 {
   m_ost << "\033[2J" << std::endl;
-    // << FUNC_NAME << " " << arg << std::endl << std::endl;
 
   // Double_t kpi_ratio = (Double_t)Get("K-Beam")/Get("pi-Beam");
   TString end_mark = m_is_spill_end ? "Spill End" : "";

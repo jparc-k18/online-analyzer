@@ -1,26 +1,38 @@
-/*
-  ConfMan.hh
-*/
+// -*- C++ -*-
 
 #ifndef CONF_MAN_HH
 #define CONF_MAN_HH
 
-#include<string>
-#include<vector>
-#include<map>
-#include<bitset>
+#include <string>
+#include <vector>
+#include <map>
+#include <bitset>
 
-class ConfMan {
+#include <TObject.h>
+#include <TString.h>
+
+//______________________________________________________________________________
+class ConfMan : public TObject
+{
+public:
+  static ConfMan& GetInstance( void );
+  virtual ~ConfMan( void );
+
+private:
+  ConfMan( void );
+  ConfMan( const ConfMan& );
+  ConfMan& operator =( const ConfMan& );
+
   // Private parameter declarations ----------------------------------------
   // Arguments of main function
   enum ArgumentList {
     kProcess, kConfPath, kStreamPath,
     sizeArgumentList
   };
-  std::string path_file_[sizeArgumentList];
+  TString path_file_[sizeArgumentList];
 
   // File path list in configuration file
-  std::map<std::string, std::string> name_file_;
+  std::map<TString, TString> name_file_;
 
   // Flags
   enum Flag {
@@ -30,44 +42,27 @@ class ConfMan {
   std::bitset<sizeFlag> flag_;
 
 public:
-  // Public functions ------------------------------------------------------
-  ~ConfMan();
-  void initialize(const std::vector<std::string>& argv);
-  static ConfMan&  getInstance();
-  bool isGood();
+  void Initialize(const std::vector<std::string>& argv);
+  bool IsGood( void ) const { return flag_[kIsGood]; }
+  void InitializeHodoParamMan( void );
+  void InitializeHodoPHCMan( void );
+  void InitializeDCGeomMan( void );
+  void InitializeDCTdcCalibMan( void );
+  void InitializeDCDriftParamMan( void );
+  void InitializeEMCParamMan( void );
+  void InitializeMatrixParamMan( void );
+  void InitializeMsTParamMan( void );
+  void InitializeUserParamMan( void );
+  void InitializeGeAdcCalibMan( void );
 
-  void initializeHodoParamMan();
-  void initializeHodoPHCMan();
-
-  void initializeDCGeomMan();
-  void initializeDCTdcCalibMan();
-  void initializeDCDriftParamMan();
-
-  void initializeEMCParamMan();
-  void initializeMatrixParamMan();
-  void initializeMsTParamMan();
-
-  void initializeUserParamMan();
-
-  void initializeGeAdcCalibMan();
-  
-private:
-  ConfMan();
-  ConfMan(const ConfMan& object);
-  ConfMan& operator =(const ConfMan& object);
+  ClassDef(ConfMan,0);
 };
 
-// GetInstance
-inline ConfMan& ConfMan::getInstance()
+//______________________________________________________________________________
+inline ConfMan& ConfMan::GetInstance( void )
 {
   static ConfMan object;
   return object;
-}
-
-// isGood
-inline bool ConfMan::isGood()
-{
-  return flag_[kIsGood];
 }
 
 #endif

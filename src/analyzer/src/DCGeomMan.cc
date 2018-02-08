@@ -1,397 +1,398 @@
-/*
-  DCGeomMan.cc
-
-  2012/1/24
-*/
-
-#include "DCGeomMan.hh"
-#include "DCGeomRecord.hh"
-#include "ConfMan.hh"
+// -*- C++ -*-
 
 #include <string>
-#include <stdexcept>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
+#include <iostream>
 
-const int MaxChar = 200;
+#include <std_ostream.hh>
 
-DCGeomMan *DCGeomMan::geomMan_=0;
+#include "ConfMan.hh"
+#include "DCGeomMan.hh"
+#include "DCGeomRecord.hh"
+#include "Exception.hh"
+#include "FuncName.hh"
 
-// initialize DCGeomMan -----------------------------------------------------
+ClassImp(DCGeomMan);
+
+//______________________________________________________________________________
 void
-ConfMan::initializeDCGeomMan()
+ConfMan::InitializeDCGeomMan( void )
 {
   if(name_file_["DCGEOM:"] != ""){
     DCGeomMan& gDCGeo = DCGeomMan::GetInstance();
     flag_[kIsGood] = gDCGeo.Initialize(name_file_["DCGEOM:"]);
   }else{
-    std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["DCGEOM:"] 
-	      << std::endl;
+    hddaq::cout << "#E ConfMan::"
+		<< " File path does not exist in " << name_file_["DCGEOM:"]
+		<< std::endl;
     flag_.reset(kIsGood);
   }
 }
-// initialize DCGeomMan -----------------------------------------------------
 
-DCGeomMan::DCGeomMan()
-  : TOFid_(51), LCid_(54)
-{}
-
-DCGeomMan::~DCGeomMan()
-{}
-
-
-DCGeomMan & DCGeomMan::GetInstance( void )
+//______________________________________________________________________________
+DCGeomMan::DCGeomMan( void )
+  : TObject(),
+    TOFid_(51),
+    LCid_(54)
 {
-  if( !geomMan_ ){
-    geomMan_ = new DCGeomMan();
-  }
-  return *geomMan_;
 }
 
-double DCGeomMan::GetLocalZ( int lnum ) const
+//______________________________________________________________________________
+DCGeomMan::~DCGeomMan( void )
 {
-  static const std::string funcname = "[DCGeomMan::GetLocalZ(int)]"; 
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ) return pGeo->length_;
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
-  }
 }
 
-double DCGeomMan::GetResolution( int lnum ) const
+//______________________________________________________________________________
+Double_t
+DCGeomMan::GetLocalZ( Int_t lnum ) const
 {
-  static const std::string funcname = "[DCGeomMan::GetResolution(int)]"; 
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ) return pGeo->resol_;
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    return itr->second->length_;
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
   }
 }
 
-double DCGeomMan::GetTiltAngle( int lnum ) const
+//______________________________________________________________________________
+Double_t
+DCGeomMan::GetResolution( Int_t lnum ) const
 {
-  static const std::string funcname = "[DCGeomMan::GetTiltAngle(int)]";
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ) return pGeo->tiltAngle_;
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    return itr->second->resol_;
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
   }
 }
 
-double DCGeomMan::GetRotAngle1( int lnum ) const
+//______________________________________________________________________________
+Double_t
+DCGeomMan::GetTiltAngle( Int_t lnum ) const
 {
-  static const std::string funcname = "[DCGeomMan::GetRotAngle1(int)]";
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ) return pGeo->rotAngle1_;
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    return itr->second->tiltAngle_;
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
   }
 }
 
-double DCGeomMan::GetRotAngle2( int lnum ) const
+//______________________________________________________________________________
+Double_t
+DCGeomMan::GetRotAngle1( Int_t lnum ) const
 {
-  static const std::string funcname = "[DCGeomMan::GetRotAngle2(int)]";
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ) return pGeo->rotAngle2_;
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    return itr->second->rotAngle1_;
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
   }
 }
 
-const ThreeVector & DCGeomMan::GetGlobalPosition( int lnum ) const
+//______________________________________________________________________________
+Double_t
+DCGeomMan::GetRotAngle2( Int_t lnum ) const
 {
-  static const std::string funcname = "[DCGeomMan::GetGlobalPosition(int)]";
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ) return pGeo->pos_;
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    return itr->second->rotAngle2_;
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
   }
 }
 
-ThreeVector DCGeomMan::NormalVector( int lnum ) const
+//______________________________________________________________________________
+const ThreeVector&
+DCGeomMan::GetGlobalPosition( Int_t lnum ) const
 {
-  static const std::string funcname = "[DCGeomMan::NormalVector(int)]";
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ) return pGeo->NormalVector();
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    return itr->second->pos_;
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
   }
 }
 
-ThreeVector DCGeomMan::UnitVector( int lnum ) const
+//______________________________________________________________________________
+ThreeVector
+DCGeomMan::NormalVector( Int_t lnum ) const
 {
-  static const std::string funcname = "[DCGeomMan::UnitVector(int)]";
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ) return pGeo->UnitVector();
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    return itr->second->NormalVector();
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
   }
 }
 
-const DCGeomRecord * DCGeomMan::GetRecord( int lnum ) const
+//______________________________________________________________________________
+ThreeVector
+DCGeomMan::UnitVector( Int_t lnum ) const
 {
-  static const std::string funcname = "[DCGeomMan::GetRecord(int)]";
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ) return pGeo;
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
-  }
-}
- 
-double DCGeomMan::calcWirePosition( int lnum, double wire ) const
-{
-  static const std::string funcname = "[DCGeomMan::calcWirePosition()]";
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ){
-    return pGeo->WirePos(wire);
-  }
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    return itr->second->UnitVector();
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
   }
 }
 
-int DCGeomMan::calcWireNumber( int lnum, double pos ) const
+//______________________________________________________________________________
+const DCGeomRecord*
+DCGeomMan::GetRecord( Int_t lnum ) const
 {
-  static const std::string funcname = "[DCGeomMan::calcWireNumber()]";
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ){
-    return pGeo->WireNumber(pos);
-  }
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    return itr->second;
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
   }
 }
- 
 
-void DCGeomMan::clearElements( void )
+//______________________________________________________________________________
+Double_t
+DCGeomMan::calcWirePosition( Int_t lnum, Double_t wire ) const
 {
-  //  for_each( geomRecord_.begin(), geomRecord_.end(), DeleteObject() );
-  std::map <int, DCGeomRecord *>::iterator itr;
-  for( itr=geomRecord_.begin(); itr!=geomRecord_.end(); ++itr ){
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    return itr->second->WirePos(wire);
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
+  }
+}
+
+//______________________________________________________________________________
+Int_t
+DCGeomMan::calcWireNumber( Int_t lnum, Double_t pos ) const
+{
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    return itr->second->WireNumber(pos);
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
+  }
+}
+
+//______________________________________________________________________________
+void
+DCGeomMan::clearElements( void )
+{
+  //  for_each( m_map.begin(), m_map.end(), DeleteObject() );
+  std::map <Int_t, DCGeomRecord *>::iterator itr;
+  for( itr=m_map.begin(); itr!=m_map.end(); ++itr ){
     delete itr->second;
     itr->second = 0;
   }
-  geomRecord_.clear();
+  m_map.clear();
   TOFid_=51;
 }
 
-
-bool DCGeomMan::Initialize( void )
+//______________________________________________________________________________
+Bool_t
+DCGeomMan::Initialize( void )
 {
-  static const std::string funcname = "[DCGeomMan::Initialize]";
-  char str[MaxChar];
-  char cname[MaxChar];
-  int id;
-  double xs, ys, zs, ta, ra1, ra2, l, res, w0, dd, ofs;
-  //double A = 0.8/750.;
+  Int_t id;
+  Double_t xs, ys, zs, ta, ra1, ra2, l, res, w0, dd, ofs;
+  char cname[100];
+  //Double_t A = 0.8/750.;
 
-  FILE *fp;
+  std::ifstream ifs( m_file_name );
 
-  if( ( fp = fopen( filename_.c_str(), "r" ) ) == 0 ){
-    throw std::invalid_argument(funcname+": file open fail");
+  if( !ifs.is_open() ){
+    hddaq::cerr << FUNC_NAME << ": file open fail" << std::endl;
+    return false;
   }
 
   clearElements();
 
-  while( fgets( str, MaxChar, fp ) != 0 ){
-    if( str[0]!='#' ){
-      if( sscanf( str, "%d %s %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-		  &id, cname, &xs, &ys, &zs, &ta, &ra1, &ra2, &l, &res,
-		  &w0, &dd, &ofs )
-	  == 13 ){
-	DCGeomRecord *pRec = 
-	  new DCGeomRecord( id, cname, xs, ys, zs, 
-			    ta, ra1, ra2, l, res,
-			    w0, dd, ofs );
-	DCGeomRecord *pOld = geomRecord_[id];
-	geomRecord_[id] = pRec;
+  TString line;
+  while( ifs.good() && line.ReadLine(ifs) ){
+    if( line[0] == '#' ) continue;
 
-	if(strcmp(cname,"TOF")==0) {
-	  TOFid_=id;
-	}
-	
-	if( pOld ){
-	  std::cerr << funcname << ": duplicated id number. "
+    if( std::sscanf( line.Data(), "%d %s %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+		     &id, cname, &xs, &ys, &zs, &ta, &ra1, &ra2, &l, &res,
+		     &w0, &dd, &ofs ) == 13 ){
+      DCGeomRecord *pRec = new DCGeomRecord( id, cname, xs, ys, zs,
+					     ta, ra1, ra2, l, res,
+					     w0, dd, ofs );
+      DCGeomRecord *pOld = m_map[id];
+      m_map[id] = pRec;
+      if(strcmp(cname,"TOF")==0) {
+	TOFid_=id;
+      }
+
+      if( pOld ){
+	hddaq::cerr << FUNC_NAME << ": duplicated id number. "
 		    << " following record is deleted." << std::endl;
-	  std::cerr << "Id=" << pOld->id_ << " " << pOld->pos_
+	hddaq::cerr << "Id=" << pOld->id_ << " " << pOld->pos_
 		    << " ) ... " << std::endl;
-	  delete pOld;
-	}
+	delete pOld;
       }
-      else {
-	std::string strtemp=str;
-	std::cerr << funcname << ": Invalid format " << strtemp << std::endl;
-      }
+    }
+    else {
+      hddaq::cerr << FUNC_NAME << ": Invalid format " << line << std::endl;
     }
   }
 
-  fclose(fp);
-
-  std::cout << funcname << " Initialization finished." << std::endl;
-
+  hddaq::cout << FUNC_NAME << " Initialization finished." << std::endl;
   return true;
 }
 
-
-std::vector <int> DCGeomMan::GetDetectorIDList( void ) const
+//______________________________________________________________________________
+std::vector<Int_t>
+DCGeomMan::GetDetectorIDList( void ) const
 {
-  std::vector<int> vlist;
-  vlist.reserve(geomRecord_.size());
-  std::map <int, DCGeomRecord *>::const_iterator 
-    itr=geomRecord_.begin(), end=geomRecord_.end();
-
+  std::vector<Int_t> vlist;
+  vlist.reserve( m_map.size() );
+  DCGeomIterator itr=m_map.begin(), end=m_map.end();
   for(; itr!=end; ++itr ){
     vlist.push_back( itr->first );
   }
-
   return vlist;
 }
 
-ThreeVector DCGeomMan::Local2GlobalPos( int lnum, 
-					const ThreeVector &in ) const
+//______________________________________________________________________________
+ThreeVector
+DCGeomMan::Local2GlobalPos( Int_t lnum,
+			    const ThreeVector &in ) const
 {
-  static const std::string funcname = 
-    "[DCGeomMan::Local2GlobalPos(ThreeVecor &)]";
-
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( !pGeo ) 
-    throw std::out_of_range(funcname+": No record" );
-
-  double x = pGeo->dxds_*in.x() + pGeo->dxdt_*in.y()
-    + pGeo->dxdu_*in.z() + pGeo->pos_.x();
-  double y = pGeo->dyds_*in.x() + pGeo->dydt_*in.y()
-    + pGeo->dydu_*in.z() + pGeo->pos_.y();
-  double z = pGeo->dzds_*in.x() + pGeo->dzdt_*in.y()
-    + pGeo->dzdu_*in.z() + pGeo->pos_.z();
-
-  return ThreeVector( x, y, z );
-}
-
-ThreeVector DCGeomMan::Global2LocalPos( int lnum,
-					const ThreeVector &in ) const
-{
-  static const std::string funcname = 
-    "[DCGeomMan::Global2LocalPos(ThreeVecor &)]";
-
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( !pGeo ){
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
-  }
-
-  double x 
-    = pGeo->dsdx_*(in.x()-pGeo->pos_.x())
-    + pGeo->dsdy_*(in.y()-pGeo->pos_.y())
-    + pGeo->dsdz_*(in.z()-pGeo->pos_.z());
-  double y 
-    = pGeo->dtdx_*(in.x()-pGeo->pos_.x())
-    + pGeo->dtdy_*(in.y()-pGeo->pos_.y())
-    + pGeo->dtdz_*(in.z()-pGeo->pos_.z());
-  double z 
-    = pGeo->dudx_*(in.x()-pGeo->pos_.x())
-    + pGeo->dudy_*(in.y()-pGeo->pos_.y())
-    + pGeo->dudz_*(in.z()-pGeo->pos_.z());
-
-  return ThreeVector( x, y, z );
-}
-
-ThreeVector DCGeomMan::Local2GlobalDir( int lnum,
-					const ThreeVector &in ) const
-{
-  static const std::string funcname = 
-    "[DCGeomMan::Local2GlobalDir(ThreeVecor &)]";
-
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( !pGeo ){
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
-  }
-
-  double x = pGeo->dxds_*in.x() + pGeo->dxdt_*in.y()
-    + pGeo->dxdu_*in.z();
-  double y = pGeo->dyds_*in.x() + pGeo->dydt_*in.y()
-    + pGeo->dydu_*in.z();
-  double z = pGeo->dzds_*in.x() + pGeo->dzdt_*in.y()
-    + pGeo->dzdu_*in.z();
-
-  return ThreeVector( x, y, z );
-}
-
-ThreeVector DCGeomMan::Global2LocalDir( int lnum,
-					const ThreeVector &in ) const
-{
-  static const std::string funcname = 
-    "[DCGeomMan::Global2LocalDir(ThreeVecor &)]";
-
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( !pGeo ){
-    std::cerr << funcname << ": No record. Layer#=" 
-	      << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
-  }
-
-  double x = pGeo->dsdx_*in.x() + pGeo->dsdy_*in.y()+ pGeo->dsdz_*in.z();
-  double y = pGeo->dtdx_*in.x() + pGeo->dtdy_*in.y()+ pGeo->dtdz_*in.z();
-  double z = pGeo->dudx_*in.x() + pGeo->dudy_*in.y()+ pGeo->dudz_*in.z();
-
-  return ThreeVector( x, y, z );
-}
-
-void DCGeomMan::SetResolution( int lnum,  double res) const
-{
-  static const std::string funcname = "[DCGeomMan::SetResolution(int, double)]"; 
-  DCGeomRecord *pGeo = geomRecord_[lnum];
-  if( pGeo ) {
-    pGeo->resol_=res;
-    return;
-  }
-  else{
-    std::cerr << funcname << ": No record. Layer#=" 
-              << lnum << std::endl;
-    throw std::out_of_range(funcname+": No record" );
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    DCGeomRecord *pGeo = itr->second;
+    Double_t x = pGeo->dxds_*in.x() + pGeo->dxdt_*in.y()
+      + pGeo->dxdu_*in.z() + pGeo->pos_.x();
+    Double_t y = pGeo->dyds_*in.x() + pGeo->dydt_*in.y()
+      + pGeo->dydu_*in.z() + pGeo->pos_.y();
+    Double_t z = pGeo->dzds_*in.x() + pGeo->dzdt_*in.y()
+      + pGeo->dzdu_*in.z() + pGeo->pos_.z();
+    return ThreeVector( x, y, z );
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
   }
 }
 
-int DCGeomMan::GetDetectorId( const std::string &detName ) const
+//______________________________________________________________________________
+ThreeVector
+DCGeomMan::Global2LocalPos( Int_t lnum,
+			    const ThreeVector &in ) const
 {
-  const std::string funcName = "DCGeomMan::GetDetectorId";
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    DCGeomRecord *pGeo = itr->second;
+    Double_t x
+      = pGeo->dsdx_*(in.x()-pGeo->pos_.x())
+      + pGeo->dsdy_*(in.y()-pGeo->pos_.y())
+      + pGeo->dsdz_*(in.z()-pGeo->pos_.z());
+    Double_t y
+      = pGeo->dtdx_*(in.x()-pGeo->pos_.x())
+      + pGeo->dtdy_*(in.y()-pGeo->pos_.y())
+      + pGeo->dtdz_*(in.z()-pGeo->pos_.z());
+    Double_t z
+      = pGeo->dudx_*(in.x()-pGeo->pos_.x())
+      + pGeo->dudy_*(in.y()-pGeo->pos_.y())
+      + pGeo->dudz_*(in.z()-pGeo->pos_.z());
+    return ThreeVector( x, y, z );
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
+  }
+}
 
-  std::map <int, DCGeomRecord *>::const_iterator 
-    itr=geomRecord_.begin(), end=geomRecord_.end();
+//______________________________________________________________________________
+ThreeVector
+DCGeomMan::Local2GlobalDir( Int_t lnum,
+			    const ThreeVector &in ) const
+{
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    DCGeomRecord *pGeo = itr->second;
+    Double_t x = pGeo->dxds_*in.x() + pGeo->dxdt_*in.y()
+      + pGeo->dxdu_*in.z();
+    Double_t y = pGeo->dyds_*in.x() + pGeo->dydt_*in.y()
+      + pGeo->dydu_*in.z();
+    Double_t z = pGeo->dzds_*in.x() + pGeo->dzdt_*in.y()
+      + pGeo->dzdu_*in.z();
+    return ThreeVector( x, y, z );
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
+  }
+}
 
+//______________________________________________________________________________
+ThreeVector
+DCGeomMan::Global2LocalDir( Int_t lnum,
+			    const ThreeVector& in ) const
+{
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    DCGeomRecord *pGeo = itr->second;
+    Double_t x = pGeo->dsdx_*in.x() + pGeo->dsdy_*in.y()+ pGeo->dsdz_*in.z();
+    Double_t y = pGeo->dtdx_*in.x() + pGeo->dtdy_*in.y()+ pGeo->dtdz_*in.z();
+    Double_t z = pGeo->dudx_*in.x() + pGeo->dudy_*in.y()+ pGeo->dudz_*in.z();
+    return ThreeVector( x, y, z );
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
+  }
+}
+
+//______________________________________________________________________________
+void
+DCGeomMan::SetResolution( Int_t lnum,  Double_t res)
+{
+  DCGeomIterator itr = m_map.find(lnum);
+  if( itr != m_map.end() ){
+    itr->second->resol_ = res;
+  } else {
+    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
+		<< lnum << std::endl;
+    throw Exception( FUNC_NAME+": No record" );
+  }
+}
+
+//______________________________________________________________________________
+Int_t
+DCGeomMan::GetDetectorId( const TString& detName ) const
+{
+  DCGeomIterator itr=m_map.begin(), end=m_map.end();
   for(; itr!=end; ++itr ){
-    if (itr->second->name_ == detName)
+    if( itr->second->name_ == detName ){
       return itr->second->id_;
+    }
   }
 
-  std::cerr << funcName << " : No such detector " << detName << std::endl;
-  exit(-1);
-
-  return -1;
+  hddaq::cerr << FUNC_NAME << " : No such detector " << detName << std::endl;
+  return -9999;
 }

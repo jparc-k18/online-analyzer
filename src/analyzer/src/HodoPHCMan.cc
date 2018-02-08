@@ -29,7 +29,7 @@ const int UdShift   = 27;
 
 // initialize HodoPHCMan ----------------------------------------------------
 void
-ConfMan::initializeHodoPHCMan()
+ConfMan::InitializeHodoPHCMan()
 {
   if(name_file_["HDPHC:"] != ""){
     HodoPHCMan& gHodoPHC = HodoPHCMan::GetInstance();
@@ -37,7 +37,7 @@ ConfMan::initializeHodoPHCMan()
     flag_[kIsGood] = gHodoPHC.Initialize();
   }else{
     std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["HDPHC:"] 
+	      << " File path does not exist in " << name_file_["HDPHC:"]
 	      << std::endl;
     flag_.reset(kIsGood);
   }
@@ -71,7 +71,7 @@ HodoPHCParam::~HodoPHCParam()
 
 double HodoPHCParam::DoPHC( double time, double de )
 {
-  static const std::string funcname = "[HodoPHCParam::DoPHC]";
+  static const TString funcname = "[HodoPHCParam::DoPHC]";
   double retval=time;
 
   switch(Type){
@@ -82,7 +82,7 @@ double HodoPHCParam::DoPHC( double time, double de )
   case 2:
     retval=type2Correction(time,de); break; // fiber
   default:
-    std::cerr << funcname << ": No Correction Method. Type=" 
+    std::cerr << funcname << ": No Correction Method. Type="
               << Type << std::endl;
   }
   return retval;
@@ -90,7 +90,7 @@ double HodoPHCParam::DoPHC( double time, double de )
 
 double HodoPHCParam::DoRPHC( double time, double de )
 {
-  static const std::string funcname = "[HodoPHCParam::DoRPHC]";
+  static const TString funcname = "[HodoPHCParam::DoRPHC]";
   double retval=time;
 
   switch(Type){
@@ -99,7 +99,7 @@ double HodoPHCParam::DoRPHC( double time, double de )
   case 1:
     retval=type1RCorrection(time,de); break;
   default:
-    std::cerr << funcname << ": No Correction Method. Type=" 
+    std::cerr << funcname << ": No Correction Method. Type="
               << Type << std::endl;
   }
   return retval;
@@ -143,10 +143,10 @@ void HodoPHCMan::clearMap( void )
 
 bool HodoPHCMan::Initialize( void )
 {
-  static const std::string funcname = "[HodoPHCMan::Initialize]";
+  static const TString funcname = "[HodoPHCMan::Initialize]";
 
   //  FILE *fp;
-  std::ifstream f(PHCFileName.c_str());
+  std::ifstream f( PHCFileName );
   //  char buf[BufSize];
 
   if(f.fail()){
@@ -167,7 +167,7 @@ bool HodoPHCMan::Initialize( void )
       if( sscanf(buf.c_str(),
                  "%d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                  &cid, &plid, &seg, &ud, &type, &np, &par[0], &par[1], &par[2],
-                 &par[3], &par[4], &par[5], &par[6], &par[7], &par[8], 
+                 &par[3], &par[4], &par[5], &par[6], &par[7], &par[8],
                  &par[9] ) >= 6 ){
         if(np>10) np=10;
         int key=KEY(cid,plid,seg,ud);
@@ -183,8 +183,8 @@ bool HodoPHCMan::Initialize( void )
       else{
         std::cerr << funcname << ": Invalid format" << std::endl;
         std::cerr << " ===> " << buf << std::endl;
-      } /* if( sscanf... ) */ 
-    } /* if(buf[0]...) */ 
+      } /* if( sscanf... ) */
+    } /* if(buf[0]...) */
   } /* while( fgets... ) */
 
   //  fclose(fp);

@@ -20,8 +20,8 @@ namespace
 {
   const std::string& class_name("SsdAnalyzer");
   using namespace hddaq::unpacker;
-  UnpackerManager& gUnpacker = GUnpacker::get_instance();
-  HodoParamMan& gHodoParamMan = HodoParamMan::GetInstance();
+  const UnpackerManager& gUnpacker = GUnpacker::get_instance();
+  const HodoParamMan& gHodoParamMan = HodoParamMan::GetInstance();
 }
 
 //______________________________________________________________________________

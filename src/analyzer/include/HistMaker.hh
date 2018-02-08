@@ -1,3 +1,5 @@
+// -*- C++ -*-
+
 #ifndef HISTMAKER_HH
 #define HISTMAKER_HH
 
@@ -6,26 +8,27 @@
 #include<bitset>
 #include<string>
 
-#include<TROOT.h>
+#include <TObject.h>
+#include <TROOT.h>
 
 enum DetectorType {
   kDetectorZero,
   // Detector unique ID in the beam line
-  kBH1, kBFT, kBC3, kBC4, kBH2, 
+  kBH1, kBFT, kBC3, kBC4, kBH2,
   kMsT, kMtx3D,
   // Detector unique ID in the KURAMA system
   kCFT,kBGO,kPiID,kSFT, kSDC1, kSAC, kSCH, kFBT1,
   kSDC2, kSDC3, kFBT2, kTOF,kTOF_HT,kLC,
-  // VMEEASIROC unique ID 
+  // VMEEASIROC unique ID
   kVMEEASIROC,
   // Old detectors E07
   kBAC, kFBH,
   kSSDT, kSSD1, kSSD2,
-  kPVAC, kFAC, kEMC, 
+  kPVAC, kFAC, kEMC,
   // Old detectors
   kBMW, kBAC_SAC, kSFV_SAC3, kGe, kPWO, kSP0,
   kBH2_E07, kBAC_E07, kSSD0, kSAC1, kKFAC,
-  kKIC, kHDC, kSDC4, kTOFMT, kLAC, 
+  kKIC, kHDC, kSDC4, kTOFMT, kLAC,
   // Others
   kTriggerFlag, kDAQ, kCorrelation, kMisc,
   kTimeStamp, kDCEff,
@@ -60,7 +63,7 @@ enum DataType{
   kADCwTDC, kFADC,
   kDeltaE, kCTime, kDeltaE2D, kCTime2D,
   kChisqr,
-  // Extra data type for CFT 
+  // Extra data type for CFT
   kHighGain,kLowGain,kPede,
   // Extra data type for EMC
   kSerial, kXpos, kYpos, kXYpos, kTime,
@@ -77,7 +80,8 @@ class TH1;
 class TH2;
 class TList;
 
-class HistMaker {
+class HistMaker : public TObject
+{
   // Declaration of the private parameters ---------------------------------
   // histogram unique and sequential ID
   int current_hist_id_;
@@ -94,7 +98,7 @@ class HistMaker {
 
 public:
   // Public functions ------------------------------------------------------
-  virtual ~HistMaker( void );
+  ~HistMaker( void );
   static HistMaker& getInstance( void );
   static void getListOfDetectors(std::vector<std::string>& vec);
   static void getListOfPsFiles(std::vector<std::string>& vec);

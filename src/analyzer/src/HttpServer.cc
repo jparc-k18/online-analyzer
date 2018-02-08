@@ -10,18 +10,24 @@
 #include <TObject.h>
 #include <TSystem.h>
 
+#include "FuncName.hh"
 #include "HttpServer.hh"
+
+// ClassImp(HttpServer);
 
 //______________________________________________________________________________
 HttpServer::HttpServer( void )
-  : m_server(0),
+  : //TObject(),
+    m_server(0),
     m_port(8080)
 {
+  //  DEBUG_PRINT;
 }
 
 //______________________________________________________________________________
 HttpServer::~HttpServer( void )
 {
+  //  DEBUG_PRINT;
 }
 
 //______________________________________________________________________________

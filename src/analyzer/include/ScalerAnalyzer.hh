@@ -14,7 +14,7 @@
 #include <iostream>
 #include <vector>
 
-#include <Rtypes.h>
+#include <TObject.h>
 #include <TString.h>
 
 class TCanvas;
@@ -50,11 +50,10 @@ struct ScalerInfo
 };
 
 //______________________________________________________________________________
-class ScalerAnalyzer
+class ScalerAnalyzer : public TObject
 {
 public:
   static ScalerAnalyzer& GetInstance( void );
-  static TString&        ClassName( void );
   ~ScalerAnalyzer( void );
 
 private:
@@ -77,7 +76,6 @@ public:
     kScalerSheet,
     nFlag
   };
-  static const std::vector<TString> sFlag;
 
 private:
   // for Phase1
@@ -94,7 +92,7 @@ private:
   TCanvas*            m_canvas;
 
 public:
-  void                   Clear( void );
+  void                   Clear( Option_t* option="" );
   Bool_t                 Decode( void );
   Double_t               Duty( void ) const;
   std::pair<Int_t,Int_t> Find( const TString& name ) const;
@@ -103,13 +101,14 @@ public:
   Scaler                 Get( Int_t i, Int_t j ) const { return m_info[i][j].data; }
   Scaler                 Get( const TString& name ) const;
   Bool_t                 GetFlag( Int_t i ) const { return m_flag[i]; }
+  const char*            GetName( void ) const { return TObject::GetName(); }
   TString                GetName( Int_t i, Int_t j ) const { return m_info[i][j].name; }
   Int_t                  GetRunNumber( void ) const { return m_run_number; }
   ScalerInfo             GetScalerInfo( Int_t i, Int_t j ) const { return m_info[i][j]; }
   Bool_t                 Has( const TString& key ) const;
   Bool_t                 IsSpillEnd( void ) const { return m_is_spill_end; }
   Int_t                  ModuleId( Int_t i, Int_t j ) const { return m_info[i][j].module_id; }
-  void                   Print( const TString& arg="" ) const;
+  void                   Print( Option_t* option="" ) const;
   void                   PrintFlags( void ) const;
   void                   PrintScalerSheet( void );
   TString                SeparateComma( Scaler number ) const;
@@ -129,6 +128,7 @@ private:
 		    const TString& title2,
 		    const TString& title3 );
 
+  ClassDef(ScalerAnalyzer,0);
 };
 
 //______________________________________________________________________________
@@ -137,14 +137,6 @@ ScalerAnalyzer::GetInstance( void )
 {
   static ScalerAnalyzer g_instance;
   return g_instance;
-}
-
-//______________________________________________________________________________
-inline TString&
-ScalerAnalyzer::ClassName( void )
-{
-  static TString g_name("ScalerAnalyzer");
-  return g_name;
 }
 
 #endif

@@ -38,21 +38,21 @@ namespace analyzer
   using namespace hddaq;
 
   std::vector<TH1*> hptr_array;
-  
+
 //____________________________________________________________________________
 int
 process_begin(const std::vector<std::string>& argv)
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
-  gConfMan.initializeHodoParamMan();
-  gConfMan.initializeHodoPHCMan();
-  // gConfMan.initializeDCGeomMan();
-  // gConfMan.initializeDCTdcCalibMan();
-  // gConfMan.initializeDCDriftParamMan();
-  gConfMan.initializeUserParamMan();
-  gConfMan.initializeGeAdcCalibMan();
-  if(!gConfMan.isGood()){return -1;}
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
+  gConfMan.InitializeHodoParamMan();
+  gConfMan.InitializeHodoPHCMan();
+  // gConfMan.InitializeDCGeomMan();
+  // gConfMan.InitializeDCTdcCalibMan();
+  // gConfMan.InitializeDCDriftParamMan();
+  gConfMan.InitializeUserParamMan();
+  gConfMan.InitializeGeAdcCalibMan();
+  if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
   // Make tabs
@@ -72,7 +72,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispGeAdc_60Co());
   // tab_macro->Add(dispGeAdc_60Co_1170());
   // tab_macro->Add(dispGeAdc_60Co_1330());
-  
+
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
   tab_hist->Add(gHist.createGe());
@@ -92,12 +92,12 @@ process_begin(const std::vector<std::string>& argv)
   std::vector<std::string> optList;
   gHist.getListOfPsFiles(detList);
   gPsMaker.getListOfOption(optList);
-  
+
   hddaq::gui::GuiPs& gPsTab = hddaq::gui::GuiPs::getInstance();
   gPsTab.setFilename("/home/sks/PSFile/e13_2015/hbjana.ps");
   gPsTab.initialize(optList, detList);
   // ----------------------------------------------------------
-  
+
   gStyle->SetOptStat(1110);
   gStyle->SetTitleW(.4);
   gStyle->SetTitleH(.1);
@@ -125,7 +125,7 @@ process_event()
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-  
+
   // TriggerFlag ---------------------------------------------------
   bool scaler_flag = false;
   {
@@ -150,7 +150,7 @@ process_event()
     gUnpacker.dump_data_device(k_device);
 #endif
   }
-  
+
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
@@ -182,7 +182,7 @@ process_event()
       = gHist.getSequentialID(kGe, 0, kADC, NumOfSegGe +1);
     static const int ge_adcsum_calib_id
       = gHist.getSequentialID(kGe, 0, kADC, NumOfSegGe +2);
-    
+
     // hitpat hist id
     static const int ge_hitpat_id = gHist.getSequentialID(kGe, 0, kHitPat);
 
@@ -192,7 +192,7 @@ process_event()
     static const int ge_tfa2d_id = gHist.getSequentialID(kGe, 0, kTFA2D);
     static const int ge_pur2d_id = gHist.getSequentialID(kGe, 0, kPUR2D);
     static const int ge_rst2d_id = gHist.getSequentialID(kGe, 0, kRST2D);
-    
+
     for(int seg = 0; seg<NumOfSegGe; ++seg){
       // ADC
       int nhit_adc = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
@@ -228,7 +228,7 @@ process_event()
 	for(int m = 0; m<nhit_tfa; ++m){
 	  int tfa = gUnpacker.get(k_device, 0, seg, 0, k_tfa, m);
 	  hptr_array[ge_tfa_id + seg]->Fill(tfa);
-	  hptr_array[ge_tfa2d_id]->Fill(seg, tfa);	
+	  hptr_array[ge_tfa2d_id]->Fill(seg, tfa);
 	}
       }
 
@@ -309,7 +309,7 @@ process_event()
 	  hptr_array[pwo_hit_id+box]->Fill(unit);
 	  ++Multiplicity;
 	}
-	
+
       }// for(unit)
 
       hptr_array[pwo_mul_id+box]->Fill(Multiplicity);

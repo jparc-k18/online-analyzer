@@ -50,10 +50,10 @@ process_begin( const std::vector<std::string>& argv )
 {
   static const std::string func_name("["+space_name+"::"+__func__+"()]");
 
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize( argv );
-  gConfMan.initializeEMCParamMan();
-  if( !gConfMan.isGood() ) return -1;
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize( argv );
+  gConfMan.InitializeEMCParamMan();
+  if( !gConfMan.IsGood() ) return -1;
 
   for( Int_t i=0; i<MaxEventBuffer; ++i ){
     for( Int_t apv=0; apv<NumOfAPVDAQ; ++apv ){

@@ -1,46 +1,52 @@
-/*
-  DCTdcCalibMan.hh
+// -*- C++ -*-
 
-  2012/1/24
-*/
-
-#ifndef DCTdcCalibMan_h
-#define DCTdcCalibMan_h 1
+#ifndef DC_TDC_CALIB_MAN_HH
+#define DC_TDC_CALIB_MAN_HH
 
 #include <map>
 #include <string>
 #include <vector>
 
-typedef std::vector <int> IntVec;
+#include <TObject.h>
+#include <TString.h>
 
 struct DCTdcCalMap;
 
-class DCTdcCalibMan
+//______________________________________________________________________________
+class DCTdcCalibMan : public TObject
 {
 public:
-  DCTdcCalibMan();
-  ~DCTdcCalibMan();
-  static DCTdcCalibMan& GetInstance(){static DCTdcCalibMan obj; return obj;}
+  static DCTdcCalibMan& GetInstance( void );
+  ~DCTdcCalibMan( void );
 
 private:
-  DCTdcCalibMan( const DCTdcCalibMan & );
-  DCTdcCalibMan & operator = ( const DCTdcCalibMan & );
+  DCTdcCalibMan( void );
+  DCTdcCalibMan( const DCTdcCalibMan& );
+  DCTdcCalibMan& operator =( const DCTdcCalibMan& );
 
 private:
-  std::string MapFileName_;
-
-  mutable std::map <unsigned int, DCTdcCalMap *> Cont_;
+  TString                        m_file_name;
+  std::map<UInt_t, DCTdcCalMap*> m_map;
 
 public:
-  bool Initialize( void );
-  void SetFileName(const std::string& filename){MapFileName_ = filename;}
-
-  bool GetTime( int PlaneId, double WireId, int tdc, double & time ) const;
-  bool GetTdc( int PlaneId, double WireId, double time, int & tdc ) const;
+  Bool_t Initialize( void );
+  void   SetFileName( const TString& filename ){ m_file_name = filename; }
+  Bool_t GetTime( Int_t PlaneId, Double_t WireId, Int_t tdc, Double_t & time ) const;
+  Bool_t GetTdc( Int_t PlaneId, Double_t WireId, Double_t time, Int_t & tdc ) const;
 
 private:
-  DCTdcCalMap * getMap( int PlaneId, double WireId ) const;
-  void clearElements( void );
+  DCTdcCalMap* GetMap( Int_t PlaneId, Double_t WireId ) const;
+  void         ClearElements( void );
+
+  ClassDef(DCTdcCalibMan,0);
 };
 
-#endif 
+//______________________________________________________________________________
+inline DCTdcCalibMan&
+DCTdcCalibMan::GetInstance( void )
+{
+  static DCTdcCalibMan g_instance;
+  return g_instance;
+}
+
+#endif

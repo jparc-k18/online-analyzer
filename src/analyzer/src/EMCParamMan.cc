@@ -1,5 +1,4 @@
-/*
- */
+// -*- C++ -*-
 
 #include <sstream>
 #include <fstream>
@@ -7,15 +6,16 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "EMCParamMan.hh"
 #include "ConfMan.hh"
 #include "DetectorID.hh"
+#include "EMCParamMan.hh"
+#include "FuncName.hh"
 
-static const std::string class_name("EMCParamMan");
+ClassImp(EMCParamMan);
 
-// initialize EMCParamMan --------------------------------------------------
+//______________________________________________________________________________
 void
-ConfMan::initializeEMCParamMan( void )
+ConfMan::InitializeEMCParamMan( void )
 {
   if( ( name_file_["EMC:"] != "" ) ){
     EMCParamMan& gEMCParam = EMCParamMan::GetInstance();
@@ -27,28 +27,25 @@ ConfMan::initializeEMCParamMan( void )
     flag_.reset( kIsGood );
   }
 }
-// initialize EMCParamMan --------------------------------------------------
 
-//_____________________________________________________________________
+//______________________________________________________________________________
 EMCParamMan::EMCParamMan( void )
   : m_nspill(0)
 {
 }
 
-//_____________________________________________________________________
+//______________________________________________________________________________
 EMCParamMan::~EMCParamMan( void )
 {
 }
 
-//_____________________________________________________________________
+//______________________________________________________________________________
 bool
-EMCParamMan::Initialize( const std::string& filename )
+EMCParamMan::Initialize( const TString& filename )
 {
-  static const std::string func_name("["+class_name+"::"+__func__+"()]");
-
-  std::ifstream ifs( filename.c_str() );
+  std::ifstream ifs( filename );
   if( !ifs.is_open() ){
-    std::cerr << "#E " << func_name << " "
+    std::cerr << "#E " << FUNC_NAME << " "
 	      << "no such parameter file : " << filename << std::endl;
     std::exit( EXIT_FAILURE );
   }
@@ -58,19 +55,17 @@ EMCParamMan::Initialize( const std::string& filename )
   m_x.clear();
   m_y.clear();
 
-  std::string line;
-  while( !ifs.eof() && std::getline( ifs, line ) ){
-    if( line.empty() ) continue;
+  TString line;
+  while( ifs.good() && line.ReadLine(ifs) ){
+    if( line[0] == '#' ) continue;
 
-    std::string param[3];
-    std::istringstream iss( line );
+    TString param[3];
+    std::istringstream iss( line.Data() );
     iss >> param[0] >> param[1] >> param[2];
 
-    if( param[0].at(0) == '#' ) continue;
-
-    double spill = std::strtod( param[0].c_str(), NULL );
-    double x     = std::strtod( param[1].c_str(), NULL );
-    double y     = std::strtod( param[2].c_str(), NULL );
+    double spill = param[0].Atof();
+    double x     = param[1].Atof();
+    double y     = param[2].Atof();
     m_spill.push_back( spill );
     m_x.push_back( x );
     m_y.push_back( y );
@@ -80,7 +75,7 @@ EMCParamMan::Initialize( const std::string& filename )
 
 #if 0
   {
-    std::cout << "#D " << func_name << " "
+    std::cout << "#D " << FUNC_NAME << " "
 	      << "EMC Parameter" << std::endl;
     for( int i=0; i<m_nspill; ++i ){
       std::cout << m_spill[i] << "\t" << m_x[i] << "\t" << m_y[i] << std::endl;
@@ -88,14 +83,14 @@ EMCParamMan::Initialize( const std::string& filename )
   }
 #endif
 
-  std::cout << "#D " << func_name << " "
+  std::cout << "#D " << FUNC_NAME << " "
 	    << "Initialized"
 	    << std::endl;
 
   return true;
 }
 
-//_____________________________________________________________________
+//______________________________________________________________________________
 int
 EMCParamMan::Pos2Spill( double x, double y )
 {

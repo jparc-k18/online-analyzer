@@ -21,7 +21,7 @@ namespace analyzer
 
   namespace
   {
-    ConfMan& gConfMan = ConfMan::getInstance();
+    ConfMan& gConfMan = ConfMan::GetInstance();
     UnpackerManager& gUnpacker = GUnpacker::get_instance();
     //std::vector<std::string> target = { "hul01", "hul03" };
     std::vector<std::string> target = { "vme01" };
@@ -31,7 +31,7 @@ namespace analyzer
 int
 process_begin(const std::vector<std::string>& argv)
 {
-  gConfMan.initialize(argv);
+  gConfMan.Initialize(argv);
 
   // for( int i=0, n=target.size(); i<n; ++i ){
   //   int node_id = gUnpacker.get_fe_id( target.at(i) );

@@ -19,6 +19,7 @@
 #include "DetectorID.hh"
 #include "HistMaker.hh"
 #include "MacroBuilder.hh"
+// #include "RawData.hh"
 #include "UserParamMan.hh"
 
 namespace analyzer
@@ -26,54 +27,56 @@ namespace analyzer
   using namespace hddaq::unpacker;
   using namespace hddaq;
 
-  std::vector<TH1*> hptr_array;
-  
-  enum HistName
-    {
-      // Inside Target
-      i_Zn495, i_Zn338, i_Zn167_5, i_Z0, i_Z150, i_Z240, 
-      // Detector positions
-      i_SFT, i_EG, i_DC1, i_SAC,
-      NHist
-    };
-  static const double TgtOrg_plus[] =
-    {
-      // Inside Target
-      -495., -338., -167.5, 0, 150., 240.,
-      // Detector
-      400., 540., 733., 866.
-    };
+  namespace
+  {
+    std::vector<TH1*> hptr_array;
+    enum HistName
+      {
+	// Inside Target
+	i_Zn495, i_Zn338, i_Zn167_5, i_Z0, i_Z150, i_Z240,
+	// Detector positions
+	i_SFT, i_EG, i_DC1, i_SAC,
+	NHist
+      };
+    static const double TgtOrg_plus[] =
+      {
+	// Inside Target
+	-495., -338., -167.5, 0, 150., 240.,
+	// Detector
+	400., 540., 733., 866.
+      };
 
-  static const std::string posName[] =
-    {
-      // Inside Target
-      "Tgt Z=-495", "Tgt Z=-338", "Tgt Z=-167.5", "Tgt Z=0", 
-      "Tgt Z=150",  "Tgt Z=240",  
-      // Detectors
-      "SFT", "End guard", "DC1", "KbAC"
-    };
+    static const std::string posName[] =
+      {
+	// Inside Target
+	"Tgt Z=-495", "Tgt Z=-338", "Tgt Z=-167.5", "Tgt Z=0",
+	"Tgt Z=150",  "Tgt Z=240",
+	// Detectors
+	"SFT", "End guard", "DC1", "KbAC"
+      };
 
-  static const double posSSD[] =
-    {
-      -100, 100, 100, 100
-    };
+    static const double posSSD[] =
+      {
+	-100, 100, 100, 100
+      };
 
-  static double FF_plus = 0;
+    static double FF_plus = 0;
+  }
 
 //____________________________________________________________________________
 int
 process_begin(const std::vector<std::string>& argv)
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
-  gConfMan.initializeDCGeomMan();
-  gConfMan.initializeDCTdcCalibMan();
-  gConfMan.initializeDCDriftParamMan();
-  gConfMan.initializeUserParamMan();
-  if(!gConfMan.isGood()){return -1;}
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
+  gConfMan.InitializeDCGeomMan();
+  gConfMan.InitializeDCTdcCalibMan();
+  gConfMan.InitializeDCDriftParamMan();
+  gConfMan.InitializeUserParamMan();
+  if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
-  FF_plus = UserParamMan::getInstance().getParameter("FF_PLUS", 0);
+  FF_plus = UserParamMan::GetInstance().GetParameter("FF_PLUS", 0);
   std::cout << "#D : FF+" << FF_plus << std::endl;
 
   // Make tabs
@@ -261,7 +264,7 @@ process_event()
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-  
+
   return 0;
 }
 

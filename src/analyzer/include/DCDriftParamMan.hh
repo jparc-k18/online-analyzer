@@ -1,51 +1,65 @@
-/*
-  DCDriftParamMan.hh
+// -*- C++ -*-
 
-  2012/1/24
-*/
-
-#ifndef DCDriftParamMan_h 
-#define DCDriftParamMan_h 1
+#ifndef DC_DRIFT_PARAM_MAN_HH
+#define DC_DRIFT_PARAM_MAN_HH
 
 #include <map>
 #include <string>
 
-struct DCDriftParamRecord;
+#include <TObject.h>
+#include <TString.h>
 
-class DCDriftParamMan
+//______________________________________________________________________________
+struct DCDriftParamRecord
 {
 public:
-  DCDriftParamMan();
-  ~DCDriftParamMan();
-  static DCDriftParamMan& GetInstance(){static DCDriftParamMan obj; return obj;}
-private:
-  DCDriftParamMan( const DCDriftParamMan & );
-  DCDriftParamMan & operator = ( const DCDriftParamMan & );
+  Int_t type, np;
+  std::vector<Double_t> p;
+};
+
+//______________________________________________________________________________
+class DCDriftParamMan : public TObject
+{
+public:
+  static DCDriftParamMan& GetInstance( void );
+  ~DCDriftParamMan( void );
 
 private:
-  std::string ParameterFileName_;
+  DCDriftParamMan( void );
+  DCDriftParamMan( const DCDriftParamMan& );
+  DCDriftParamMan& operator =( const DCDriftParamMan& );
 
-  mutable std::map <unsigned int, DCDriftParamRecord *> Cont_;
+private:
+  TString                               m_file_name;
+  std::map<UInt_t, DCDriftParamRecord*> m_map;
 
 public:
-  bool Initialize( void );
-  void SetFileName( const std::string & filename) {ParameterFileName_ = filename;}
-
-  bool calcDrift( int PlaneId, double WireId, double ctime, 
-		  double & dt, double & dl ) const;
+  Bool_t Initialize( void );
+  void   SetFileName( const TString& file_name) { m_file_name = file_name; }
+  Bool_t calcDrift( Int_t PlaneId, Double_t WireId, Double_t ctime,
+		    Double_t & dt, Double_t & dl ) const;
 
 private:
-  DCDriftParamRecord * getParameter( int PlaneId, double WireId ) const;
+  DCDriftParamRecord* getParameter( Int_t PlaneId, Double_t WireId ) const;
   void clearElements( void );
 
-  static double DriftLength1( double dt, double vel );
-  static double DriftLength2( double dt, double p1, double p2, double p3,
-			      double st, double p5, double p6 );
-  static double DriftLength3( double dt, double p1, double p2, int PlaneId);
-  static double DriftLength4( double dt, double p1, double p2, double p3);
-  static double DriftLength5( double dt, double p1, double p2, double p3, double p4, double p5);
-  static double DriftLength6(int PlaneId, double dt, double p1, double p2 ,double p3, double p4, double p5);
+  static Double_t DriftLength1( Double_t dt, Double_t vel );
+  static Double_t DriftLength2( Double_t dt, Double_t p1, Double_t p2, Double_t p3,
+			      Double_t st, Double_t p5, Double_t p6 );
+  static Double_t DriftLength3( Double_t dt, Double_t p1, Double_t p2, Int_t PlaneId);
+  static Double_t DriftLength4( Double_t dt, Double_t p1, Double_t p2, Double_t p3);
+  static Double_t DriftLength5( Double_t dt, Double_t p1, Double_t p2, Double_t p3, Double_t p4, Double_t p5);
+  static Double_t DriftLength6( Int_t PlaneId, Double_t dt, Double_t p1, Double_t p2 ,Double_t p3, Double_t p4, Double_t p5);
 
+  ClassDef(DCDriftParamMan,0);
 };
+
+//______________________________________________________________________________
+inline DCDriftParamMan&
+DCDriftParamMan::GetInstance( void )
+{
+  static DCDriftParamMan g_instance;
+  return g_instance;
+}
 
 #endif

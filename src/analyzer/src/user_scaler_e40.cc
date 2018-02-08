@@ -37,7 +37,7 @@ namespace analyzer
 Int_t
 process_begin( const std::vector<std::string>& argv )
 {
-  ConfMan::getInstance().initialize(argv);
+  ConfMan::GetInstance().Initialize(argv);
 
   // flags
   gScaler.SetFlag( ScalerAnalyzer::kSeparateComma );

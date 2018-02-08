@@ -1,43 +1,47 @@
-#ifndef UPARAMMAN_H
-#define UPARAMMAN_H 1
+// -*- C++ -*-
 
-#include<vector>
-#include<map>
+#ifndef USER_PARAM_MAN_HH
+#define USER_PARAM_MAN_HH
 
-class UserParamMan{
-  // Private parameter declarations ----------------------------------------
-  typedef std::vector<double>               arrayType;
-  typedef std::map<std::string, arrayType>  mapType;
+#include <vector>
+#include <map>
 
-  // Parameters list instance
+#include <TObject.h>
+#include <TString.h>
+
+//______________________________________________________________________________
+class UserParamMan : public TObject
+{
+public:
+  static UserParamMan& GetInstance( void );
+  ~UserParamMan( void );
+
+private:
+  UserParamMan( void );
+  UserParamMan( const UserParamMan& );
+  UserParamMan& operator =( const UserParamMan& );
+
+private:
+  typedef std::vector<Double_t>         arrayType;
+  typedef std::map<TString, arrayType>  mapType;
+
   mapType param_container_;
 
 public:
-  // User functions --------------------------------------------------------
-  ~UserParamMan();
-  static UserParamMan& getInstance();
+  Bool_t   Initialize( const TString& filename );
+  Double_t GetParameter( const TString& name, Int_t index=0 ) const;
+  Int_t    GetSize( const TString& name) const;
+  Bool_t   IsGood( void ) const;
 
-  bool   initialize(const std::string& filename);
-
-  double getParameter(const char* name, int index=0);
-  double getParameter(const std::string& name, int index=0);
-
-  int    getSize(const char* name);
-  int    getSize(const std::string& name);
-
-  bool   isGood();
-
-private:
-  UserParamMan();
-  UserParamMan(const UserParamMan& object);
-  UserParamMan& operator =(const UserParamMan& object);
+  ClassDef(UserParamMan,0);
 };
 
-// getInstance
-inline UserParamMan& UserParamMan::getInstance()
+//______________________________________________________________________________
+inline UserParamMan&
+UserParamMan::GetInstance( void )
 {
-  static UserParamMan object;
-  return object;
+  static UserParamMan g_instance;
+  return g_instance;
 }
 
 #endif

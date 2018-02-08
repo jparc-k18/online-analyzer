@@ -1,9 +1,12 @@
+// -*- C++ -*-
+
 #ifndef GUIPS_H
 #define GUIPS_H
 
 #include <vector>
 
 #include <TGFrame.h>
+#include <TObject.h>
 
 class TGCompositeFrame;
 class TGCheckButton;
@@ -12,8 +15,9 @@ class TGTextEntry;
 
 namespace hddaq
 {
-  namespace gui
-  {
+
+namespace gui
+{
 
 class GuiPs
 {
@@ -65,5 +69,3 @@ private:
   }
 }
 #endif
-
-

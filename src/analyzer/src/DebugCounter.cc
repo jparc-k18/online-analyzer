@@ -15,7 +15,8 @@ namespace debug
 
 //______________________________________________________________________________
 ObjectCounter::ObjectCounter( void )
-  : m_map()
+  : TObject(),
+    m_map()
 {
 }
 
@@ -30,14 +31,11 @@ ObjectCounter::Check( void ) const
 {
 #ifdef MemoryLeak
   Bool_t has_leak = false;
-
   ObjectIter itr, end=m_map.end();
   for( itr=m_map.begin(); itr!=end; ++itr ){
     if( itr->second!=0 ) has_leak = true;
   }
-
-  if( has_leak )
-    Print();
+  if( has_leak ) Print();
 #endif
 }
 

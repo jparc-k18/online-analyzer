@@ -43,15 +43,15 @@ namespace analyzer
     int  module_id;
     int  ch;
     bool flag_disp;
-    
+
     scaler_info(){;}
     scaler_info(const char* Name, int Id, int Ch, bool flag):
       name(Name), module_id(Id), ch(Ch), flag_disp(flag)
     {;}
   };
-  
+
   std::vector<scaler_info> cont_info[size_dispColumn];
-  
+
   static unsigned int prev[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}, {0} };
   static unsigned int curr[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}, {0} };
   static unsigned int val[size_dispColumn][NofCh]  = {{0}, {0}, {0}, {0}, {0} };
@@ -63,7 +63,7 @@ separate_comma(int number)
   std::vector<int> sep_num;
   int abs_number = abs(number);
   int sign       = number >= 0 ? 1 : -1;
-  
+
   while(abs_number/1000){
     sep_num.push_back(abs_number%1000);
     abs_number /= 1000;
@@ -82,9 +82,9 @@ separate_comma(int number)
 int
 process_begin(const std::vector<std::string>& argv)
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
-  
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
+
   // spill by spill flag
   if(4 == argv.size()){
     flag_spill_by_spill = true;
@@ -156,7 +156,7 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("Coin Go",        id_vme03_1, 20, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("Coin clear",     id_vme03_0,  6, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("Overflow Go",    id_vme03_0,  7, true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("Overflow clear", id_vme03_0,  8, true); cont_info[right][index++] = tmp;} 
+  {scaler_info tmp("Overflow clear", id_vme03_0,  8, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("CoinxOver",      id_vme03_2,  4, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("Total clear",    id_vme03_0,  9, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("L2 req",         id_vme03_0, 11, true); cont_info[right][index++] = tmp;}
@@ -195,10 +195,10 @@ process_end()
 	 "", "Integral",
 	 "", "kHz",
 	 "", "Hz");
-	     
+
   for(int i = 0; i<NofCh; ++i){
     scaler_info info[size_dispColumn];
-      
+
     // Counter & DAQ info
     info[left]   = cont_info[left][i];
     info[center] = cont_info[center][i];
@@ -207,7 +207,7 @@ process_end()
     // Ge info
     info[Ge_left]  = cont_info[Ge_left][i];
     info[Ge_right] = cont_info[Ge_right][i];
-      
+
     // display
     printf("%-10s %10u : %-15s %10u : %-15s %10u : %-6s %12f : %-6s %12f\n",
 	   info[left].name.c_str(),   val[left][i],
@@ -253,7 +253,7 @@ process_end()
   printf("%-20s %15s\t",   "Trig1 Req.",     separate_comma((int)l1_req).c_str());
   printf("%-20s %15.4f\n", "(K,pi)/K-beam",  kpi/kbeam);
   printf("%-20s %15s\t",   "Trig1 Acc.",     separate_comma((int)l1_acc).c_str());
-  printf("%-20s %15.4f\n", "Live time/Real time", live_time/real_time);  
+  printf("%-20s %15.4f\n", "Live time/Real time", live_time/real_time);
   printf("%-20s %15s\t",   "Total Clear",    separate_comma(clear).c_str());
   printf("%-20s %15.4f\n", "L1 acc/L1 req",  l1_acc/l1_req);
   printf("%-20s %15s\t",   "Trig2 Acc.",     separate_comma((int)l2_acc).c_str());
@@ -268,7 +268,7 @@ int
 process_event()
 {
   static UnpackerManager& g_unpacker = GUnpacker::get_instance();
-  
+
   static int run_number = g_unpacker.get_root()->get_run_number();
   static int event_count = 0;
   static bool en_disp = false;
@@ -277,7 +277,7 @@ process_event()
   }else{
     if(event_count%400 == 0) en_disp = true;
   }
-  
+
   // clear console
   if(en_disp) printf("\033[2J");
 
@@ -296,10 +296,10 @@ process_event()
     // scaler
     static int scaler_id    = g_unpacker.get_device_id("scaler");
     static int ge_scaler_id = g_unpacker.get_device_id("GeScaler");
-    
+
     for(int i = 0; i<NofCh; ++i){
       scaler_info info[size_dispColumn];
-      
+
       // Counter & DAQ info
       info[left]   = cont_info[left][i];
       info[center] = cont_info[center][i];
@@ -327,7 +327,7 @@ process_event()
       if(info[center].flag_disp){
 	prev[center][i] = curr[center][i];
 	curr[center][i] = g_unpacker.get(scaler_id, info[center].module_id, 0, info[center].ch, 0);
-	
+
 	if(curr[center][i] < prev[center][i]){
 	  prev[center][i] = 0;
 	}
@@ -347,7 +347,7 @@ process_event()
 	if(curr[right][i] < prev[right][i]){
 	  prev[right][i] = 0;
 	}
-	
+
 	if(i == 0){
 	  // spill
 	  if(inclement_spill) ++val[right][0];
@@ -369,14 +369,14 @@ process_event()
 	curr[Ge_left][i] = g_unpacker.get(ge_scaler_id, info[Ge_left].module_id, 0, info[Ge_left].ch, 0);
 	val[Ge_left][i] = curr[Ge_left][i];
       }
-	  
+
       // Ge Reset
       if(info[Ge_right].flag_disp){
 	curr[Ge_right][i] = g_unpacker.get(ge_scaler_id, info[Ge_right].module_id, 0, info[Ge_right].ch, 0);
 	val[Ge_right][i] = curr[Ge_right][i];
       }
     }
-    
+
     if(en_disp){
       printf("%-10s %10s : %-15s %10s : %-15s %10s : %-6s %12s : %-6s %12s\n",
 	     "", "Integral",
@@ -384,10 +384,10 @@ process_event()
 	     "", "Integral",
 	     "", "kHz",
 	     "", "Hz");
-	     
+
       for(int i = 0; i<NofCh; ++i){
 	scaler_info info[size_dispColumn];
-      
+
 	// Counter & DAQ info
 	info[left]   = cont_info[left][i];
 	info[center] = cont_info[center][i];
@@ -396,7 +396,7 @@ process_event()
 	// Ge info
 	info[Ge_left]  = cont_info[Ge_left][i];
 	info[Ge_right] = cont_info[Ge_right][i];
-      
+
 	// display
 	printf("%-10s %10u : %-15s %10u : %-15s %10u : %-6s %12f : %-6s %12f\n",
 	       info[left].name.c_str(),   val[left][i],
@@ -408,7 +408,7 @@ process_event()
       }
     }
   }
-  
+
   ++event_count;
   en_disp = false;
 

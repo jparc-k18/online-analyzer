@@ -46,6 +46,7 @@ namespace analyzer
 
   namespace
   {
+    const UserParamMan& gUser = UserParamMan::GetInstance();
     std::vector<TH1*> hptr_array;
     bool flag_event_cut = false;
     int event_cut_factor = 1; // for fast semi-online analysis
@@ -55,17 +56,17 @@ namespace analyzer
 int
 process_begin( const std::vector<std::string>& argv )
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
-  gConfMan.initializeHodoParamMan();
-  gConfMan.initializeHodoPHCMan();
-  gConfMan.initializeDCGeomMan();
-  gConfMan.initializeDCTdcCalibMan();
-  gConfMan.initializeDCDriftParamMan();
-  gConfMan.initializeMatrixParamMan();
-  gConfMan.initializeMsTParamMan();
-  gConfMan.initializeUserParamMan();
-  if(!gConfMan.isGood()) return -1;
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
+  gConfMan.InitializeHodoParamMan();
+  gConfMan.InitializeHodoPHCMan();
+  gConfMan.InitializeDCGeomMan();
+  gConfMan.InitializeDCTdcCalibMan();
+  gConfMan.InitializeDCDriftParamMan();
+  gConfMan.InitializeMatrixParamMan();
+  gConfMan.InitializeMsTParamMan();
+  gConfMan.InitializeUserParamMan();
+  if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
   if( argv.size()==4 ){
@@ -406,10 +407,8 @@ process_event( void )
     static const int k_tdc      = gUnpacker.get_data_id("BH1", "tdc");
 
     // TDC gate range
-    static const unsigned int tdc_min
-      = UserParamMan::getInstance().getParameter("BH1_TDC", 0);
-    static const unsigned int tdc_max
-      = UserParamMan::getInstance().getParameter("BH1_TDC", 1);
+    static const unsigned int tdc_min = gUser.GetParameter("BH1_TDC", 0);
+    static const unsigned int tdc_max = gUser.GetParameter("BH1_TDC", 1);
 
     // Up PMT
     int bh1a_id   = gHist.getSequentialID(kBH1, 0, kADC);
@@ -560,9 +559,8 @@ process_event( void )
     static const int k_trailing = gUnpacker.get_data_id("BFT", "trailing");
 
     // TDC gate range
-    UserParamMan& gPar = UserParamMan::getInstance();
-    static const int tdc_min = gPar.getParameter("BFT_TDC", 0);
-    static const int tdc_max = gPar.getParameter("BFT_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("BFT_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("BFT_TDC", 1);
 
     // sequential id
     static const int bft_tu_id    = gHist.getSequentialID(kBFT, 0, kTDC,      1);
@@ -662,10 +660,8 @@ process_event( void )
     static const int k_tdc     = 0;
 
     // TDC gate range
-    static const int tdc_min
-      = UserParamMan::getInstance().getParameter("BC3_TDC", 0);
-    static const int tdc_max
-      = UserParamMan::getInstance().getParameter("BC3_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("BC3_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("BC3_TDC", 1);
 
     // sequential id
     static const int bc3t_id    = gHist.getSequentialID(kBC3, 0, kTDC);
@@ -726,10 +722,8 @@ process_event( void )
     static const int k_tdc = 0;
 
     // TDC gate range
-    static const int tdc_min
-      = UserParamMan::getInstance().getParameter("BC4_TDC", 0);
-    static const int tdc_max
-      = UserParamMan::getInstance().getParameter("BC4_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("BC4_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("BC4_TDC", 1);
 
     // sequential id
     static const int bc4t_id    = gHist.getSequentialID(kBC4, 0, kTDC);
@@ -793,10 +787,8 @@ process_event( void )
     static const int k_tdc    = gUnpacker.get_data_id("BH2", "tdc");
 
     // TDC gate range
-    static const unsigned int tdc_min
-      = UserParamMan::getInstance().getParameter("BH2_TDC", 0);
-    static const unsigned int tdc_max
-      = UserParamMan::getInstance().getParameter("BH2_TDC", 1);
+    static const unsigned int tdc_min = gUser.GetParameter("BH2_TDC", 0);
+    static const unsigned int tdc_max = gUser.GetParameter("BH2_TDC", 1);
 
     // UP
     int bh2a_id   = gHist.getSequentialID(kBH2, 0, kADC);
@@ -934,9 +926,8 @@ process_event( void )
     static const int k_trailing = gUnpacker.get_data_id("SCH", "trailing");
 
     // TDC gate range
-    UserParamMan& gPar = UserParamMan::getInstance();
-    static const int tdc_min = gPar.getParameter("SCH_TDC", 0);
-    static const int tdc_max = gPar.getParameter("SCH_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("SCH_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("SCH_TDC", 1);
 
     // sequential id
     static const int sch_t_id    = gHist.getSequentialID(kSCH, 0, kTDC,      1);
@@ -988,10 +979,8 @@ process_event( void )
     static const int k_tdc    = 0;
 
     // TDC gate range
-    static const int tdc_min
-      = UserParamMan::getInstance().getParameter("SDC1_TDC", 0);
-    static const int tdc_max
-      = UserParamMan::getInstance().getParameter("SDC1_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("SDC1_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("SDC1_TDC", 1);
 
     // sequential id
     static const int sdc1t_id    = gHist.getSequentialID(kSDC1, 0, kTDC, 1);
@@ -1054,10 +1043,8 @@ process_event( void )
   //    static const int k_tdc    = 0;
   //
   //    // TDC gate range
-  //    static const int tdc_min
-  //      = UserParamMan::getInstance().getParameter("SDC2_TDC", 0);
-  //    static const int tdc_max
-  //      = UserParamMan::getInstance().getParameter("SDC2_TDC", 1);
+  //    static const int tdc_min = gUser.GetParameter("SDC2_TDC", 0);
+  //    static const int tdc_max = gUser.GetParameter("SDC2_TDC", 1);
   //
   //    // sequential id
   //    static const int sdc2t_id    = gHist.getSequentialID(kSDC2, 0, kTDC);
@@ -1120,10 +1107,8 @@ process_event( void )
   //    static const int k_tdc    = 0;
   //
   //    // TDC gate range
-  //    static const int tdc_min
-  //      = UserParamMan::getInstance().getParameter("SDC3_TDC", 0);
-  //    static const int tdc_max
-  //      = UserParamMan::getInstance().getParameter("SDC3_TDC", 1);
+  //    static const int tdc_min = gUser.GetParameter("SDC3_TDC", 0);
+  //    static const int tdc_max = gUser.GetParameter("SDC3_TDC", 1);
   //
   //    // sequential id
   //    static const int sdc3t_id    = gHist.getSequentialID(kSDC3, 0, kTDC);
@@ -1196,16 +1181,11 @@ process_event( void )
     static const int k_trailing = gUnpacker.get_data_id("SDC2", "trailing");
 
     // TDC gate range
-    static const int tdc_min
-      = UserParamMan::getInstance().getParameter("SDC2_TDC", 0);
-    static const int tdc_max
-      = UserParamMan::getInstance().getParameter("SDC2_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("SDC2_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("SDC2_TDC", 1);
     // TOT gate range
-    static const int tot_min
-      = UserParamMan::getInstance().getParameter("SDC2_TOT", 0);
-    //    static const int tot_max
-    //      = UserParamMan::getInstance().getParameter("SDC2_TOT", 1);
-
+    static const int tot_min = gUser.GetParameter("SDC2_TOT", 0);
+    // static const int tot_max = gUser.GetParameter("SDC2_TOT", 1);
 
     // sequential id
     static const int sdc2t_id    = gHist.getSequentialID(kSDC2, 0, kTDC);
@@ -1324,15 +1304,11 @@ process_event( void )
     static const int k_trailing = gUnpacker.get_data_id("SDC3", "trailing");
 
     // TDC gate range
-    static const int tdc_min
-      = UserParamMan::getInstance().getParameter("SDC3_TDC", 0);
-    static const int tdc_max
-      = UserParamMan::getInstance().getParameter("SDC3_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("SDC3_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("SDC3_TDC", 1);
     // TOT gate range
-    static const int tot_min
-      = UserParamMan::getInstance().getParameter("SDC3_TOT", 0);
-    static const int tot_max
-      = UserParamMan::getInstance().getParameter("SDC3_TOT", 1);
+    static const int tot_min = gUser.GetParameter("SDC3_TOT", 0);
+    static const int tot_max = gUser.GetParameter("SDC3_TOT", 1);
 
 
     // sequential id
@@ -1929,9 +1905,8 @@ process_event( void )
     static const int k_trailing = gUnpacker.get_data_id("SFT", "trailing");
 
     // TDC gate range
-    UserParamMan& gPar = UserParamMan::getInstance();
-    static const int tdc_min = gPar.getParameter("SFT_TDC", 0);
-    static const int tdc_max = gPar.getParameter("SFT_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("SFT_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("SFT_TDC", 1);
 
     // SequentialID
     int sft_t_id    = gHist.getSequentialID(kSFT, 0, kTDC,     1);
@@ -2088,9 +2063,8 @@ process_event( void )
     static const int k_trailing = gUnpacker.get_data_id("FBT1", "trailing");
 
     // TDC gate range
-    UserParamMan& gPar = UserParamMan::getInstance();
-    static const int tdc_min = gPar.getParameter("FBT1_TDC", 0);
-    static const int tdc_max = gPar.getParameter("FBT1_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("FBT1_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("FBT1_TDC", 1);
 
 
     // sequential id
@@ -2152,9 +2126,8 @@ process_event( void )
     static const int k_trailing = gUnpacker.get_data_id("FBT2", "trailing");
 
     // TDC gate range
-    UserParamMan& gPar = UserParamMan::getInstance();
-    static const int tdc_min = gPar.getParameter("FBT2_TDC", 0);
-    static const int tdc_max = gPar.getParameter("FBT2_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("FBT2_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("FBT2_TDC", 1);
 
     // sequential id
     for( int l=0; l<NumOfLayersFBT; ++l ){

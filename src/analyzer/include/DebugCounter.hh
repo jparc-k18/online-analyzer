@@ -31,11 +31,11 @@ private:
   ObjectMap m_map;
 
 public:
-  void         Check( void ) const;
-  virtual void Print( Option_t* option="" ) const;
+  void        Check( void ) const;
+  void        Print( Option_t* option="" ) const;
   // static method
-  static void  Decrease( const TString& key );
-  static void  Increase( const TString& key );
+  static void Decrease( const TString& key );
+  static void Increase( const TString& key );
 
   ClassDef(ObjectCounter,0);
 };

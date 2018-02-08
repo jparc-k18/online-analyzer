@@ -1,74 +1,79 @@
-/*
-  DCGeomMan.hh
+// -*- C++ -*-
 
-  2012/1/24
-*/
+#ifndef DC_GEOM_MAN_HH
+#define DC_GEOM_MAN_HH
 
-#ifndef DCGeomMan_h
-#define DCGeomMan_h 1
-
-#include "ThreeVector.hh"
 #include <string>
 #include <vector>
 #include <map>
 
+#include "ThreeVector.hh"
+
 class DCGeomRecord;
 
-class DCGeomMan 
+//______________________________________________________________________________
+class DCGeomMan : public TObject
 {
-private:
-  DCGeomMan();
 public:
-  ~DCGeomMan();
-
-public:
-  void SetFileName( const char *filename ) { filename_=filename; }
-  void SetFileName( const std::string &filename ) { filename_=filename; }
-
-  bool Initialize( void );
-  bool Initialize( const char *filename )
-  { filename_=filename; return Initialize(); }
-  bool Initialize( const std::string &filename )
-  { filename_=filename; return Initialize(); }
-
   static DCGeomMan & GetInstance( void );
-  double GetLocalZ( int lnum ) const;
-  double GetResolution( int lnum ) const;
+  ~DCGeomMan( void );
 
-  // Do not use this method except for special cases
-  void SetResolution( int lnum, double res ) const;
-  //
-
-  double GetTiltAngle( int lnum ) const;
-  double GetRotAngle1( int lnum ) const;
-  double GetRotAngle2( int lnum ) const;
-  const ThreeVector & GetGlobalPosition( int lnum ) const;
-  ThreeVector NormalVector( int lnum ) const;
-  ThreeVector UnitVector( int lnum ) const;
-  const DCGeomRecord *GetRecord( int lnum ) const;
-
-  ThreeVector Local2GlobalPos( int lnum, const ThreeVector &in ) const;
-  ThreeVector Global2LocalPos( int lnum, const ThreeVector &in ) const;
-  ThreeVector Local2GlobalDir( int lnum, const ThreeVector &in ) const;
-  ThreeVector Global2LocalDir( int lnum, const ThreeVector &in ) const;
-
-  double calcWirePosition( int lnum, double wire ) const;
-  int calcWireNumber( int lnum, double position ) const;
-
-  std::vector<int> GetDetectorIDList( void ) const;
-  int GetTofId( void ) const { return TOFid_; }
-  int GetLcId( void ) const { return LCid_; }
-  int GetDetectorId( const std::string &detName ) const;
-  
 private:
-  static DCGeomMan *geomMan_;
-  std::string filename_;
-  mutable std::map <int, DCGeomRecord *> geomRecord_;
-  int TOFid_, LCid_;
+  DCGeomMan( void );
+  DCGeomMan( const DCGeomMan& );
+  DCGeomMan& operator =( const DCGeomMan& );
+
+private:
+  typedef std::map <Int_t, DCGeomRecord *> DCGeomMap;
+  typedef DCGeomMap::const_iterator        DCGeomIterator;
+  TString   m_file_name;
+  DCGeomMap m_map;
+  Int_t     TOFid_;
+  Int_t     LCid_;
+
+public:
+  void                SetFileName( const char* file_name ) { m_file_name = file_name; }
+  void                SetFileName( const TString & file_name ) { m_file_name = file_name; }
+  Bool_t              Initialize( void );
+  Bool_t              Initialize( const char* file_name )
+  { m_file_name = file_name; return Initialize(); }
+  Bool_t              Initialize( const TString& file_name )
+  { m_file_name = file_name; return Initialize(); }
+  Double_t            GetLocalZ( Int_t lnum ) const;
+  Double_t            GetResolution( Int_t lnum ) const;
+  Double_t            GetTiltAngle( Int_t lnum ) const;
+  Double_t            GetRotAngle1( Int_t lnum ) const;
+  Double_t            GetRotAngle2( Int_t lnum ) const;
+  const ThreeVector&  GetGlobalPosition( Int_t lnum ) const;
+  ThreeVector         NormalVector( Int_t lnum ) const;
+  ThreeVector         UnitVector( Int_t lnum ) const;
+  const DCGeomRecord* GetRecord( Int_t lnum ) const;
+  ThreeVector         Local2GlobalPos( Int_t lnum, const ThreeVector &in ) const;
+  ThreeVector         Global2LocalPos( Int_t lnum, const ThreeVector &in ) const;
+  ThreeVector         Local2GlobalDir( Int_t lnum, const ThreeVector &in ) const;
+  ThreeVector         Global2LocalDir( Int_t lnum, const ThreeVector &in ) const;
+  Double_t            calcWirePosition( Int_t lnum, Double_t wire ) const;
+  Int_t               calcWireNumber( Int_t lnum, Double_t position ) const;
+  std::vector<Int_t>  GetDetectorIDList( void ) const;
+  Int_t               GetTofId( void ) const { return TOFid_; }
+  Int_t               GetLcId( void ) const { return LCid_; }
+  Int_t               GetDetectorId( const TString& detName ) const;
+  // Do not use this method except for special cases
+  void                SetResolution( Int_t lnum, Double_t res );
+  //
 
 private:
   void clearElements( void );
+
+  ClassDef(DCGeomMan,0);
 };
 
+//______________________________________________________________________________
+inline DCGeomMan&
+DCGeomMan::GetInstance( void )
+{
+  static DCGeomMan g_instance;
+  return g_instance;
+}
 
 #endif

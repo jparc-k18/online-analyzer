@@ -46,6 +46,7 @@ namespace analyzer
 
   namespace
   {
+    const UserParamMan& gUser = UserParamMan::GetInstance();
     std::vector<TH1*> hptr_array;
     bool flag_event_cut = false;
     int event_cut_factor = 1; // for fast semi-online analysis
@@ -55,17 +56,17 @@ namespace analyzer
 int
 process_begin( const std::vector<std::string>& argv )
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
-  gConfMan.initializeHodoParamMan();
-  gConfMan.initializeHodoPHCMan();
-  gConfMan.initializeDCGeomMan();
-  gConfMan.initializeDCTdcCalibMan();
-  gConfMan.initializeDCDriftParamMan();
-  gConfMan.initializeMatrixParamMan();
-  gConfMan.initializeMsTParamMan();
-  gConfMan.initializeUserParamMan();
-  if(!gConfMan.isGood()) return -1;
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
+  gConfMan.InitializeHodoParamMan();
+  gConfMan.InitializeHodoPHCMan();
+  gConfMan.InitializeDCGeomMan();
+  gConfMan.InitializeDCTdcCalibMan();
+  gConfMan.InitializeDCDriftParamMan();
+  gConfMan.InitializeMatrixParamMan();
+  gConfMan.InitializeMsTParamMan();
+  gConfMan.InitializeUserParamMan();
+  if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
   if( argv.size()==4 ){
@@ -264,10 +265,8 @@ process_event( void )
     static const int k_fadc      = gUnpacker.get_data_id("BGO", "fadc");
 
 //    // TDC gate range
-//    static const unsigned int tdc_min
-//      = UserParamMan::getInstance().getParameter("BGO_TDC", 0);
-//    static const unsigned int tdc_max
-//      = UserParamMan::getInstance().getParameter("BGO_TDC", 1);
+//    static const unsigned int tdc_min = gUser.GetParameter("BGO_TDC", 0);
+//    static const unsigned int tdc_max = gUser.GetParameter("BGO_TDC", 1);
 
 //    int bgoa_id   = gHist.getSequentialID(kBGO, 0, kADC);
 //    int bgot_id   = gHist.getSequentialID(kBGO, 0, kTDC);
@@ -344,7 +343,7 @@ process_event( void )
 #endif
 
   //------------------------------------------------------------------
-  // PiID 
+  // PiID
   //------------------------------------------------------------------
   {
     // data type
@@ -353,10 +352,8 @@ process_event( void )
     static const int k_tdc      = gUnpacker.get_data_id("PiID", "leading");
 
     // TDC gate range
-    static const unsigned int tdc_min
-      = UserParamMan::getInstance().getParameter("PiID_TDC", 0);
-    static const unsigned int tdc_max
-      = UserParamMan::getInstance().getParameter("PiID_TDC", 1);
+    static const unsigned int tdc_min = gUser.GetParameter("PiID_TDC", 0);
+    static const unsigned int tdc_max = gUser.GetParameter("PiID_TDC", 1);
 
     int piida_id   = gHist.getSequentialID(kPiID, 0, kADC);
     int piidt_id   = gHist.getSequentialID(kPiID, 0, kTDC);

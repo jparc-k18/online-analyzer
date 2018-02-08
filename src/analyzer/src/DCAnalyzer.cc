@@ -16,6 +16,7 @@
 #include "DCTdcCalibMan.hh"
 #include "DCGeomMan.hh"
 #include "DCDriftParamMan.hh"
+#include "FuncName.hh"
 
 #define DEBUG  0
 #define TDC1st 1
@@ -30,6 +31,8 @@ namespace
   DCTdcCalibMan&   t0man    = DCTdcCalibMan::GetInstance();
   DCDriftParamMan& driftman = DCDriftParamMan::GetInstance();
   DCGeomMan&       geomman  = DCGeomMan::GetInstance();
+  const UserParamMan &gUser = UserParamMan::GetInstance();
+
   // tdc cut
   const int tdc_min = 550;
   const int tdc_max = 700;
@@ -180,11 +183,10 @@ void DCRHC::pushback( int DetectorID )
 //______________________________________________________________________________
 void DCRHC::pushback_BcOut( void )
 {
-  static UserParamMan &paramMan = UserParamMan::getInstance();
-  static const double MinTdcBC3 = paramMan.getParameter("BC3_TDC", 0);
-  static const double MaxTdcBC3 = paramMan.getParameter("BC3_TDC", 1);
-  static const double MinTdcBC4 = paramMan.getParameter("BC4_TDC", 0);
-  static const double MaxTdcBC4 = paramMan.getParameter("BC4_TDC", 1);
+  static const double MinTdcBC3 = gUser.GetParameter("BC3_TDC", 0);
+  static const double MaxTdcBC3 = gUser.GetParameter("BC3_TDC", 1);
+  static const double MinTdcBC4 = gUser.GetParameter("BC4_TDC", 0);
+  static const double MaxTdcBC4 = gUser.GetParameter("BC4_TDC", 1);
 
   for( int layer=0; layer<NumOfLayersBcOut; ++layer ){
       m_hitwire[layer].clear();
@@ -255,9 +257,8 @@ void DCRHC::pushback_BcOut( void )
 //______________________________________________________________________________
 void DCRHC::pushback_SdcIn( void )
 {
-  static UserParamMan &paramMan = UserParamMan::getInstance();
-  static const double MinTdcSDC1 = paramMan.getParameter("SDC1_TDC", 0);
-  static const double MaxTdcSDC1 = paramMan.getParameter("SDC1_TDC", 1);
+  static const double MinTdcSDC1 = gUser.GetParameter("SDC1_TDC", 0);
+  static const double MaxTdcSDC1 = gUser.GetParameter("SDC1_TDC", 1);
 
   for( int layer=0; layer<NumOfLayersSdcIn; ++layer )
     m_hitwire[layer].clear();
@@ -290,11 +291,10 @@ void DCRHC::pushback_SdcIn( void )
 //______________________________________________________________________________
 void DCRHC::pushback_SdcOut( void )
 {
-  static UserParamMan &paramMan = UserParamMan::getInstance();
-  static const double MinTdcSDC2 = paramMan.getParameter("SDC2_TDC", 0);
-  static const double MaxTdcSDC2 = paramMan.getParameter("SDC2_TDC", 1);
-  //  static const double MinTdcSDC3 = paramMan.getParameter("SDC3_TDC", 0);
-  //  static const double MaxTdcSDC3 = paramMan.getParameter("SDC3_TDC", 1);
+  static const double MinTdcSDC2 = gUser.GetParameter("SDC2_TDC", 0);
+  static const double MaxTdcSDC2 = gUser.GetParameter("SDC2_TDC", 1);
+  //  static const double MinTdcSDC3 = gUser.GetParameter("SDC3_TDC", 0);
+  //  static const double MaxTdcSDC3 = gUser.GetParameter("SDC3_TDC", 1);
 
   for(int layer=0;layer<NumOfLayersSdcOut;++layer)
     m_hitwire[layer].clear();

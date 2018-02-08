@@ -1,213 +1,216 @@
+// -*- C++ -*-
+
 #ifndef DETECTOR_ID_HH
 #define DETECTOR_ID_HH
 
-const int UorD = 2;
-const int AorT = 2;
+#include <Rtypes.h>
+
+const Int_t UorD = 2;
+const Int_t AorT = 2;
 
 // Counters
-const int DetIdBH1  =  1;
-const int DetIdBH2  =  2;
-const int DetIdBAC  =  3;
-const int DetIdSAC  =  9;
-const int DetIdSCH  =  7;
-const int DetIdBGO  = 114;
-const int DetIdPiID = 115;
-const int DetIdTOF  =  8;
-const int DetIdTOF_HT  =  11;
-const int DetIdLC   = 10; //add
-const int NumOfSegBH1  = 11;
-const int NumOfSegBH2  =  8; //add
-const int NumOfSegBAC  =  2;
-const int NumOfSegFBH  = 16;
-//const int NumOfSegSAC  = 16; // 12 readout & 4 rooms //add
-const int NumOfSegSCH  = 64;
-const int NumOfSegBGO  = 24;
-const int NumOfSegPiID = 32;
-const int NumOfSegTOF  = 24;
-//const int NumOfSegTOF_HT  = 24;
-const int NumOfSegTOF_HT  = 15;
-const int NumOfSegClusteredFBH = 31;
-const int NumOfRoomsSAC  = 4;
-const int NumOfSegLC  = 28;
+const Int_t DetIdBH1  =  1;
+const Int_t DetIdBH2  =  2;
+const Int_t DetIdBAC  =  3;
+const Int_t DetIdSAC  =  9;
+const Int_t DetIdSCH  =  7;
+const Int_t DetIdBGO  = 114;
+const Int_t DetIdPiID = 115;
+const Int_t DetIdTOF  =  8;
+const Int_t DetIdTOF_HT  =  11;
+const Int_t DetIdLC   = 10; //add
+const Int_t NumOfSegBH1  = 11;
+const Int_t NumOfSegBH2  =  8; //add
+const Int_t NumOfSegBAC  =  2;
+const Int_t NumOfSegFBH  = 16;
+//const Int_t NumOfSegSAC  = 16; // 12 readout & 4 rooms //add
+const Int_t NumOfSegSCH  = 64;
+const Int_t NumOfSegBGO  = 24;
+const Int_t NumOfSegPiID = 32;
+const Int_t NumOfSegTOF  = 24;
+//const Int_t NumOfSegTOF_HT  = 24;
+const Int_t NumOfSegTOF_HT  = 15;
+const Int_t NumOfSegClusteredFBH = 31;
+const Int_t NumOfRoomsSAC  = 4;
+const Int_t NumOfSegLC  = 28;
 
 // Misc
-const int DetIdTFlag     = 21;
-const int DetIdScaler    = 22;
-const int NumOfSegTFlag  = 32;
-const int NumOfSegScaler = 32;
-const int SpillEndFlag   = 27; // 0-based
-const int NumOfVmeRm     = 10;
+const Int_t DetIdTFlag     = 21;
+const Int_t DetIdScaler    = 22;
+const Int_t NumOfSegTFlag  = 32;
+const Int_t NumOfSegScaler = 32;
+const Int_t SpillEndFlag   = 27; // 0-based
+const Int_t NumOfVmeRm     = 10;
 
 // Trackers
-const int DetIdBC3  = 103;
-const int DetIdBC4  = 104;
-const int DetIdSDC1 = 105;
-const int DetIdSDC2 = 106;
-const int DetIdSDC3 = 107;
-const int DetIdBFT  = 110;
-const int DetIdSFT  = 111;
-const int DetIdCFT  = 113;
-const int DetIdFBT1 = 131; //add
-const int DetIdFBT2 = 132; //add
-const int DetIdBcOut  = 20;
-const int DetIdSdcIn  = 30;
-const int DetIdSdcOut = 40;
+const Int_t DetIdBC3  = 103;
+const Int_t DetIdBC4  = 104;
+const Int_t DetIdSDC1 = 105;
+const Int_t DetIdSDC2 = 106;
+const Int_t DetIdSDC3 = 107;
+const Int_t DetIdBFT  = 110;
+const Int_t DetIdSFT  = 111;
+const Int_t DetIdCFT  = 113;
+const Int_t DetIdFBT1 = 131; //add
+const Int_t DetIdFBT2 = 132; //add
+const Int_t DetIdBcOut  = 20;
+const Int_t DetIdSdcIn  = 30;
+const Int_t DetIdSdcOut = 40;
 
-const int NumOfLayersBcOut  = 12;
-const int NumOfLayersSdcIn  =  6;
-const int NumOfLayersSdcOut =  8;
-const int NumOfLayersSsdIn  =  4;
-const int NumOfLayersSsdOut =  4;
-const int NumOfLayersBC3  = 6;
-const int NumOfLayersBC4  = 6;
-const int NumOfLayersSFT  = 4; //add
-const int NumOfLayersCFT  =8;
-const int NumOfLayersFBT = 2; //add
-const int NumOfLayersSDC1 = 6;
-const int NumOfLayersSDC2 = 4;
-const int NumOfLayersSDC3 = 4;
-const int NumOfWireBC3   =  64;
-const int NumOfWireBC4   =  64;
-const int NumOfWireSDC1  =  64;
-const int NumOfWireSDC2  = 128;
-const int NumOfWireSDC3X =  96;
-const int NumOfWireSDC3Y =  64;
+const Int_t NumOfLayersBcOut  = 12;
+const Int_t NumOfLayersSdcIn  =  6;
+const Int_t NumOfLayersSdcOut =  8;
+const Int_t NumOfLayersSsdIn  =  4;
+const Int_t NumOfLayersSsdOut =  4;
+const Int_t NumOfLayersBC3  = 6;
+const Int_t NumOfLayersBC4  = 6;
+const Int_t NumOfLayersSFT  = 4; //add
+const Int_t NumOfLayersCFT  =8;
+const Int_t NumOfLayersFBT = 2; //add
+const Int_t NumOfLayersSDC1 = 6;
+const Int_t NumOfLayersSDC2 = 4;
+const Int_t NumOfLayersSDC3 = 4;
+const Int_t NumOfWireBC3   =  64;
+const Int_t NumOfWireBC4   =  64;
+const Int_t NumOfWireSDC1  =  64;
+const Int_t NumOfWireSDC2  = 128;
+const Int_t NumOfWireSDC3X =  96;
+const Int_t NumOfWireSDC3Y =  64;
 
-const int PlMinBdcOut = 13;
-const int PlMaxBdcOut = 24;
-const int PlMinSdcIn  =  1;
-const int PlMaxSdcIn  =  6;
-const int PlMinSdcOut = 31;
-const int PlMaxSdcOut = 38;
+const Int_t PlMinBcOut  = 13;
+const Int_t PlMaxBcOut  = 24;
+const Int_t PlMinSdcIn  =  1;
+const Int_t PlMaxSdcIn  =  6;
+const Int_t PlMinSdcOut = 31;
+const Int_t PlMaxSdcOut = 38;
 
-const int NumOfSegBFT  =  160;
-const int NumOfSegSFT_X =  256; //add
-const int NumOfSegSFT_UV =  320; //add
-const int NumOfSegCFT_UV1   = 426;
-const int NumOfSegCFT_PHI1  = 584;
-const int NumOfSegCFT_UV2   = 472 + 10; //471
-const int NumOfSegCFT_PHI2  = 692;
-const int NumOfSegCFT_UV3   = 510;
-const int NumOfSegCFT_PHI3  = 800;
-const int NumOfSegCFT_UV4   = 538;
-const int NumOfSegCFT_PHI4  = 928;//910
-const int NumOfSegCFT[NumOfLayersCFT] = {
-                            NumOfSegCFT_UV1  , 
-                            NumOfSegCFT_PHI1 , 
-                            NumOfSegCFT_UV2  , 
-                            NumOfSegCFT_PHI2 , 
-                            NumOfSegCFT_UV3  , 
-                            NumOfSegCFT_PHI3 , 
-                            NumOfSegCFT_UV4  , 
-                            NumOfSegCFT_PHI4 }; 
-const int NumOfSegFBT1 =  48; //add
-const int NumOfSegFBT2 =  64; //add
-// VMEEASIROC Board 
-const int DetIdVEASIROC  =116;
-const int NumOfLayersVMEEASIROC  =95;
-const int NumOfSegVMEEASIROC  =64;
+const Int_t NumOfSegBFT  =  160;
+const Int_t NumOfSegSFT_X =  256; //add
+const Int_t NumOfSegSFT_UV =  320; //add
+const Int_t NumOfSegCFT_UV1   = 426;
+const Int_t NumOfSegCFT_PHI1  = 584;
+const Int_t NumOfSegCFT_UV2   = 472 + 10; //471
+const Int_t NumOfSegCFT_PHI2  = 692;
+const Int_t NumOfSegCFT_UV3   = 510;
+const Int_t NumOfSegCFT_PHI3  = 800;
+const Int_t NumOfSegCFT_UV4   = 538;
+const Int_t NumOfSegCFT_PHI4  = 928;//910
+const Int_t NumOfSegCFT[NumOfLayersCFT] = {
+                            NumOfSegCFT_UV1  ,
+                            NumOfSegCFT_PHI1 ,
+                            NumOfSegCFT_UV2  ,
+                            NumOfSegCFT_PHI2 ,
+                            NumOfSegCFT_UV3  ,
+                            NumOfSegCFT_PHI3 ,
+                            NumOfSegCFT_UV4  ,
+                            NumOfSegCFT_PHI4 };
+const Int_t NumOfSegFBT1 =  48; //add
+const Int_t NumOfSegFBT2 =  64; //add
+// VMEEASIROC Board
+const Int_t DetIdVEASIROC  =116;
+const Int_t NumOfLayersVMEEASIROC  =95;
+const Int_t NumOfSegVMEEASIROC  =64;
 
 // Tracker const
-const int FBTOffset = 200;
-const int NumOfUDStructureFBT = 2;
+const Int_t FBTOffset = 200;
+const Int_t NumOfUDStructureFBT = 2;
 // Old Detectors
 // E07 Detectors
-const int DetIdFBH  =  4;
-const int DetIdPVAC =  5;
-const int DetIdFAC  =  6;
-const int DetIdEMC      = 23;
-const int DetIdSSDT     = 24;
-const int NumOfSegPVAC =  1;
-const int NumOfSegFAC  =  1;
-const int NumOfSegEMC      =  1;
-const int NumOfSegSSDT     = 16;
-const int DetIdSSD1 = 121;
-const int DetIdSSD2 = 122;
-const int DetIdSsd    = 50;
-const int NumOfLayersSsd  = 8;
-const int NumOfLayersSSD1 = 4;
-const int NumOfLayersSSD2 = 4;
-const int NumOfSamplesSSD = 8;
-const int NumOfSegSSD1 = 1536;
-const int NumOfSegSSD2 = 1536;
-const int DetIdLAC  =  6;
-const int DetIdGC   =  8;
-const int DetIdYOON =  9;
-const int DetIdRC   = 21;
-const int DetIdAC1  = 22;
-const int DetIdBVH  = 23;
-const int DetIdNRC  = 24;
-const int DetIdBH2_E07 =  33;
-const int DetIdBAC_E07 =  34;
-const int DetIdSAC1    =  37;
-const int DetIdKFAC    =  44;
-const int NumOfSegLAC = 30;
-const int NumOfSegBH2_E07 =  2;
-const int NumOfSegBAC_E07 =  4 + 2;
-const int NumOfSegSAC1    =  1;
-const int NumOfSegKFAC    =  2;
-const int NumOfLayersSSD0 =  2;
+const Int_t DetIdFBH  =  4;
+const Int_t DetIdPVAC =  5;
+const Int_t DetIdFAC  =  6;
+const Int_t DetIdEMC      = 23;
+const Int_t DetIdSSDT     = 24;
+const Int_t NumOfSegPVAC =  1;
+const Int_t NumOfSegFAC  =  1;
+const Int_t NumOfSegEMC      =  1;
+const Int_t NumOfSegSSDT     = 16;
+const Int_t DetIdSSD1 = 121;
+const Int_t DetIdSSD2 = 122;
+const Int_t DetIdSsd    = 50;
+const Int_t NumOfLayersSsd  = 8;
+const Int_t NumOfLayersSSD1 = 4;
+const Int_t NumOfLayersSSD2 = 4;
+const Int_t NumOfSamplesSSD = 8;
+const Int_t NumOfSegSSD1 = 1536;
+const Int_t NumOfSegSSD2 = 1536;
+const Int_t DetIdLAC  =  6;
+const Int_t DetIdGC   =  8;
+const Int_t DetIdYOON =  9;
+const Int_t DetIdRC   = 21;
+const Int_t DetIdAC1  = 22;
+const Int_t DetIdBVH  = 23;
+const Int_t DetIdNRC  = 24;
+const Int_t DetIdBH2_E07 =  33;
+const Int_t DetIdBAC_E07 =  34;
+const Int_t DetIdSAC1    =  37;
+const Int_t DetIdKFAC    =  44;
+const Int_t NumOfSegLAC = 30;
+const Int_t NumOfSegBH2_E07 =  2;
+const Int_t NumOfSegBAC_E07 =  4 + 2;
+const Int_t NumOfSegSAC1    =  1;
+const Int_t NumOfSegKFAC    =  2;
+const Int_t NumOfLayersSSD0 =  2;
 // E05 Detectors
-const int DetIdMsT     = 32;
-const int DetIdMsTRM   = 82;
-const int DetIdKIC     = 41;
-const int NumOfSegMsT  = 24;
-const int NumOfSegKIC  =  4;
+const Int_t DetIdMsT     = 32;
+const Int_t DetIdMsTRM   = 82;
+const Int_t DetIdKIC     = 41;
+const Int_t NumOfSegMsT  = 24;
+const Int_t NumOfSegKIC  =  4;
 // E13 Detectors
-const int DetIdBMW     = 10;
-const int DetIdMatrix  = 12;
-const int DetIdSFV     = 24;
-const int DetIdTOFMT   = 25;
-const int DetIdSP0     = 26;
-const int DetIdGe      = 27;
-const int DetIdPWO     = 28;
-const int DetIdPWOADC  = 29;
-const int NumOfSegBAC_SAC = 6;
-const int NumOfSegSFV = 18;
-const int NumOfSegGe   = 32;
+const Int_t DetIdBMW     = 10;
+const Int_t DetIdMatrix  = 12;
+const Int_t DetIdSFV     = 24;
+const Int_t DetIdTOFMT   = 25;
+const Int_t DetIdSP0     = 26;
+const Int_t DetIdGe      = 27;
+const Int_t DetIdPWO     = 28;
+const Int_t DetIdPWOADC  = 29;
+const Int_t NumOfSegBAC_SAC = 6;
+const Int_t NumOfSegSFV = 18;
+const Int_t NumOfSegGe   = 32;
 
-const int NumOfSegPWO  = 238;
-const int NumOfBoxPWO  = 22;
-const int NumOfUnitPWO[NumOfBoxPWO] =
+const Int_t NumOfSegPWO  = 238;
+const Int_t NumOfBoxPWO  = 22;
+const Int_t NumOfUnitPWO[NumOfBoxPWO] =
   {
     6, 9, 6, 14, 14, 21, 14, 14, 6, 9, 6,
     6, 9, 6, 14, 14, 21, 14, 14, 6, 9, 6
   };
 
-const int SegIdPWO[NumOfBoxPWO] =
+const Int_t SegIdPWO[NumOfBoxPWO] =
   {
     4, 0, 0, 4, 0, 0, 1, 5, 2, 1, 6,
     1, 2, 5, 6, 2, 1, 3, 7, 7, 3, 3,
   };
 
-const int NumOfLayersSP0 = 8;
-const int NumOfSegSP0    = 5;
+const Int_t NumOfLayersSP0 = 8;
+const Int_t NumOfSegSP0    = 5;
 
-const int DetIdBC1   = 101;
-const int DetIdBC2   = 102;
-const int DetIdSDC4  = 108;
-const int DetIdK6BDC = 109;
-const int DetIdHDC   = 113;
-const int DetIdSSD0  = 120;
+const Int_t DetIdBC1   = 101;
+const Int_t DetIdBC2   = 102;
+const Int_t DetIdSDC4  = 108;
+const Int_t DetIdK6BDC = 109;
+const Int_t DetIdHDC   = 113;
+const Int_t DetIdSSD0  = 120;
 
-const int DetIdBcIn   = 10;
+const Int_t DetIdBcIn   = 10;
 
-const int NumOfLayersBC1  =  6;
-const int NumOfLayersBC2  =  6;
-const int NumOfLayersBcIn = 12;
-const int NumOfLayersHDC  =  4;
-const int NumOfLayersSDC4 =  6;
+const Int_t NumOfLayersBC1  =  6;
+const Int_t NumOfLayersBC2  =  6;
+const Int_t NumOfLayersBcIn = 12;
+const Int_t NumOfLayersHDC  =  4;
+const Int_t NumOfLayersSDC4 =  6;
 
-const int NumOfWireBC1    =  256;
-const int NumOfWireBC2    =  256;
-const int NumOfWireHDC    =  112;
-const int NumOfWireSDC3x  =  108;
-const int NumOfWireSDC4x  =  108;
-const int NumOfWireSDC3uv =  120;
-const int NumOfWireSDC4uv =  120;
-const int NumOfSegSSD0    = 1536;
-const int PlMinBdcIn  =  1;
-const int PlMaxBdcIn  = 12;
-
+const Int_t NumOfWireBC1    =  256;
+const Int_t NumOfWireBC2    =  256;
+const Int_t NumOfWireHDC    =  112;
+const Int_t NumOfWireSDC3x  =  108;
+const Int_t NumOfWireSDC4x  =  108;
+const Int_t NumOfWireSDC3uv =  120;
+const Int_t NumOfWireSDC4uv =  120;
+const Int_t NumOfSegSSD0    = 1536;
+const Int_t PlMinBcIn  =  1;
+const Int_t PlMaxBcIn  = 12;
 
 #endif

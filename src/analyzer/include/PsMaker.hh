@@ -7,10 +7,11 @@
 class TCanvas;
 class TPostScript;
 
-class PsMaker{
+class PsMaker
+{
   // Option list which are displayed in the Ps tab
   enum OptionList{
-    kExpDataSheet, 
+    kExpDataSheet,
     kFixXaxis,
     kLogyADC, kLogyTDC,//, kLogyHitPat, kLogyMulti,
     sizeOptionList
@@ -30,7 +31,7 @@ class PsMaker{
 public:
   virtual ~PsMaker();
   static PsMaker& getInstance();
-  
+
   void getListOfOption(std::vector<std::string>& vec);
   void makePs();
 
@@ -42,7 +43,7 @@ private:
 		     const char* optDraw = ""
 		     );
   void drawDCEff( void );
-  void clearOneCanvas(int npad);  
+  void clearOneCanvas(int npad);
 
   PsMaker();
   PsMaker(const PsMaker& object);

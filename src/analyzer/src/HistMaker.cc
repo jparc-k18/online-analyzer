@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "DetectorID.hh"
+#include "FuncName.hh"
 #include "HistHelper.hh"
 #include "HistMaker.hh"
 
@@ -33,7 +34,8 @@ namespace
 
 // Constructor -------------------------------------------------------------
 HistMaker::HistMaker( void )
-  : current_hist_id_(0)
+  : TObject(),
+    current_hist_id_(0)
 {
 }
 
@@ -3430,8 +3432,8 @@ TList* HistMaker::createTOF_HT(bool flag_ps)
   const char* nameDetector = strDet.c_str();
   const char* name_ch[] = { "(1,11)", "(2,20)", "(3,18)", "(4,21)", "(5,9)",
                             "(6,22)", "(7,23)", "(8,24)", "(10,19)",
-                            "12", "13", "14", "15", "16", "17"}; 
-                            
+                            "12", "13", "14", "15", "16", "17"};
+
 
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);

@@ -14,7 +14,7 @@
 #include "user_analyzer.hh"
 #include "UnpackerManager.hh"
 #include "ConfMan.hh"
-#include "DCAnalyzer.hh"
+#include "DCAnalyzerOld.hh"
 #include "DetectorID.hh"
 #include "HistMaker.hh"
 #include "MacroBuilder.hh"
@@ -148,7 +148,6 @@ process_event()
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-
 
   return 0;
 }

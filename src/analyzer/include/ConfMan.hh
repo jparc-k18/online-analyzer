@@ -16,7 +16,7 @@ class ConfMan : public TObject
 {
 public:
   static ConfMan& GetInstance( void );
-  virtual ~ConfMan( void );
+  ~ConfMan( void );
 
 private:
   ConfMan( void );

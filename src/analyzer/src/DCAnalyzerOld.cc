@@ -2,7 +2,7 @@
 
 // Author : Hitoshi Sugimura
 
-#include "DCAnalyzer.hh"
+#include "DCAnalyzerOld.hh"
 
 #include <iostream>
 #include <vector>

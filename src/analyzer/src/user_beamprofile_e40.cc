@@ -10,16 +10,20 @@
 #include <TStyle.h>
 #include <TString.h>
 
+#include <UnpackerManager.hh>
+
 #include "Controller.hh"
 #include "user_analyzer.hh"
-#include "UnpackerManager.hh"
+
 #include "ConfMan.hh"
-#include "DCAnalyzer.hh"
+#include "DCAnalyzerOld.hh"
 #include "DCGeomMan.hh"
+#include "DebugCounter.hh"
 #include "DetectorID.hh"
+#include "EventAnalyzer.hh"
 #include "HistMaker.hh"
 #include "MacroBuilder.hh"
-// #include "RawData.hh"
+#include "RawData.hh"
 #include "UserParamMan.hh"
 
 namespace analyzer
@@ -65,7 +69,7 @@ namespace analyzer
 
 //____________________________________________________________________________
 int
-process_begin(const std::vector<std::string>& argv)
+process_begin( const std::vector<std::string>& argv )
 {
   ConfMan& gConfMan = ConfMan::GetInstance();
   gConfMan.Initialize(argv);
@@ -165,14 +169,14 @@ process_begin(const std::vector<std::string>& argv)
 
 //____________________________________________________________________________
 int
-process_end()
+process_end( void )
 {
   return 0;
 }
 
 //____________________________________________________________________________
 int
-process_event()
+process_event( void )
 {
   static HistMaker& gHist = HistMaker::getInstance();
   static UnpackerManager& gUnpacker = GUnpacker::get_instance();
@@ -180,6 +184,12 @@ process_event()
 
   static const double dist_FF = 1200.;
 
+  debug::ObjectCounter& gCounter = debug::ObjectCounter::GetInstance();
+  // gCounter.Check();
+  gCounter.Print();
+
+  EventAnalyzer event;
+  event.DecodeRawData();
 
   /////////// BcOut
   {

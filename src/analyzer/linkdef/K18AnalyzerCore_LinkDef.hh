@@ -30,6 +30,7 @@
 #pragma link C++ class RawData+;
 #pragma link C++ class ScalerAnalyzer+;
 #pragma link C++ class UserParamMan+;
+#pragma link C++ class analyzer::EventAnalyzer+;
 #pragma link C++ class debug::ObjectCounter+;
 #pragma link C++ class std::vector< std::vector<Int_t> >+;
 #pragma link C++ class std::vector< std::vector<Double_t> >+;

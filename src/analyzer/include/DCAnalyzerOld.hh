@@ -1,7 +1,7 @@
 // Author : Hitoshi Sugimura
 
-#ifndef DCANALYZER_H
-#define DCANALYZER_H
+#ifndef DCANALYZER_OLD_H
+#define DCANALYZER_OLD_H
 
 #include <iostream>
 #include <vector>
@@ -25,7 +25,7 @@ private:
   std::vector<double> z;
   std::vector<double> sinvector;
   std::vector<double> cosvector;
-  std::vector<std::vector<double> > inv_matrix; 
+  std::vector<std::vector<double> > inv_matrix;
   std::vector<int> lr;
   double X0;
   double Y0;

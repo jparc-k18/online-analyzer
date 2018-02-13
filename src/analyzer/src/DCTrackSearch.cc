@@ -272,17 +272,18 @@ namespace
     CalcTracks( trackCont );
     utility::ClearContainerAll( candCont );
   }
+}
 
-  //______________________________________________________________________________
-  // MakeCluster _________________________________________________________________
-
+//______________________________________________________________________________
+namespace track
+{
   //______________________________________________________________________________
   Bool_t
   MakePairPlaneHitCluster( const DCHitContainer & HC1,
 			   const DCHitContainer & HC2,
 			   Double_t CellSize,
 			   ClusterList& Cont,
-			   Bool_t honeycomb=false )
+			   Bool_t honeycomb )
   {
     Int_t nh1=HC1.size(), nh2=HC2.size();
     std::vector<Int_t> UsedFlag(nh2,0);
@@ -363,7 +364,7 @@ namespace
   Bool_t
   MakeUnPairPlaneHitCluster( const DCHitContainer& HC,
 			     ClusterList& Cont,
-			     Bool_t honeycomb=false )
+			     Bool_t honeycomb )
   {
     const Int_t nh = HC.size();
     for( Int_t i=0; i<nh; ++i ){
@@ -467,7 +468,7 @@ namespace
 			      const DCHitContainer& HC2,
 			      Double_t CellSize,
 			      ClusterList& Cont,
-			      Bool_t honeycomb=false )
+			      Bool_t honeycomb )
   {
     Int_t nh1=HC1.size(), nh2=HC2.size();
     std::vector<Int_t> UsedFlag(nh2,0);
@@ -534,9 +535,6 @@ namespace
   }
 
   //______________________________________________________________________________
-  // MakeIndex ___________________________________________________________________
-
-  //______________________________________________________________________________
   std::vector<IndexList>
   MakeIndex( Int_t ndim, const Int_t *index1 )
   {
@@ -564,7 +562,7 @@ namespace
 	index.push_back(elem);
 	Int_t size1=index.size();
 	if( size1>MaxCombi ){
-#if 0
+#if 1
 	  hddaq::cout << FUNC_NAME << " too much combinations..." << std::endl;
 #endif
 	  return std::vector<IndexList>(0);
@@ -631,9 +629,6 @@ namespace
   }
 
   //______________________________________________________________________________
-  // MakeTrack ___________________________________________________________________
-
-  //______________________________________________________________________________
   DCLocalTrack*
   MakeTrack( const std::vector<ClusterList>& CandCont,
 	     const IndexList& combination )
@@ -659,11 +654,6 @@ namespace
     return tp;
   }
 
-}
-
-//______________________________________________________________________________
-namespace track
-{
   //______________________________________________________________________________
   Int_t /* Local Track Search without BH2Filter */
   LocalTrackSearch( const std::vector<DCHitContainer>& HC,

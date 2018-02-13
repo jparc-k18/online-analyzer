@@ -192,17 +192,17 @@ process_event( void )
   static const Int_t ypos_id  = gHist.getSequentialID(kMisc, 0, kHitPat, NHist+1);
   static const Int_t xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
 
-  debug::ObjectCounter::Check();
-
   EventAnalyzer event;
   event.DecodeRawData();
   event.DecodeDCRawHits();
 
-  Int_t ntBcOut = event.TrackSearchBcOut();
+  event.TrackSearchBcOut();
+
+  Int_t ntBcOut = event.GetNTrackBcOut();
   for( Int_t i=0; i<ntBcOut; ++i ){
     const DCLocalTrack* track = event.GetTrackBcOut(i);
-    if( !track ) continue;
-    Double_t x0 = track->GetX0(); Double_t y0 = track->GetY0();
+    if( !track || track->GetChiSquare()>10. ) continue;
+    // Double_t x0 = track->GetX0(); Double_t y0 = track->GetY0();
     // Double_t u0 = track->GetU0(); Double_t v0 = track->GetV0();
     for( Int_t j=0; j<NHist; ++j ){
       Double_t z = dist_FF+FF_plus+TgtOrg_plus[j];
@@ -211,84 +211,6 @@ process_event( void )
       hptr_array[ypos_id+j]->Fill(y);
       hptr_array[xypos_id+j]->Fill(x, y);
     }
-  }
-
-  return 0;
-
-  /////////// BcOut
-  {
-    DCRHC BcOutAna(DetIdBcOut);
-    bool BcOutTrack = BcOutAna.TrackSearch(9);
-
-    if(BcOutTrack){
-      for(Int_t i = 0; i<NHist; ++i){
-	Double_t xpos = BcOutAna.GetPosX(dist_FF+FF_plus+TgtOrg_plus[i]);
-	Double_t ypos = BcOutAna.GetPosY(dist_FF+FF_plus+TgtOrg_plus[i]);
-	hptr_array[xpos_id+i]->Fill(xpos);
-	hptr_array[ypos_id+i]->Fill(ypos);
-	hptr_array[xypos_id+i]->Fill(xpos, ypos);
-      }
-    }
-  }
-
-#if DEBUG
-  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-#endif
-
-  ////////// SSD1
-  {
-    // data type
-    static const Int_t k_device = gUnpacker.get_device_id("SSD1");
-    static const Int_t k_adc    = gUnpacker.get_data_id("SSD1","adc");
-    static const Int_t k_flag   = gUnpacker.get_data_id("SSD1","flag");
-    // sequential id
-    static const Int_t hit_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
-
-    bool chit_flag[NumOfLayersSSD1][NumOfSegSSD1];
-
-    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
-      for(Int_t seg=0; seg<NumOfSegSSD1; ++seg){
-	chit_flag[l][seg] = false;
-	// ADC
-	Int_t nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
-	if( nhit_a==0 ) continue;
-	if( nhit_a != NumOfSamplesSSD ){
-	  std::cerr << "#W SSD1 layer:" << l << " seg:" << seg
-		    << " the number of samples is wrong : "
-		    << nhit_a << "/" << NumOfSamplesSSD << std::endl;
-	  continue;
-	}
-	Int_t  adc[nhit_a];
-	bool slope[nhit_a-1];
-	Int_t  peak_height   = -1;
-	Int_t  peak_position = -1;
-	for(Int_t m=0; m<nhit_a; ++m){
-	  adc[m] = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
-	  adc[m] -= adc[0];
-	  if( m>0 )
-	    slope[m] = adc[m]>adc[m-1];
-	  if( adc[m]>peak_height ){
-	    peak_height   = adc[m];
-	    peak_position = m;
-	  }
-	}
-	// Zero Suppression Flag
-	Int_t  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
-	bool  hit_flag = false;
-	if(nhit_flag != 0){
-	  Int_t flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
-	  if(flag==1) hit_flag = true;
-	}
-	chit_flag[l][seg] = hit_flag &&
-	  slope[0] &&
-	  slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
-	  //&& ( peak_height > 350 );
-	if( peak_height>=0 && peak_position>=1 && chit_flag[l][seg] ){
-	  Double_t wpos = gGeom.CalcWirePosition( l+7, seg+1 );
-	  hptr_array[hit_id +l]->Fill( wpos );
-	}
-      }//for(seg)
-    }//for(l)
   }
 
 #if DEBUG

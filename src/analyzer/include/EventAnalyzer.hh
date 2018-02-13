@@ -24,13 +24,13 @@ protected:
   DCAnalyzer* m_dc_analyzer;
 
 public:
-  void  DecodeRawData( void );
-  void  DecodeDCRawHits( void );
-  Int_t TrackSearchBcOut( void );
-
+  void          DecodeRawData( void );
+  void          DecodeDCRawHits( void );
   RawData*      GetRawData( void ) const { return m_raw_data; }
   DCAnalyzer*   GetDCAnalyzer( void ) const { return m_dc_analyzer; }
+  Int_t         GetNTrackBcOut( void ) const;
   DCLocalTrack* GetTrackBcOut( Int_t i ) const;
+  Bool_t        TrackSearchBcOut( void );
 
   ClassDef(EventAnalyzer,0);
 };

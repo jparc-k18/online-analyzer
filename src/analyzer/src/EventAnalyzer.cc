@@ -39,10 +39,20 @@ EventAnalyzer::DecodeDCRawHits( void )
 }
 
 //______________________________________________________________________________
-Int_t
+Bool_t
 EventAnalyzer::TrackSearchBcOut( void )
 {
-  if( !m_dc_analyzer->TrackSearchBcOut() )
+  if( !m_dc_analyzer )
+    return false;
+  else
+    return m_dc_analyzer->TrackSearchBcOut();
+}
+
+//______________________________________________________________________________
+Int_t
+EventAnalyzer::GetNTrackBcOut( void ) const
+{
+  if( !m_dc_analyzer )
     return -1;
   else
     return m_dc_analyzer->GetNtracksBcOut();

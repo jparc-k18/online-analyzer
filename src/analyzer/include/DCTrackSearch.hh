@@ -28,6 +28,32 @@ ClassName( void )
 }
 
 //______________________________________________________________________________
+// MakeCluster _________________________________________________________________
+Bool_t MakePairPlaneHitCluster( const DCHitContainer & HC1,
+				const DCHitContainer & HC2,
+				Double_t CellSize,
+				ClusterList& Cont,
+				Bool_t honeycomb=false );
+Bool_t MakeUnPairPlaneHitCluster( const DCHitContainer& HC,
+				  ClusterList& Cont,
+				  Bool_t honeycomb=false );
+Bool_t MakeMWPCPairPlaneHitCluster( const DCHitContainer& HC, ClusterList& Cont );
+Bool_t MakeSsdHitCluster( const DCHitContainer& HC, ClusterList& Cont );
+Bool_t MakeTOFHitCluster( const DCHitContainer& HitCont, ClusterList& Cont, Int_t xy );
+
+//______________________________________________________________________________
+// MakeIndex ___________________________________________________________________
+std::vector<IndexList> MakeIndex( Int_t ndim, const Int_t *index1 );
+std::vector<IndexList> MakeIndex( Int_t ndim, const IndexList& index1 );
+std::vector<IndexList> MakeIndex_VXU( Int_t ndim,Int_t maximumHit, const Int_t *index1 );
+std::vector<IndexList> MakeIndex_VXU( Int_t ndim,Int_t maximumHit, const IndexList& index1 );
+
+//______________________________________________________________________________
+// MakeTrack ___________________________________________________________________
+DCLocalTrack* MakeTrack( const std::vector<ClusterList>& CandCont,
+			 const IndexList& combination );
+
+//______________________________________________________________________________
 Int_t LocalTrackSearch( const std::vector<DCHitContainer>& HC,
 			const DCPairPlaneInfo *PpInfo,
 			Int_t npp, std::vector<DCLocalTrack*>& TrackCont,

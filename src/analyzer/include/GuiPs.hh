@@ -1,7 +1,7 @@
 // -*- C++ -*-
 
-#ifndef GUIPS_H
-#define GUIPS_H
+#ifndef GUI_PS_H
+#define GUI_PS_H
 
 #include <vector>
 
@@ -35,19 +35,19 @@ private:
   TGCompositeFrame*           m_frame;
   std::vector<TGTextButton*>  m_command;
   std::vector<TGCheckButton*> m_optButton;
-  std::vector<std::string>    m_optList;
+  std::vector<TString>        m_optList;
   std::vector<TGCheckButton*> m_devButton;
-  std::vector<std::string>    m_devList;
+  std::vector<TString>        m_devList;
   TGTextEntry*                m_textFilename;
-  std::string                 m_filename;
+  TString                     m_filename;
 
 public:
   static GuiPs& getInstance();
   virtual ~GuiPs();
 
-  static std::string getFilename();
-  void initialize(const std::vector<std::string>& optList,
-		  const std::vector<std::string>& devList);
+  static TString getFilename();
+  void initialize(const std::vector<TString>& optList,
+		  const std::vector<TString>& devList);
   static bool isDevOn(int i);
   static bool isOptOn(int i);
   void print();

@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include <Rtypes.h>
+#include <TString.h>
 
 class TH1;
 class TH2;
@@ -15,95 +16,95 @@ class GHist
 {
 
 protected:
-  std::map<int, std::string> m_index;
+  std::map<Int_t, TString> m_index;
 
 public:
-  static GHist& getInstance();
-  virtual ~GHist();
+  static GHist& getInstance( void );
+  virtual ~GHist( void );
 
   // methods for TH1 --------------------------------------------------
-  static TH1* D1(const std::string& name,
-		 const std::string& title,
-		 int nbinsx,
-		 double xlow,
-		 double xup);
-  static TH1* D1(int id,
-		 const std::string& title,
-		 int nbinsx,
-		 double xlow,
-		 double xup);
-  static TH1* I1(const std::string& name,
-		 const std::string& title,
-		 int nbinsx,
-		 double xlow,
-		 double xup);
-  static TH1* I1(int id,
-		 const std::string& title,
-		 int nbinsx,
-		 double xlow,
-		 double xup);
-  static int  fill1(const std::string& name, 
-		    double x,
-		    double w=1.0);
-  static int  fill1(int id,
-		    double x,
-		    double w=1.0);
-  static int  fill1(TH1* h,
-		    double x,
-		    double w=1.0);
+  static TH1* D1(const TString& name,
+		 const TString& title,
+		 Int_t nbinsx,
+		 Double_t xlow,
+		 Double_t xup);
+  static TH1* D1(Int_t id,
+		 const TString& title,
+		 Int_t nbinsx,
+		 Double_t xlow,
+		 Double_t xup);
+  static TH1* I1(const TString& name,
+		 const TString& title,
+		 Int_t nbinsx,
+		 Double_t xlow,
+		 Double_t xup);
+  static TH1* I1(Int_t id,
+		 const TString& title,
+		 Int_t nbinsx,
+		 Double_t xlow,
+		 Double_t xup);
+  static Int_t  fill1(const TString& name,
+		    Double_t x,
+		    Double_t w=1.0);
+  static Int_t  fill1(Int_t id,
+		    Double_t x,
+		    Double_t w=1.0);
+  static Int_t  fill1(TH1* h,
+		    Double_t x,
+		    Double_t w=1.0);
 
   // methods for TH1 --------------------------------------------------
-  static TH2* D2(const std::string& name,
-		 const std::string& title,
-		 int nbinsx,
-		 double xlow,
-		 double xip,
-		 int nbinsy,
-		 double ylow,
-		 double yup);
-  static TH2* D2(int id,
-		 const std::string& title,
-		 int nbinsx,
-		 double xlow,
-		 double xip,
-		 int nbinsy,
-		 double ylow,
-		 double yup);
-  static TH2* I2(const std::string& name,
-		 const std::string& title,
-		 int nbinsx,
-		 double xlow,
-		 double xip,
-		 int nbinsy,
-		 double ylow,
-		 double yup);
-  static TH2* I2(int id,
-		 const std::string& title,
-		 int nbinsx,
-		 double xlow,
-		 double xip,
-		 int nbinsy,
-		 double ylow,
-		 double yup);
-  static int  fill2(const std::string& name,
-		    double x,
-		    double y,
-		    double w=1.0);
-  static int  fill2(int id,
-		    double x,
-		    double y,
-		    double w=1.0);
-  static int  fill2(TH2* h,
-		    double x,
-		    double y,
-		    double w=1.0);
+  static TH2* D2(const TString& name,
+		 const TString& title,
+		 Int_t nbinsx,
+		 Double_t xlow,
+		 Double_t xip,
+		 Int_t nbinsy,
+		 Double_t ylow,
+		 Double_t yup);
+  static TH2* D2(Int_t id,
+		 const TString& title,
+		 Int_t nbinsx,
+		 Double_t xlow,
+		 Double_t xip,
+		 Int_t nbinsy,
+		 Double_t ylow,
+		 Double_t yup);
+  static TH2* I2(const TString& name,
+		 const TString& title,
+		 Int_t nbinsx,
+		 Double_t xlow,
+		 Double_t xip,
+		 Int_t nbinsy,
+		 Double_t ylow,
+		 Double_t yup);
+  static TH2* I2(Int_t id,
+		 const TString& title,
+		 Int_t nbinsx,
+		 Double_t xlow,
+		 Double_t xip,
+		 Int_t nbinsy,
+		 Double_t ylow,
+		 Double_t yup);
+  static Int_t  fill2(const TString& name,
+		    Double_t x,
+		    Double_t y,
+		    Double_t w=1.0);
+  static Int_t  fill2(Int_t id,
+		    Double_t x,
+		    Double_t y,
+		    Double_t w=1.0);
+  static Int_t  fill2(TH2* h,
+		    Double_t x,
+		    Double_t y,
+		    Double_t w=1.0);
 
   // Common mothod ------------------------------------------------------
   // No function which return TH2 pointer is prepared.
-  // If the actual class of the pointer is TH2, 
+  // If the actual class of the pointer is TH2,
   // dynamic_cast in the user source code is need.
-  static TH1* get(const std::string& name);
-  static TH1* get(int id);
+  static TH1* get(const TString& name);
+  static TH1* get(Int_t id);
 
 private:
   GHist();

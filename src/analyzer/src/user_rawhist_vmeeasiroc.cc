@@ -109,8 +109,8 @@ process_begin( const std::vector<std::string>& argv )
   // but the file path should be changed.
   // ----------------------------------------------------------
   PsMaker& gPsMaker = PsMaker::getInstance();
-  std::vector<std::string> detList;
-  std::vector<std::string> optList;
+  std::vector<TString> detList;
+  std::vector<TString> optList;
   gHist.getListOfPsFiles(detList);
   gPsMaker.getListOfOption(optList);
 

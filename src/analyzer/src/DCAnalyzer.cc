@@ -13,9 +13,9 @@
 #include "DCDriftParamMan.hh"
 #include "DCGeomMan.hh"
 #include "DCHit.hh"
-// #include "DCLocalTrack.hh"
+#include "DCLocalTrack.hh"
 #include "DCRawHit.hh"
-// #include "DCTrackSearch.hh"
+#include "DCTrackSearch.hh"
 #include "DebugCounter.hh"
 // #include "DebugTimer.hh"
 // #include "EventDisplay.hh"
@@ -631,25 +631,25 @@ DCAnalyzer::DecodeRawHits( RawData *rawData )
 // #endif
 
 //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::TrackSearchBcOut( void )
-// {
-//   static const Int_t MinLayer = gUser.GetParameter("MinLayerBcOut");
+Bool_t
+DCAnalyzer::TrackSearchBcOut( void )
+{
+  static const Int_t MinLayer = gUser.GetParameter("MinLayerBcOut");
 
-// #if BcOut_Pair //Pair Plane Tracking Routine for BcOut
-//   track::LocalTrackSearch( m_BcOutHC, PPInfoBcOut, NPPInfoBcOut,
-// 			   m_BcOutTC, MinLayer );
-//   return true;
-// #endif
+#if BcOut_Pair //Pair Plane Tracking Routine for BcOut
+  track::LocalTrackSearch( m_BcOutHC, PPInfoBcOut, NPPInfoBcOut,
+			   m_BcOutTC, MinLayer );
+  return true;
+#endif
 
-// #if BcOut_XUV  //XUV Tracking Routine for BcOut
-//   track::LocalTrackSearchVUX( m_BcOutHC, PPInfoBcOut, NPPInfoBcOut,
-// 			      m_BcOutTC, MinLayer );
-//   return true;
-// #endif
+#if BcOut_XUV  //XUV Tracking Routine for BcOut
+  track::LocalTrackSearchVUX( m_BcOutHC, PPInfoBcOut, NPPInfoBcOut,
+			      m_BcOutTC, MinLayer );
+  return true;
+#endif
 
-//   return false;
-// }
+  return false;
+}
 
 // //______________________________________________________________________________
 // // Use with BH2Filter

@@ -7,6 +7,7 @@
 
 class RawData;
 class DCAnalyzer;
+class DCLocalTrack;
 
 namespace analyzer
 {
@@ -23,11 +24,13 @@ protected:
   DCAnalyzer* m_dc_analyzer;
 
 public:
-  void DecodeRawData( void );
-  void DecodeDCRawHits( void );
+  void  DecodeRawData( void );
+  void  DecodeDCRawHits( void );
+  Int_t TrackSearchBcOut( void );
 
-  RawData*    GetRawData( void ) const { return m_raw_data; }
-  DCAnalyzer* GetDCAnalyzer( void ) const { return m_dc_analyzer; }
+  RawData*      GetRawData( void ) const { return m_raw_data; }
+  DCAnalyzer*   GetDCAnalyzer( void ) const { return m_dc_analyzer; }
+  DCLocalTrack* GetTrackBcOut( Int_t i ) const;
 
   ClassDef(EventAnalyzer,0);
 };

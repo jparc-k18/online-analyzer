@@ -42,24 +42,37 @@ public:
   { m_file_name = file_name; return Initialize(); }
   Bool_t              IsReady( void ) const { return m_is_ready; }
   Double_t            GetLocalZ( Int_t lnum ) const;
+  Double_t            GetLocalZ( const TString& name ) const;
   Double_t            GetResolution( Int_t lnum ) const;
+  Double_t            GetResolution( const TString& name ) const;
   Double_t            GetTiltAngle( Int_t lnum ) const;
+  Double_t            GetTiltAngle( const TString& name ) const;
   Double_t            GetRotAngle1( Int_t lnum ) const;
+  Double_t            GetRotAngle1( const TString& name ) const;
   Double_t            GetRotAngle2( Int_t lnum ) const;
+  Double_t            GetRotAngle2( const TString& name ) const;
   const ThreeVector&  GetGlobalPosition( Int_t lnum ) const;
+  const ThreeVector&  GetGlobalPosition( const TString& name ) const;
   ThreeVector         NormalVector( Int_t lnum ) const;
+  ThreeVector         NormalVector( const TString& name ) const;
   ThreeVector         UnitVector( Int_t lnum ) const;
+  ThreeVector         UnitVector( const TString& name ) const;
   const DCGeomRecord* GetRecord( Int_t lnum ) const;
+  const DCGeomRecord* GetRecord( const TString& name ) const;
   ThreeVector         Local2GlobalPos( Int_t lnum, const ThreeVector &in ) const;
+  ThreeVector         Local2GlobalPos( const TString& name, const ThreeVector &in ) const;
   ThreeVector         Global2LocalPos( Int_t lnum, const ThreeVector &in ) const;
+  ThreeVector         Global2LocalPos( const TString& name, const ThreeVector &in ) const;
   ThreeVector         Local2GlobalDir( Int_t lnum, const ThreeVector &in ) const;
+  ThreeVector         Local2GlobalDir( const TString& name, const ThreeVector &in ) const;
   ThreeVector         Global2LocalDir( Int_t lnum, const ThreeVector &in ) const;
+  ThreeVector         Global2LocalDir( const TString& name, const ThreeVector &in ) const;
   Double_t            CalcWirePosition( Int_t lnum, Double_t wire ) const;
   Int_t               CalcWireNumber( Int_t lnum, Double_t position ) const;
   std::vector<Int_t>  GetDetectorIDList( void ) const;
   Int_t               GetTofId( void ) const { return TOFid_; }
   Int_t               GetLcId( void ) const { return LCid_; }
-  Int_t               GetDetectorId( const TString& detName ) const;
+  Int_t               GetDetectorId( const TString& name ) const;
   // Do not use this method except for special cases
   void                SetResolution( Int_t lnum, Double_t res );
   //

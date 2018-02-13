@@ -38,4 +38,25 @@ EventAnalyzer::DecodeDCRawHits( void )
   m_dc_analyzer->DecodeRawHits( m_raw_data );
 }
 
+//______________________________________________________________________________
+Int_t
+EventAnalyzer::TrackSearchBcOut( void )
+{
+  if( !m_dc_analyzer->TrackSearchBcOut() )
+    return -1;
+  else
+    return m_dc_analyzer->GetNtracksBcOut();
+}
+
+//______________________________________________________________________________
+DCLocalTrack*
+EventAnalyzer::GetTrackBcOut( Int_t i ) const
+{
+  if( !m_dc_analyzer ||
+      m_dc_analyzer->GetNtracksBcOut()== 0 )
+    return nullptr;
+  else
+    return m_dc_analyzer->GetTrackBcOut(i);
+}
+
 }

@@ -20,6 +20,7 @@
 #include "DCAnalyzerOld.hh"
 #include "DCGeomMan.hh"
 #include "DCHit.hh"
+#include "DCLocalTrack.hh"
 #include "DebugCounter.hh"
 #include "DetectorID.hh"
 #include "EventAnalyzer.hh"
@@ -35,7 +36,14 @@ namespace analyzer
 
   namespace
   {
+    const HistMaker&       gHist     = HistMaker::getInstance();
+    const UnpackerManager& gUnpacker = GUnpacker::get_instance();
+    const DCGeomMan&       gGeom     = DCGeomMan::GetInstance();
+
+    const Double_t dist_FF = 1200.;
+
     std::vector<TH1*> hptr_array;
+
     enum HistName
       {
 	// Inside Target
@@ -44,7 +52,7 @@ namespace analyzer
 	i_SFT, i_EG, i_DC1, i_SAC,
 	NHist
       };
-    static const double TgtOrg_plus[] =
+    static const Double_t TgtOrg_plus[] =
       {
 	// Inside Target
 	-495., -338., -167.5, 0, 150., 240.,
@@ -61,16 +69,16 @@ namespace analyzer
 	"SFT", "End guard", "DC1", "KbAC"
       };
 
-    static const double posSSD[] =
+    static const Double_t posSSD[] =
       {
 	-100, 100, 100, 100
       };
 
-    static double FF_plus = 0;
+    static Double_t FF_plus = 0;
   }
 
 //____________________________________________________________________________
-int
+Int_t
 process_begin( const std::vector<std::string>& argv )
 {
   ConfMan& gConfMan = ConfMan::GetInstance();
@@ -107,20 +115,20 @@ process_begin( const std::vector<std::string>& argv )
     TList *sub_dir = new TList;
     const char* nameSubDir = "BcOut";
     sub_dir->SetName(nameSubDir);
-    int unique_id = gHist.getUniqueID(kMisc, 0, kHitPat);
+    Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat);
     // Profile X
-    for(int i = 0; i<NHist; ++i){
+    for(Int_t i = 0; i<NHist; ++i){
       char* title = i==i_Z0?
-	Form("%s_X %s (FF+%d)", nameSubDir, posName[i].c_str(), (int)FF_plus) :
+	Form("%s_X %s (FF+%d)", nameSubDir, posName[i].c_str(), (Int_t)FF_plus) :
 	Form("%s_X %s", nameSubDir, posName[i].c_str());
       sub_dir->Add(gHist.createTH1(unique_id++, title,
 				    400,-200,200,
 				    "x position [mm]", ""));
     }
     // Profile Y
-    for(int i = 0; i<NHist; ++i){
+    for(Int_t i = 0; i<NHist; ++i){
       char* title = i==i_Z0?
-	Form("%s_Y %s (FF+%d)", nameSubDir, posName[i].c_str(), (int)FF_plus) :
+	Form("%s_Y %s (FF+%d)", nameSubDir, posName[i].c_str(), (Int_t)FF_plus) :
 	Form("%s_Y %s", nameSubDir, posName[i].c_str());
       sub_dir->Add(gHist.createTH1(unique_id++, title,
 				    200,-100,100,
@@ -128,9 +136,9 @@ process_begin( const std::vector<std::string>& argv )
     }
     tab_hist->Add(sub_dir);
     // Profile XY
-    for(int i = 0; i<NHist; ++i){
+    for(Int_t i = 0; i<NHist; ++i){
       char* title = i==i_Z0?
-	Form("%s_XY %s (FF+%d)", nameSubDir, posName[i].c_str(), (int)FF_plus) :
+	Form("%s_XY %s (FF+%d)", nameSubDir, posName[i].c_str(), (Int_t)FF_plus) :
 	Form("%s_YY %s", nameSubDir, posName[i].c_str());
       sub_dir->Add(gHist.createTH2(unique_id++, title,
 				   400,-200,200, 200,-100,100,
@@ -144,10 +152,10 @@ process_begin( const std::vector<std::string>& argv )
     TList *sub_dir = new TList;
     const char* nameSubDir = "SSD1";
     sub_dir->SetName(nameSubDir);
-    int unique_id = gHist.getUniqueID(kMisc, 0, kHitPat2D);
+    Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat2D);
     const char* nameLayer[] = { "Y0", "X0", "Y1", "X1" };
-    for(int l=0; l<NumOfLayersSSD1; ++l){
-      char* title = Form("%s_HitPos_%s FF+%d", nameSubDir, nameLayer[l], (int)posSSD[l]);
+    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
+      char* title = Form("%s_HitPos_%s FF+%d", nameSubDir, nameLayer[l], (Int_t)posSSD[l]);
       sub_dir->Add(gHist.createTH1(unique_id++, title,
 				   200,-100,100,
 				   "Position [mm]", ""));
@@ -170,21 +178,19 @@ process_begin( const std::vector<std::string>& argv )
 }
 
 //____________________________________________________________________________
-int
+Int_t
 process_end( void )
 {
   return 0;
 }
 
 //____________________________________________________________________________
-int
+Int_t
 process_event( void )
 {
-  static HistMaker& gHist = HistMaker::getInstance();
-  static UnpackerManager& gUnpacker = GUnpacker::get_instance();
-  static DCGeomMan&       gGeom     = DCGeomMan::GetInstance();
-
-  static const double dist_FF = 1200.;
+  static const Int_t xpos_id  = gHist.getSequentialID(kMisc, 0, kHitPat);
+  static const Int_t ypos_id  = gHist.getSequentialID(kMisc, 0, kHitPat, NHist+1);
+  static const Int_t xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
 
   debug::ObjectCounter::Check();
 
@@ -192,47 +198,22 @@ process_event( void )
   event.DecodeRawData();
   event.DecodeDCRawHits();
 
-  //BC3&BC4
-  DCAnalyzer* DCAna = event.GetDCAnalyzer();
-  Double_t multi_BcOut=0.;
-  {
-    for( Int_t layer=1; layer<=NumOfLayersBcOut; ++layer ){
-      const DCHitContainer& contOut =DCAna->GetBcOutHC(layer);
-      Int_t nhOut=contOut.size();
-      multi_BcOut += Double_t(nhOut);
-
-      Int_t plane_eff = (layer-1)*3;
-      Bool_t fl_valid_sig = false;
-      for( Int_t i=0; i<nhOut; ++i ){
-        DCHit *hit=contOut[i];
-        Double_t wire=hit->GetWire();
-	hddaq::cout << "layer : " << layer << "  " << wire << std::endl;
-
-        Int_t nhtdc = hit->GetTdcSize();
-        Int_t tdc1st = -1;
-        for( Int_t k=0; k<nhtdc; k++ ){
-          Int_t tdc = hit->GetTdcVal(k);
-          if( tdc > tdc1st ){
-            tdc1st=tdc;
-            fl_valid_sig = true;
-          }
-        }
-
-        Int_t nhdt = hit->GetDriftTimeSize();
-        for( Int_t k=0; k<nhdt; k++ ){
-          Double_t dt = hit->GetDriftTime(k);
-        }
-        Int_t nhdl = hit->GetDriftTimeSize();
-        for( Int_t k=0; k<nhdl; k++ ){
-          Double_t dl = hit->GetDriftLength(k);
-        }
-      }
-      if(fl_valid_sig){
-        ++plane_eff;
-      }else{
-      }
+  Int_t ntBcOut = event.TrackSearchBcOut();
+  for( Int_t i=0; i<ntBcOut; ++i ){
+    const DCLocalTrack* track = event.GetTrackBcOut(i);
+    if( !track ) continue;
+    Double_t x0 = track->GetX0(); Double_t y0 = track->GetY0();
+    // Double_t u0 = track->GetU0(); Double_t v0 = track->GetV0();
+    for( Int_t j=0; j<NHist; ++j ){
+      Double_t z = dist_FF+FF_plus+TgtOrg_plus[j];
+      Double_t x = track->GetX(z); Double_t y = track->GetY(z);
+      hptr_array[xpos_id+j]->Fill(x);
+      hptr_array[ypos_id+j]->Fill(y);
+      hptr_array[xypos_id+j]->Fill(x, y);
     }
   }
+
+  return 0;
 
   /////////// BcOut
   {
@@ -240,13 +221,9 @@ process_event( void )
     bool BcOutTrack = BcOutAna.TrackSearch(9);
 
     if(BcOutTrack){
-      static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat);
-      static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist+1);
-      static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
-
-      for(int i = 0; i<NHist; ++i){
-	double xpos = BcOutAna.GetPosX(dist_FF+FF_plus+TgtOrg_plus[i]);
-	double ypos = BcOutAna.GetPosY(dist_FF+FF_plus+TgtOrg_plus[i]);
+      for(Int_t i = 0; i<NHist; ++i){
+	Double_t xpos = BcOutAna.GetPosX(dist_FF+FF_plus+TgtOrg_plus[i]);
+	Double_t ypos = BcOutAna.GetPosY(dist_FF+FF_plus+TgtOrg_plus[i]);
 	hptr_array[xpos_id+i]->Fill(xpos);
 	hptr_array[ypos_id+i]->Fill(ypos);
 	hptr_array[xypos_id+i]->Fill(xpos, ypos);
@@ -261,19 +238,19 @@ process_event( void )
   ////////// SSD1
   {
     // data type
-    static const int k_device = gUnpacker.get_device_id("SSD1");
-    static const int k_adc    = gUnpacker.get_data_id("SSD1","adc");
-    static const int k_flag   = gUnpacker.get_data_id("SSD1","flag");
+    static const Int_t k_device = gUnpacker.get_device_id("SSD1");
+    static const Int_t k_adc    = gUnpacker.get_data_id("SSD1","adc");
+    static const Int_t k_flag   = gUnpacker.get_data_id("SSD1","flag");
     // sequential id
-    static const int hit_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
+    static const Int_t hit_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
 
     bool chit_flag[NumOfLayersSSD1][NumOfSegSSD1];
 
-    for(int l=0; l<NumOfLayersSSD1; ++l){
-      for(int seg=0; seg<NumOfSegSSD1; ++seg){
+    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
+      for(Int_t seg=0; seg<NumOfSegSSD1; ++seg){
 	chit_flag[l][seg] = false;
 	// ADC
-	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
+	Int_t nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
 	if( nhit_a==0 ) continue;
 	if( nhit_a != NumOfSamplesSSD ){
 	  std::cerr << "#W SSD1 layer:" << l << " seg:" << seg
@@ -281,11 +258,11 @@ process_event( void )
 		    << nhit_a << "/" << NumOfSamplesSSD << std::endl;
 	  continue;
 	}
-	int  adc[nhit_a];
+	Int_t  adc[nhit_a];
 	bool slope[nhit_a-1];
-	int  peak_height   = -1;
-	int  peak_position = -1;
-	for(int m=0; m<nhit_a; ++m){
+	Int_t  peak_height   = -1;
+	Int_t  peak_position = -1;
+	for(Int_t m=0; m<nhit_a; ++m){
 	  adc[m] = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
 	  adc[m] -= adc[0];
 	  if( m>0 )
@@ -296,10 +273,10 @@ process_event( void )
 	  }
 	}
 	// Zero Suppression Flag
-	int  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
+	Int_t  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
 	bool  hit_flag = false;
 	if(nhit_flag != 0){
-	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
+	  Int_t flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
 	  if(flag==1) hit_flag = true;
 	}
 	chit_flag[l][seg] = hit_flag &&
@@ -307,7 +284,7 @@ process_event( void )
 	  slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	  //&& ( peak_height > 350 );
 	if( peak_height>=0 && peak_position>=1 && chit_flag[l][seg] ){
-	  double wpos = gGeom.CalcWirePosition( l+7, seg+1 );
+	  Double_t wpos = gGeom.CalcWirePosition( l+7, seg+1 );
 	  hptr_array[hit_id +l]->Fill( wpos );
 	}
       }//for(seg)

@@ -64,6 +64,13 @@ DCGeomMan::GetLocalZ( Int_t lnum ) const
 
 //______________________________________________________________________________
 Double_t
+DCGeomMan::GetLocalZ( const TString& name ) const
+{
+  return GetLocalZ( GetDetectorId(name) );
+}
+
+//______________________________________________________________________________
+Double_t
 DCGeomMan::GetResolution( Int_t lnum ) const
 {
   DCGeomIterator itr = m_map.find(lnum);
@@ -74,6 +81,13 @@ DCGeomMan::GetResolution( Int_t lnum ) const
 		<< lnum << std::endl;
     throw Exception( FUNC_NAME+": No record" );
   }
+}
+
+//______________________________________________________________________________
+Double_t
+DCGeomMan::GetResolution( const TString& name ) const
+{
+  return GetResolution( GetDetectorId(name) );
 }
 
 //______________________________________________________________________________
@@ -92,6 +106,13 @@ DCGeomMan::GetTiltAngle( Int_t lnum ) const
 
 //______________________________________________________________________________
 Double_t
+DCGeomMan::GetTiltAngle( const TString& name ) const
+{
+  return GetTiltAngle( GetDetectorId(name) );
+}
+
+//______________________________________________________________________________
+Double_t
 DCGeomMan::GetRotAngle1( Int_t lnum ) const
 {
   DCGeomIterator itr = m_map.find(lnum);
@@ -102,6 +123,13 @@ DCGeomMan::GetRotAngle1( Int_t lnum ) const
 		<< lnum << std::endl;
     throw Exception( FUNC_NAME+": No record" );
   }
+}
+
+//______________________________________________________________________________
+Double_t
+DCGeomMan::GetRotAngle1( const TString& name ) const
+{
+  return GetRotAngle1( GetDetectorId(name) );
 }
 
 //______________________________________________________________________________
@@ -119,6 +147,13 @@ DCGeomMan::GetRotAngle2( Int_t lnum ) const
 }
 
 //______________________________________________________________________________
+Double_t
+DCGeomMan::GetRotAngle2( const TString& name ) const
+{
+  return GetRotAngle2( GetDetectorId(name) );
+}
+
+//______________________________________________________________________________
 const ThreeVector&
 DCGeomMan::GetGlobalPosition( Int_t lnum ) const
 {
@@ -130,6 +165,13 @@ DCGeomMan::GetGlobalPosition( Int_t lnum ) const
 		<< lnum << std::endl;
     throw Exception( FUNC_NAME+": No record" );
   }
+}
+
+//______________________________________________________________________________
+const ThreeVector&
+DCGeomMan::GetGlobalPosition( const TString& name ) const
+{
+  return GetGlobalPosition( GetDetectorId(name) );
 }
 
 //______________________________________________________________________________
@@ -148,6 +190,13 @@ DCGeomMan::NormalVector( Int_t lnum ) const
 
 //______________________________________________________________________________
 ThreeVector
+DCGeomMan::NormalVector( const TString& name ) const
+{
+  return NormalVector( GetDetectorId(name) );
+}
+
+//______________________________________________________________________________
+ThreeVector
 DCGeomMan::UnitVector( Int_t lnum ) const
 {
   DCGeomIterator itr = m_map.find(lnum);
@@ -158,6 +207,13 @@ DCGeomMan::UnitVector( Int_t lnum ) const
 		<< lnum << std::endl;
     throw Exception( FUNC_NAME+": No record" );
   }
+}
+
+//______________________________________________________________________________
+ThreeVector
+DCGeomMan::UnitVector( const TString& name ) const
+{
+  return UnitVector( GetDetectorId(name) );
 }
 
 //______________________________________________________________________________
@@ -172,6 +228,13 @@ DCGeomMan::GetRecord( Int_t lnum ) const
 		<< lnum << std::endl;
     throw Exception( FUNC_NAME+": No record" );
   }
+}
+
+//______________________________________________________________________________
+const DCGeomRecord*
+DCGeomMan::GetRecord( const TString& name ) const
+{
+  return GetRecord( GetDetectorId(name) );
 }
 
 //______________________________________________________________________________
@@ -305,6 +368,14 @@ DCGeomMan::Local2GlobalPos( Int_t lnum,
 
 //______________________________________________________________________________
 ThreeVector
+DCGeomMan::Local2GlobalPos( const TString& name,
+			    const ThreeVector &in ) const
+{
+  return Local2GlobalPos( GetDetectorId( name ), in );
+}
+
+//______________________________________________________________________________
+ThreeVector
 DCGeomMan::Global2LocalPos( Int_t lnum,
 			    const ThreeVector &in ) const
 {
@@ -333,6 +404,14 @@ DCGeomMan::Global2LocalPos( Int_t lnum,
 
 //______________________________________________________________________________
 ThreeVector
+DCGeomMan::Global2LocalPos( const TString& name,
+			    const ThreeVector &in ) const
+{
+  return Global2LocalPos( GetDetectorId( name ), in );
+}
+
+//______________________________________________________________________________
+ThreeVector
 DCGeomMan::Local2GlobalDir( Int_t lnum,
 			    const ThreeVector &in ) const
 {
@@ -355,6 +434,14 @@ DCGeomMan::Local2GlobalDir( Int_t lnum,
 
 //______________________________________________________________________________
 ThreeVector
+DCGeomMan::Local2GlobalDir( const TString& name,
+			    const ThreeVector &in ) const
+{
+  return Local2GlobalDir( GetDetectorId( name ), in );
+}
+
+//______________________________________________________________________________
+ThreeVector
 DCGeomMan::Global2LocalDir( Int_t lnum,
 			    const ThreeVector& in ) const
 {
@@ -373,6 +460,14 @@ DCGeomMan::Global2LocalDir( Int_t lnum,
 }
 
 //______________________________________________________________________________
+ThreeVector
+DCGeomMan::Global2LocalDir( const TString& name,
+			    const ThreeVector &in ) const
+{
+  return Global2LocalDir( GetDetectorId( name ), in );
+}
+
+//______________________________________________________________________________
 void
 DCGeomMan::SetResolution( Int_t lnum,  Double_t res)
 {
@@ -388,15 +483,15 @@ DCGeomMan::SetResolution( Int_t lnum,  Double_t res)
 
 //______________________________________________________________________________
 Int_t
-DCGeomMan::GetDetectorId( const TString& detName ) const
+DCGeomMan::GetDetectorId( const TString& name ) const
 {
   DCGeomIterator itr=m_map.begin(), end=m_map.end();
   for(; itr!=end; ++itr ){
-    if( itr->second->name_ == detName ){
+    if( itr->second->name_ == name ){
       return itr->second->id_;
     }
   }
 
-  hddaq::cerr << FUNC_NAME << " : No such detector " << detName << std::endl;
+  hddaq::cerr << FUNC_NAME << " : No such detector " << name << std::endl;
   return -9999;
 }

@@ -19,7 +19,10 @@
 #pragma link C++ class DCGeomMan+;
 #pragma link C++ class DCGeomRecord+;
 #pragma link C++ class DCHit+;
+#pragma link C++ class DCPairHitCluster+;
 #pragma link C++ class DCRawHit+;
+#pragma link C++ class DCLocalTrack+;
+#pragma link C++ class DCLTrackHit+;
 #pragma link C++ class DCTdcCalibMan+;
 #pragma link C++ class EMCParamMan+;
 #pragma link C++ class Exception+;

@@ -30,13 +30,15 @@ private:
   DCDriftParamMan& operator =( const DCDriftParamMan& );
 
 private:
+  Bool_t                                m_is_ready;
   TString                               m_file_name;
   std::map<UInt_t, DCDriftParamRecord*> m_map;
 
 public:
   Bool_t Initialize( void );
+  Bool_t IsReady( void ) const { return m_is_ready; }
   void   SetFileName( const TString& file_name) { m_file_name = file_name; }
-  Bool_t calcDrift( Int_t PlaneId, Double_t WireId, Double_t ctime,
+  Bool_t CalcDrift( Int_t PlaneId, Double_t WireId, Double_t ctime,
 		    Double_t & dt, Double_t & dl ) const;
 
 private:

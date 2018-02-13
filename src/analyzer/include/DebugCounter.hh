@@ -31,9 +31,11 @@ private:
   ObjectMap m_map;
 
 public:
-  void        Check( void ) const;
-  void        Print( Option_t* option="" ) const;
+  void        CheckCounter( void ) const;
+  void        PrintCounter( void ) const;
   // static method
+  static void Check( void );
+  static void Print( void );
   static void Decrease( const TString& key );
   static void Increase( const TString& key );
 
@@ -46,6 +48,20 @@ ObjectCounter::GetInstance( void )
 {
   static ObjectCounter g_instance;
   return g_instance;
+}
+
+//______________________________________________________________________________
+inline void
+ObjectCounter::Check( void )
+{
+  GetInstance().CheckCounter();
+}
+
+//______________________________________________________________________________
+inline void
+ObjectCounter::Print( void )
+{
+  GetInstance().PrintCounter();
 }
 
 //_____________________________________________________________________

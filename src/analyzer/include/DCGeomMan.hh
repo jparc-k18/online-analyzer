@@ -26,6 +26,7 @@ private:
 private:
   typedef std::map <Int_t, DCGeomRecord *> DCGeomMap;
   typedef DCGeomMap::const_iterator        DCGeomIterator;
+  Bool_t    m_is_ready;
   TString   m_file_name;
   DCGeomMap m_map;
   Int_t     TOFid_;
@@ -39,6 +40,7 @@ public:
   { m_file_name = file_name; return Initialize(); }
   Bool_t              Initialize( const TString& file_name )
   { m_file_name = file_name; return Initialize(); }
+  Bool_t              IsReady( void ) const { return m_is_ready; }
   Double_t            GetLocalZ( Int_t lnum ) const;
   Double_t            GetResolution( Int_t lnum ) const;
   Double_t            GetTiltAngle( Int_t lnum ) const;
@@ -52,8 +54,8 @@ public:
   ThreeVector         Global2LocalPos( Int_t lnum, const ThreeVector &in ) const;
   ThreeVector         Local2GlobalDir( Int_t lnum, const ThreeVector &in ) const;
   ThreeVector         Global2LocalDir( Int_t lnum, const ThreeVector &in ) const;
-  Double_t            calcWirePosition( Int_t lnum, Double_t wire ) const;
-  Int_t               calcWireNumber( Int_t lnum, Double_t position ) const;
+  Double_t            CalcWirePosition( Int_t lnum, Double_t wire ) const;
+  Int_t               CalcWireNumber( Int_t lnum, Double_t position ) const;
   std::vector<Int_t>  GetDetectorIDList( void ) const;
   Int_t               GetTofId( void ) const { return TOFid_; }
   Int_t               GetLcId( void ) const { return LCid_; }

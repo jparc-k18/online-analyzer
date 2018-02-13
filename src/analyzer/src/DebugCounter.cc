@@ -27,7 +27,7 @@ ObjectCounter::~ObjectCounter( void )
 
 //______________________________________________________________________________
 void
-ObjectCounter::Check( void ) const
+ObjectCounter::CheckCounter( void ) const
 {
 #ifdef MemoryLeak
   Bool_t has_leak = false;
@@ -41,7 +41,7 @@ ObjectCounter::Check( void ) const
 
 //______________________________________________________________________________
 void
-ObjectCounter::Print( Option_t* ) const
+ObjectCounter::PrintCounter( void ) const
 {
   std::cout << "#DCounter " << FUNC_NAME << std::endl;
   ObjectIter itr, end=m_map.end();

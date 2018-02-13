@@ -25,11 +25,13 @@ private:
   DCTdcCalibMan& operator =( const DCTdcCalibMan& );
 
 private:
+  Bool_t                         m_is_ready;
   TString                        m_file_name;
   std::map<UInt_t, DCTdcCalMap*> m_map;
 
 public:
   Bool_t Initialize( void );
+  Bool_t IsReady( void ) const { return m_is_ready; }
   void   SetFileName( const TString& filename ){ m_file_name = filename; }
   Bool_t GetTime( Int_t PlaneId, Double_t WireId, Int_t tdc, Double_t & time ) const;
   Bool_t GetTdc( Int_t PlaneId, Double_t WireId, Double_t time, Int_t & tdc ) const;

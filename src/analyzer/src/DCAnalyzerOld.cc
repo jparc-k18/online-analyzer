@@ -411,7 +411,7 @@ void DCRHC::HitPosition( int DetectorID )
       ////////// require Multiplicity = 1 /////////////
       if(m_hitwire[plane].size()!=1) continue;
       int wireid = m_hitwire[plane][0]+1;
-      double hitposition = geomman.calcWirePosition(plid, wireid);
+      double hitposition = geomman.CalcWirePosition(plid, wireid);
       m_hitpos[plane].push_back(hitposition);
     }
 
@@ -756,7 +756,7 @@ void DCRHC::makeDriftLength( int DetectorID )
 	  int wireid = m_hitwire[i][j]+1;
 	  double dt;
 	  t = m_dtime[i][j];
-	  driftman.calcDrift(plid, wireid, t, dt, drift_length);
+	  driftman.CalcDrift(plid, wireid, t, dt, drift_length);
 	  m_dlength[i].push_back(drift_length);
 	}
     }

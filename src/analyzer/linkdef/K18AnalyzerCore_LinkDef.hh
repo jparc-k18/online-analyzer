@@ -14,9 +14,11 @@
 #pragma link C++ enum SubDetectorType;
 #pragma link C++ enum DataType;
 #pragma link C++ class ConfMan+;
+#pragma link C++ class DCAnalyzer+;
 #pragma link C++ class DCDriftParamMan+;
 #pragma link C++ class DCGeomMan+;
 #pragma link C++ class DCGeomRecord+;
+#pragma link C++ class DCHit+;
 #pragma link C++ class DCRawHit+;
 #pragma link C++ class DCTdcCalibMan+;
 #pragma link C++ class EMCParamMan+;

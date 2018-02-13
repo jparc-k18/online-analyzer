@@ -6,6 +6,7 @@
 #include <TObject.h>
 
 class RawData;
+class DCAnalyzer;
 
 namespace analyzer
 {
@@ -18,12 +19,15 @@ public:
   ~EventAnalyzer( void );
 
 protected:
-  RawData *m_raw_data;
+  RawData*    m_raw_data;
+  DCAnalyzer* m_dc_analyzer;
 
 public:
   void DecodeRawData( void );
+  void DecodeDCRawHits( void );
 
-  RawData* GetRawData( void ) const { return m_raw_data; }
+  RawData*    GetRawData( void ) const { return m_raw_data; }
+  DCAnalyzer* GetDCAnalyzer( void ) const { return m_dc_analyzer; }
 
   ClassDef(EventAnalyzer,0);
 };

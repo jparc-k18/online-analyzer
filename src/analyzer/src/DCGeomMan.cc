@@ -35,6 +35,9 @@ ConfMan::InitializeDCGeomMan( void )
 //______________________________________________________________________________
 DCGeomMan::DCGeomMan( void )
   : TObject(),
+    m_is_ready(false),
+    m_file_name(),
+    m_map(),
     TOFid_(51),
     LCid_(54)
 {
@@ -173,7 +176,7 @@ DCGeomMan::GetRecord( Int_t lnum ) const
 
 //______________________________________________________________________________
 Double_t
-DCGeomMan::calcWirePosition( Int_t lnum, Double_t wire ) const
+DCGeomMan::CalcWirePosition( Int_t lnum, Double_t wire ) const
 {
   DCGeomIterator itr = m_map.find(lnum);
   if( itr != m_map.end() ){
@@ -187,7 +190,7 @@ DCGeomMan::calcWirePosition( Int_t lnum, Double_t wire ) const
 
 //______________________________________________________________________________
 Int_t
-DCGeomMan::calcWireNumber( Int_t lnum, Double_t pos ) const
+DCGeomMan::CalcWireNumber( Int_t lnum, Double_t pos ) const
 {
   DCGeomIterator itr = m_map.find(lnum);
   if( itr != m_map.end() ){
@@ -261,6 +264,7 @@ DCGeomMan::Initialize( void )
   }
 
   hddaq::cout << FUNC_NAME << " Initialization finished." << std::endl;
+  m_is_ready = true;
   return true;
 }
 

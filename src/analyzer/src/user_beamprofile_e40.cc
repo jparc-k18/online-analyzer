@@ -16,8 +16,10 @@
 #include "user_analyzer.hh"
 
 #include "ConfMan.hh"
+#include "DCAnalyzer.hh"
 #include "DCAnalyzerOld.hh"
 #include "DCGeomMan.hh"
+#include "DCHit.hh"
 #include "DebugCounter.hh"
 #include "DetectorID.hh"
 #include "EventAnalyzer.hh"
@@ -184,12 +186,53 @@ process_event( void )
 
   static const double dist_FF = 1200.;
 
-  debug::ObjectCounter& gCounter = debug::ObjectCounter::GetInstance();
-  // gCounter.Check();
-  gCounter.Print();
+  debug::ObjectCounter::Check();
 
   EventAnalyzer event;
   event.DecodeRawData();
+  event.DecodeDCRawHits();
+
+  //BC3&BC4
+  DCAnalyzer* DCAna = event.GetDCAnalyzer();
+  Double_t multi_BcOut=0.;
+  {
+    for( Int_t layer=1; layer<=NumOfLayersBcOut; ++layer ){
+      const DCHitContainer& contOut =DCAna->GetBcOutHC(layer);
+      Int_t nhOut=contOut.size();
+      multi_BcOut += Double_t(nhOut);
+
+      Int_t plane_eff = (layer-1)*3;
+      Bool_t fl_valid_sig = false;
+      for( Int_t i=0; i<nhOut; ++i ){
+        DCHit *hit=contOut[i];
+        Double_t wire=hit->GetWire();
+	hddaq::cout << "layer : " << layer << "  " << wire << std::endl;
+
+        Int_t nhtdc = hit->GetTdcSize();
+        Int_t tdc1st = -1;
+        for( Int_t k=0; k<nhtdc; k++ ){
+          Int_t tdc = hit->GetTdcVal(k);
+          if( tdc > tdc1st ){
+            tdc1st=tdc;
+            fl_valid_sig = true;
+          }
+        }
+
+        Int_t nhdt = hit->GetDriftTimeSize();
+        for( Int_t k=0; k<nhdt; k++ ){
+          Double_t dt = hit->GetDriftTime(k);
+        }
+        Int_t nhdl = hit->GetDriftTimeSize();
+        for( Int_t k=0; k<nhdl; k++ ){
+          Double_t dl = hit->GetDriftLength(k);
+        }
+      }
+      if(fl_valid_sig){
+        ++plane_eff;
+      }else{
+      }
+    }
+  }
 
   /////////// BcOut
   {
@@ -264,7 +307,7 @@ process_event( void )
 	  slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	  //&& ( peak_height > 350 );
 	if( peak_height>=0 && peak_position>=1 && chit_flag[l][seg] ){
-	  double wpos = gGeom.calcWirePosition( l+7, seg+1 );
+	  double wpos = gGeom.CalcWirePosition( l+7, seg+1 );
 	  hptr_array[hit_id +l]->Fill( wpos );
 	}
       }//for(seg)

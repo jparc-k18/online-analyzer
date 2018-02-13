@@ -48,7 +48,10 @@ struct DCTdcCalMap
 
 //______________________________________________________________________________
 DCTdcCalibMan::DCTdcCalibMan( void )
-  : TObject()
+  : TObject(),
+    m_is_ready(false),
+    m_file_name(),
+    m_map()
 {
 }
 
@@ -79,13 +82,13 @@ DCTdcCalibMan::Initialize( void )
 
   std::ifstream ifs( m_file_name );
   if( !ifs.is_open() ){
-    //hddaq::cerr << FUNC_NAME << ": file open fail" << std::endl;
+    hddaq::cerr << FUNC_NAME << ": file open fail" << std::endl;
     return false;
   }
 
   TString line;
   while( ifs.good() && line.ReadLine(ifs) ){
-    if( line[0] != '#' ) continue;
+    if( line[0] == '#' ) continue;
     if( std::sscanf( line.Data(), "%d %d %lf %lf",
 		     &pid, &wid, &p1, &p0 ) == 4 ){
       UInt_t key = MakeKey( pid, wid );
@@ -95,19 +98,20 @@ DCTdcCalibMan::Initialize( void )
 	m_map[key]=p;
       }
       else{
-	// std::cerr << FUNC_NAME << ": new fail. "
-	// 	  << " Plane=" << std::setw(3) << std::dec << pid
-	// 	  << " Wire=" << std::setw(3) << std::dec << wid
-	// 	  << std::endl;
+	std::cerr << FUNC_NAME << ": new fail. "
+		  << " Plane=" << std::setw(3) << std::dec << pid
+		  << " Wire=" << std::setw(3) << std::dec << wid
+		  << std::endl;
       }
     }
     else{
-      // std::cerr << FUNC_NAME << ": Bad format => "
-      // 		<< line << std::endl;
+      std::cerr << FUNC_NAME << ": Bad format => "
+      		<< line << std::endl;
     }
   }
 
-  // hddaq::cout << FUNC_NAME << ": Initialization finished" << std::endl;
+  hddaq::cout << FUNC_NAME << ": Initialization finished" << std::endl;
+  m_is_ready = true;
   return true;
 }
 
@@ -134,10 +138,10 @@ DCTdcCalibMan::GetTime( Int_t PlaneId, Double_t WireId,
     return true;
   }
   else{
-    // std::cerr << FUNC_NAME << ": No record. "
-    // 	      << " PlaneId=" << std::setw(3) << std::dec << PlaneId
-    // 	      << " WireId=" << std::setw(3) << std::dec << WireId
-    // 	      << std::endl;
+    std::cerr << FUNC_NAME << ": No record. "
+    	      << " PlaneId=" << std::setw(3) << std::dec << PlaneId
+    	      << " WireId=" << std::setw(3) << std::dec << WireId
+    	      << std::endl;
     return false;
   }
 }
@@ -153,10 +157,10 @@ DCTdcCalibMan::GetTdc( Int_t PlaneId, Double_t WireId,
     return true;
   }
   else{
-    // std::cerr << FUNC_NAME << ": No record. "
-    // 	      << " PlaneId=" << std::setw(3) << std::dec << PlaneId
-    // 	      << " WireId=" << std::setw(3) << std::dec << WireId
-    // 	      << std::endl;
+    std::cerr << FUNC_NAME << ": No record. "
+    	      << " PlaneId=" << std::setw(3) << std::dec << PlaneId
+    	      << " WireId=" << std::setw(3) << std::dec << WireId
+    	      << std::endl;
     return false;
   }
 }

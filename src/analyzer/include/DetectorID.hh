@@ -84,6 +84,11 @@ const Int_t PlMaxSdcIn  =  6;
 const Int_t PlMinSdcOut = 31;
 const Int_t PlMaxSdcOut = 38;
 
+const Int_t PlOffsBc     = 100;
+const Int_t PlOffsSdcIn  =   0;
+const Int_t PlOffsSdcOut =  30;
+const Int_t PlOffsSsd    =   6;
+
 const Int_t NumOfSegBFT  =  160;
 const Int_t NumOfSegSFT_X =  256; //add
 const Int_t NumOfSegSFT_UV =  320; //add
@@ -95,15 +100,14 @@ const Int_t NumOfSegCFT_UV3   = 510;
 const Int_t NumOfSegCFT_PHI3  = 800;
 const Int_t NumOfSegCFT_UV4   = 538;
 const Int_t NumOfSegCFT_PHI4  = 928;//910
-const Int_t NumOfSegCFT[NumOfLayersCFT] = {
-                            NumOfSegCFT_UV1  ,
-                            NumOfSegCFT_PHI1 ,
-                            NumOfSegCFT_UV2  ,
-                            NumOfSegCFT_PHI2 ,
-                            NumOfSegCFT_UV3  ,
-                            NumOfSegCFT_PHI3 ,
-                            NumOfSegCFT_UV4  ,
-                            NumOfSegCFT_PHI4 };
+const Int_t NumOfSegCFT[NumOfLayersCFT] = { NumOfSegCFT_UV1,
+					    NumOfSegCFT_PHI1,
+					    NumOfSegCFT_UV2,
+					    NumOfSegCFT_PHI2,
+					    NumOfSegCFT_UV3,
+					    NumOfSegCFT_PHI3,
+					    NumOfSegCFT_UV4,
+					    NumOfSegCFT_PHI4 };
 const Int_t NumOfSegFBT1 =  48; //add
 const Int_t NumOfSegFBT2 =  64; //add
 // VMEEASIROC Board

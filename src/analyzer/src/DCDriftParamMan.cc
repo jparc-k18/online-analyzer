@@ -41,7 +41,10 @@ void ConfMan::InitializeDCDriftParamMan( void )
 
 //______________________________________________________________________________
 DCDriftParamMan::DCDriftParamMan( void )
-  : TObject()
+  : TObject(),
+    m_is_ready(false),
+    m_file_name(),
+    m_map()
 {
 }
 
@@ -109,6 +112,7 @@ DCDriftParamMan::Initialize( void )
   } /* while( ifs... */
 
   hddaq::cout << FUNC_NAME << ": Initialization finished" << std::endl;
+  m_is_ready = true;
   return true;
 }
 
@@ -255,7 +259,7 @@ DCDriftParamMan::DriftLength6( Int_t PlaneId, Double_t dt,
 
 //______________________________________________________________________________
 Bool_t
-DCDriftParamMan::calcDrift( Int_t PlaneId, Double_t WireId, Double_t ctime,
+DCDriftParamMan::CalcDrift( Int_t PlaneId, Double_t WireId, Double_t ctime,
 			    Double_t & dt, Double_t & dl ) const
 {
   DCDriftParamRecord *p = getParameter( PlaneId, WireId );

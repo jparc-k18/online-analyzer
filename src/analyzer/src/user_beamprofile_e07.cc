@@ -221,7 +221,7 @@ process_event()
 	  slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	  //&& ( peak_height > 350 );
 	if( peak_height>=0 && peak_position>=1 && chit_flag[l][seg] ){
-	  double wpos = gGeom.calcWirePosition( l+7, seg+1 );
+	  double wpos = gGeom.CalcWirePosition( l+7, seg+1 );
 	  hptr_array[hit_id +l]->Fill( wpos );
 	}
       }//for(seg)

@@ -325,7 +325,8 @@ void
 Controller::refresh() const
 {
   m_command[k_refresh]->SetState(kButtonDisabled);
-  Updater::getInstance().refresh();
+  // Updater::getInstance().refresh();
+  Updater::getInstance().update();
   m_command[k_reset]->SetState(kButtonUp);
   return;
 }

@@ -25,21 +25,6 @@ namespace
 }
 
 //______________________________________________________________________________
-void ConfMan::InitializeDCDriftParamMan( void )
-{
-  if(name_file_["DRFTPM:"] != ""){
-    DCDriftParamMan& gDCDriftParam = DCDriftParamMan::GetInstance();
-    gDCDriftParam.SetFileName(name_file_["DRFTPM:"]);
-    flag_[kIsGood] = gDCDriftParam.Initialize();
-  }else{
-    std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["DRFTPM:"]
-	      << std::endl;
-    flag_.reset(kIsGood);
-  }
-}
-
-//______________________________________________________________________________
 DCDriftParamMan::DCDriftParamMan( void )
   : TObject(),
     m_is_ready(false),
@@ -111,7 +96,6 @@ DCDriftParamMan::Initialize( void )
     } /* if( sscanf... */
   } /* while( ifs... */
 
-  hddaq::cout << FUNC_NAME << ": Initialization finished" << std::endl;
   m_is_ready = true;
   return true;
 }

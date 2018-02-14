@@ -10,15 +10,21 @@
 #include <TStyle.h>
 #include <TString.h>
 
+#include <Unpacker.hh>
+#include <UnpackerManager.hh>
+
 #include "Controller.hh"
 #include "user_analyzer.hh"
-#include "UnpackerManager.hh"
+
 #include "ConfMan.hh"
 #include "DCAnalyzerOld.hh"
+#include "DCDriftParamMan.hh"
 #include "DCGeomMan.hh"
+#include "DCTdcCalibMan.hh"
 #include "DetectorID.hh"
 #include "HistMaker.hh"
 #include "MacroBuilder.hh"
+#include "UserParamMan.hh"
 
 namespace analyzer
 {
@@ -48,10 +54,10 @@ process_begin(const std::vector<std::string>& argv)
 {
   ConfMan& gConfMan = ConfMan::GetInstance();
   gConfMan.Initialize(argv);
-  gConfMan.InitializeDCGeomMan();
-  gConfMan.InitializeDCTdcCalibMan();
-  gConfMan.InitializeDCDriftParamMan();
-  gConfMan.InitializeUserParamMan();
+  gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
+  gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
+  gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
+  gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 

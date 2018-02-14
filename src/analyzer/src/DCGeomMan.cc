@@ -18,21 +18,6 @@
 ClassImp(DCGeomMan);
 
 //______________________________________________________________________________
-void
-ConfMan::InitializeDCGeomMan( void )
-{
-  if(name_file_["DCGEOM:"] != ""){
-    DCGeomMan& gDCGeo = DCGeomMan::GetInstance();
-    flag_[kIsGood] = gDCGeo.Initialize(name_file_["DCGEOM:"]);
-  }else{
-    hddaq::cout << "#E ConfMan::"
-		<< " File path does not exist in " << name_file_["DCGEOM:"]
-		<< std::endl;
-    flag_.reset(kIsGood);
-  }
-}
-
-//______________________________________________________________________________
 DCGeomMan::DCGeomMan( void )
   : TObject(),
     m_is_ready(false),
@@ -326,7 +311,6 @@ DCGeomMan::Initialize( void )
     }
   }
 
-  hddaq::cout << FUNC_NAME << " Initialization finished." << std::endl;
   m_is_ready = true;
   return true;
 }

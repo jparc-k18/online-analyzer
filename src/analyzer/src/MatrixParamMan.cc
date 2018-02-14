@@ -13,22 +13,6 @@
 
 ClassImp(MatrixParamMan);
 
-//______________________________________________________________________________
-void
-ConfMan::InitializeMatrixParamMan( void )
-{
-  if( ( name_file_["MATRIX2D:"] != "" ) && ( name_file_["MATRIX3D:"] != "" ) ){
-    MatrixParamMan& gMatrixParam = MatrixParamMan::GetInstance();
-    flag_[kIsGood] = gMatrixParam.Initialize( name_file_["MATRIX2D:"],
-					      name_file_["MATRIX3D:"] );
-  }else{
-    std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["MATRIX2D:"]
-	      << " or " << name_file_["MATRIX3D:"] << std::endl;
-    flag_.reset(kIsGood);
-  }
-}
-
 //_____________________________________________________________________
 MatrixParamMan::MatrixParamMan( void )
   : TObject()
@@ -48,8 +32,8 @@ MatrixParamMan::Initialize( const TString& filename_2d,
   {
     std::ifstream ifs2d( filename_2d );
     if( !ifs2d.is_open() ){
-      // std::cerr << "#E " << FUNC_NAME << " "
-      // 		<< "No such parameter file : " << filename_2d << std::endl;
+      std::cerr << "#E " << FUNC_NAME << " "
+      		<< "No such parameter file : " << filename_2d << std::endl;
       std::exit( EXIT_FAILURE );
     }
 
@@ -97,8 +81,8 @@ MatrixParamMan::Initialize( const TString& filename_2d,
   {
     std::ifstream ifs3d( filename_3d );
     if( !ifs3d.is_open() ){
-      // std::cerr << "#E " << FUNC_NAME << " "
-      // 		<< "No such parameter file : " << filename_3d << std::endl;
+      std::cerr << "#E " << FUNC_NAME << " "
+      		<< "No such parameter file : " << filename_3d << std::endl;
       std::exit( EXIT_FAILURE );
     }
 
@@ -151,10 +135,6 @@ MatrixParamMan::Initialize( const TString& filename_2d,
     }
 #endif
   }
-
-  // std::cout << "#D " << FUNC_NAME << " "
-  // 	    << "Initialized"
-  // 	    << std::endl;
 
   return true;
 }

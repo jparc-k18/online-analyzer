@@ -46,11 +46,11 @@ ConfMan::Initialize( const std::vector<std::string>& argv )
   using namespace hddaq;
   using namespace hddaq::unpacker;
 
-  std::cout << "#D " << FUNC_NAME
-	    << " argument list" << std::endl;
+  hddaq::cout << "#D " << FUNC_NAME
+	      << " argument list" << std::endl;
   std::copy(argv.begin(), argv.end(),
-	    std::ostream_iterator<std::string>(std::cout, "\n"));
-  std::cout << std::endl;
+	    std::ostream_iterator<std::string>(hddaq::cout, "\n"));
+  hddaq::cout << std::endl;
 
   int nArg = argv.size();
   if (sizeArgumentList > nArg)
@@ -65,10 +65,10 @@ ConfMan::Initialize( const std::vector<std::string>& argv )
   const std::string& confFile(argv[kConfPath]);
   const std::string& dataSrc(argv[kStreamPath]);
 
-  std::cout << " config file = " << confFile << std::endl;
+  hddaq::cout << " config file = " << confFile << std::endl;
   TString dir = hddaq::dirname( confFile );
   dir += "/";
-  std::cout << " dir = " << dir << std::endl;
+  hddaq::cout << " dir = " << dir << std::endl;
   std::ifstream conf( confFile.c_str() );
   while (conf.good())
     {
@@ -84,22 +84,28 @@ ConfMan::Initialize( const std::vector<std::string>& argv )
 	continue;
       if (param.size()==2)
 	{
-	  const TString& name = param[0];
+	  TString key   = param[0];
 	  TString value = param[1];
-	  std::cout << " key = " << name
-		    << " value = " << value << std::endl;
+	  key.ReplaceAll(":","");
+	  key.ReplaceAll(";","");
+	  key.ReplaceAll(" ","");
 	  if ( value[0] != '/' )
 	    value = hddaq::realpath( std::string(dir+value) );
-	  name_file_[name] = value;
+
+	  hddaq::cout << " key = " << key
+		    << " value = " << value << std::endl;
+	  m_key_map[key] = value;
 	}
     }
 
   // initialize unpacker system
   UnpackerManager& g_unpacker = GUnpacker::get_instance();
-  g_unpacker.set_config_file( std::string(name_file_["UNPACKER:"]),
-			      std::string(name_file_["DIGIT:"]),
-			      std::string(name_file_["CMAP:"]) );
+  g_unpacker.set_config_file( std::string(m_key_map["UNPACKER"]),
+			      std::string(m_key_map["DIGIT"]),
+			      std::string(m_key_map["CMAP"]) );
   g_unpacker.set_istream(dataSrc);
+
+  hddaq::cout << std::endl;
 
   // Initialize of ConfMan and Unpacker were done
   flag_.set(kIsGood);

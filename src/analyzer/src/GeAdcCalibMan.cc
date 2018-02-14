@@ -10,21 +10,6 @@
 
 ClassImp(GeAdcCalibMan);
 
-// initialize GeAdcCalibMan ----------------------------------------------
-void ConfMan::InitializeGeAdcCalibMan( void )
-{
-  if(name_file_["GEADC:"] != ""){
-    GeAdcCalibMan& gGeAdcCalib = GeAdcCalibMan::GetInstance();
-    flag_[kIsGood] = gGeAdcCalib.Initialize(name_file_["GEADC:"]);
-  }else{
-    std::cout << "#E ConfMan"
-	      << " File path does not exist in " << name_file_["GEADC:"]
-	      << std::endl;
-    flag_.reset(kIsGood);
-  }
-}
-// initialize GeAdcCalibMan ----------------------------------------------
-
 #define frand() (-0.5+(double) rand() / RAND_MAX)
 
 const int BufSize = 200;

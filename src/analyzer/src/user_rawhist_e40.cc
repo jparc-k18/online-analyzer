@@ -16,25 +16,30 @@
 #include <TMath.h>
 #include <TStyle.h>
 
-#include "Controller.hh"
+#include <DAQNode.hh>
+#include <filesystem_util.hh>
+#include <Unpacker.hh>
+#include <UnpackerManager.hh>
 
+#include "Controller.hh"
 #include "user_analyzer.hh"
-#include "Unpacker.hh"
-#include "UnpackerManager.hh"
-#include "DAQNode.hh"
-#include "filesystem_util.hh"
+
 #include "ConfMan.hh"
-#include "HistMaker.hh"
+#include "DCDriftParamMan.hh"
+#include "DCGeomMan.hh"
+#include "DCTdcCalibMan.hh"
 #include "DetectorID.hh"
-#include "PsMaker.hh"
 #include "GuiPs.hh"
-#include "MacroBuilder.hh"
-#include "SsdAnalyzer.hh"
-#include "UserParamMan.hh"
+#include "HistMaker.hh"
 #include "HodoParamMan.hh"
+#include "HodoPHCMan.hh"
+#include "MacroBuilder.hh"
 #include "MatrixParamMan.hh"
 #include "MsTParamMan.hh"
 #include "ProcInfo.hh"
+#include "PsMaker.hh"
+#include "SsdAnalyzer.hh"
+#include "UserParamMan.hh"
 
 #define DEBUG    0
 #define FLAG_DAQ 1
@@ -58,14 +63,14 @@ process_begin( const std::vector<std::string>& argv )
 {
   ConfMan& gConfMan = ConfMan::GetInstance();
   gConfMan.Initialize(argv);
-  gConfMan.InitializeHodoParamMan();
-  gConfMan.InitializeHodoPHCMan();
-  gConfMan.InitializeDCGeomMan();
-  gConfMan.InitializeDCTdcCalibMan();
-  gConfMan.InitializeDCDriftParamMan();
-  gConfMan.InitializeMatrixParamMan();
-  gConfMan.InitializeMsTParamMan();
-  gConfMan.InitializeUserParamMan();
+  gConfMan.InitializeParameter<HodoParamMan>("HDPRM");
+  gConfMan.InitializeParameter<HodoPHCMan>("HDPHC");
+  gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
+  gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
+  gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
+  // gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D", "MATRIX3D");
+  gConfMan.InitializeParameter<MsTParamMan>("MASS");
+  gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 

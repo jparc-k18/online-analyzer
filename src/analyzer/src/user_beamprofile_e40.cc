@@ -10,6 +10,7 @@
 #include <TStyle.h>
 #include <TString.h>
 
+#include <Unpacker.hh>
 #include <UnpackerManager.hh>
 
 #include "Controller.hh"
@@ -18,10 +19,11 @@
 #include "BH2Hit.hh"
 #include "ConfMan.hh"
 #include "DCAnalyzer.hh"
-#include "DCAnalyzerOld.hh"
+#include "DCDriftParamMan.hh"
 #include "DCGeomMan.hh"
 #include "DCHit.hh"
 #include "DCLocalTrack.hh"
+#include "DCTdcCalibMan.hh"
 #include "DetectorID.hh"
 #include "EventAnalyzer.hh"
 #include "HistMaker.hh"
@@ -81,12 +83,12 @@ process_begin( const std::vector<std::string>& argv )
 {
   ConfMan& gConfMan = ConfMan::GetInstance();
   gConfMan.Initialize(argv);
-  gConfMan.InitializeDCGeomMan();
-  gConfMan.InitializeDCTdcCalibMan();
-  gConfMan.InitializeDCDriftParamMan();
-  gConfMan.InitializeHodoParamMan();
-  gConfMan.InitializeHodoPHCMan();
-  gConfMan.InitializeUserParamMan();
+  gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
+  gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
+  gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
+  gConfMan.InitializeParameter<HodoParamMan>("HDPRM");
+  gConfMan.InitializeParameter<HodoPHCMan>("HDPHC");
+  gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
@@ -163,8 +165,8 @@ process_begin( const std::vector<std::string>& argv )
     for( Int_t l=0; l<NumOfLayersBcOut; ++l ){
 	sub_dir->Add( gHist.createTH2( unique_id_wobh2+l,
 				       Form("%s_BcOut-%s", nameSubDir, name_layer[l]),
-				       NumOfWireBC3+1, 0., (Double_t)NumOfWireBC3+1.,
-				       NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
+				       NumOfWireBC3, 0., (Double_t)NumOfWireBC3,
+				       NumOfSegBH2, 0., (Double_t)NumOfSegBH2,
 				       "Wire", "Segment" ) );
     }
     // for( Int_t l=0; l<NumOfLayersBcOut; ++l ){

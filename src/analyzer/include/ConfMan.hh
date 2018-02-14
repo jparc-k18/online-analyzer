@@ -8,6 +8,8 @@
 #include <map>
 #include <bitset>
 
+#include <std_ostream.hh>
+
 #include <TObject.h>
 #include <TString.h>
 
@@ -32,7 +34,7 @@ private:
   TString path_file_[sizeArgumentList];
 
   // File path list in configuration file
-  std::map<TString, TString> name_file_;
+  std::map<TString, TString> m_key_map;
 
   // Flags
   enum Flag {
@@ -42,18 +44,19 @@ private:
   std::bitset<sizeFlag> flag_;
 
 public:
-  void Initialize(const std::vector<std::string>& argv);
-  bool IsGood( void ) const { return flag_[kIsGood]; }
-  void InitializeHodoParamMan( void );
-  void InitializeHodoPHCMan( void );
-  void InitializeDCGeomMan( void );
-  void InitializeDCTdcCalibMan( void );
-  void InitializeDCDriftParamMan( void );
-  void InitializeEMCParamMan( void );
-  void InitializeMatrixParamMan( void );
-  void InitializeMsTParamMan( void );
-  void InitializeUserParamMan( void );
-  void InitializeGeAdcCalibMan( void );
+  void   Initialize(const std::vector<std::string>& argv);
+  Bool_t IsGood( void ) const { return flag_[kIsGood]; }
+
+  template <typename T>
+  Bool_t InitializeParameter( void );
+  template <typename T>
+  Bool_t InitializeParameter( const TString& key );
+  template <typename T>
+  Bool_t InitializeParameter( const TString& key1,
+			      const TString& key2 );
+
+private:
+  Bool_t ShowResult( Bool_t s, const TString& name );
 
   ClassDef(ConfMan,0);
 };
@@ -63,6 +66,55 @@ inline ConfMan& ConfMan::GetInstance( void )
 {
   static ConfMan g_instance;
   return g_instance;
+}
+
+//______________________________________________________________________________
+inline Bool_t
+ConfMan::ShowResult( Bool_t s, const TString& name )
+{
+  if( s )
+    hddaq::cout << std::setw(20) << std::left
+                << " ["+name+"]"
+                << "-> Initialized" << std::endl;
+  else
+    hddaq::cout << std::setw(20) << std::left
+                << " ["+name+"]"
+                << "-> Failed" << std::endl;
+
+  if( flag_[kIsGood] && !s ) flag_.reset(kIsGood);
+  return s;
+}
+
+//______________________________________________________________________________
+template <typename T>
+inline Bool_t
+ConfMan::InitializeParameter( void )
+{
+  return
+    ShowResult( T::GetInstance().Initialize(),
+		T::GetInstance().ClassName() );
+}
+
+//______________________________________________________________________________
+template <typename T>
+inline Bool_t
+ConfMan::InitializeParameter( const TString& key )
+{
+  return
+    ShowResult( T::GetInstance().Initialize( m_key_map[key] ),
+		T::GetInstance().ClassName() );
+}
+
+//______________________________________________________________________________
+template <typename T>
+inline Bool_t
+ConfMan::InitializeParameter( const TString& key1,
+			      const TString& key2 )
+{
+  return
+    ShowResult( T::GetInstance().Initialize( m_key_map[key1],
+					     m_key_map[key2] ),
+		T::GetInstance().ClassName() );
 }
 
 #endif

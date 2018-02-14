@@ -14,21 +14,6 @@
 ClassImp(EMCParamMan);
 
 //______________________________________________________________________________
-void
-ConfMan::InitializeEMCParamMan( void )
-{
-  if( ( name_file_["EMC:"] != "" ) ){
-    EMCParamMan& gEMCParam = EMCParamMan::GetInstance();
-    flag_[kIsGood] = gEMCParam.Initialize( name_file_["EMC:"] );
-  }else{
-    std::cout << "#E ConfMan::initializeEMCParamMan()"
-	      << " File path does not exist in " << name_file_["EMC:"]
-	      << std::endl;
-    flag_.reset( kIsGood );
-  }
-}
-
-//______________________________________________________________________________
 EMCParamMan::EMCParamMan( void )
   : m_nspill(0)
 {

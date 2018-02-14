@@ -22,27 +22,31 @@
 #include <TText.h>
 #include <TTimeStamp.h>
 
+#include <user_analyzer.hh>
+#include <Unpacker.hh>
+#include <UnpackerManager.hh>
+#include <DAQNode.hh>
+#include <filesystem_util.hh>
+
 #include "Controller.hh"
-#include "HttpServer.hh"
 #include "Updater.hh"
 
-#include "user_analyzer.hh"
-#include "Unpacker.hh"
-#include "UnpackerManager.hh"
-#include "DAQNode.hh"
-#include "filesystem_util.hh"
-
-#include "EMCParamMan.hh"
 #include "ConfMan.hh"
-#include "HistMaker.hh"
 #include "DetectorID.hh"
-#include "PsMaker.hh"
-#include "MacroBuilder.hh"
-#include "SsdAnalyzer.hh"
-#include "UserParamMan.hh"
+#include "DCDriftParamMan.hh"
+#include "DCGeomMan.hh"
+#include "DCTdcCalibMan.hh"
+#include "EMCParamMan.hh"
+#include "HistMaker.hh"
 #include "HodoParamMan.hh"
+#include "HodoPHCMan.hh"
+#include "HttpServer.hh"
+#include "MacroBuilder.hh"
 #include "MatrixParamMan.hh"
 #include "MsTParamMan.hh"
+#include "PsMaker.hh"
+#include "SsdAnalyzer.hh"
+#include "UserParamMan.hh"
 
 #define DEBUG    0
 #define FLAG_DAQ 1
@@ -82,15 +86,14 @@ process_begin( const std::vector<std::string>& argv )
 
   ConfMan& gConfMan = ConfMan::GetInstance();
   gConfMan.Initialize(argv);
-  gConfMan.InitializeEMCParamMan();
-  gConfMan.InitializeHodoParamMan();
-  gConfMan.InitializeHodoPHCMan();
-  gConfMan.InitializeDCGeomMan();
-  gConfMan.InitializeDCTdcCalibMan();
-  gConfMan.InitializeDCDriftParamMan();
-  gConfMan.InitializeMatrixParamMan();
-  gConfMan.InitializeMsTParamMan();
-  gConfMan.InitializeUserParamMan();
+  gConfMan.InitializeParameter<EMCParamMan>("EMC");
+  gConfMan.InitializeParameter<HodoParamMan>("HDPRM");
+  gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
+  gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
+  gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
+  gConfMan.InitializeParameter<HodoParamMan>("HDPRM");
+  gConfMan.InitializeParameter<HodoPHCMan>("HDPHC");
+  gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 

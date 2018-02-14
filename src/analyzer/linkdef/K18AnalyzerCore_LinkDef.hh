@@ -41,6 +41,7 @@
 #pragma link C++ class Exception+;
 #pragma link C++ class HistMaker+;
 #pragma link C++ class HodoParamMan+;
+#pragma link C++ class HodoPHCMan+;
 #pragma link C++ class HttpServer+;
 #pragma link C++ class GeAdcCalibMan+;
 #pragma link C++ class MatrixParamMan+;

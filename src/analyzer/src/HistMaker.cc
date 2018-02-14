@@ -74,7 +74,7 @@ Int_t HistMaker::setHistPtr( std::vector<TH1*>& vec )
     vec[i] = GHist::get(unique_id);
     if(vec[i] == NULL){
       std::cerr << "#E " << FUNC_NAME
-		<< "Pointer is NULL\n"
+		<< " Pointer is NULL\n"
 		<< " Unique ID    : " << unique_id << "\n"
 		<< " Sequential ID: " << i << std::endl;
       gDirectory->ls();
@@ -100,7 +100,7 @@ TH1* HistMaker::createTH1( Int_t unique_id, const TString& title,
   idmap_unique_from_seq_.insert( std::make_pair( sequential_id, unique_id ) );
   if(!ret.second){
     std::cerr << "#E " << FUNC_NAME
-	      << "The unique id overlaps with other id"
+	      << " The unique id overlaps with other id"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
     std::exit(-1);
@@ -110,7 +110,7 @@ TH1* HistMaker::createTH1( Int_t unique_id, const TString& title,
   TH1 *h = GHist::I1(unique_id, title, nbinx, xmin, xmax);
   if(!h){
     std::cerr << "#E " << FUNC_NAME
-	      << "Fail to create TH1"
+	      << " Fail to create TH1"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
     std::exit(-1);
@@ -138,7 +138,7 @@ TH2* HistMaker::createTH2( Int_t unique_id, const TString& title,
   idmap_unique_from_seq_.insert( std::make_pair(sequential_id, unique_id ) );
   if( !ret.second ){
     std::cerr << "#E " << FUNC_NAME
-	      << "The unique id overlaps with other id"
+	      << " The unique id overlaps with other id"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
     std::exit(-1);
@@ -150,7 +150,7 @@ TH2* HistMaker::createTH2( Int_t unique_id, const TString& title,
 		      nbiny, ymin, ymax );
   if(!h){
     std::cerr << "#E " << FUNC_NAME
-	      << "Fail to create TH2"
+	      << " Fail to create TH2"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
     std::exit(-1);

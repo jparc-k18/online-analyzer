@@ -32,25 +32,9 @@ namespace
 }
 
 //______________________________________________________________________________
-void
-ConfMan::InitializeHodoParamMan( void )
-{
-  if(name_file_["HDPRM:"] != ""){
-    HodoParamMan& gHodoParam = HodoParamMan::GetInstance();
-    gHodoParam.SetFileName(name_file_["HDPRM:"]);
-    flag_[kIsGood] = gHodoParam.Initialize();
-  }else{
-    hddaq::cout << "#E ConfMan::"
-		<< " File path does not exist in " << name_file_["HDPRM:"]
-		<< std::endl;
-    flag_.reset(kIsGood);
-  }
-}
-
-//______________________________________________________________________________
 HodoParamMan::HodoParamMan( void )
   : TObject(),
-    m_is_initialized(false),
+    m_is_ready(false),
     m_file_name(),
     m_TPContainer(),
     m_APContainer()
@@ -142,8 +126,7 @@ HodoParamMan::Initialize( void )
     } /* if( sscanf... ) */
   } /* while( ifs... ) */
 
-  hddaq::cout << FUNC_NAME << ": Initialization finished" << std::endl;
-  m_is_initialized = true;
+  m_is_ready = true;
   return true;
 }
 

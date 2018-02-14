@@ -36,6 +36,7 @@ private:
 
 public:
   Bool_t Initialize( void );
+  Bool_t Initialize( const TString& file_name ) { SetFileName(file_name); return Initialize(); }
   Bool_t IsReady( void ) const { return m_is_ready; }
   void   SetFileName( const TString& file_name) { m_file_name = file_name; }
   Bool_t CalcDrift( Int_t PlaneId, Double_t WireId, Double_t ctime,

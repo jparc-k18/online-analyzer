@@ -11,6 +11,8 @@
 #include <fstream>
 #include <cstdlib>
 
+ClassImp(HodoPHCMan);
+
 namespace
 {
   const Double_t EPS = std::numeric_limits<Double_t>::epsilon();
@@ -32,22 +34,6 @@ namespace
 	    | ((seg&SegMask)<<SegShift) | ((ud&UdMask)<<UdShift) );
   }
 
-}
-
-//______________________________________________________________________________
-void
-ConfMan::InitializeHodoPHCMan( void )
-{
-  if(name_file_["HDPHC:"] != ""){
-    HodoPHCMan& gHodoPHC = HodoPHCMan::GetInstance();
-    gHodoPHC.SetFileName(name_file_["HDPHC:"]);
-    flag_[kIsGood] = gHodoPHC.Initialize();
-  } else {
-    std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["HDPHC:"]
-	      << std::endl;
-    flag_.reset(kIsGood);
-  }
 }
 
 //______________________________________________________________________________
@@ -199,7 +185,6 @@ HodoPHCMan::Initialize( void )
     } /* if(buf[0]...) */
   } /* while( fgets... ) */
 
-  std::cout << funcname << ": Initialization finished." << std::endl;
   m_is_initialized = true;
   return true;
 }

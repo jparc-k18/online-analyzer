@@ -19,11 +19,11 @@ OUT_PUT_OPT	:= -o
 LD		:= g++
 #LDFLAGS	:= -export-dynamic
 CXXFLAGS	:= -O3 -Wall -fPIC
-#DEBUGFLAGS	:= -pg -g
+DEBUGFLAGS	+= -DMemoryLeak
 CXXFLAGS	+= -pg -p
 SOFLAGS		:= -shared
 #SOFLAGS	:= -shared -Wl,-soname,
-CXXFLAGS	+= -I$(include_top_dir)
+CXXFLAGS	+= -I$(include_top_dir) $(DEBUGFLAGS)
 
 #AR	:= ar
 CP	:= cp -vf

@@ -74,7 +74,7 @@ BH2Filter::Apply( const HodoAnalyzer& hodo, const DCAnalyzer& dc, FilterList& ca
   std::set<Int_t> seg;
   for( Int_t i=0, n=hodo.GetNHitsBH2(); i<n; ++i ){
     const BH2Hit* const h = hodo.GetHitBH2(i);
-    if (!h) continue;
+    if(!h) continue;
     seg.insert(h->SegmentId());
   }
   BuildCandidates( seg, cands );

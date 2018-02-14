@@ -14,21 +14,6 @@
 ClassImp(UserParamMan);
 
 //______________________________________________________________________________
-void
-ConfMan::InitializeUserParamMan( void )
-{
-  if(name_file_["USER:"] != ""){
-    UserParamMan& gUserParam = UserParamMan::GetInstance();
-    flag_[kIsGood] = gUserParam.Initialize(name_file_["USER:"]);
-  }else{
-    std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["USER:"]
-	      << std::endl;
-    flag_.reset(kIsGood);
-  }
-}
-
-//______________________________________________________________________________
 UserParamMan::UserParamMan( void )
   : TObject()
 {
@@ -101,8 +86,6 @@ UserParamMan::Initialize( const TString& filename )
     // insert to map
     param_container_[name_param] = param_array;
   }
-
-  std::cout << "#D " << FUNC_NAME << " Initialized" << std::endl;
 
   return true;
 }

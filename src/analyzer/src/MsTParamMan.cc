@@ -15,23 +15,12 @@
 ClassImp(MsTParamMan);
 
 //______________________________________________________________________________
-void
-ConfMan::InitializeMsTParamMan( void )
-{
-  if( ( name_file_["MASS:"] != "" ) ){
-    MsTParamMan& gMsTParam = MsTParamMan::GetInstance();
-    flag_[kIsGood] = gMsTParam.Initialize( name_file_["MASS:"] );
-  }else{
-    std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["MASS:"]
-	      << std::endl;
-    flag_.reset(kIsGood);
-  }
-}
-
-//______________________________________________________________________________
 MsTParamMan::MsTParamMan( void )
-  : TObject()
+  : TObject(),
+    m_nseg_a( NumOfSegTOF+2 ),
+    m_nseg_b( NumOfSegSCH ),
+    m_low_threshold(),
+    m_high_threshold()
 {
 }
 
@@ -47,19 +36,16 @@ MsTParamMan::Initialize( const TString& filename )
   {
     std::ifstream ifs( filename );
     if( !ifs.is_open() ){
-      // std::cerr << "#E " << FUNC_NAME << " "
-      // 		<< "No such parameter file : " << filename << std::endl;
+      hddaq::cerr << "#E " << FUNC_NAME << " "
+		  << "No such parameter file : " << filename << std::endl;
       std::exit( EXIT_FAILURE );
     }
 
-    const Int_t NumOfSegDetA = NumOfSegTOF+2;
-    const Int_t NumOfSegDetB = NumOfSegSCH;
-
-    m_low_threshold.resize( NumOfSegDetA );
-    m_high_threshold.resize( NumOfSegDetA );
-    for( Int_t i=0; i<NumOfSegDetA; ++i ){
-      m_low_threshold[i].resize( NumOfSegDetB );
-      m_high_threshold[i].resize( NumOfSegDetB );
+    m_low_threshold.resize( m_nseg_a );
+    m_high_threshold.resize( m_nseg_a );
+    for( Int_t i=0; i<m_nseg_a; ++i ){
+      m_low_threshold[i].resize( m_nseg_b );
+      m_high_threshold[i].resize( m_nseg_b );
     }
 
     std::string line;
@@ -68,10 +54,10 @@ MsTParamMan::Initialize( const TString& filename )
     while( !ifs.eof() && std::getline( ifs, line ) ){
       if( line.empty() ) continue;
 
-      std::string param[NumOfSegDetB];
+      std::string param[m_nseg_b];
       std::istringstream iss( line );
 
-      for( Int_t i=0; i<NumOfSegDetB; ++i ){
+      for( Int_t i=0; i<m_nseg_b; ++i ){
 	iss >> param[i];
       }
       if( param[0].at(0) == '#' ) continue;
@@ -86,8 +72,8 @@ MsTParamMan::Initialize( const TString& filename )
 	continue;
       }
 
-      if( param[NumOfSegDetB-1].empty() ) continue;
-      for( Int_t i=0; i<NumOfSegDetB; ++i ){
+      if( param[m_nseg_b-1].empty() ) continue;
+      for( Int_t i=0; i<m_nseg_b; ++i ){
 	std::replace( param[i].begin(), param[i].end(), '(', ' ');
 	std::replace( param[i].begin(), param[i].end(), ')', ' ');
 	std::replace( param[i].begin(), param[i].end(), ',', ' ');
@@ -98,32 +84,7 @@ MsTParamMan::Initialize( const TString& filename )
       }
       ++tofseg;
     }
-
-#if 1
-    // Low
-    std::cout << "Low Threshold" << std::endl;
-    for( Int_t i=0; i<NumOfSegDetA; ++i ){
-      std::cout << std::setw(2) << i << " :";
-      for( Int_t j=0; j<NumOfSegDetB; ++j ){
-	std::cout << " " << m_low_threshold[i][j];
-      }
-      std::cout << std::endl;
-    }
-    // High
-    std::cout << "High Threshold" << std::endl;
-    for( Int_t i=0; i<NumOfSegDetA; ++i ){
-      std::cout << std::setw(2) << i << " :";
-      for( Int_t j=0; j<NumOfSegDetB; ++j ){
-	std::cout << " " << m_high_threshold[i][j];
-      }
-      std::cout << std::endl;
-    }
-#endif
   }
-
-  // std::cout << "#D " << FUNC_NAME << " "
-  // 	    << "Initialized"
-  // 	    << std::endl;
 
   return true;
 }
@@ -138,4 +99,29 @@ MsTParamMan::IsAccept( Int_t detA, Int_t detB, Int_t tdc )
   Int_t low  = m_low_threshold[cdetA][detB];
   Int_t high = m_high_threshold[cdetA][detB];
   return ( low < tdc && tdc < high );
+}
+
+//______________________________________________________________________________
+void
+MsTParamMan::Print( Option_t* ) const
+{
+  hddaq::cout << FUNC_NAME << std::endl;
+  // Low
+  hddaq::cout << "Low Threshold" << std::endl;
+  for( Int_t i=0; i<m_nseg_a; ++i ){
+    hddaq::cout << std::setw(2) << i << " :";
+    for( Int_t j=0; j<m_nseg_b; ++j ){
+      hddaq::cout << " " << m_low_threshold[i][j];
+    }
+    hddaq::cout << std::endl;
+  }
+  // High
+  hddaq::cout << "High Threshold" << std::endl;
+  for( Int_t i=0; i<m_nseg_a; ++i ){
+    hddaq::cout << std::setw(2) << i << " :";
+    for( Int_t j=0; j<m_nseg_b; ++j ){
+      hddaq::cout << " " << m_high_threshold[i][j];
+    }
+    hddaq::cout << std::endl;
+  }
 }

@@ -22,22 +22,6 @@ namespace
 }
 
 //______________________________________________________________________________
-void
-ConfMan::InitializeDCTdcCalibMan( void )
-{
-  if(name_file_["TDCCALIB:"] != ""){
-    DCTdcCalibMan& gDCTdcCalib = DCTdcCalibMan::GetInstance();
-    gDCTdcCalib.SetFileName(name_file_["TDCCALIB:"]);
-    flag_[kIsGood] = gDCTdcCalib.Initialize();
-  }else{
-    std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["TDCCALIB:"]
-	      << std::endl;
-    flag_.reset(kIsGood);
-  }
-}
-
-//______________________________________________________________________________
 struct DCTdcCalMap
 {
   DCTdcCalMap( Double_t q0, Double_t q1 )
@@ -110,7 +94,6 @@ DCTdcCalibMan::Initialize( void )
     }
   }
 
-  hddaq::cout << FUNC_NAME << ": Initialization finished" << std::endl;
   m_is_ready = true;
   return true;
 }

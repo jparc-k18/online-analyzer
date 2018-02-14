@@ -31,8 +31,9 @@ private:
 
 public:
   Bool_t Initialize( void );
+  Bool_t Initialize( const TString& file_name ) { SetFileName(file_name); return Initialize(); }
   Bool_t IsReady( void ) const { return m_is_ready; }
-  void   SetFileName( const TString& filename ){ m_file_name = filename; }
+  void   SetFileName( const TString& file_name ){ m_file_name = file_name; }
   Bool_t GetTime( Int_t PlaneId, Double_t WireId, Int_t tdc, Double_t & time ) const;
   Bool_t GetTdc( Int_t PlaneId, Double_t WireId, Double_t time, Int_t & tdc ) const;
 

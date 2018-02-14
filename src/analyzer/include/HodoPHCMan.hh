@@ -9,7 +9,7 @@
 #include <TString.h>
 
 //______________________________________________________________________________
-class HodoPHCParam
+class HodoPHCParam : public TObject
 {
 public:
   HodoPHCParam( int type, int np, double *parlist );
@@ -49,8 +49,9 @@ private:
   PHCPContainer m_map;
 
 public:
-  void   SetFileName( const TString& filename ) { m_file_name=filename; }
+  void   SetFileName( const TString& file_name ) { m_file_name = file_name; }
   Bool_t Initialize( void );
+  Bool_t Initialize( const TString& file_name ) { SetFileName(file_name); return Initialize(); }
   Bool_t IsReady( void ) const { return m_is_initialized; }
   Bool_t DoCorrection( int cid, int plid, int seg, int ud, double time,
                      double de, double &ctime ) const;
@@ -59,6 +60,8 @@ public:
 private:
   HodoPHCParam * GetMap( int cid, int plid, int seg, int ud ) const;
   void clearMap( void );
+
+  ClassDef(HodoPHCMan,0);
 };
 
 //______________________________________________________________________________

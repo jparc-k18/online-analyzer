@@ -22,12 +22,16 @@ private:
   MsTParamMan& operator =( const MsTParamMan& );
 
 private:
+  Int_t                                m_nseg_a;
+  Int_t                                m_nseg_b;
   std::vector< std::vector<Double_t> > m_low_threshold;
   std::vector< std::vector<Double_t> > m_high_threshold;
 
 public:
   bool Initialize( const TString& filename );
   bool IsAccept( Int_t detA, Int_t detB, Int_t tdc );
+
+  virtual void Print( Option_t* option="" ) const;
 
   ClassDef(MsTParamMan,0);
 };

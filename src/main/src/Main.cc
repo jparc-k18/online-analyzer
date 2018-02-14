@@ -7,8 +7,11 @@
 #include <iterator>
 #include <ctime>
 #include <sys/time.h>
+
+#include <TStyle.h>
 #include <TThread.h>
 
+#include <std_ostream.hh>
 #include <UnpackerManager.hh>
 
 #include "user_analyzer.hh"
@@ -305,14 +308,26 @@ Main::start()
 void
 Main::stat()
 {
-  std::cout << "#D Main::stat()" << std::endl;
-  UnpackerManager& g_unpacker = GUnpacker::get_instance();
-//   std::cout << "#D " << g_unpacker.get_counter()
-// 	    << " events unpacked" << std::endl;
-//  TThread::Lock();
-  g_unpacker.show_event_number();
-//   g_unpacker.show_summary(true);
-//  TThread::UnLock();
+  // std::cout << "#D Main::stat()" << std::endl;
+
+  static Int_t default_optstat = gStyle->GetOptStat();
+  Int_t current_optstat = gStyle->GetOptStat();
+  Int_t optstat = current_optstat != 0 ? 0 : default_optstat;
+
+  hddaq::cout << "   gStyle::fOptStat "
+	      << std::setw(10) << std::setfill('0') << std::right
+	      << current_optstat << " -> "
+	      << std::setw(10) << std::setfill('0') << std::right
+	      << optstat << std::endl;
+  gStyle->SetOptStat( optstat );
+
+  // UnpackerManager& g_unpacker = GUnpacker::get_instance();
+  // std::cout << "#D " << g_unpacker.get_counter()
+  // 	    << " events unpacked" << std::endl;
+  // TThread::Lock();
+  // g_unpacker.show_event_number();
+  // g_unpacker.show_summary(true);
+  // TThread::UnLock();
   return;
 }
 

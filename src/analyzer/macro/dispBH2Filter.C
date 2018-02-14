@@ -40,24 +40,18 @@ void dispBH2Filter( void )
   {
     TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c2"));
     c->Clear();
-    c->Divide(3,2);
+    c->Divide(2,2);
     TH1 *h;
     c->cd(1);
     h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kMulti, 1) ) );
     if( h ) h->Draw();
     c->cd(2);
-    h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kChisqr, 1) ) );
-    if( h ) h->Draw();
-    c->cd(3);
     h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 2, kHitPat2D, 1) ) );
     if( h ) h->Draw("colz");
-    c->cd(4);
+    c->cd(3);
     h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kMulti, 2) ) );
     if( h ) h->Draw();
-    c->cd(5);
-    h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kChisqr, 2) ) );
-    if( h ) h->Draw();
-    c->cd(6);
+    c->cd(4);
     h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 2, kHitPat2D, 2) ) );
     if( h ) h->Draw("colz");
     c->Update();

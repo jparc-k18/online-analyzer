@@ -12,7 +12,7 @@ class TThread;
 
 namespace analyzer
 {
-  
+
   class Main
   {
   public:
@@ -31,15 +31,15 @@ namespace analyzer
     int                      m_count;
     bool                     m_is_overwrite;
     bool                     m_is_batch;
-    
+
   public:
     static Main& getInstance();
     virtual ~Main();
-    
+
     void hoge() const;
     const std::vector<std::string>& getArgv() const;
     int  getCounter() const;
-//     void initialize(int argc, 
+//     void initialize(int argc,
 // 		    char* argv[]);
     void initialize(const std::vector<std::string>& argV);
     bool isBatch() const;

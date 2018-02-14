@@ -25,14 +25,14 @@ EMCParamMan::~EMCParamMan( void )
 }
 
 //______________________________________________________________________________
-bool
+Bool_t
 EMCParamMan::Initialize( const TString& filename )
 {
   std::ifstream ifs( filename );
   if( !ifs.is_open() ){
     std::cerr << "#E " << FUNC_NAME << " "
 	      << "no such parameter file : " << filename << std::endl;
-    std::exit( EXIT_FAILURE );
+    return false;
   }
 
   m_nspill = 0;
@@ -48,9 +48,9 @@ EMCParamMan::Initialize( const TString& filename )
     std::istringstream iss( line.Data() );
     iss >> param[0] >> param[1] >> param[2];
 
-    double spill = param[0].Atof();
-    double x     = param[1].Atof();
-    double y     = param[2].Atof();
+    Double_t spill = param[0].Atof();
+    Double_t x     = param[1].Atof();
+    Double_t y     = param[2].Atof();
     m_spill.push_back( spill );
     m_x.push_back( x );
     m_y.push_back( y );
@@ -62,7 +62,7 @@ EMCParamMan::Initialize( const TString& filename )
   {
     std::cout << "#D " << FUNC_NAME << " "
 	      << "EMC Parameter" << std::endl;
-    for( int i=0; i<m_nspill; ++i ){
+    for( Int_t i=0; i<m_nspill; ++i ){
       std::cout << m_spill[i] << "\t" << m_x[i] << "\t" << m_y[i] << std::endl;
     }
   }
@@ -76,10 +76,10 @@ EMCParamMan::Initialize( const TString& filename )
 }
 
 //______________________________________________________________________________
-int
-EMCParamMan::Pos2Spill( double x, double y )
+Int_t
+EMCParamMan::Pos2Spill( Double_t x, Double_t y )
 {
-  for( int i=0; i<m_nspill; ++i ){
+  for( Int_t i=0; i<m_nspill; ++i ){
     if( TMath::Abs( m_x[i] - x ) < 1000. &&
 	TMath::Abs( m_y[i] - y ) < 1000. ){
       return m_spill[i];

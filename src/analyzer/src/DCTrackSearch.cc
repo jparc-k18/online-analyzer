@@ -727,8 +727,7 @@ namespace track
     ClearFlags(trackCont);
     std::stable_sort( trackCont.begin(), trackCont.end(), DCLTrackComp() );
     DeleteDuplicatedTracks( trackCont );
-    CalcTracks( trackCont );
-
+    // CalcTracks( trackCont );
     return trackCont.size();
   }
 

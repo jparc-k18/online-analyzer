@@ -69,7 +69,7 @@ DCLocalTrack::AddHit( DCLTrackHit *hitp )
 void
 DCLocalTrack::Calculate( void )
 {
-  if( IsCalculated() ){
+  if( m_is_calculated ){
     hddaq::cerr << "#W " << FUNC_NAME << " "
 		<< "already called" << std::endl;
     return;

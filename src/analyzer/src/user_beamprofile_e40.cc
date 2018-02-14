@@ -16,6 +16,7 @@
 #include "Controller.hh"
 #include "user_analyzer.hh"
 
+#include "BH2Filter.hh"
 #include "BH2Hit.hh"
 #include "ConfMan.hh"
 #include "DCAnalyzer.hh"
@@ -34,6 +35,8 @@
 #include "RawData.hh"
 #include "UserParamMan.hh"
 
+#define BH2FILTER 0
+
 namespace analyzer
 {
   using namespace hddaq::unpacker;
@@ -41,9 +44,10 @@ namespace analyzer
 
   namespace
   {
-    const HistMaker&       gHist     = HistMaker::getInstance();
-    const UnpackerManager& gUnpacker = GUnpacker::get_instance();
-    const DCGeomMan&       gGeom     = DCGeomMan::GetInstance();
+    const UnpackerManager& gUnpacker  = GUnpacker::get_instance();
+    const HistMaker&       gHist      = HistMaker::getInstance();
+    const DCGeomMan&       gGeom      = DCGeomMan::GetInstance();
+          BH2Filter&       gBH2Filter = BH2Filter::GetInstance();
 
     const Double_t dist_FF = 1200.;
 
@@ -83,6 +87,7 @@ process_begin( const std::vector<std::string>& argv )
 {
   ConfMan& gConfMan = ConfMan::GetInstance();
   gConfMan.Initialize(argv);
+  gConfMan.InitializeParameter<BH2Filter>("BH2FLT");
   gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
   gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
   gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
@@ -91,6 +96,9 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
+
+  gBH2Filter.Print();
+  // gBH2Filter.SetVerbose();
 
   FF_plus = UserParamMan::GetInstance().GetParameter("FF_PLUS", 0);
   std::cout << "#D : FF+" << FF_plus << std::endl;
@@ -108,6 +116,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("split33"));
   tab_macro->Add(macro::Get("dispBeamProfile_e40"));
   tab_macro->Add(macro::Get("dispBcOutFF"));
+  tab_macro->Add(macro::Get("dispBH2Filter"));
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
@@ -146,11 +155,23 @@ process_begin( const std::vector<std::string>& argv )
 				   400,-200,200, 200,-100,100,
 				   "x position [mm]", "y position [mm]"));
     }
-    // Correlation X and BH2
-    // sub_dir->Add( gHist.createTH2( gHist.getUniqueID(kMisc, 0, kHitPat2D),
-    // 				   "BcOut_BH2_Cor",
-    // 				   400,-200,200, NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
-    // 				   "x position [mm]", "Segment" ) );
+    // BH2 Filter
+    sub_dir->Add( gHist.createTH2( gHist.getUniqueID(kMisc, 2, kHitPat2D, 1),
+    				   "BcOut_BH2_RAW",
+    				   400,-200,200, NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
+    				   "x position [mm]", "Segment" ) );
+    sub_dir->Add( gHist.createTH2( gHist.getUniqueID(kMisc, 2, kHitPat2D, 2),
+    				   "BcOut_BH2_CUT",
+    				   400,-200,200, NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
+    				   "x position [mm]", "Segment" ) );
+    sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kMulti, 1),
+    				   "BcOut_NTracks_RAW", 10, 0., 10. ) );
+    sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kMulti, 2),
+    				   "BcOut_NTracks_CUT", 10, 0., 10. ) );
+    sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kChisqr, 1),
+    				   "BcOut_Chisqr_RAW", 100, 0., 20. ) );
+    sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kChisqr, 2),
+    				   "BcOut_Chisqr_CUT", 100, 0., 20. ) );
     tab_hist->Add(sub_dir);
   }
 
@@ -159,25 +180,26 @@ process_begin( const std::vector<std::string>& argv )
     const char* nameSubDir = "BH2Filter";
     sub_dir->SetName(nameSubDir);
     Int_t unique_id_wobh2 = gHist.getUniqueID(kMisc, 0, kHitPat2D);
-    // Int_t unique_id_wbh2  = gHist.getUniqueID(kMisc, 1, kHitPat2D);
+    Int_t unique_id_wbh2  = gHist.getUniqueID(kMisc, 1, kHitPat2D);
     const Char_t* name_layer[] = { "BC3-x0", "BC3-x1", "BC3-v0", "BC3-v1", "BC3-u0", "BC3-u1",
 				   "BC4-u0", "BC4-u1", "BC4-v0", "BC4-v1", "BC4-x0", "BC4-x1" };
     for( Int_t l=0; l<NumOfLayersBcOut; ++l ){
-	sub_dir->Add( gHist.createTH2( unique_id_wobh2+l,
-				       Form("%s_BcOut-%s", nameSubDir, name_layer[l]),
-				       NumOfWireBC3, 0., (Double_t)NumOfWireBC3,
-				       NumOfSegBH2, 0., (Double_t)NumOfSegBH2,
-				       "Wire", "Segment" ) );
+      sub_dir->Add( gHist.createTH2( unique_id_wobh2+l,
+				     Form("%s_%s_RAW", nameSubDir, name_layer[l]),
+				     100, -150., 150.,
+				     NumOfSegBH2, 0., (Double_t)NumOfSegBH2,
+				     "Wire Position [mm]", "Segment" ) );
     }
-    // for( Int_t l=0; l<NumOfLayersBcOut; ++l ){
-    // 	sub_dir->Add( gHist.createTH2( unique_id_wbh2+l,
-    // 				       Form("%s_BcOut-%s (w/BH2Filter)", nameSubDir, name_layer[l]),
-    // 				       NumOfWireBC3+1, 0., (Double_t)NumOfWireBC3+1.,
-    // 				       NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
-    // 				       "Wire", "Segment" ) );
-    // }
+    for( Int_t l=0; l<NumOfLayersBcOut; ++l ){
+      sub_dir->Add( gHist.createTH2( unique_id_wbh2+l,
+				     Form("%s_%s_CUT", nameSubDir, name_layer[l]),
+				     100, -150., 150.,
+				     NumOfSegBH2, 0., (Double_t)NumOfSegBH2,
+				     "Wire Position [mm]", "Segment" ) );
+    }
     tab_hist->Add(sub_dir);
   }
+
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
   // Then you need to do down cast when you use TH2.
@@ -188,7 +210,6 @@ process_begin( const std::vector<std::string>& argv )
   gStyle->SetTitleH(.1);
   gStyle->SetStatW(.42);
   gStyle->SetStatH(.3);
-
   return 0;
 }
 
@@ -203,59 +224,90 @@ process_end( void )
 Int_t
 process_event( void )
 {
-  static const Int_t xpos_id   = gHist.getSequentialID(kMisc, 0, kHitPat);
-  static const Int_t ypos_id   = gHist.getSequentialID(kMisc, 0, kHitPat, NHist+1);
-  static const Int_t xypos_id  = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
-  static const Int_t bh2filter_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
-  // static const Int_t bh2cor_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
-  // static const Double_t zBH2 = gGeom.GetLocalZ("BH2");
-
   EventAnalyzer event;
   event.DecodeRawData();
   event.DecodeDCAnalyzer();
   event.DecodeHodoAnalyzer();
 
-  const HodoAnalyzer* hodoAna = event.GetHodoAnalyzer();
-  const DCAnalyzer*   dcAna   = event.GetDCAnalyzer();
+  const HodoAnalyzer* const hodoAna = event.GetHodoAnalyzer();
+  const DCAnalyzer* const dcAna = event.GetDCAnalyzer();
 
   Int_t nhBh2 = hodoAna->GetNHitsBH2();
-  Double_t segBh2 = -1.;
+  Int_t segBh2 = -1.;
   for( Int_t i=0; i<nhBh2; ++i ){
-    const BH2Hit* hit = hodoAna->GetHitBH2(i);
+    const BH2Hit* const hit = hodoAna->GetHitBH2(i);
     Int_t seg = hit->SegmentId();
     if( nhBh2 == 1 ) segBh2 = seg;
     static const Int_t hit_id = gHist.getSequentialID(kBH2, 0, kHitPat);
     hptr_array[hit_id]->Fill( seg );
   }
 
-  for( Int_t l=0; l<NumOfLayersBcOut; ++l ){
-    const DCHitContainer& cont = dcAna->GetBcOutHC(l+1);
-    Int_t nhOut = cont.size();
-    for( Int_t i=0; i<nhOut; ++i ){
-      const DCHit* hit = cont.at(i);
-      Double_t wire = hit->GetWire();
-      hptr_array[bh2filter_id+l]->Fill( wire, segBh2 );
+  // BH2 % BcOut Hit
+  if( segBh2 >= 0 ){
+    const std::vector<Double_t>& xmin = gBH2Filter.GetXmin( segBh2 );
+    const std::vector<Double_t>& xmax = gBH2Filter.GetXmax( segBh2 );
+    for( Int_t l=0; l<NumOfLayersBcOut; ++l ){
+      const DCHitContainer& cont = dcAna->GetBcOutHC(l+1);
+      Int_t nhOut = cont.size();
+      for( Int_t i=0; i<nhOut; ++i ){
+	const DCHit* const hit = cont.at(i);
+	Double_t pos   = hit->GetWirePosition();
+	static const Int_t bh2raw_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
+	static const Int_t bh2cut_id = gHist.getSequentialID(kMisc, 1, kHitPat2D);
+	hptr_array[bh2raw_id+l]->Fill( pos, segBh2 );
+	if( xmin.at(l) < pos && pos < xmax.at(l) ){
+	  hptr_array[bh2cut_id+l]->Fill( pos, segBh2 );
+	}
+      }
     }
   }
 
   // BcOutTracking
-  // event.ApplyBH2Filter();
+#if !BH2FILTER
   event.TrackSearchBcOut();
-
-  Int_t ntBcOut = dcAna->GetNtracksBcOut();
-  for( Int_t i=0; i<ntBcOut; ++i ){
-    const DCLocalTrack* track = dcAna->GetTrackBcOut(i);
-    if( !track || track->GetChiSquare()>10. ) continue;
-    // Double_t x0 = track->GetX0(); Double_t y0 = track->GetY0();
-    // Double_t u0 = track->GetU0(); Double_t v0 = track->GetV0();
-    for( Int_t j=0; j<NHist; ++j ){
-      Double_t z = dist_FF+FF_plus+TgtOrg_plus[j];
-      Double_t x = track->GetX(z); Double_t y = track->GetY(z);
-      hptr_array[xpos_id+j]->Fill(x);
-      hptr_array[ypos_id+j]->Fill(y);
-      hptr_array[xypos_id+j]->Fill(x, y);
+  {
+    Int_t ntBcOut = dcAna->GetNtracksBcOut();
+    hptr_array[gHist.getSequentialID(kMisc, 0, kMulti, 1)]->Fill( ntBcOut );
+    for( Int_t i=0; i<ntBcOut; ++i ){
+      const DCLocalTrack* const track = dcAna->GetTrackBcOut(i);
+      static const Int_t chisqr_id = gHist.getSequentialID(kMisc, 0, kChisqr, 1);
+      Double_t chisqr = track->GetChiSquare();
+      hptr_array[chisqr_id]->Fill( chisqr );
+      if( !track || chisqr>10. ) continue;
+      static const Int_t bh2raw_id = gHist.getSequentialID(kMisc, 2, kHitPat2D, 1);
+      static const Double_t zBH2 = gGeom.GetLocalZ("BH2");
+      hptr_array[bh2raw_id]->Fill( track->GetX(zBH2), segBh2 );
     }
-    // hptr_array[bh2cor_id]->Fill( track->GetX(zBH2), segBh2 );
+  }
+#endif
+
+  event.ApplyBH2Filter();
+  event.TrackSearchBcOut();
+  {
+    Int_t ntBcOut = dcAna->GetNtracksBcOut();
+    hptr_array[gHist.getSequentialID(kMisc, 0, kMulti, 2)]->Fill( ntBcOut );
+    for( Int_t i=0; i<ntBcOut; ++i ){
+      const DCLocalTrack* const track = dcAna->GetTrackBcOut(i);
+      static const Int_t chisqr_id = gHist.getSequentialID(kMisc, 0, kChisqr, 2);
+      Double_t chisqr = track->GetChiSquare();
+      hptr_array[chisqr_id]->Fill( chisqr );
+      if( !track || chisqr>10. ) continue;
+      // Double_t x0 = track->GetX0(); Double_t y0 = track->GetY0();
+      // Double_t u0 = track->GetU0(); Double_t v0 = track->GetV0();
+      for( Int_t j=0; j<NHist; ++j ){
+	Double_t z = dist_FF+FF_plus+TgtOrg_plus[j];
+	Double_t x = track->GetX(z); Double_t y = track->GetY(z);
+	static const Int_t xpos_id   = gHist.getSequentialID(kMisc, 0, kHitPat);
+	static const Int_t ypos_id   = gHist.getSequentialID(kMisc, 0, kHitPat, NHist+1);
+	static const Int_t xypos_id  = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
+	hptr_array[xpos_id+j]->Fill(x);
+	hptr_array[ypos_id+j]->Fill(y);
+	hptr_array[xypos_id+j]->Fill(x, y);
+      }
+      static const Int_t bh2cut_id = gHist.getSequentialID(kMisc, 2, kHitPat2D, 2);
+      static const Double_t zBH2 = gGeom.GetLocalZ("BH2");
+      hptr_array[bh2cut_id]->Fill( track->GetX(zBH2), segBh2 );
+    }
   }
 
 #if DEBUG

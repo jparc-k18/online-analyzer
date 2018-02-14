@@ -37,13 +37,20 @@ BH2Filter::Param::~Param( void )
 void
 BH2Filter::Param::Print( const TString& arg ) const
 {
-  std::cout << "\n " << arg << " (xmin, xmax) = \n";
-  for (Int_t i=0, n=m_xmin.size(); i<n; ++i)
-    {
-      std::cout << " iplane " << std::setw(3) << i
-		<< " (" << std::setw(6) << m_xmin[i] << " "
-		<< std::setw(6) << m_xmax[i] << ")\n";
+  const Int_t w = 3;
+  std::cout << arg << ":";
+  for( Int_t i=0, n=m_xmin.size(); i<n; ++i ){
+    if( i==6 ){
+      hddaq::cout << std::endl
+		  << std::setw(2) << " ";
     }
+    std::cout << " ( " << std::right
+	      << std::setw(w) << m_xmin[i] << " "
+    	      << std::setw(w) << m_xmax[i] << " )";
+    // std::cout << " iplane " << std::setw(3) << i
+    // 	      << " (" << std::setw(6) << m_xmin[i] << " "
+    // 	      << std::setw(6) << m_xmax[i] << " )" << std::endl;
+  }
   std::cout << std::endl;
 }
 
@@ -51,6 +58,7 @@ BH2Filter::Param::Print( const TString& arg ) const
 BH2Filter::BH2Filter( void )
   : TObject(),
     m_is_ready(false),
+    m_verbose(false),
     m_param(NumOfSegBH2)
 {
 }
@@ -89,7 +97,7 @@ BH2Filter::Apply( Int_t T0Seg, const DCAnalyzer& dc, FilterList& cands )
     std::exit(-1);
   }
 
-  m_dc   = &dc;
+  m_dc = &dc;
   std::set<Int_t> seg;
   seg.insert(T0Seg);
   BuildCandidates( seg, cands );
@@ -97,8 +105,11 @@ BH2Filter::Apply( Int_t T0Seg, const DCAnalyzer& dc, FilterList& cands )
 
 //______________________________________________________________________________
 void
-BH2Filter::BuildCandidates( std::set<Int_t> & seg, FilterList& cands )
+BH2Filter::BuildCandidates( std::set<Int_t>& seg, FilterList& cands )
 {
+  if( m_verbose )
+    std::cout << FUNC_NAME << std::endl;
+
   cands.resize(seg.size());
   FIterator itCont = cands.begin();
   for( std::set<Int_t>::const_iterator itSeg = seg.begin(), itSegEnd = seg.end();
@@ -106,7 +117,7 @@ BH2Filter::BuildCandidates( std::set<Int_t> & seg, FilterList& cands )
     const Int_t iSeg = *itSeg;
     std::vector<DCHitContainer>& c = *itCont;
     c.resize(NumOfLayersBcOut+1);
-    std::cout << "  BH2 seg = " << iSeg << "\n";
+    if( m_verbose ) std::cout << "  BH2 seg = " << iSeg << std::endl;
     for( Int_t iplane=0; iplane<NumOfLayersBcOut; ++iplane ){
       Int_t iLayer = iplane + 1;
       DCHitContainer& after = c[iLayer];
@@ -117,23 +128,23 @@ BH2Filter::BuildCandidates( std::set<Int_t> & seg, FilterList& cands )
 	const DCHit* const h = before[ih];
 	if( !h ) continue;
 	const Double_t wpos  = h->GetWirePosition();
-	const Int_t    layer = h->GetLayer();
-	std::cout << " layer = " << iplane
-		  << "(" << layer << ") : " << wpos
-		  << " (" << xmin << ", " << xmax << ")";
+	if( m_verbose ){
+	  const Int_t    layer = h->GetLayer();
+	  std::cout << " layer = " << std::setw(2) << iplane
+		    << "(" << std::setw(3) << layer << ") : "
+		    << std::setw(6) << wpos
+		    << " (" << std::setw(6) << xmin
+		    << ", " << std::setw(6) << xmax << ")";
+	}
 	if( wpos<xmin || xmax<wpos ){
-	  std::cout << std::endl;
+	  if( m_verbose ) std::cout << std::endl;
 	  continue;
 	}
-	std::cout << " good " << std::endl;
+	if( m_verbose ) std::cout << " good " << std::endl;
 	after.push_back(const_cast<DCHit*>(h));
       }
-      std::cout << __FILE__ << ":" << __LINE__
-		<< " " << after.size() << std::endl;
     }
   }
-  std::cout << __FILE__ << ":" << __LINE__
-	    << " " << cands.size() << std::endl;
 }
 
 //______________________________________________________________________________
@@ -158,7 +169,7 @@ BH2Filter::Initialize( const TString& file_name )
   if( !f.is_open() ){
     std::cerr << "#E " << FUNC_NAME << " file open fail "
 	      <<  file_name << std::endl;
-    std::exit(-1);
+    return false;
   }
 
   TString line;
@@ -180,21 +191,19 @@ BH2Filter::Initialize( const TString& file_name )
     const Int_t bcPlane = static_cast<Int_t>(v[kLayerID]);
     const Double_t xmin = v[kXMin];
     const Double_t xmax = v[kXMax];
-
     Int_t iplane = bcPlane - (PlOffsBc+13);
-    hddaq::cout << " seg = "    << std::setw(2) << bh2Seg
-		<< ", plane = " << std::setw(3) << bcPlane
-		<< "(" << iplane << ")"
-		<< ", xmin = "  << std::setw(5) << xmin
-		<< ", xmax = "  << std::setw(5) << xmax
-		<< std::endl;
+    if( m_verbose ){
+      hddaq::cout << " seg = "    << std::setw(2) << bh2Seg
+		  << ", plane = " << std::setw(3) << bcPlane
+		  << "(" << iplane << ")"
+		  << ", xmin = "  << std::setw(5) << xmin
+		  << ", xmax = "  << std::setw(5) << xmax
+		  << std::endl;
+    }
     m_param[bh2Seg].m_xmin[iplane] = xmin;
     m_param[bh2Seg].m_xmax[iplane] = xmax;
-
   }
 
-  Print();
-  std::cout << FUNC_NAME << ": Initialization finished" << std::endl;
   m_is_ready = true;
   return true;
 }
@@ -203,11 +212,11 @@ BH2Filter::Initialize( const TString& file_name )
 void
 BH2Filter::Print( Option_t* ) const
 {
-  std::cout << "#D BH2Filter::print" << std::endl;
-  for (Int_t i=0, n=m_param.size(); i<n; ++i)
-    {
-      std::stringstream ss;
-      ss << "isegment " << i;
-      m_param[i].Print(ss.str());
-    }
+  std::cout << "#D " << FUNC_NAME << std::endl
+	    << "   (xmin xmax)" << std::endl;
+  for( Int_t i=0, n=m_param.size(); i<n; ++i ){
+    std::stringstream ss;
+    ss << i;
+    m_param[i].Print(ss.str());
+  }
 }

@@ -69,19 +69,18 @@ void HistMaker::getListOfPsFiles( std::vector<TString>& vec )
 Int_t HistMaker::setHistPtr( std::vector<TH1*>& vec )
 {
   vec.resize(current_hist_id_);
-  for(Int_t i = 0; i<current_hist_id_; ++i){
+  for( Int_t i = 0; i<current_hist_id_; ++i ){
     Int_t unique_id = getUniqueID(i);
     vec[i] = GHist::get(unique_id);
-    if(vec[i] == NULL){
+    if( !vec[i] ){
       std::cerr << "#E " << FUNC_NAME
-		<< " Pointer is NULL\n"
-		<< " Unique ID    : " << unique_id << "\n"
+		<< " Pointer is NULL" << std::endl
+		<< " Unique ID    : " << unique_id << std::endl
 		<< " Sequential ID: " << i << std::endl;
       gDirectory->ls();
       return -1;
     }
   }
-
   return 0;
 }
 

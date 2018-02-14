@@ -637,6 +637,8 @@ DCAnalyzer::TrackSearchBcOut( void )
 {
   static const Int_t MinLayer = gUser.GetParameter("MinLayerBcOut");
 
+  ClearTracksBcOut();
+
 #if BcOut_Pair //Pair Plane Tracking Routine for BcOut
   track::LocalTrackSearch( m_BcOutHC, PPInfoBcOut, NPPInfoBcOut,
 			   m_BcOutTC, MinLayer );
@@ -658,6 +660,8 @@ Bool_t
 DCAnalyzer::TrackSearchBcOut( const BH2Filter::FilterList& hc )
 {
   static const Int_t MinLayer = gUser.GetParameter("MinLayerBcOut");
+
+  ClearTracksBcOut();
 
 #if BcOut_Pair //Pair Plane Tracking Routine for BcOut
   track::LocalTrackSearch( hc, PPInfoBcOut, NPPInfoBcOut, m_BcOutTC, MinLayer );

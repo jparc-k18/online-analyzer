@@ -54,6 +54,7 @@ public:
 
 private:
   Bool_t              m_is_ready;
+  Bool_t              m_verbose;
   std::vector<Param>  m_param;
   const DCAnalyzer*   m_dc;
   const HodoAnalyzer* m_hodo;
@@ -64,6 +65,7 @@ public:
   const std::vector<Double_t>& GetXmax( Int_t seg ) const;
   const std::vector<Double_t>& GetXmin( Int_t seg ) const;
   Bool_t                       Initialize( const TString& file_name );
+  void                         SetVerbose( Bool_t verbose=true ) { m_verbose = verbose; }
   virtual void                 Print( Option_t* option="" ) const;
 
 private:

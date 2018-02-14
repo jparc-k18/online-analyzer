@@ -237,7 +237,7 @@ DCDriftParamMan::DriftLength6( Int_t PlaneId, Double_t dt,
   else {
     std::cerr << "DCDriftParamMan::DriftLength6 Invalid planeId="
               << PlaneId << std::endl;
-    exit(1);
+    std::exit(-1);
   }
 }
 

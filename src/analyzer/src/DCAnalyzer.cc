@@ -18,7 +18,7 @@
 #include "DCRawHit.hh"
 #include "DCTrackSearch.hh"
 #include "DebugCounter.hh"
-// #include "DebugTimer.hh"
+#include "DebugTimer.hh"
 // #include "EventDisplay.hh"
 // #include "FiberCluster.hh"
 #include "FuncName.hh"

@@ -51,6 +51,7 @@
 
 #pragma link C++ class analyzer::EventAnalyzer+;
 #pragma link C++ class debug::ObjectCounter+;
+#pragma link C++ class debug::Timer+;
 
 #pragma link C++ class std::vector< std::vector<Int_t> >+;
 #pragma link C++ class std::vector< std::vector<Double_t> >+;

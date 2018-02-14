@@ -156,16 +156,24 @@ process_begin( const std::vector<std::string>& argv )
     TList *sub_dir = new TList;
     const char* nameSubDir = "BH2Filter";
     sub_dir->SetName(nameSubDir);
-    Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat2D);
+    Int_t unique_id_wobh2 = gHist.getUniqueID(kMisc, 0, kHitPat2D);
+    // Int_t unique_id_wbh2  = gHist.getUniqueID(kMisc, 1, kHitPat2D);
     const Char_t* name_layer[] = { "BC3-x0", "BC3-x1", "BC3-v0", "BC3-v1", "BC3-u0", "BC3-u1",
 				   "BC4-u0", "BC4-u1", "BC4-v0", "BC4-v1", "BC4-x0", "BC4-x1" };
     for( Int_t l=0; l<NumOfLayersBcOut; ++l ){
-	sub_dir->Add( gHist.createTH2( unique_id+l,
+	sub_dir->Add( gHist.createTH2( unique_id_wobh2+l,
 				       Form("%s_BcOut-%s", nameSubDir, name_layer[l]),
 				       NumOfWireBC3+1, 0., (Double_t)NumOfWireBC3+1.,
 				       NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
 				       "Wire", "Segment" ) );
     }
+    // for( Int_t l=0; l<NumOfLayersBcOut; ++l ){
+    // 	sub_dir->Add( gHist.createTH2( unique_id_wbh2+l,
+    // 				       Form("%s_BcOut-%s (w/BH2Filter)", nameSubDir, name_layer[l]),
+    // 				       NumOfWireBC3+1, 0., (Double_t)NumOfWireBC3+1.,
+    // 				       NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
+    // 				       "Wire", "Segment" ) );
+    // }
     tab_hist->Add(sub_dir);
   }
   // Set histogram pointers to the vector sequentially.
@@ -229,7 +237,7 @@ process_event( void )
   }
 
   // BcOutTracking
-  event.ApplyBH2Filter();
+  // event.ApplyBH2Filter();
   event.TrackSearchBcOut();
 
   Int_t ntBcOut = dcAna->GetNtracksBcOut();

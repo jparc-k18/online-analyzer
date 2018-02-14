@@ -9,10 +9,10 @@
 
 #include "DetectorID.hh"
 
-// class HodoRawHit;
+class HodoRawHit;
 class DCRawHit;
 
-// typedef std::vector<HodoRawHit*> HodoRHitContainer;
+typedef std::vector<HodoRawHit*> HodoRHitContainer;
 typedef std::vector<DCRawHit*>   DCRHitContainer;
 
 //______________________________________________________________________________
@@ -28,16 +28,14 @@ private:
 
 private:
   Bool_t                         m_is_decoded;
-  // HodoRHitContainer              m_BH1RawHC;
-  // HodoRHitContainer              m_BH2RawHC;
-  // HodoRHitContainer              m_BACRawHC;
-  // HodoRHitContainer              m_PVACRawHC;
-  // HodoRHitContainer              m_FACRawHC;
-  // HodoRHitContainer              m_TOFRawHC;
-  // std::vector<HodoRHitContainer> m_BFTRawHC;
-  // HodoRHitContainer              m_SCHRawHC;
-  // HodoRHitContainer              m_FBHRawHC;
-  // HodoRHitContainer              m_SSDTRawHC;
+  HodoRHitContainer              m_BH1RawHC;
+  HodoRHitContainer              m_BH2RawHC;
+  HodoRHitContainer              m_BACRawHC;
+  HodoRHitContainer              m_SACRawHC;
+  HodoRHitContainer              m_TOFRawHC;
+  HodoRHitContainer              m_LCRawHC;
+  std::vector<HodoRHitContainer> m_BFTRawHC;
+  HodoRHitContainer              m_SCHRawHC;
 
   std::vector<DCRHitContainer> m_BcInRawHC;
   std::vector<DCRHitContainer> m_BcOutRawHC;
@@ -60,29 +58,30 @@ private:
   enum EDCDataType { kLeading, kTrailing, kNDCDataType };
 
 public:
+  Bool_t AddHodoRawHit( HodoRHitContainer& cont,
+			Int_t id, Int_t plane, Int_t seg, Int_t UorD, Int_t AorT, Int_t data );
   Bool_t AddDCRawHit( DCRHitContainer& cont,
 		      int plane, int wire, int tdc, int type=kLeading );
+  void   DecodeHodo( Int_t id, Int_t plane, Int_t nseg, Int_t nch, HodoRHitContainer& cont );
+  void   DecodeHodo( Int_t id, Int_t nseg, Int_t nch, HodoRHitContainer& cont );
+
   void                     ClearAll( void );
   Bool_t                   DecodeHits( void );
   Bool_t                   DecodeCalibHits( void );
-  // const HodoRHitContainer& GetBH1RawHC( void ) const { return m_BH1RawHC; }
-  // const HodoRHitContainer& GetBH2RawHC( void ) const { return m_BH2RawHC; }
-  // const HodoRHitContainer& GetBACRawHC( void ) const { return m_BACRawHC; }
-  // const HodoRHitContainer& GetPVACRawHC( void ) const { return m_PVACRawHC; }
-  // const HodoRHitContainer& GetFACRawHC( void ) const { return m_FACRawHC; }
-  // const HodoRHitContainer& GetTOFRawHC( void ) const { return m_TOFRawHC; }
-  // const HodoRHitContainer& GetLACRawHC( void ) const;
-  // const HodoRHitContainer& GetLCRawHC( void ) const;
-  // const HodoRHitContainer& GetBFTRawHC( Int_t plane ) const { return m_BFTRawHC.at(plane); }
-  // const HodoRHitContainer& GetSCHRawHC( void ) const { return m_SCHRawHC; }
-  // const HodoRHitContainer& GetFBHRawHC( void ) const { return m_FBHRawHC; }
-  // const HodoRHitContainer& GetSSDTRawHC( void ) const { return m_SSDTRawHC; }
-  // const DCRHitContainer&   GetBcInRawHC( Int_t layer ) const { return m_BcInRawHC.at(layer); }
-  const DCRHitContainer&   GetBcOutRawHC( Int_t layer ) const { return m_BcOutRawHC.at(layer); }
-  const DCRHitContainer&   GetSdcInRawHC( Int_t layer ) const { return m_SdcInRawHC.at(layer); }
-  const DCRHitContainer&   GetSdcOutRawHC( Int_t layer ) const { return m_SdcOutRawHC.at(layer); }
-  const DCRHitContainer&   GetSsdInRawHC( Int_t layer ) const { return m_SsdInRawHC.at(layer); }
-  const DCRHitContainer&   GetSsdOutRawHC( Int_t layer ) const { return m_SsdOutRawHC.at(layer); }
+  const HodoRHitContainer& GetBH1RawHC( void ) const { return m_BH1RawHC; }
+  const HodoRHitContainer& GetBH2RawHC( void ) const { return m_BH2RawHC; }
+  const HodoRHitContainer& GetBACRawHC( void ) const { return m_BACRawHC; }
+  const HodoRHitContainer& GetSACRawHC( void ) const { return m_SACRawHC; }
+  const HodoRHitContainer& GetTOFRawHC( void ) const { return m_TOFRawHC; }
+  const HodoRHitContainer& GetLCRawHC( void ) const { return m_LCRawHC; }
+  const HodoRHitContainer& GetBFTRawHC( Int_t plane ) const { return m_BFTRawHC[plane]; }
+  const HodoRHitContainer& GetSCHRawHC( void ) const { return m_SCHRawHC; }
+  // const DCRHitContainer&   GetBcInRawHC( Int_t layer ) const { return m_BcInRawHC[layer]; }
+  const DCRHitContainer&   GetBcOutRawHC( Int_t layer ) const { return m_BcOutRawHC[layer]; }
+  const DCRHitContainer&   GetSdcInRawHC( Int_t layer ) const { return m_SdcInRawHC[layer]; }
+  const DCRHitContainer&   GetSdcOutRawHC( Int_t layer ) const { return m_SdcOutRawHC[layer]; }
+  const DCRHitContainer&   GetSsdInRawHC( Int_t layer ) const { return m_SsdInRawHC[layer]; }
+  const DCRHitContainer&   GetSsdOutRawHC( Int_t layer ) const { return m_SsdOutRawHC[layer]; }
   const DCRHitContainer&   GetSsdOutSdcInRawHC( Int_t layer ) const;
   // const HodoRHitContainer& GetScalerRawHC( void ) const { return m_ScalerRawHC; }
   // const HodoRHitContainer& GetTrigRawHC( void ) const { return m_TrigRawHC; }

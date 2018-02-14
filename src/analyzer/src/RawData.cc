@@ -12,7 +12,7 @@
 #include "DetectorID.hh"
 #include "DCRawHit.hh"
 #include "FuncName.hh"
-// #include "HodoRawHit.hh"
+#include "HodoRawHit.hh"
 #include "RawData.hh"
 #include "UserParamMan.hh"
 
@@ -28,85 +28,20 @@ namespace
 #if OscillationCut
   const Int_t  MaxMultiHitDC  = 16;
 #endif
-
-  //______________________________________________________________________________
-  // inline bool
-  // AddHodoRawHit( HodoRHitContainer& cont,
-  // 		 Int_t id, Int_t plane, Int_t seg, Int_t UorD, Int_t AorT, Int_t data )
-  // {
-  //   HodoRawHit *p = 0;
-  //   for( std::size_t i=0, n=cont.size(); i<n; ++i ){
-  //     HodoRawHit *q = cont[i];
-  //     if( q->DetectorId()==id &&
-  // 	  q->PlaneId()==plane &&
-  // 	  q->SegmentId()==seg ){
-  // 	p=q; break;
-  //     }
-  //   }
-  //   if( !p ){
-  //     p = new HodoRawHit( id, plane, seg );
-  //     cont.push_back(p);
-  //   }
-
-  //   switch(AorT){
-  //   case 0:
-  //     if( UorD==0 ) p->SetAdcUp(data);
-  //     else          p->SetAdcDown(data);
-  //     break;
-  //   case 1:
-  //     if( UorD==0 ) p->SetTdcUp(data);
-  //     else          p->SetTdcDown(data);
-  //     break;
-  //   default:
-  //     std::cerr << FUNC_NAME << " wrong AorT " << std::endl
-  // 		  << "DetectorId = " << id    << std::endl
-  // 		  << "PlaneId    = " << plane << std::endl
-  // 		  << "SegId      = " << seg   << std::endl
-  // 		  << "AorT       = " << AorT  << std::endl
-  // 		  << "UorD       = " << UorD  << std::endl;
-  //     return false;
-  //   }
-  //   return true;
-  // }
-
-  //______________________________________________________________________________
-  // inline void
-  // DecodeHodo( Int_t id, Int_t plane, Int_t nseg, Int_t nch, HodoRHitContainer& cont )
-  // {
-  //   if( nseg==0 ) nseg = 1;
-  //   for( Int_t seg=0; seg<nseg; ++seg ){
-  //     for( Int_t UorD=0; UorD<nch; ++UorD ){
-  // 	for( Int_t AorT=0; AorT<2; ++AorT ){
-  // 	  Int_t nhit = gUnpacker.get_entries( id, plane, seg, UorD, AorT );
-  // 	  if( nhit<=0 ) continue;
-  // 	  Int_t data = gUnpacker.get( id, plane, seg, UorD, AorT );
-  // 	  AddHodoRawHit( cont, id, plane, seg, UorD, AorT, data );
-  // 	}
-  //     }
-  //   }
-  // }
-
-  //______________________________________________________________________________
-  // inline void
-  // DecodeHodo( Int_t id, Int_t nseg, Int_t nch, HodoRHitContainer& cont )
-  // {
-  //   DecodeHodo( id, 0, nseg, nch, cont );
-  // }
-
 }
 
 //______________________________________________________________________________
 RawData::RawData( void )
   : TObject(),
     m_is_decoded(false),
-    // m_BH1RawHC(),
-    // m_BH2RawHC(),
-    // m_BACRawHC(),
-    // m_PVACRawHC(),
-    // m_FACRawHC(),
-    // m_TOFRawHC(),
-    // m_BFTRawHC(NumOfPlaneBFT),
-    // m_SCHRawHC(),
+    m_BH1RawHC(),
+    m_BH2RawHC(),
+    m_BACRawHC(),
+    m_SACRawHC(),
+    m_TOFRawHC(),
+    m_LCRawHC(),
+    m_BFTRawHC(NumOfPlaneBFT),
+    m_SCHRawHC(),
     // m_BcInRawHC(NumOfLayersBcIn+1),
     m_BcOutRawHC(NumOfLayersBcOut+1)
     // m_SdcInRawHC(NumOfLayersSdcIn+1),
@@ -131,6 +66,46 @@ RawData::~RawData( void )
 {
   ClearAll();
   debug::ObjectCounter::Decrease(ClassName());
+}
+
+//______________________________________________________________________________
+Bool_t
+RawData::AddHodoRawHit( HodoRHitContainer& cont,
+			Int_t id, Int_t plane, Int_t seg, Int_t UorD, Int_t AorT, Int_t data )
+{
+  HodoRawHit *p = 0;
+  for( std::size_t i=0, n=cont.size(); i<n; ++i ){
+    HodoRawHit *q = cont[i];
+    if( q->DetectorId()==id &&
+	q->PlaneId()==plane &&
+	q->SegmentId()==seg ){
+      p=q; break;
+    }
+  }
+  if( !p ){
+    p = new HodoRawHit( id, plane, seg );
+    cont.push_back(p);
+  }
+
+  switch(AorT){
+  case 0:
+    if( UorD==0 ) p->SetAdcUp(data);
+    else          p->SetAdcDown(data);
+    break;
+  case 1:
+    if( UorD==0 ) p->SetTdcUp(data);
+    else          p->SetTdcDown(data);
+    break;
+  default:
+    std::cerr << FUNC_NAME << " wrong AorT " << std::endl
+	      << "DetectorId = " << id    << std::endl
+	      << "PlaneId    = " << plane << std::endl
+	      << "SegId      = " << seg   << std::endl
+	      << "AorT       = " << AorT  << std::endl
+	      << "UorD       = " << UorD  << std::endl;
+    return false;
+  }
+  return true;
 }
 
 //______________________________________________________________________________
@@ -169,20 +144,40 @@ RawData::AddDCRawHit( DCRHitContainer& cont,
 
 //______________________________________________________________________________
 void
+RawData::DecodeHodo( Int_t id, Int_t plane, Int_t nseg, Int_t nch, HodoRHitContainer& cont )
+{
+  if( nseg==0 ) nseg = 1;
+  for( Int_t seg=0; seg<nseg; ++seg ){
+    for( Int_t UorD=0; UorD<nch; ++UorD ){
+      for( Int_t AorT=0; AorT<2; ++AorT ){
+	Int_t nhit = gUnpacker.get_entries( id, plane, seg, UorD, AorT );
+	if( nhit<=0 ) continue;
+	Int_t data = gUnpacker.get( id, plane, seg, UorD, AorT );
+	AddHodoRawHit( cont, id, plane, seg, UorD, AorT, data );
+      }
+    }
+  }
+}
+
+//______________________________________________________________________________
+void
+RawData::DecodeHodo( Int_t id, Int_t nseg, Int_t nch, HodoRHitContainer& cont )
+{
+  DecodeHodo( id, 0, nseg, nch, cont );
+}
+
+//______________________________________________________________________________
+void
 RawData::ClearAll( void )
 {
-  // utility::ClearContainer( m_BH1RawHC );
-  // utility::ClearContainer( m_BH2RawHC );
-  // utility::ClearContainer( m_BACRawHC );
-  // utility::ClearContainer( m_PVACRawHC );
-  // utility::ClearContainer( m_FACRawHC );
-  // utility::ClearContainer( m_TOFRawHC );
-
-  // utility::ClearContainerAll( m_BFTRawHC );
-
-  // utility::ClearContainer( m_SCHRawHC );
-  // utility::ClearContainer( m_FBHRawHC );
-  // utility::ClearContainer( m_SSDTRawHC );
+  utility::ClearContainer( m_BH1RawHC );
+  utility::ClearContainer( m_BH2RawHC );
+  utility::ClearContainer( m_BACRawHC );
+  utility::ClearContainer( m_SACRawHC );
+  utility::ClearContainer( m_TOFRawHC );
+  utility::ClearContainer( m_LCRawHC );
+  utility::ClearContainerAll( m_BFTRawHC );
+  utility::ClearContainer( m_SCHRawHC );
 
   // utility::ClearContainerAll( m_BcInRawHC );
   utility::ClearContainerAll( m_BcOutRawHC );
@@ -228,18 +223,16 @@ RawData::DecodeHits( void )
 
   ClearAll();
 
-  // // BH1
-  // DecodeHodo( DetIdBH1, NumOfSegBH1, kBothSide, m_BH1RawHC );
-  // // BH2
-  // DecodeHodo( DetIdBH2, NumOfSegBH2, kBothSide, m_BH2RawHC );
-  // // BAC
+  // BH1
+  DecodeHodo( DetIdBH1, NumOfSegBH1, kBothSide, m_BH1RawHC );
+  // BH2
+  DecodeHodo( DetIdBH2, NumOfSegBH2, kBothSide, m_BH2RawHC );
+  // BAC
   // DecodeHodo( DetIdBAC, NumOfSegBAC, kOneSide, m_BACRawHC );
-  // // PVAC
-  // DecodeHodo( DetIdPVAC, NumOfSegPVAC, kOneSide, m_PVACRawHC );
-  // // FAC
-  // DecodeHodo( DetIdFAC, NumOfSegFAC, kOneSide, m_FACRawHC );
-  // // TOF
-  // DecodeHodo( DetIdTOF, NumOfSegTOF, kBothSide, m_TOFRawHC );
+  // SAC
+  // DecodeHodo( DetIdSAC, NumOfSegSAC, kOneSide, m_SACRawHC );
+  // TOF
+  DecodeHodo( DetIdTOF, NumOfSegTOF, kBothSide, m_TOFRawHC );
 
   //BFT
   // for( Int_t plane=0; plane<NumOfPlaneBFT; ++plane ){

@@ -75,13 +75,15 @@ private:
   typedef std::map <Int_t, HodoTParam*>::const_iterator TIterator;
   typedef std::map <Int_t, HodoAParam*>::const_iterator AIterator;
 
+  Bool_t     m_is_initialized;
   TString    m_file_name;
-  TContainer TPContainer;
-  AContainer APContainer;
+  TContainer m_TPContainer;
+  AContainer m_APContainer;
 
 public:
   void   SetFileName( const TString& filename ) { m_file_name = filename; }
   Bool_t Initialize( void );
+  Bool_t IsReady( void ) const { return m_is_initialized; }
   Bool_t GetTime( Int_t cid, Int_t plid, Int_t seg, Int_t ud, Int_t tdc, Double_t &time ) const;
   Bool_t GetDe( Int_t cid, Int_t plid, Int_t seg, Int_t ud, Int_t adc, Double_t &de ) const;
   Bool_t GetTdc(Int_t cid, Int_t plid, Int_t seg, Int_t ud, Double_t time, Int_t &tdc ) const;

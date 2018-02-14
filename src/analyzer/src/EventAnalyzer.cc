@@ -3,6 +3,7 @@
 #include "RawData.hh"
 #include "DCAnalyzer.hh"
 #include "EventAnalyzer.hh"
+#include "HodoAnalyzer.hh"
 
 ClassImp(analyzer::EventAnalyzer);
 
@@ -13,7 +14,8 @@ namespace analyzer
 EventAnalyzer::EventAnalyzer( void )
   : TObject(),
     m_raw_data( new RawData ),
-    m_dc_analyzer( new DCAnalyzer )
+    m_dc_analyzer( new DCAnalyzer ),
+    m_hodo_analyzer( new HodoAnalyzer )
 {
 }
 
@@ -22,6 +24,7 @@ EventAnalyzer::~EventAnalyzer( void )
 {
   delete m_raw_data;
   delete m_dc_analyzer;
+  delete m_hodo_analyzer;
 }
 
 //______________________________________________________________________________
@@ -33,9 +36,16 @@ EventAnalyzer::DecodeRawData( void )
 
 //______________________________________________________________________________
 void
-EventAnalyzer::DecodeDCRawHits( void )
+EventAnalyzer::DecodeDCAnalyzer( void )
 {
   m_dc_analyzer->DecodeRawHits( m_raw_data );
+}
+
+//______________________________________________________________________________
+void
+EventAnalyzer::DecodeHodoAnalyzer( void )
+{
+  m_hodo_analyzer->DecodeRawHits( m_raw_data );
 }
 
 //______________________________________________________________________________
@@ -46,27 +56,6 @@ EventAnalyzer::TrackSearchBcOut( void )
     return false;
   else
     return m_dc_analyzer->TrackSearchBcOut();
-}
-
-//______________________________________________________________________________
-Int_t
-EventAnalyzer::GetNTrackBcOut( void ) const
-{
-  if( !m_dc_analyzer )
-    return -1;
-  else
-    return m_dc_analyzer->GetNtracksBcOut();
-}
-
-//______________________________________________________________________________
-DCLocalTrack*
-EventAnalyzer::GetTrackBcOut( Int_t i ) const
-{
-  if( !m_dc_analyzer ||
-      m_dc_analyzer->GetNtracksBcOut()== 0 )
-    return nullptr;
-  else
-    return m_dc_analyzer->GetTrackBcOut(i);
 }
 
 }

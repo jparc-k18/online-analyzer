@@ -89,6 +89,7 @@ const Int_t PlOffsSdcIn  =   0;
 const Int_t PlOffsSdcOut =  30;
 const Int_t PlOffsSsd    =   6;
 
+const Int_t NumOfPlaneBFT = 2;
 const Int_t NumOfSegBFT  =  160;
 const Int_t NumOfSegSFT_X =  256; //add
 const Int_t NumOfSegSFT_UV =  320; //add

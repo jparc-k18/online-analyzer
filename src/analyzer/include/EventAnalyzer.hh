@@ -8,6 +8,8 @@
 class RawData;
 class DCAnalyzer;
 class DCLocalTrack;
+class HodoAnalyzer;
+class BH2Hit;
 
 namespace analyzer
 {
@@ -20,16 +22,19 @@ public:
   ~EventAnalyzer( void );
 
 protected:
-  RawData*    m_raw_data;
-  DCAnalyzer* m_dc_analyzer;
+  RawData*      m_raw_data;
+  DCAnalyzer*   m_dc_analyzer;
+  HodoAnalyzer* m_hodo_analyzer;
 
 public:
   void          DecodeRawData( void );
-  void          DecodeDCRawHits( void );
+  void          DecodeDCAnalyzer( void );
+  void          DecodeHodoAnalyzer( void );
+
   RawData*      GetRawData( void ) const { return m_raw_data; }
   DCAnalyzer*   GetDCAnalyzer( void ) const { return m_dc_analyzer; }
-  Int_t         GetNTrackBcOut( void ) const;
-  DCLocalTrack* GetTrackBcOut( Int_t i ) const;
+  HodoAnalyzer* GetHodoAnalyzer( void ) const { return m_hodo_analyzer; }
+
   Bool_t        TrackSearchBcOut( void );
 
   ClassDef(EventAnalyzer,0);

@@ -61,8 +61,8 @@ public:
 //______________________________________________________________________________
 inline ConfMan& ConfMan::GetInstance( void )
 {
-  static ConfMan object;
-  return object;
+  static ConfMan g_instance;
+  return g_instance;
 }
 
 #endif

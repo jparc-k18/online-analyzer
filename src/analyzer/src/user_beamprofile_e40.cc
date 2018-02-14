@@ -15,16 +15,19 @@
 #include "Controller.hh"
 #include "user_analyzer.hh"
 
+#include "BH2Hit.hh"
 #include "ConfMan.hh"
 #include "DCAnalyzer.hh"
 #include "DCAnalyzerOld.hh"
 #include "DCGeomMan.hh"
 #include "DCHit.hh"
 #include "DCLocalTrack.hh"
-#include "DebugCounter.hh"
 #include "DetectorID.hh"
 #include "EventAnalyzer.hh"
 #include "HistMaker.hh"
+#include "HodoAnalyzer.hh"
+#include "HodoParamMan.hh"
+#include "HodoPHCMan.hh"
 #include "MacroBuilder.hh"
 #include "RawData.hh"
 #include "UserParamMan.hh"
@@ -60,18 +63,13 @@ namespace analyzer
 	400., 540., 733., 866.
       };
 
-    static const std::string posName[] =
+    static const TString posName[] =
       {
 	// Inside Target
 	"Tgt Z=-495", "Tgt Z=-338", "Tgt Z=-167.5", "Tgt Z=0",
 	"Tgt Z=150",  "Tgt Z=240",
 	// Detectors
 	"SFT", "End guard", "DC1", "KbAC"
-      };
-
-    static const Double_t posSSD[] =
-      {
-	-100, 100, 100, 100
       };
 
     static Double_t FF_plus = 0;
@@ -86,6 +84,8 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.InitializeDCGeomMan();
   gConfMan.InitializeDCTdcCalibMan();
   gConfMan.InitializeDCDriftParamMan();
+  gConfMan.InitializeHodoParamMan();
+  gConfMan.InitializeHodoPHCMan();
   gConfMan.InitializeUserParamMan();
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
@@ -106,10 +106,10 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("split33"));
   tab_macro->Add(macro::Get("dispBeamProfile_e40"));
   tab_macro->Add(macro::Get("dispBcOutFF"));
-  tab_macro->Add(macro::Get("dispSSD1Profile"));
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
+  tab_hist->Add(gHist.createBH2());
   //BcOut
   {
     TList *sub_dir = new TList;
@@ -119,8 +119,8 @@ process_begin( const std::vector<std::string>& argv )
     // Profile X
     for(Int_t i = 0; i<NHist; ++i){
       char* title = i==i_Z0?
-	Form("%s_X %s (FF+%d)", nameSubDir, posName[i].c_str(), (Int_t)FF_plus) :
-	Form("%s_X %s", nameSubDir, posName[i].c_str());
+	Form("%s_X %s (FF+%d)", nameSubDir, posName[i].Data(), (Int_t)FF_plus) :
+	Form("%s_X %s", nameSubDir, posName[i].Data());
       sub_dir->Add(gHist.createTH1(unique_id++, title,
 				    400,-200,200,
 				    "x position [mm]", ""));
@@ -128,41 +128,46 @@ process_begin( const std::vector<std::string>& argv )
     // Profile Y
     for(Int_t i = 0; i<NHist; ++i){
       char* title = i==i_Z0?
-	Form("%s_Y %s (FF+%d)", nameSubDir, posName[i].c_str(), (Int_t)FF_plus) :
-	Form("%s_Y %s", nameSubDir, posName[i].c_str());
+	Form("%s_Y %s (FF+%d)", nameSubDir, posName[i].Data(), (Int_t)FF_plus) :
+	Form("%s_Y %s", nameSubDir, posName[i].Data());
       sub_dir->Add(gHist.createTH1(unique_id++, title,
-				    200,-100,100,
-				    "y position [mm]", ""));
+				   200,-100,100,
+				   "y position [mm]", ""));
     }
     tab_hist->Add(sub_dir);
     // Profile XY
     for(Int_t i = 0; i<NHist; ++i){
       char* title = i==i_Z0?
-	Form("%s_XY %s (FF+%d)", nameSubDir, posName[i].c_str(), (Int_t)FF_plus) :
-	Form("%s_YY %s", nameSubDir, posName[i].c_str());
+	Form("%s_XY %s (FF+%d)", nameSubDir, posName[i].Data(), (Int_t)FF_plus) :
+	Form("%s_YY %s", nameSubDir, posName[i].Data());
       sub_dir->Add(gHist.createTH2(unique_id++, title,
 				   400,-200,200, 200,-100,100,
 				   "x position [mm]", "y position [mm]"));
     }
+    // Correlation X and BH2
+    // sub_dir->Add( gHist.createTH2( gHist.getUniqueID(kMisc, 0, kHitPat2D),
+    // 				   "BcOut_BH2_Cor",
+    // 				   400,-200,200, NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
+    // 				   "x position [mm]", "Segment" ) );
     tab_hist->Add(sub_dir);
   }
 
-  //SSD1
   {
     TList *sub_dir = new TList;
-    const char* nameSubDir = "SSD1";
+    const char* nameSubDir = "BH2Filter";
     sub_dir->SetName(nameSubDir);
     Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat2D);
-    const char* nameLayer[] = { "Y0", "X0", "Y1", "X1" };
-    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
-      char* title = Form("%s_HitPos_%s FF+%d", nameSubDir, nameLayer[l], (Int_t)posSSD[l]);
-      sub_dir->Add(gHist.createTH1(unique_id++, title,
-				   200,-100,100,
-				   "Position [mm]", ""));
+    const Char_t* name_layer[] = { "BC3-x0", "BC3-x1", "BC3-v0", "BC3-v1", "BC3-u0", "BC3-u1",
+				   "BC4-u0", "BC4-u1", "BC4-v0", "BC4-v1", "BC4-x0", "BC4-x1" };
+    for( Int_t l=0; l<NumOfLayersBcOut; ++l ){
+	sub_dir->Add( gHist.createTH2( unique_id+l,
+				       Form("%s_BcOut-%s", nameSubDir, name_layer[l]),
+				       NumOfWireBC3+1, 0., (Double_t)NumOfWireBC3+1.,
+				       NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
+				       "Wire", "Segment" ) );
     }
     tab_hist->Add(sub_dir);
   }
-
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
   // Then you need to do down cast when you use TH2.
@@ -188,19 +193,47 @@ process_end( void )
 Int_t
 process_event( void )
 {
-  static const Int_t xpos_id  = gHist.getSequentialID(kMisc, 0, kHitPat);
-  static const Int_t ypos_id  = gHist.getSequentialID(kMisc, 0, kHitPat, NHist+1);
-  static const Int_t xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
+  static const Int_t xpos_id   = gHist.getSequentialID(kMisc, 0, kHitPat);
+  static const Int_t ypos_id   = gHist.getSequentialID(kMisc, 0, kHitPat, NHist+1);
+  static const Int_t xypos_id  = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
+  static const Int_t bh2filter_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
+  // static const Int_t bh2cor_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
+  // static const Double_t zBH2 = gGeom.GetLocalZ("BH2");
 
   EventAnalyzer event;
   event.DecodeRawData();
-  event.DecodeDCRawHits();
+  event.DecodeDCAnalyzer();
+  event.DecodeHodoAnalyzer();
 
+  const HodoAnalyzer* hodoAna = event.GetHodoAnalyzer();
+  const DCAnalyzer*   dcAna   = event.GetDCAnalyzer();
+
+  Int_t nhBh2 = hodoAna->GetNHitsBH2();
+  Double_t segBh2 = -1.;
+  for( Int_t i=0; i<nhBh2; ++i ){
+    const BH2Hit* hit = hodoAna->GetHitBH2(i);
+    Int_t seg = hit->SegmentId();
+    if( nhBh2 == 1 ) segBh2 = seg;
+    static const Int_t hit_id = gHist.getSequentialID(kBH2, 0, kHitPat);
+    hptr_array[hit_id]->Fill( seg );
+  }
+
+  for( Int_t l=0; l<NumOfLayersBcOut; ++l ){
+    const DCHitContainer& cont = dcAna->GetBcOutHC(l+1);
+    Int_t nhOut = cont.size();
+    for( Int_t i=0; i<nhOut; ++i ){
+      const DCHit* hit = cont.at(i);
+      Double_t wire = hit->GetWire();
+      hptr_array[bh2filter_id+l]->Fill( wire, segBh2 );
+    }
+  }
+
+  // BcOutTracking
   event.TrackSearchBcOut();
 
-  Int_t ntBcOut = event.GetNTrackBcOut();
+  Int_t ntBcOut = dcAna->GetNtracksBcOut();
   for( Int_t i=0; i<ntBcOut; ++i ){
-    const DCLocalTrack* track = event.GetTrackBcOut(i);
+    const DCLocalTrack* track = dcAna->GetTrackBcOut(i);
     if( !track || track->GetChiSquare()>10. ) continue;
     // Double_t x0 = track->GetX0(); Double_t y0 = track->GetY0();
     // Double_t u0 = track->GetU0(); Double_t v0 = track->GetV0();
@@ -211,6 +244,7 @@ process_event( void )
       hptr_array[ypos_id+j]->Fill(y);
       hptr_array[xypos_id+j]->Fill(x, y);
     }
+    // hptr_array[bh2cor_id]->Fill( track->GetX(zBH2), segBh2 );
   }
 
 #if DEBUG

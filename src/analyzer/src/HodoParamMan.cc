@@ -49,15 +49,17 @@ ConfMan::InitializeHodoParamMan( void )
 
 //______________________________________________________________________________
 HodoParamMan::HodoParamMan( void )
-  : TObject()
+  : TObject(),
+    m_is_initialized(false),
+    m_file_name(),
+    m_TPContainer(),
+    m_APContainer()
 {
-  //DEBUG_PRINT;
 }
 
 //______________________________________________________________________________
 HodoParamMan::~HodoParamMan( void )
 {
-  // DEBUG_PRINT;
   clearACont();
   clearTCont();
 }
@@ -66,18 +68,18 @@ HodoParamMan::~HodoParamMan( void )
 void
 HodoParamMan::clearACont( void )
 {
-  for( AIterator i=APContainer.begin(); i!=APContainer.end(); ++i )
+  for( AIterator i=m_APContainer.begin(); i!=m_APContainer.end(); ++i )
     delete i->second;
-  APContainer.clear();
+  m_APContainer.clear();
 }
 
 //______________________________________________________________________________
 void
 HodoParamMan::clearTCont( void )
 {
-  for( TIterator i=TPContainer.begin(); i!=TPContainer.end(); ++i )
+  for( TIterator i=m_TPContainer.begin(); i!=m_TPContainer.end(); ++i )
     delete i->second;
-  TPContainer.clear();
+  m_TPContainer.clear();
 }
 
 //______________________________________________________________________________
@@ -105,7 +107,7 @@ HodoParamMan::Initialize( void )
       Int_t key = MakeKey( cid, plid, seg, ud );
       if( at==0 ){ /* ADC */
 	HodoAParam *pa = new HodoAParam(p0,p1);
-	if(pa) APContainer[key]=pa;
+	if(pa) m_APContainer[key]=pa;
 	else{
 	  std::cerr << FUNC_NAME << ": new fail (A)"
 	  	    << " CId=" << std::setw(3) << cid
@@ -117,7 +119,7 @@ HodoParamMan::Initialize( void )
       else if(at==1){ /* TDC */
 	HodoTParam *ta=new HodoTParam(p0,p1);
 	if(ta){
-	  TPContainer[key]=ta;
+	  m_TPContainer[key]=ta;
 	}
 	else{
 	  std::cerr << FUNC_NAME << ": new fail (T)"
@@ -141,7 +143,7 @@ HodoParamMan::Initialize( void )
   } /* while( ifs... ) */
 
   hddaq::cout << FUNC_NAME << ": Initialization finished" << std::endl;
-
+  m_is_initialized = true;
   return true;
 }
 
@@ -173,8 +175,8 @@ HodoParamMan::GetTmap( Int_t cid, Int_t plid, Int_t seg, Int_t ud ) const
 {
   Int_t key = MakeKey(cid,plid,seg,ud);
   HodoTParam *map=0;
-  TIterator i=TPContainer.find(key);
-  if( i!=TPContainer.end() ) map=i->second;
+  TIterator i=m_TPContainer.find(key);
+  if( i!=m_TPContainer.end() ) map=i->second;
   return map;
 }
 
@@ -184,7 +186,7 @@ HodoParamMan::GetAmap( Int_t cid, Int_t plid, Int_t seg, Int_t ud ) const
 {
   Int_t key=MakeKey(cid,plid,seg,ud);
   HodoAParam *map=0;
-  AIterator i=APContainer.find(key);
-  if( i!=APContainer.end() ) map=i->second;
+  AIterator i=m_APContainer.find(key);
+  if( i!=m_APContainer.end() ) map=i->second;
   return map;
 }

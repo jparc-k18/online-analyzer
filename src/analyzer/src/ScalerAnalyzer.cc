@@ -23,6 +23,7 @@
 
 #include "ConfMan.hh"
 #include "DetectorID.hh"
+#include "Exception.hh"
 #include "FuncName.hh"
 #include "ScalerAnalyzer.hh"
 #include "UserParamMan.hh"
@@ -449,9 +450,8 @@ ScalerAnalyzer::Set( Int_t i, Int_t j, const ScalerInfo& info )
   if( i >= MaxColumn || j >= MaxRow ){
     m_ost << "#E " << FUNC_NAME << std::endl
 	  << " * Exceed Column/Row : " << info.name << std::endl;
-    throw std::out_of_range( std::string(FUNC_NAME+" "+info.name) );
-  }
-  else {
+    throw Exception( FUNC_NAME+" "+info.name );
+  } else {
     m_info[i][j] = info;
   }
 }

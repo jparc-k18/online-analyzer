@@ -5,6 +5,8 @@
 
 #include <TObject.h>
 
+#include "BH2Filter.hh"
+
 class RawData;
 class DCAnalyzer;
 class DCLocalTrack;
@@ -22,11 +24,14 @@ public:
   ~EventAnalyzer( void );
 
 protected:
-  RawData*      m_raw_data;
-  DCAnalyzer*   m_dc_analyzer;
-  HodoAnalyzer* m_hodo_analyzer;
+  Bool_t                m_bh2filter_is_applied;
+  RawData*              m_raw_data;
+  DCAnalyzer*           m_dc_analyzer;
+  HodoAnalyzer*         m_hodo_analyzer;
+  BH2Filter::FilterList m_bh2filter_list;
 
 public:
+  void          ApplyBH2Filter( void );
   void          DecodeRawData( void );
   void          DecodeDCAnalyzer( void );
   void          DecodeHodoAnalyzer( void );

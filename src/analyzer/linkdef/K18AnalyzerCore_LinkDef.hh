@@ -15,6 +15,7 @@
 #pragma link C++ enum DataType;
 
 #pragma link C++ class BH2Cluster+;
+#pragma link C++ class BH2Filter+;
 #pragma link C++ class BH2Hit+;
 #pragma link C++ class DCAnalyzer+;
 #pragma link C++ class DCHit+;

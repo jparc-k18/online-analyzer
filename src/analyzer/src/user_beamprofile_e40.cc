@@ -229,6 +229,7 @@ process_event( void )
   }
 
   // BcOutTracking
+  event.ApplyBH2Filter();
   event.TrackSearchBcOut();
 
   Int_t ntBcOut = dcAna->GetNtracksBcOut();

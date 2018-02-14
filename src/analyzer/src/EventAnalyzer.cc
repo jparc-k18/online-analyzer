@@ -1,9 +1,10 @@
 // -*- C++ -*-
 
-#include "RawData.hh"
+#include "BH2Filter.hh"
 #include "DCAnalyzer.hh"
 #include "EventAnalyzer.hh"
 #include "HodoAnalyzer.hh"
+#include "RawData.hh"
 
 ClassImp(analyzer::EventAnalyzer);
 
@@ -13,6 +14,7 @@ namespace analyzer
 //______________________________________________________________________________
 EventAnalyzer::EventAnalyzer( void )
   : TObject(),
+    m_bh2filter_is_applied( false ),
     m_raw_data( new RawData ),
     m_dc_analyzer( new DCAnalyzer ),
     m_hodo_analyzer( new HodoAnalyzer )
@@ -25,6 +27,15 @@ EventAnalyzer::~EventAnalyzer( void )
   delete m_raw_data;
   delete m_dc_analyzer;
   delete m_hodo_analyzer;
+}
+
+//______________________________________________________________________________
+void
+EventAnalyzer::ApplyBH2Filter( void )
+{
+  BH2Filter& gBH2Filter = BH2Filter::GetInstance();
+  gBH2Filter.Apply( *m_hodo_analyzer, *m_dc_analyzer, m_bh2filter_list );
+  m_bh2filter_is_applied = true;
 }
 
 //______________________________________________________________________________
@@ -54,8 +65,10 @@ EventAnalyzer::TrackSearchBcOut( void )
 {
   if( !m_dc_analyzer )
     return false;
-  else
+  if( !m_bh2filter_is_applied )
     return m_dc_analyzer->TrackSearchBcOut();
+  else
+    return m_dc_analyzer->TrackSearchBcOut( m_bh2filter_list );
 }
 
 }

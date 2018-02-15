@@ -24,13 +24,18 @@
 #pragma link C++ class DCLocalTrack+;
 #pragma link C++ class DCLTrackHit+;
 #pragma link C++ class FiberCluster+;
+#pragma link C++ class FieldElements+;
 #pragma link C++ class FLHit+;
 #pragma link C++ class HodoAnalyzer+;
 #pragma link C++ class HodoCluster+;
 #pragma link C++ class Hodo1Hit+;
 #pragma link C++ class Hodo2Hit+;
 #pragma link C++ class HodoRawHit+;
+#pragma link C++ class KuramaFieldMap+;
+#pragma link C++ class KuramaTrack+;
 #pragma link C++ class RawData+;
+#pragma link C++ class RungeKutta+;
+#pragma link C++ class TrackHit+;
 
 #pragma link C++ class ConfMan+;
 #pragma link C++ class DCDriftParamMan+;
@@ -39,6 +44,7 @@
 #pragma link C++ class DCTdcCalibMan+;
 #pragma link C++ class EMCParamMan+;
 #pragma link C++ class Exception+;
+#pragma link C++ class FieldMan+;
 #pragma link C++ class HistMaker+;
 #pragma link C++ class HodoParamMan+;
 #pragma link C++ class HodoPHCMan+;

@@ -92,7 +92,9 @@ ConfMan::Initialize( const std::vector<std::string>& argv )
 
       hddaq::cout << " key = " << key
 		  << " value = " << value << std::endl;
-      m_key_map[key] = value;
+      m_key_map[key]    = value;
+      m_int_map[key]    = value.Atoi();
+      m_double_map[key] = value.Atof();
     }
   }
 

@@ -36,6 +36,7 @@
 #pragma link C++ class KuramaTrack+;
 #pragma link C++ class RawData+;
 #pragma link C++ class RungeKutta+;
+#pragma link C++ class SsdCluster+;
 #pragma link C++ class TrackHit+;
 
 #pragma link C++ class ConfMan+;

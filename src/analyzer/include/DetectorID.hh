@@ -139,6 +139,7 @@ const Int_t NumOfLayersSSD2 = 4;
 const Int_t NumOfSamplesSSD = 8;
 const Int_t NumOfSegSSD1 = 1536;
 const Int_t NumOfSegSSD2 = 1536;
+const Double_t SamplingIntervalSSD = 25.; //[ns]
 const Int_t DetIdLAC  =  6;
 const Int_t DetIdGC   =  8;
 const Int_t DetIdYOON =  9;

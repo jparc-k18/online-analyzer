@@ -38,6 +38,7 @@
 #include <TRint.h>
 #include <TRotMatrix.h>
 #include <TStyle.h>
+#include <TTimeStamp.h>
 #include <TTRD1.h>
 #include <TTRD2.h>
 #include <TTUBS.h>
@@ -45,6 +46,9 @@
 #include <TView.h>
 
 #include <std_ostream.hh>
+#include <DAQNode.hh>
+#include <Unpacker.hh>
+#include <UnpackerManager.hh>
 
 #include "DCGeomMan.hh"
 #include "DCLocalTrack.hh"
@@ -58,15 +62,18 @@
 #include "MathTools.hh"
 // #include "RMAnalyzer.hh"
 
-#define BH2        1
-#define BcOut      1
-#define KURAMA     1
-#define Collimator 1
-#define SdcIn      1
-#define SdcOut     1
-#define FBH        1
-#define SCH        1
-#define TOF        1
+// Detector Construction
+#define BH2         1
+#define BcOut       1
+#define KURAMA      1
+#define SdcIn       1
+#define SdcOut      1
+#define FBH         1
+#define SCH         1
+#define TOF         1
+#define E07Detector 0
+
+// Additional Canvas
 #define Vertex     0
 #define Hist       0
 
@@ -74,6 +81,10 @@ ClassImp(EventDisplay);
 
 namespace
 {
+  using namespace hddaq;
+  using namespace hddaq::unpacker;
+
+  const UnpackerManager& gUnpacker = GUnpacker::get_instance();
   const DCGeomMan& gGeom = DCGeomMan::GetInstance();
   // EMCAnalyzer&     gEMC  = EMCAnalyzer::GetInstance();
   // RMAnalyzer&      gRM   = RMAnalyzer::GetInstance();
@@ -195,7 +206,6 @@ EventDisplay::Initialize( void )
 #else
   gStyle->SetPalette(53);
 #endif
-  gStyle->SetPalette(53);
   gStyle->SetNumberContours(255);
 
   m_geometry = new TGeometry( "evdisp","K1.8 Event Display" );
@@ -217,7 +227,7 @@ EventDisplay::Initialize( void )
   ConstructKURAMA();
 #endif
 
-#if Collimator
+#if E07Detector
   ConstructCollimator();
 #endif
 
@@ -258,8 +268,11 @@ EventDisplay::Initialize( void )
   m_canvas->Update();
 
 #if Vertex
+
+#if E07Detector
   ConstructEmulsion();
   ConstructSSD();
+#endif
 
   m_canvas_vertex = new TCanvas( "canvas_vertex", "K1.8 Event Display (Vertex)",
 				 2680, 540, 920, 500 );
@@ -1215,7 +1228,7 @@ EventDisplay::ConstructEmulsion( void )
   Double_t EmulsionZ = 100.0/2.0; // Y
   Double_t rotMatEmulsion[9];
 
-  new TBRIK( "target_brik", "target_brik", "void",
+  new TBRIK( "emulsion_brik", "emulsion_brik", "void",
 	     EmulsionX, EmulsionY, EmulsionZ );
 
   CalcRotMatrix( 0., 0., 0., rotMatEmulsion );
@@ -2059,17 +2072,26 @@ EventDisplay::DrawText( void )
 
   m_geometry->Draw();
 
+  static const int eb_id = gUnpacker.get_fe_id("k18eb");
+
+  const UInt_t event_number = gUnpacker.get_node_header( eb_id, DAQNode::k_event_number );
+  const UInt_t run_number   = gUnpacker.get_node_header( eb_id, DAQNode::k_run_number   );
+  const UInt_t data_size    = gUnpacker.get_node_header( eb_id, DAQNode::k_data_size    );
+  const UInt_t unix_time    = gUnpacker.get_node_header( eb_id, DAQNode::k_unix_time    );
+  TTimeStamp time_stamp( unix_time );
+  time_stamp.Add( -TTimeStamp::GetZoneOffset() );
+
   static TText *text = NewTText();
   text->SetTextSize(0.040);
   text->DrawText( 0.050, 0.950, "Run#" );
   text->DrawText( 0.270, 0.950, "Event#" );
-  text->DrawText( 0.630, 0.950, "Date" );
+  text->DrawText( 0.600, 0.950, "Date" );
   text->SetTextAlign(32);
-  // text->DrawText( 0.220, 0.950, Form("%05d", gRM.RunNumber() ) );
-  // text->DrawText( 0.500, 0.950, Form("%8d", gRM.EventNumber() ) );
-  // text->DrawText( 0.950, 0.950, utility::TimeStamp().AsString("s") );
+  text->DrawText( 0.220, 0.950, Form("%05d", run_number ) );
+  text->DrawText( 0.500, 0.950, Form("%8d", event_number ) );
+  text->DrawText( 0.950, 0.950, time_stamp.AsString("s") );
   text->SetTextSize(0.025);
-  // text->DrawText( 0.950, 0.900, Form("%d word", utility::EBDataSize()) );
+  text->DrawText( 0.950, 0.900, Form("%d word", data_size) );
   text->SetTextAlign(12);
   text->DrawText( 0.700, 0.900, "EB Data Size" );
   text->DrawText( 0.050, 0.530, "BcOutTracking" );
@@ -2104,6 +2126,7 @@ EventDisplay::DrawText( void )
 
   // text->DrawText( 0.050, 0.200, Form("EMC   (  %.2lf  %.2lf  )",
   // 				     gEMC.X(), gEMC.Y() ));
+  m_canvas->Update();
 }
 
 //______________________________________________________________________________

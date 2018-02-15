@@ -9,6 +9,9 @@
 #include <stdexcept>
 #include <string>
 
+#include <TF1.h>
+#include <TGraph.h>
+
 #include <std_ostream.hh>
 
 #include "DCDriftParamMan.hh"
@@ -18,6 +21,7 @@
 #include "DCTdcCalibMan.hh"
 #include "DCLTrackHit.hh"
 #include "DebugCounter.hh"
+#include "DetectorID.hh"
 #include "FuncName.hh"
 #include "MathTools.hh"
 // #include "SsdParamMan.hh"
@@ -277,120 +281,126 @@ DCHit::CalcFiberObservables( void )
 }
 
 //______________________________________________________________________________
+Bool_t
+DCHit::CalcSsdObservables( void )
+{
+  if( !gGeom.IsReady()
+      // || !gSsd.IsReady()
+      )
+    return false;
+
+  m_angle = gGeom.GetTiltAngle( m_layer );
+  m_wpos  = gGeom.CalcWirePosition( m_layer, m_wire );
+  m_z     = gGeom.GetLocalZ( m_layer );
+
+  std::size_t nhadc = m_adc.size();
+  if( nhadc!=NumOfSamplesSSD ){
+    hddaq::cerr << "#W " << FUNC_NAME << " the number of sample is wrong " << std::endl
+		<< "   layer#" << m_layer << " segment#" << m_wire
+		<< " [" << nhadc << "/" << NumOfSamplesSSD << "]" << std::endl;
+    return false;
+  }
+
+  if( m_trailing.size()>0 ) m_zero_suppressed = true;
+
+  Double_t pedestal = m_adc[0];
+  std::vector<Double_t> dE(nhadc);
+  std::vector<Double_t> rms(nhadc);
+  for( std::size_t i=0; i<nhadc; ++i ){
+    if ( m_dt.size()<nhadc ){
+      m_dt.push_back( m_tdc[i] );
+      m_dl.push_back( 0. );
+    }
+    m_dl_range[i] = true;
+
+    // if( m_adc[i]<pedestal )
+    //   pedestal = m_adc[i];
+
+    // if( !gSsd.GetDe( m_layer, m_wire, i, m_adc[i], dE[i] ) ){
+    //   hddaq::cerr << FUNC_NAME << " : something is wrong at GetDe("
+    // 		  << m_layer   << ", " << m_wire << ", " << i << ", "
+    // 		  << m_adc[i]  << ", " << dE[i] << ")"
+    // 		  << std::endl;
+    //   return false;
+    // }
+    dE[i] = m_adc[i];
+
+    // if( !gSsd.GetRms( m_layer,m_wire, i, rms[i] ) ){
+    //   hddaq::cerr << FUNC_NAME << " : something is wrong at GetRms("
+    // 		  << m_layer   << ", " << m_wire << ", " << i << ", "
+    // 		  << rms[i]   << ")"
+    // 		  <<std::endl;
+    //   return false;
+    // }
+    rms[i] = 1.;
+
+    dE[i] -= pedestal;
+    m_waveform.push_back( dE[i] );
+    m_time.push_back( m_tdc[i]*SamplingIntervalSSD );
+
+    if( m_adc[i]>m_peak_height ){
+      m_peak_time     = m_time[i];
+      m_rms           = rms[i];
+      m_peak_height   = m_adc[i];
+      m_peak_position = m_tdc[i];
+    }
+  }
+
+  m_pedestal  = pedestal;
+  m_adc_sum   = math::Accumulate(dE);
+  m_deviation = math::Deviation(dE);
+
+  /*** SSD Waveform Fitting ***************************
+   *
+   *  f(x) = a * (x-b) * exp(-(x-b)/c)
+   *    a : scale factor
+   *    b : start timing
+   *    c : decay constant
+   *
+   *  f'(x)          = a/c * (-x+b+c) * exp(-(x-b)/c)
+   *  f'(x)|x=b+c    = 0.
+   *  f(b+c)         = a * c * exp(-1)
+   *  Sf(x)dx|b->inf = a * c^2
+   *
+   *  peak time = b + c
+   *  amplitude = a * c * exp(-1)
+   *  integral  = a * c^2
+   *
+   ****************************************************/
+
+  // TGraphErrors graph( NumOfSamplesSSD, &m_time[0], dE, 0, rms );
+  TGraph graph( NumOfSamplesSSD, &(m_time[0]), &(dE[0]) );
+
+  Double_t xmin =  40.;
+  Double_t xmax = 210.;
+  TF1 func( "func", "[0]*(x-[1])*exp(-(x-[1])/[2])", xmin, xmax );
+  func.SetParameter( 0, dE[3]*std::exp(1)/60. );
+  func.SetParLimits( 0, 0., 50000.*std::exp(-1.) );
+  func.SetParameter( 1, 40. );
+  func.SetParLimits( 1, 10., 100. );
+  func.FixParameter( 2, 50. );
+
+  graph.Fit("func", "RQ");
+  Double_t p[3];
+  func.GetParameters(p);
+
+  m_peak_time = p[1] + p[2];
+  m_amplitude = p[0] * p[2] * std::exp(-1.);
+  // m_de        = func.Integral( p[1], math::Infinity() );
+  m_de        = p[0]*p[2]*p[2];
+  m_chisqr    = func.GetChisquare() / func.GetNDF();
+
+  m_is_ssd        = true;
+  m_good_waveform = true;
+
+  if( m_de<0.1 ) m_good_waveform = false;
+
+  return true;
+}
+
+//______________________________________________________________________________
 // Bool_t
-// DCHit::CalcSsdObservables( void )
-// {
-//   if( !gGeom.IsReady() || !gSsd.IsReady() )
-//     return false;
-
-//   m_angle = gGeom.GetTiltAngle( m_layer );
-//   m_wpos  = gGeom.CalcWirePosition( m_layer, m_wire );
-//   m_z     = gGeom.GetLocalZ( m_layer );
-
-//   std::size_t nhadc = m_adc.size();
-//   if( nhadc!=NumOfSampleSSD ){
-//     hddaq::cerr << "#W " << FUNC_NAME << " the number of sample is wrong " << std::endl
-// 		<< "   layer#" << m_layer << " segment#" << m_wire
-// 		<< " [" << nhadc << "/" << NumOfSampleSSD << "]" << std::endl;
-//     return false;
-//   }
-
-//   if( m_trailing.size()>0 ) m_zero_suppressed = true;
-
-//   Double_t pedestal = m_adc[0];
-//   std::vector<Double_t> dE(nhadc);
-//   std::vector<Double_t> rms(nhadc);
-//   for( std::size_t i=0; i<nhadc; ++i ){
-//     if ( m_dt.size()<nhadc ){
-//       m_dt.push_back( m_tdc[i] );
-//       m_dl.push_back( 0. );
-//     }
-//     m_dl_range[i] = true;
-
-//     // if( m_adc[i]<pedestal )
-//     //   pedestal = m_adc[i];
-
-//     if( !gSsd.GetDe( m_layer, m_wire, i, m_adc[i], dE[i] ) ){
-//       hddaq::cerr << FUNC_NAME << " : something is wrong at GetDe("
-// 		  << m_layer   << ", " << m_wire << ", " << i << ", "
-// 		  << m_adc[i]  << ", " << dE[i] << ")"
-// 		  << std::endl;
-//       return false;
-//     }
-
-//     if( !gSsd.GetRms( m_layer,m_wire, i, rms[i] ) ){
-//       hddaq::cerr << FUNC_NAME << " : something is wrong at GetRms("
-// 		  << m_layer   << ", " << m_wire << ", " << i << ", "
-// 		  << rms[i]   << ")"
-// 		  <<std::endl;
-//       return false;
-//     }
-
-//     dE[i] -= pedestal;
-//     m_waveform.push_back( dE[i] );
-//     m_time.push_back( m_tdc[i]*SamplingIntervalSSD );
-
-//     if( m_adc[i]>m_peak_height ){
-//       m_peak_time     = m_time[i];
-//       m_rms           = rms[i];
-//       m_peak_height   = m_adc[i];
-//       m_peak_position = m_tdc[i];
-//     }
-//   }
-
-//   m_pedestal  = pedestal;
-//   m_adc_sum   = math::Accumulate(dE);
-//   m_deviation = math::Deviation(dE);
-
-//   /*** SSD Waveform Fitting ***************************
-//    *
-//    *  f(x) = a * (x-b) * exp(-(x-b)/c)
-//    *    a : scale factor
-//    *    b : start timing
-//    *    c : decay constant
-//    *
-//    *  f'(x)          = a/c * (-x+b+c) * exp(-(x-b)/c)
-//    *  f'(x)|x=b+c    = 0.
-//    *  f(b+c)         = a * c * exp(-1)
-//    *  Sf(x)dx|b->inf = a * c^2
-//    *
-//    *  peak time = b + c
-//    *  amplitude = a * c * exp(-1)
-//    *  integral  = a * c^2
-//    *
-//    ****************************************************/
-
-//   // TGraphErrors graph( NumOfSampleSSD, &m_time[0], dE, 0, rms );
-//   TGraph graph( NumOfSampleSSD, &(m_time[0]), &(dE[0]) );
-
-//   Double_t xmin =  40.;
-//   Double_t xmax = 210.;
-//   TF1 func( "func", "[0]*(x-[1])*exp(-(x-[1])/[2])", xmin, xmax );
-//   func.SetParameter( 0, dE[3]*std::exp(1)/60. );
-//   func.SetParLimits( 0, 0., 50000.*std::exp(-1.) );
-//   func.SetParameter( 1, 40. );
-//   func.SetParLimits( 1, 10., 100. );
-//   func.FixParameter( 2, 50. );
-
-//   graph.Fit("func", "RQ");
-//   Double_t p[3];
-//   func.GetParameters(p);
-
-//   m_peak_time = p[1] + p[2];
-//   m_amplitude = p[0] * p[2] * std::exp(-1.);
-//   // m_de        = func.Integral( p[1], math::Infinity() );
-//   m_de        = p[0]*p[2]*p[2];
-//   m_chisqr    = func.GetChisquare() / func.GetNDF();
-
-//   m_is_ssd        = true;
-//   m_good_waveform = true;
-
-//   if( m_de<0.1 ) m_good_waveform = false;
-
-//   return true;
-// }
-
-// Bool_t DCHit::CalcObservablesSimulation( Double_t dlength)
+// DCHit::CalcObservablesSimulation( Double_t dlength )
 // {
 //   if( !gGeom.IsReady() ) return false;
 

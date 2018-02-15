@@ -19,7 +19,7 @@
 #include "DCGeomMan.hh"
 #include "DCGeomRecord.hh"
 #include "DetectorID.hh"
-// #include "EventDisplay.hh"
+#include "EventDisplay.hh"
 #include "Exception.hh"
 #include "FieldMan.hh"
 #include "FuncName.hh"
@@ -32,7 +32,7 @@ ClassImp(RungeKutta);
 namespace
 {
   const DCGeomMan& gGeom   = DCGeomMan::GetInstance();
-  // EventDisplay&    gEvDisp = EventDisplay::GetInstance();
+  EventDisplay&    gEvDisp = EventDisplay::GetInstance();
   const FieldMan&  gField  = FieldMan::GetInstance();
   // const Int_t& IdTOF    = gGeom.DetectorId("TOF");
 
@@ -133,7 +133,7 @@ RungeKutta::CalcFieldIntegral( Double_t U, Double_t V, Double_t Q, const ThreeVe
 //______________________________________________________________________________
 RKFieldIntegral
 RungeKutta::CalcFieldIntegral( Double_t U, Double_t V, Double_t Q, const ThreeVector& B,
-		       const ThreeVector& dBdX, const ThreeVector& dBdY )
+			       const ThreeVector& dBdX, const ThreeVector& dBdY )
 {
   Double_t fac = std::sqrt(1.+U*U+V*V);
   Double_t f1  = U*V*(B.x()) - (1.+U*U)*(B.y()) + V*(B.z());
@@ -160,7 +160,7 @@ RungeKutta::CalcFieldIntegral( Double_t U, Double_t V, Double_t Q, const ThreeVe
 //______________________________________________________________________________
 RKDeltaFieldIntegral
 RungeKutta::CalcDeltaFieldIntegral( const RKTrajectoryPoint& prevPoint,
-			    const RKFieldIntegral& intg )
+				    const RKFieldIntegral& intg )
 {
   Double_t dkxx = intg.axu*prevPoint.dudx + intg.axv*prevPoint.dvdx
     + intg.cxx*prevPoint.dxdx + intg.cxy*prevPoint.dydx;
@@ -193,10 +193,10 @@ RungeKutta::CalcDeltaFieldIntegral( const RKTrajectoryPoint& prevPoint,
 //______________________________________________________________________________
 RKDeltaFieldIntegral
 RungeKutta::CalcDeltaFieldIntegral( const RKTrajectoryPoint   & prevPoint,
-			    const RKFieldIntegral     & intg,
-			    const RKDeltaFieldIntegral& dIntg1,
-			    const RKDeltaFieldIntegral& dIntg2,
-			    Double_t StepSize )
+				    const RKFieldIntegral     & intg,
+				    const RKDeltaFieldIntegral& dIntg1,
+				    const RKDeltaFieldIntegral& dIntg2,
+				    Double_t StepSize )
 {
   Double_t h  = StepSize;
   Double_t h2 = StepSize*StepSize;
@@ -276,7 +276,7 @@ RungeKutta::TraceOneStep( Double_t StepSize, const RKTrajectoryPoint& prevPoint 
   ThreeVector dBdY1 = gField.GetdBdY( Z1 );
   RKFieldIntegral f1 =
     RungeKutta::CalcFieldIntegral( pre_u, pre_v, pre_q,
-			   B1, dBdX1, dBdY1 );
+				   B1, dBdX1, dBdY1 );
 #else
   RKFieldIntegral f1 =
     RungeKutta::CalcFieldIntegral( pre_u, pre_v, pre_q, B1 );
@@ -294,13 +294,13 @@ RungeKutta::TraceOneStep( Double_t StepSize, const RKTrajectoryPoint& prevPoint 
   ThreeVector dBdY2 = gField.GetdBdY( Z2 );
   RKFieldIntegral f2 =
     RungeKutta::CalcFieldIntegral( pre_u + 0.5*dr*f1.kx,
-			   pre_v + 0.5*dr*f1.ky,
-			   pre_q, B2, dBdX2, dBdY2 );
+				   pre_v + 0.5*dr*f1.ky,
+				   pre_q, B2, dBdX2, dBdY2 );
 #else
   RKFieldIntegral f2 =
     RungeKutta::CalcFieldIntegral( pre_u + 0.5*dr*f1.kx,
-			   pre_v + 0.5*dr*f1.ky,
-			   pre_q, B2 );
+				   pre_v + 0.5*dr*f1.ky,
+				   pre_q, B2 );
 #endif
   RKDeltaFieldIntegral df2 =
     RungeKutta::CalcDeltaFieldIntegral( prevPoint, f2, df1, df1, 0.5*dr );
@@ -308,13 +308,13 @@ RungeKutta::TraceOneStep( Double_t StepSize, const RKTrajectoryPoint& prevPoint 
 #ifdef ExactFFTreat
   RKFieldIntegral f3 =
     RungeKutta::CalcFieldIntegral( pre_u + 0.5*dr*f2.kx,
-			   pre_v + 0.5*dr*f2.ky,
-			   pre_q, B2, dBdX2, dBdY2 );
+				   pre_v + 0.5*dr*f2.ky,
+				   pre_q, B2, dBdX2, dBdY2 );
 #else
   RKFieldIntegral f3 =
     RungeKutta::CalcFieldIntegral( pre_u + 0.5*dr*f2.kx,
-			   pre_v + 0.5*dr*f2.ky,
-			   pre_q, B2 );
+				   pre_v + 0.5*dr*f2.ky,
+				   pre_q, B2 );
 #endif
   RKDeltaFieldIntegral df3 =
     RungeKutta::CalcDeltaFieldIntegral( prevPoint, f3, df2, df1, 0.5*dr );
@@ -329,13 +329,13 @@ RungeKutta::TraceOneStep( Double_t StepSize, const RKTrajectoryPoint& prevPoint 
   ThreeVector dBdY4 = gField.GetdBdY( Z4 );
   RKFieldIntegral f4 =
     RungeKutta::CalcFieldIntegral( pre_u + dr*f3.kx,
-			   pre_v + dr*f3.ky,
-			   pre_q, B4, dBdX4, dBdY4 );
+				   pre_v + dr*f3.ky,
+				   pre_q, B4, dBdX4, dBdY4 );
 #else
   RKFieldIntegral f4 =
     RungeKutta::CalcFieldIntegral( pre_u + dr*f3.kx,
-                         pre_v + dr*f3.ky,
-                         pre_q, B4 );
+				   pre_v + dr*f3.ky,
+				   pre_q, B4 );
 #endif
   RKDeltaFieldIntegral df4 =
     RungeKutta::CalcDeltaFieldIntegral( prevPoint, f4, df3, df3, dr );
@@ -446,8 +446,8 @@ RungeKutta::TraceOneStep( Double_t StepSize, const RKTrajectoryPoint& prevPoint 
 //______________________________________________________________________________
 Bool_t
 RungeKutta::CheckCrossing( Int_t lnum, const RKTrajectoryPoint& startPoint,
-		   const RKTrajectoryPoint& endPoint,
-		   RKcalcHitPoint& crossPoint )
+			   const RKTrajectoryPoint& endPoint,
+			   RKcalcHitPoint& crossPoint )
 {
   const DCGeomRecord *geom_record = gGeom.GetRecord( lnum );
   ThreeVector posVector   = geom_record->Position();
@@ -648,15 +648,15 @@ RungeKutta::Trace( const RKCordParameter& initial, RKHitPointContainer& hitConta
 
   while( ++iStep < MaxStep ){
     Double_t StepSize = gField.StepSize( prevPoint.PositionInGlobal(),
-				       NormalStepSize, MinStepSize );
+					 NormalStepSize, MinStepSize );
     RKTrajectoryPoint nextPoint = RungeKutta::TraceOneStep( StepSize, prevPoint );
 
     /*for EventDisplay*/
     StepPoint[iStep-1] = nextPoint.PositionInGlobal();
 
     while( RungeKutta::CheckCrossing( hitContainer[iPlane].first,
-			      prevPoint, nextPoint,
-			      hitContainer[iPlane].second ) ){
+				      prevPoint, nextPoint,
+				      hitContainer[iPlane].second ) ){
 #if 0
       {
 	PrintHelper helper( 1, std::ios::fixed );
@@ -694,10 +694,10 @@ RungeKutta::Trace( const RKCordParameter& initial, RKHitPointContainer& hitConta
 #endif
       --iPlane;
       if( iPlane<0 ) {
-	// if( gEvDisp.IsReady() ){
-	//   Double_t q = hitContainer[0].second.MomentumInGlobal().z();
-	//   gEvDisp.DrawKuramaTrack( iStep, StepPoint, q );
-        // }
+	if( gEvDisp.IsReady() ){
+	  Double_t q = hitContainer[0].second.MomentumInGlobal().z();
+	  gEvDisp.DrawKuramaTrack( iStep, StepPoint, q );
+        }
 	return KuramaTrack::kPassed;
       }
     } // while( RKcheckCrossing() )
@@ -769,10 +769,10 @@ RungeKutta::TraceToLast( RKHitPointContainer& hitContainer )
 			      prevPoint, nextPoint,
 			      hitContainer[iPlane].second ) ){
       if( ++iPlane>=nPlane ){
-	// if( gEvDisp.IsReady() ){
-	//   Double_t q = hitContainer[0].second.MomentumInGlobal().z();
-	//   gEvDisp.DrawKuramaTrack( iStep, StepPoint, q );
-        // }
+	if( gEvDisp.IsReady() ){
+	  Double_t q = hitContainer[0].second.MomentumInGlobal().z();
+	  gEvDisp.DrawKuramaTrack( iStep, StepPoint, q );
+        }
 	return true;
       }
     }

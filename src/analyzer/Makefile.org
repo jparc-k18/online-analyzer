@@ -51,7 +51,7 @@ my_tgt_udebug	:= $(bin_dir)/unpacker_debug
 my_obj_tag	:= $(core_obj) user_tag_checker.o
 my_tgt_tag	:= $(bin_dir)/tag_checker
 
-my_obj_event_display	:= $(core_obj) user_event_display.o $(gui_obj)
+my_obj_event_display	:= $(core_obj) user_event_display.o
 my_tgt_event_display	:= $(bin_dir)/event_display
 
 my_obj_rawhist_e13	:= $(core_obj) user_rawhist_e13.o $(gui_obj)
@@ -183,11 +183,9 @@ $(eval $(call make-nogui-target,$(my_tgt_tag),$(my_lib_tag)))
 
 #_______________________________________________________________________________
 my_obj_event_display	:= $(addprefix $(my_dir)/src/,$(my_obj_event_display))
-my_obj_event_display	:= $(my_obj_event_display) \
-		  $(my_dir)/dict/GuiPs_Dict.o
-my_lib_event_display := libmyevent_display.so
+my_lib_event_display	:= libmyevent_display.so
 $(eval $(call make-lib,$(my_lib_event_display),$(my_obj_event_display)))
-$(eval $(call make-gui-target,$(my_tgt_event_display),$(my_lib_event_display)))
+$(eval $(call make-nogui-target,$(my_tgt_event_display),$(my_lib_event_display)))
 
 #_______________________________________________________________________________
 my_obj_rawhist_e13	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e13))

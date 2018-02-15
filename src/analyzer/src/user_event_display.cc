@@ -13,7 +13,6 @@
 #include <Unpacker.hh>
 #include <UnpackerManager.hh>
 
-#include "Controller.hh"
 #include "user_analyzer.hh"
 
 #include "BH2Filter.hh"
@@ -27,6 +26,7 @@
 #include "DCTdcCalibMan.hh"
 #include "DetectorID.hh"
 #include "EventAnalyzer.hh"
+#include "EventDisplay.hh"
 #include "HistMaker.hh"
 #include "HodoAnalyzer.hh"
 #include "HodoParamMan.hh"
@@ -48,6 +48,7 @@ namespace analyzer
     const HistMaker&       gHist      = HistMaker::getInstance();
     const DCGeomMan&       gGeom      = DCGeomMan::GetInstance();
           BH2Filter&       gBH2Filter = BH2Filter::GetInstance();
+          EventDisplay&    gEvDisp    = EventDisplay::GetInstance();
 
     std::vector<TH1*> hptr_array;
 
@@ -66,31 +67,13 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.InitializeParameter<HodoParamMan>("HDPRM");
   gConfMan.InitializeParameter<HodoPHCMan>("HDPHC");
   gConfMan.InitializeParameter<UserParamMan>("USER");
+  gConfMan.InitializeParameter<EventDisplay>();
   if( !gConfMan.IsGood() ) return -1;
 
   gBH2Filter.Print();
   // gBH2Filter.SetVerbose();
 
-  // Make tabs
-  hddaq::gui::Controller& gCon = hddaq::gui::Controller::getInstance();
-  TGFileBrowser *tab_hist  = gCon.makeFileBrowser("Hist");
-  TGFileBrowser *tab_macro = gCon.makeFileBrowser("Macro");
-
-  // Add macros to the Macro tab
-  tab_macro->Add(macro::Get("clear_all_canvas"));
-  tab_macro->Add(macro::Get("clear_canvas"));
-  tab_macro->Add(macro::Get("split22"));
-  tab_macro->Add(macro::Get("split32"));
-  tab_macro->Add(macro::Get("split33"));
-
-  // Add histograms to the Hist tab
-  HistMaker& gHist = HistMaker::getInstance();
-  tab_hist->Add(gHist.createBH2());
-
-  // Set histogram pointers to the vector sequentially.
-  // This vector contains both TH1 and TH2.
-  // Then you need to do down cast when you use TH2.
-  if(0 != gHist.setHistPtr(hptr_array)){return -1;}
+  gEvDisp.SetStyle();
 
   return 0;
 }
@@ -113,6 +96,10 @@ process_event( void )
 
   const HodoAnalyzer* const hodoAna = event.GetHodoAnalyzer();
   const DCAnalyzer* const dcAna = event.GetDCAnalyzer();
+
+  gEvDisp.DrawText();
+
+  // gEvDisp.DrawTrigger( std::vector<Int_t>() );
 
   // Int_t nhBh2 = hodoAna->GetNHitsBH2();
   // Int_t segBh2 = -1.;
@@ -195,6 +182,8 @@ process_event( void )
 // #if DEBUG
 //   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 // #endif
+
+  gEvDisp.EndOfEvent();
 
   return 0;
 }

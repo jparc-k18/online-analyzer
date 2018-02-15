@@ -19,20 +19,20 @@
 #include "DCTrackSearch.hh"
 #include "DebugCounter.hh"
 #include "DebugTimer.hh"
-// #include "EventDisplay.hh"
-// #include "FiberCluster.hh"
+#include "EventDisplay.hh"
+#include "FiberCluster.hh"
 #include "FuncName.hh"
-// #include "Hodo1Hit.hh"
-// #include "Hodo2Hit.hh"
-// #include "HodoAnalyzer.hh"
-// #include "HodoCluster.hh"
-// #include "K18Parameters.hh"
-// #include "K18TrackD2U.hh"
-// #include "KuramaTrack.hh"
+#include "Hodo1Hit.hh"
+#include "Hodo2Hit.hh"
+#include "HodoAnalyzer.hh"
+#include "HodoCluster.hh"
+#include "K18Parameters.hh"
+#include "K18TrackD2U.hh"
+#include "KuramaTrack.hh"
 #include "MathTools.hh"
 // #include "MWPCCluster.hh"
 #include "RawData.hh"
-// #include "SsdCluster.hh"
+#include "SsdCluster.hh"
 #include "UserParamMan.hh"
 #include "DeleteUtility.hh"
 
@@ -179,18 +179,18 @@ DCAnalyzer::DCAnalyzer( void )
 //______________________________________________________________________________
 DCAnalyzer::~DCAnalyzer( void )
 {
-  // ClearKuramaTracks();
-  // ClearK18TracksD2U();
-  // ClearTracksSsdOut();
-  // ClearTracksSsdIn();
-  // ClearTracksSsdXY();
-  // ClearTracksSdcOut();
-  // ClearTracksSdcIn();
+  ClearKuramaTracks();
+  ClearK18TracksD2U();
+  ClearTracksSsdOut();
+  ClearTracksSsdIn();
+  ClearTracksSsdXY();
+  ClearTracksSdcOut();
+  ClearTracksSdcIn();
   ClearTracksBcOut();
-  // ClearTracksBcOutSdcIn();
-  // ClearTracksBcOutSsdIn();
-  // ClearTracksSsdOutSdcIn();
-  // ClearTracksSdcInSdcOut();
+  ClearTracksBcOutSdcIn();
+  ClearTracksBcOutSsdIn();
+  ClearTracksSsdOutSdcIn();
+  ClearTracksSdcInSdcOut();
   ClearDCHits();
   // ClearVtxHits();
   debug::ObjectCounter::Decrease(ClassName());
@@ -321,162 +321,162 @@ DCAnalyzer::DecodeBcOutHits( RawData *rawData )
   return true;
 }
 
-// //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::DecodeSdcInHits( RawData *rawData )
-// {
-//   if( m_is_decoded[k_SdcIn] ){
-//     hddaq::cout << "#D " << FUNC_NAME << " "
-// 		<< "already decoded" << std::endl;
-//     return true;
-//   }
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::DecodeSdcInHits( RawData *rawData )
+{
+  if( m_is_decoded[k_SdcIn] ){
+    hddaq::cout << "#D " << FUNC_NAME << " "
+		<< "already decoded" << std::endl;
+    return true;
+  }
 
-//   ClearSdcInHits();
+  ClearSdcInHits();
 
-//   for( Int_t layer=1; layer<=NumOfLayersSdcIn; ++layer ){
-//     const DCRHitContainer &RHitCont=rawData->GetSdcInRawHC(layer);
-//     Int_t nh = RHitCont.size();
-//     for( Int_t i=0; i<nh; ++i ){
-//       DCRawHit *rhit  = RHitCont[i];
-//       DCHit    *hit   = new DCHit( rhit->PlaneId(), rhit->WireId() );
-//       Int_t       nhtdc = rhit->GetTdcSize();
-//       if(!hit) continue;
-//       for( Int_t j=0; j<nhtdc; ++j ){
-// 	hit->SetTdcVal( rhit->GetTdc(j) );
-//       }
-//       if( hit->CalcDCObservables() )
-// 	m_SdcInHC[layer].push_back(hit);
-//       else
-// 	delete hit;
-//     }
-//   }
+  for( Int_t layer=1; layer<=NumOfLayersSdcIn; ++layer ){
+    const DCRHitContainer &RHitCont=rawData->GetSdcInRawHC(layer);
+    Int_t nh = RHitCont.size();
+    for( Int_t i=0; i<nh; ++i ){
+      DCRawHit *rhit  = RHitCont[i];
+      DCHit    *hit   = new DCHit( rhit->PlaneId(), rhit->WireId() );
+      Int_t       nhtdc = rhit->GetTdcSize();
+      if(!hit) continue;
+      for( Int_t j=0; j<nhtdc; ++j ){
+	hit->SetTdcVal( rhit->GetTdc(j) );
+      }
+      if( hit->CalcDCObservables() )
+	m_SdcInHC[layer].push_back(hit);
+      else
+	delete hit;
+    }
+  }
 
-//   m_is_decoded[k_SdcIn] = true;
-//   return true;
-// }
+  m_is_decoded[k_SdcIn] = true;
+  return true;
+}
 
-// //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::DecodeSdcOutHits( RawData *rawData )
-// {
-//   if( m_is_decoded[k_SdcOut] ){
-//     hddaq::cout << "#D " << FUNC_NAME << " "
-// 		<< "already decoded" << std::endl;
-//     return true;
-//   }
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::DecodeSdcOutHits( RawData *rawData )
+{
+  if( m_is_decoded[k_SdcOut] ){
+    hddaq::cout << "#D " << FUNC_NAME << " "
+		<< "already decoded" << std::endl;
+    return true;
+  }
 
-//   ClearSdcOutHits();
+  ClearSdcOutHits();
 
-//   for( Int_t layer=1; layer<=NumOfLayersSdcOut; ++layer ){
-//     const DCRHitContainer &RHitCont = rawData->GetSdcOutRawHC(layer);
-//     Int_t nh = RHitCont.size();
-//     for( Int_t i=0; i<nh; ++i ){
-//       DCRawHit *rhit  = RHitCont[i];
-//       DCHit    *hit   = new DCHit( rhit->PlaneId(), rhit->WireId() );
-//       Int_t       nhtdc = rhit->GetTdcSize();
-//       if(!hit) continue;
-//       for( Int_t j=0; j<nhtdc; ++j ){
-// 	hit->SetTdcVal( rhit->GetTdc(j) );
-//       }
-//       if( hit->CalcDCObservables() )
-// 	m_SdcOutHC[layer].push_back(hit);
-//       else
-// 	delete hit;
-//     }
-//   }
+  for( Int_t layer=1; layer<=NumOfLayersSdcOut; ++layer ){
+    const DCRHitContainer &RHitCont = rawData->GetSdcOutRawHC(layer);
+    Int_t nh = RHitCont.size();
+    for( Int_t i=0; i<nh; ++i ){
+      DCRawHit *rhit  = RHitCont[i];
+      DCHit    *hit   = new DCHit( rhit->PlaneId(), rhit->WireId() );
+      Int_t       nhtdc = rhit->GetTdcSize();
+      if(!hit) continue;
+      for( Int_t j=0; j<nhtdc; ++j ){
+	hit->SetTdcVal( rhit->GetTdc(j) );
+      }
+      if( hit->CalcDCObservables() )
+	m_SdcOutHC[layer].push_back(hit);
+      else
+	delete hit;
+    }
+  }
 
-//   m_is_decoded[k_SdcOut] = true;
-//   return true;
-// }
+  m_is_decoded[k_SdcOut] = true;
+  return true;
+}
 
-// //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::DecodeSsdInHits( RawData *rawData )
-// {
-//   if( m_is_decoded[k_SsdIn] ){
-//     hddaq::cout << "#D " << FUNC_NAME << " "
-// 		<< "already decoded" << std::endl;
-//     return true;
-//   }
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::DecodeSsdInHits( RawData *rawData )
+{
+  if( m_is_decoded[k_SsdIn] ){
+    hddaq::cout << "#D " << FUNC_NAME << " "
+		<< "already decoded" << std::endl;
+    return true;
+  }
 
-//   ClearSsdInHits();
+  ClearSsdInHits();
 
-//   for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer){
-//     const DCRHitContainer &RHitCont = rawData->GetSsdInRawHC(layer);
-//     Int_t nh = RHitCont.size();
-//     for( Int_t i=0; i<nh; ++i ){
-//       DCRawHit *rhit = RHitCont[i];
-//       DCHit    *hit  = new DCHit( rhit->PlaneId()+PlOffsSsd, rhit->WireId() );
-//       if(!hit) continue;
-//       // zero suppression flag
-//       if( rhit->GetTrailingSize()>0 )
-//       	hit->SetTdcTrailing( rhit->GetTrailing(0) );
+  for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer){
+    const DCRHitContainer &RHitCont = rawData->GetSsdInRawHC(layer);
+    Int_t nh = RHitCont.size();
+    for( Int_t i=0; i<nh; ++i ){
+      DCRawHit *rhit = RHitCont[i];
+      DCHit    *hit  = new DCHit( rhit->PlaneId()+PlOffsSsd, rhit->WireId() );
+      if(!hit) continue;
+      // zero suppression flag
+      if( rhit->GetTrailingSize()>0 )
+      	hit->SetTdcTrailing( rhit->GetTrailing(0) );
 
-//       Int_t nhadc = rhit->GetTdcSize();
-//       Int_t adc[nhadc];
-//       Int_t tdc[nhadc];
-//       for( Int_t j=0; j<nhadc; ++j ){
-// 	adc[j] = rhit->GetTdc(j);
-// 	tdc[j] = j+1;
-// 	hit->SetAdcVal( adc[j] );
-// 	hit->SetTdcVal( tdc[j] );
-//       }
-//       if( hit->CalcSsdObservables() )
-// 	m_SsdInHC[layer].push_back(hit);
-//       else
-// 	delete hit;
-//     }
-//     ClusterizeSsd( m_SsdInHC[layer], m_SsdInClCont[layer] );
-//   }
+      Int_t nhadc = rhit->GetTdcSize();
+      Int_t adc[nhadc];
+      Int_t tdc[nhadc];
+      for( Int_t j=0; j<nhadc; ++j ){
+	adc[j] = rhit->GetTdc(j);
+	tdc[j] = j+1;
+	hit->SetAdcVal( adc[j] );
+	hit->SetTdcVal( tdc[j] );
+      }
+      if( hit->CalcSsdObservables() )
+	m_SsdInHC[layer].push_back(hit);
+      else
+	delete hit;
+    }
+    ClusterizeSsd( m_SsdInHC[layer], m_SsdInClCont[layer] );
+  }
 
-//   m_is_decoded[k_SsdIn] = true;
-//   return true;
-// }
+  m_is_decoded[k_SsdIn] = true;
+  return true;
+}
 
-// //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::DecodeSsdOutHits( RawData *rawData )
-// {
-//   if( m_is_decoded[k_SsdOut] ){
-//     hddaq::cout << "#D " << FUNC_NAME << " "
-// 		<< "already decoded" << std::endl;
-//     return true;
-//   }
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::DecodeSsdOutHits( RawData *rawData )
+{
+  if( m_is_decoded[k_SsdOut] ){
+    hddaq::cout << "#D " << FUNC_NAME << " "
+		<< "already decoded" << std::endl;
+    return true;
+  }
 
-//   ClearSsdOutHits();
+  ClearSsdOutHits();
 
-//   for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer){
-//     const DCRHitContainer &RHitCont = rawData->GetSsdOutRawHC(layer);
-//     Int_t nh = RHitCont.size();
-//     for( Int_t i=0; i<nh; ++i ){
-//       DCRawHit *rhit = RHitCont[i];
-//       DCHit    *hit  = new DCHit(rhit->PlaneId()+PlOffsSsd,
-// 				 rhit->WireId());
-//       if(!hit) continue;
-//       // zero suppression flag
-//       if( rhit->GetTrailingSize()>0 )
-// 	hit->SetTdcTrailing( rhit->GetTrailing(0) );
+  for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer){
+    const DCRHitContainer &RHitCont = rawData->GetSsdOutRawHC(layer);
+    Int_t nh = RHitCont.size();
+    for( Int_t i=0; i<nh; ++i ){
+      DCRawHit *rhit = RHitCont[i];
+      DCHit    *hit  = new DCHit(rhit->PlaneId()+PlOffsSsd,
+				 rhit->WireId());
+      if(!hit) continue;
+      // zero suppression flag
+      if( rhit->GetTrailingSize()>0 )
+	hit->SetTdcTrailing( rhit->GetTrailing(0) );
 
-//       Int_t nhadc = rhit->GetTdcSize();
-//       Int_t adc[nhadc];
-//       Int_t tdc[nhadc];
-//       for( Int_t j=0; j<nhadc; ++j ){
-// 	adc[j] = rhit->GetTdc(j);
-// 	tdc[j] = j+1;
-// 	hit->SetAdcVal( adc[j] );
-// 	hit->SetTdcVal( tdc[j] );
-//       }
-//       if( hit->CalcSsdObservables() )
-// 	m_SsdOutHC[layer].push_back(hit);
-//       else
-// 	delete hit;
-//     }
-//     ClusterizeSsd( m_SsdOutHC[layer], m_SsdOutClCont[layer] );
-//   }
+      Int_t nhadc = rhit->GetTdcSize();
+      Int_t adc[nhadc];
+      Int_t tdc[nhadc];
+      for( Int_t j=0; j<nhadc; ++j ){
+	adc[j] = rhit->GetTdc(j);
+	tdc[j] = j+1;
+	hit->SetAdcVal( adc[j] );
+	hit->SetTdcVal( tdc[j] );
+      }
+      if( hit->CalcSsdObservables() )
+	m_SsdOutHC[layer].push_back(hit);
+      else
+	delete hit;
+    }
+    ClusterizeSsd( m_SsdOutHC[layer], m_SsdOutClCont[layer] );
+  }
 
-//   m_is_decoded[k_SsdOut] = true;
-//   return true;
-// }
+  m_is_decoded[k_SsdOut] = true;
+  return true;
+}
 
 //______________________________________________________________________________
 Bool_t
@@ -1485,60 +1485,60 @@ DCAnalyzer::ClearTracksSdcInSdcOut( void )
 // //   return clusters.size();
 // // }
 
-// //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::ClusterizeSsd( void )
-// {
-//   for( Int_t l=1; l<NumOfLayersSsdIn+1; ++l )
-//     ClusterizeSsd( m_SsdInHC[l], m_SsdInClCont[l] );
-//   for( Int_t l=1; l<NumOfLayersSsdOut+1; ++l )
-//     ClusterizeSsd( m_SsdOutHC[l], m_SsdOutClCont[l] );
-//   return true;
-// }
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::ClusterizeSsd( void )
+{
+  for( Int_t l=1; l<NumOfLayersSsdIn+1; ++l )
+    ClusterizeSsd( m_SsdInHC[l], m_SsdInClCont[l] );
+  for( Int_t l=1; l<NumOfLayersSsdOut+1; ++l )
+    ClusterizeSsd( m_SsdOutHC[l], m_SsdOutClCont[l] );
+  return true;
+}
 
-// //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::ClusterizeSsd( const DCHitContainer& HitCont,
-// 			   SsdClusterContainer& ClCont,
-// 			   Double_t MaxTimeDiff )
-// {
-//   utility::ClearContainer( ClCont );
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::ClusterizeSsd( const DCHitContainer& HitCont,
+			   SsdClusterContainer& ClCont,
+			   Double_t MaxTimeDiff )
+{
+  utility::ClearContainer( ClCont );
 
-//   const UInt_t nh = HitCont.size();
-//   if( nh==0 )
-//     return false;
+  const UInt_t nh = HitCont.size();
+  if( nh==0 )
+    return false;
 
-//   std::vector<Int_t> flag( nh, 0 );
+  std::vector<Int_t> flag( nh, 0 );
 
-//   for( UInt_t i=0; i<nh; ++i ){
-//     if( flag[i]>0 )
-//       continue;
-//     DCHitContainer CandCont;
-//     DCHit* hitA = HitCont[i];
-//     if( !hitA || !hitA->IsGoodWaveForm() )
-//       continue;
-//     CandCont.push_back( hitA );
-//     ++flag[i];
+  for( UInt_t i=0; i<nh; ++i ){
+    if( flag[i]>0 )
+      continue;
+    DCHitContainer CandCont;
+    DCHit* hitA = HitCont[i];
+    if( !hitA || !hitA->IsGoodWaveForm() )
+      continue;
+    CandCont.push_back( hitA );
+    ++flag[i];
 
-//     for( UInt_t j=0; j<nh; ++j ){
-//       if( CandCont.size()==SsdCluster::MaxClusterSize() )
-// 	break;
-//       if( i==j || flag[j]>0 )
-// 	continue;
-//       DCHit* hitB = HitCont[j];
-//       if( !hitB || !hitB->IsGoodWaveForm() )
-// 	continue;
-//       if( IsClusterable( CandCont, hitB ) ){
-// 	CandCont.push_back( hitB );
-// 	++flag[j];
-//       }
-//     }
-//     SsdCluster *cluster = new SsdCluster( CandCont );
-//     if( cluster ) ClCont.push_back( cluster );
-//   }
+    for( UInt_t j=0; j<nh; ++j ){
+      if( CandCont.size()==SsdCluster::MaxClusterSize() )
+	break;
+      if( i==j || flag[j]>0 )
+	continue;
+      DCHit* hitB = HitCont[j];
+      if( !hitB || !hitB->IsGoodWaveForm() )
+	continue;
+      if( IsClusterable( CandCont, hitB ) ){
+	CandCont.push_back( hitB );
+	++flag[j];
+      }
+    }
+    SsdCluster *cluster = new SsdCluster( CandCont );
+    if( cluster ) ClCont.push_back( cluster );
+  }
 
-//   return true;
-// }
+  return true;
+}
 
 // //______________________________________________________________________________
 // void

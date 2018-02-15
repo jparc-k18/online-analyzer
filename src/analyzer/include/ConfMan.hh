@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include <bitset>
+#include <iomanip>
 
 #include <std_ostream.hh>
 

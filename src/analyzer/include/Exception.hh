@@ -4,6 +4,7 @@
 #define EXCEPTION_HH
 
 #include <exception>
+#include <stdexcept>
 #include <string>
 
 #include <TObject.h>

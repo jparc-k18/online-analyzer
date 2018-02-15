@@ -1,9 +1,10 @@
-// Author: Tomonori Takahashi
+// author: Tomonori Takahashi
 
 #include "Main.hh"
 
 #include <iostream>
 #include <algorithm>
+#include <iomanip>
 #include <iterator>
 #include <ctime>
 #include <sys/time.h>

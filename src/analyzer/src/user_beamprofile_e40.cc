@@ -35,7 +35,7 @@
 #include "RawData.hh"
 #include "UserParamMan.hh"
 
-#define BH2FILTER 0
+#define BH2FILTER 1
 
 namespace analyzer
 {
@@ -156,22 +156,24 @@ process_begin( const std::vector<std::string>& argv )
 				   "x position [mm]", "y position [mm]"));
     }
     // BH2 Filter
+#if !BH2FILTER
     sub_dir->Add( gHist.createTH2( gHist.getUniqueID(kMisc, 2, kHitPat2D, 1),
     				   "BcOut_BH2_RAW",
     				   400,-200,200, NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
     				   "x position [mm]", "Segment" ) );
-    sub_dir->Add( gHist.createTH2( gHist.getUniqueID(kMisc, 2, kHitPat2D, 2),
-    				   "BcOut_BH2_CUT",
-    				   400,-200,200, NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
-    				   "x position [mm]", "Segment" ) );
     sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kMulti, 1),
     				   "BcOut_NTracks_RAW", 10, 0., 10. ) );
-    sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kMulti, 2),
-    				   "BcOut_NTracks_CUT", 10, 0., 10. ) );
     sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kChisqr, 1),
     				   "BcOut_Chisqr_RAW", 100, 0., 20. ) );
+#endif
+    sub_dir->Add( gHist.createTH2( gHist.getUniqueID(kMisc, 2, kHitPat2D, 2),
+    				   "BcOut_BH2",
+    				   400,-200,200, NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
+    				   "x position [mm]", "Segment" ) );
+    sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kMulti, 2),
+    				   "BcOut_NTracks", 10, 0., 10. ) );
     sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kChisqr, 2),
-    				   "BcOut_Chisqr_CUT", 100, 0., 20. ) );
+    				   "BcOut_Chisqr", 100, 0., 20. ) );
     tab_hist->Add(sub_dir);
   }
 

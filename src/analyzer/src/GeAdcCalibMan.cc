@@ -28,7 +28,8 @@ inline UInt_t MakeKey( Int_t seg )
 
 //Adc1,Adc2,Adc3,Adc4,Adc5
 //______________________________________________________________________________
-struct GeAdcCalibMap {
+struct GeAdcCalibMap
+{
   GeAdcCalibMap( Double_t q0, Double_t q1, Double_t q2, Double_t q3, Double_t q4 )
     : p0(q0), p1(q1), p2(q2), p3(q3), p4(q4)
   {}

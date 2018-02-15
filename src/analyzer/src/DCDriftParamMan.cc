@@ -62,7 +62,8 @@ DCDriftParamMan::Initialize( void )
 
   std::ifstream ifs( m_file_name );
   if( !ifs.is_open() ){
-    hddaq::cerr << FUNC_NAME << ": file open fail" << std::endl;
+    hddaq::cerr << "#E " << FUNC_NAME << " file open fail : "
+		<< m_file_name << std::endl;
     return false;
   }
 

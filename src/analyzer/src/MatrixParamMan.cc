@@ -9,6 +9,7 @@
 #include "MatrixParamMan.hh"
 #include "ConfMan.hh"
 #include "DetectorID.hh"
+#include "Exception.hh"
 #include "FuncName.hh"
 
 ClassImp(MatrixParamMan);
@@ -143,14 +144,22 @@ MatrixParamMan::Initialize( const TString& filename_2d,
 Bool_t
 MatrixParamMan::IsAccept( Int_t detA, Int_t detB )
 {
-  Int_t enable = m_enable_2d.at( detA ).at( detB );
-  return ( enable == 1 );
+  try {
+    Int_t enable = m_enable_2d.at( detA ).at( detB );
+    return ( enable == 1 );
+  } catch( const std::out_of_range& e ) {
+    throw Exception( FUNC_NAME+" "+e.what() );
+  }
 }
 
 //_____________________________________________________________________
 Bool_t
 MatrixParamMan::IsAccept( Int_t detA, Int_t detB, Int_t detC )
 {
-  Int_t enable = m_enable_3d.at( detA ).at( detB ).at( detC );
-  return ( enable == 1 );
+  try {
+    Int_t enable = m_enable_3d.at( detA ).at( detB ).at( detC );
+    return ( enable == 1 );
+  } catch( const std::out_of_range& e ) {
+    throw Exception( FUNC_NAME+" "+e.what() );
+  }
 }

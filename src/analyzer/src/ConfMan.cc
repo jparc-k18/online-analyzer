@@ -70,33 +70,31 @@ ConfMan::Initialize( const std::vector<std::string>& argv )
   dir += "/";
   hddaq::cout << " dir = " << dir << std::endl;
   std::ifstream conf( confFile.c_str() );
-  while (conf.good())
-    {
-      std::string l;
-      std::getline(conf, l);
-      std::istringstream iss(l);
-      std::istream_iterator<std::string> issBegin(iss);
-      std::istream_iterator<std::string> issEnd;
-      std::vector<std::string> param(issBegin, issEnd);
-      if (param.empty())
-	continue;
-      if (param[0].empty())
-	continue;
-      if (param.size()==2)
-	{
-	  TString key   = param[0];
-	  TString value = param[1];
-	  key.ReplaceAll(":","");
-	  key.ReplaceAll(";","");
-	  key.ReplaceAll(" ","");
-	  if ( value[0] != '/' )
-	    value = hddaq::realpath( std::string(dir+value) );
+  while( conf.good() ){
+    std::string l;
+    std::getline(conf, l);
+    std::istringstream iss(l);
+    std::istream_iterator<std::string> issBegin(iss);
+    std::istream_iterator<std::string> issEnd;
+    std::vector<std::string> param(issBegin, issEnd);
+    if( param.empty() )
+      continue;
+    if( param[0].empty() )
+      continue;
+    if( param.size()==2 ){
+      TString key   = param[0];
+      TString value = param[1];
+      key.ReplaceAll(":","");
+      key.ReplaceAll(";","");
+      key.ReplaceAll(" ","");
+      if( value[0] != '/' )
+	value = hddaq::realpath( std::string(dir+value) );
 
-	  hddaq::cout << " key = " << key
-		    << " value = " << value << std::endl;
-	  m_key_map[key] = value;
-	}
+      hddaq::cout << " key = " << key
+		  << " value = " << value << std::endl;
+      m_key_map[key] = value;
     }
+  }
 
   // initialize unpacker system
   UnpackerManager& g_unpacker = GUnpacker::get_instance();

@@ -15,6 +15,7 @@
 #include "DetectorID.hh"
 #include "DCHit.hh"
 #include "DCAnalyzer.hh"
+#include "Exception.hh"
 #include "FuncName.hh"
 #include "HodoAnalyzer.hh"
 #include "HodoCluster.hh"
@@ -72,10 +73,8 @@ BH2Filter::~BH2Filter( void )
 void
 BH2Filter::Apply( const HodoAnalyzer& hodo, const DCAnalyzer& dc, FilterList& cands )
 {
-  if( !m_is_ready ){
-    hddaq::cerr << "#E " << FUNC_NAME << " parameters are not ready" << std::endl;
-    std::exit(-1);
-  }
+  if( !m_is_ready )
+    throw Exception( FUNC_NAME+" not initialized" );
 
   m_dc   = &dc;
   m_hodo = &hodo;
@@ -92,10 +91,8 @@ BH2Filter::Apply( const HodoAnalyzer& hodo, const DCAnalyzer& dc, FilterList& ca
 void
 BH2Filter::Apply( Int_t T0Seg, const DCAnalyzer& dc, FilterList& cands )
 {
-  if( !m_is_ready ){
-    hddaq::cerr << "#E " << FUNC_NAME << " parameters are not ready" << std::endl;
-    std::exit(-1);
-  }
+  if( !m_is_ready )
+    throw Exception( FUNC_NAME+" not initialized" );
 
   m_dc = &dc;
   std::set<Int_t> seg;

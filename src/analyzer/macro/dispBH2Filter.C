@@ -42,18 +42,33 @@ void dispBH2Filter( void )
     c->Clear();
     c->Divide(2,2);
     TH1 *h;
-    c->cd(1);
+    Bool_t bh2filter = false;
     h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kMulti, 1) ) );
-    if( h ) h->Draw();
-    c->cd(2);
-    h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 2, kHitPat2D, 1) ) );
-    if( h ) h->Draw("colz");
-    c->cd(3);
-    h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kMulti, 2) ) );
-    if( h ) h->Draw();
-    c->cd(4);
-    h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 2, kHitPat2D, 2) ) );
-    if( h ) h->Draw("colz");
+    bh2filter = ( h == 0 );
+    if( bh2filter ){
+      c->cd(1);
+      h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kMulti, 2) ) );
+      if( h ) h->Draw();
+      c->cd(2);
+      h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 2, kHitPat2D, 2) ) );
+      if( h ) h->Draw("colz");
+      c->cd(3);
+      h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kChisqr, 2) ) );
+      if( h ) h->Draw("colz");
+    } else {
+      c->cd(1);
+      h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kMulti, 1) ) );
+      if( h ) h->Draw();
+      c->cd(2);
+      h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 2, kHitPat2D, 1) ) );
+      if( h ) h->Draw("colz");
+      c->cd(3);
+      h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kMulti, 2) ) );
+      if( h ) h->Draw();
+      c->cd(4);
+      h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 2, kHitPat2D, 2) ) );
+      if( h ) h->Draw("colz");
+    }
     c->Update();
   }
 

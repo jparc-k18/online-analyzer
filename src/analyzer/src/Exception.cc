@@ -4,6 +4,7 @@
 
 #include <TString.h>
 
+#include <escape_sequence.hh>
 #include <std_ostream.hh>
 
 #include "Exception.hh"
@@ -16,7 +17,9 @@ Exception::Exception( const TString& msg )
   : TObject(),
     m_msg()
 {
-  m_msg = FUNC_NAME + " " + msg;
+  m_msg = hddaq::unpacker::esc::k_yellow
+    + FUNC_NAME + " " + msg
+    + hddaq::unpacker::esc::k_default_color;
 }
 
 //______________________________________________________________________________

@@ -14,6 +14,7 @@
 #include "DCGeomRecord.hh"
 #include "Exception.hh"
 #include "FuncName.hh"
+#include "PrintHelper.hh"
 
 ClassImp(DCGeomMan);
 
@@ -41,9 +42,7 @@ DCGeomMan::GetLocalZ( Int_t lnum ) const
   if( itr != m_map.end() ){
     return itr->second->length_;
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -62,9 +61,7 @@ DCGeomMan::GetResolution( Int_t lnum ) const
   if( itr != m_map.end() ){
     return itr->second->resol_;
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -83,9 +80,7 @@ DCGeomMan::GetTiltAngle( Int_t lnum ) const
   if( itr != m_map.end() ){
     return itr->second->tiltAngle_;
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -104,9 +99,7 @@ DCGeomMan::GetRotAngle1( Int_t lnum ) const
   if( itr != m_map.end() ){
     return itr->second->rotAngle1_;
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -125,9 +118,7 @@ DCGeomMan::GetRotAngle2( Int_t lnum ) const
   if( itr != m_map.end() ){
     return itr->second->rotAngle2_;
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -146,9 +137,7 @@ DCGeomMan::GetGlobalPosition( Int_t lnum ) const
   if( itr != m_map.end() ){
     return itr->second->pos_;
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -167,9 +156,7 @@ DCGeomMan::NormalVector( Int_t lnum ) const
   if( itr != m_map.end() ){
     return itr->second->NormalVector();
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -188,9 +175,7 @@ DCGeomMan::UnitVector( Int_t lnum ) const
   if( itr != m_map.end() ){
     return itr->second->UnitVector();
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -209,9 +194,7 @@ DCGeomMan::GetRecord( Int_t lnum ) const
   if( itr != m_map.end() ){
     return itr->second;
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -230,9 +213,7 @@ DCGeomMan::CalcWirePosition( Int_t lnum, Double_t wire ) const
   if( itr != m_map.end() ){
     return itr->second->WirePos(wire);
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -244,9 +225,7 @@ DCGeomMan::CalcWireNumber( Int_t lnum, Double_t pos ) const
   if( itr != m_map.end() ){
     return itr->second->WireNumber(pos);
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -344,9 +323,7 @@ DCGeomMan::Local2GlobalPos( Int_t lnum,
       + pGeo->dzdu_*in.z() + pGeo->pos_.z();
     return ThreeVector( x, y, z );
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -380,9 +357,7 @@ DCGeomMan::Global2LocalPos( Int_t lnum,
       + pGeo->dudz_*(in.z()-pGeo->pos_.z());
     return ThreeVector( x, y, z );
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -410,9 +385,7 @@ DCGeomMan::Local2GlobalDir( Int_t lnum,
       + pGeo->dzdu_*in.z();
     return ThreeVector( x, y, z );
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -437,9 +410,7 @@ DCGeomMan::Global2LocalDir( Int_t lnum,
     Double_t z = pGeo->dudx_*in.x() + pGeo->dudy_*in.y()+ pGeo->dudz_*in.z();
     return ThreeVector( x, y, z );
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -459,9 +430,7 @@ DCGeomMan::SetResolution( Int_t lnum,  Double_t res)
   if( itr != m_map.end() ){
     itr->second->resol_ = res;
   } else {
-    hddaq::cerr << FUNC_NAME << ": No record. Layer#="
-		<< lnum << std::endl;
-    throw Exception( FUNC_NAME+": No record" );
+    throw Exception( FUNC_NAME+": No record. Layer#="+TString::Itoa(lnum,10) );
   }
 }
 
@@ -475,7 +444,5 @@ DCGeomMan::GetDetectorId( const TString& name ) const
       return itr->second->id_;
     }
   }
-
-  hddaq::cerr << FUNC_NAME << " : No such detector " << name << std::endl;
-  return -9999;
+  throw Exception( FUNC_NAME+": No such detector. Name="+name );
 }

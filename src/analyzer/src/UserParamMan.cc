@@ -8,8 +8,15 @@
 #include <std_ostream.hh>
 
 #include "ConfMan.hh"
+#include "Exception.hh"
 #include "FuncName.hh"
 #include "UserParamMan.hh"
+
+namespace
+{
+  // throw exception when no parameter is found
+  const Bool_t ThrowException = true;
+}
 
 ClassImp(UserParamMan);
 
@@ -32,25 +39,34 @@ UserParamMan::GetSize( const TString& name ) const
   if( itr != param_container_.end() ){
     return itr->second.size();
   } else {
-    std::cerr << "#E " << FUNC_NAME
-	      << " No such parameter name (" << name << ")"
-	      << std::endl;
-    return -1;
+    if( ThrowException ){
+      throw Exception( FUNC_NAME+" No such parameter : "+name );
+    } else {
+      std::cerr << "#W " << FUNC_NAME
+		<< " No such parameter : " << name << std::endl;
+      return -1;
+    }
   }
 }
 
 //______________________________________________________________________________
 Double_t
-UserParamMan::GetParameter( const TString& pName, Int_t index ) const
+UserParamMan::GetParameter( const TString& name, Int_t index ) const
 {
-  mapType::const_iterator itr = param_container_.find(pName);
+  static const Double_t default_value = -9999.;
+
+  mapType::const_iterator itr = param_container_.find(name);
   if( itr != param_container_.end() ){
     return itr->second.at(index);
   } else {
-    std::cerr << "#E " << FUNC_NAME
-	      << " No such parameter name (" << pName << ")"
-	      << std::endl;
-    return -9999.;
+    if( ThrowException ){
+      throw Exception( FUNC_NAME+" No such parameter : "+name );
+    } else {
+      std::cerr << "#W " << FUNC_NAME
+		<< " No such parameter : " << name << " -> "
+		<< default_value << std::endl;
+      return default_value;
+    }
   }
 }
 
@@ -61,8 +77,7 @@ UserParamMan::Initialize( const TString& filename )
   std::ifstream ifs( filename );
   if( !ifs.is_open() ){
     hddaq::cerr << "#E " << FUNC_NAME
-		<< " No such parameter file (" << filename << ")"
-		<< std::endl;
+		<< " No such file : " << filename << std::endl;
     return false;
   }
 

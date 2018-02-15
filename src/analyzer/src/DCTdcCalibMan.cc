@@ -2,12 +2,13 @@
 
 #include <cstdio>
 #include <fstream>
-#include <iostream>
 #include <iomanip>
-#include <cstdlib>
+#include <iostream>
+#include <sstream>
 
 #include "ConfMan.hh"
 #include "DCTdcCalibMan.hh"
+#include "Exception.hh"
 #include "FuncName.hh"
 
 ClassImp(DCTdcCalibMan);
@@ -66,7 +67,8 @@ DCTdcCalibMan::Initialize( void )
 
   std::ifstream ifs( m_file_name );
   if( !ifs.is_open() ){
-    hddaq::cerr << FUNC_NAME << ": file open fail" << std::endl;
+    hddaq::cerr << "#E " << FUNC_NAME << " file open fail : "
+		<< m_file_name << std::endl;
     return false;
   }
 
@@ -115,17 +117,19 @@ Bool_t
 DCTdcCalibMan::GetTime( Int_t PlaneId, Double_t WireId,
 			Int_t tdc, Double_t & time ) const
 {
-  DCTdcCalMap *p=GetMap(PlaneId,WireId);
+  DCTdcCalMap *p = GetMap(PlaneId,WireId);
   if(p){
     time=(p->p0)+(p->p1)*tdc;
     return true;
   }
   else{
-    std::cerr << FUNC_NAME << ": No record. "
-    	      << " PlaneId=" << std::setw(3) << std::dec << PlaneId
-    	      << " WireId=" << std::setw(3) << std::dec << WireId
-    	      << std::endl;
-    return false;
+    std::stringstream ss;
+    ss << FUNC_NAME << ": No record. "
+       << " PlaneId=" << std::setw(3) << std::dec << PlaneId
+       << " WireId=" << std::setw(3) << std::dec << WireId
+       << std::endl;
+    throw Exception( ss.str() );
+    // return false;
   }
 }
 
@@ -140,10 +144,12 @@ DCTdcCalibMan::GetTdc( Int_t PlaneId, Double_t WireId,
     return true;
   }
   else{
-    std::cerr << FUNC_NAME << ": No record. "
-    	      << " PlaneId=" << std::setw(3) << std::dec << PlaneId
-    	      << " WireId=" << std::setw(3) << std::dec << WireId
-    	      << std::endl;
-    return false;
+    std::stringstream ss;
+    ss << FUNC_NAME << ": No record. "
+       << " PlaneId=" << std::setw(3) << std::dec << PlaneId
+       << " WireId=" << std::setw(3) << std::dec << WireId
+       << std::endl;
+    throw Exception( ss.str() );
+    // return false;
   }
 }

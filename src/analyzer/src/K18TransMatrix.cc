@@ -321,8 +321,8 @@ K18TransMatrix::CalcDeltaD2U( Double_t xin, Double_t yin,
       //      hddaq::cout << delta2 << std::endl;
     }else{
       Double_t s1;
-      s1 = std::cbrt(-q/2 + TMath::Sqrt(-hanbetu)) + std::cbrt(-q/2 - TMath::Sqrt(-hanbetu))
-	-alpha/3;
+      s1 = cbrt(-q/2 + TMath::Sqrt(-hanbetu)) + cbrt(-q/2 - TMath::Sqrt(-hanbetu)) - alpha/3;
+      // s1 = std::cbrt(-q/2 + TMath::Sqrt(-hanbetu)) + std::cbrt(-q/2 - TMath::Sqrt(-hanbetu)) - alpha/3;
       delta2 = s1;
       //      hddaq::cout << "ans1 " << ans1 << std::endl;
       //      hddaq::cout << delta2 << std::endl;

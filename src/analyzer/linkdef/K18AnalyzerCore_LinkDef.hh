@@ -31,6 +31,7 @@
 #pragma link C++ class Hodo1Hit+;
 #pragma link C++ class Hodo2Hit+;
 #pragma link C++ class HodoRawHit+;
+#pragma link C++ class K18TrackD2U+;
 #pragma link C++ class KuramaFieldMap+;
 #pragma link C++ class KuramaTrack+;
 #pragma link C++ class RawData+;
@@ -43,13 +44,15 @@
 #pragma link C++ class DCGeomRecord+;
 #pragma link C++ class DCTdcCalibMan+;
 #pragma link C++ class EMCParamMan+;
+#pragma link C++ class EventDisplay+;
 #pragma link C++ class Exception+;
 #pragma link C++ class FieldMan+;
+#pragma link C++ class GeAdcCalibMan+;
 #pragma link C++ class HistMaker+;
 #pragma link C++ class HodoParamMan+;
 #pragma link C++ class HodoPHCMan+;
 #pragma link C++ class HttpServer+;
-#pragma link C++ class GeAdcCalibMan+;
+#pragma link C++ class K18TransMatrix+;
 #pragma link C++ class MatrixParamMan+;
 #pragma link C++ class MsTParamMan+;
 #pragma link C++ class ScalerAnalyzer+;

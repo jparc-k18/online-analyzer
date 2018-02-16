@@ -95,7 +95,9 @@ namespace
   const Width_t TrackColor = kRed;
   const Width_t TrackWidth = 1;
 
-  const Double_t BeamAxis = -150.;
+  // const Double_t BeamAxis = -150.;
+  const Double_t BeamAxis = -240.;
+
 #if Vertex
   const Double_t MinX = -50.;
   const Double_t MaxX =  50.;
@@ -834,6 +836,84 @@ EventDisplay::ConstructSdcIn( void )
 {
   const Double_t wireL = 200.0;
 
+  // SFT U
+  {
+    const Int_t lid = gGeom.GetDetectorId("SFT-U");
+    Double_t Rmin = 0.0;
+    Double_t Rmax = 0.01;
+    Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
+    Double_t Matrix[9] = {};
+    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
+		   gGeom.GetRotAngle1( lid ),
+		   gGeom.GetRotAngle2( lid ),
+		   Matrix );
+    new TRotMatrix( "rotSFTU", "rotSFTU", Matrix );
+    new TTUBE( "SFTUTube", "SFTUTube", "void", Rmin, Rmax, L );
+    for( Int_t wire=1; wire<=NumOfSegSFT_UV; ++wire ){
+      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
+      ThreeVector wireGlobalPos = gGeom.GetGlobalPosition( lid );
+      m_SDC1v1_node.push_back( new TNode( Form( "SFTu_Node_%d", wire ),
+					  Form( "SFTu_Node_%d", wire ),
+					  "SFTUTube",
+					  wireGlobalPos.x()+localPos,
+					  wireGlobalPos.y(),
+					  wireGlobalPos.z(),
+					  "rotSFTU", "void" ) );
+    }
+  }
+
+  // SFT V
+  {
+    const Int_t lid = gGeom.GetDetectorId("SFT-V");
+    Double_t Rmin = 0.0;
+    Double_t Rmax = 0.01;
+    Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
+    Double_t Matrix[9] = {};
+    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
+		   gGeom.GetRotAngle1( lid ),
+		   gGeom.GetRotAngle2( lid ),
+		   Matrix );
+    new TRotMatrix( "rotSFTV", "rotSFTV", Matrix );
+    new TTUBE( "SFTVTube", "SFTVTube", "void", Rmin, Rmax, L );
+    for( Int_t wire=1; wire<=NumOfSegSFT_UV; ++wire ){
+      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
+      ThreeVector wireGlobalPos = gGeom.GetGlobalPosition( lid );
+      m_SDC1v1_node.push_back( new TNode( Form( "SFTv_Node_%d", wire ),
+					  Form( "SFTv_Node_%d", wire ),
+					  "SFTVTube",
+					  wireGlobalPos.x()+localPos,
+					  wireGlobalPos.y(),
+					  wireGlobalPos.z(),
+					  "rotSFTV", "void" ) );
+    }
+  }
+
+  // SFT X
+  {
+    const Int_t lid = gGeom.GetDetectorId("SFT-X");
+    Double_t Rmin = 0.0;
+    Double_t Rmax = 0.01;
+    Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
+    Double_t Matrix[9] = {};
+    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
+		   gGeom.GetRotAngle1( lid ),
+		   gGeom.GetRotAngle2( lid ),
+		   Matrix );
+    new TRotMatrix( "rotSFTX", "rotSFTX", Matrix );
+    new TTUBE( "SFTXTube", "SFTXTube", "void", Rmin, Rmax, L );
+    for( Int_t wire=1; wire<=NumOfSegSFT_X; ++wire ){
+      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
+      ThreeVector wireGlobalPos = gGeom.GetGlobalPosition( lid );
+      m_SDC1v1_node.push_back( new TNode( Form( "SFTx_Node_%d", wire ),
+					  Form( "SFTx_Node_%d", wire ),
+					  "SFTXTube",
+					  wireGlobalPos.x()+localPos,
+					  wireGlobalPos.y(),
+					  wireGlobalPos.z(),
+					  "rotSFTX", "void" ) );
+    }
+  }
+
   // SDC1 V1
   {
     const Int_t lid = gGeom.GetDetectorId("SDC1-V1");
@@ -1500,9 +1580,9 @@ EventDisplay::DrawHitWire( Int_t lid, Int_t hit_wire, Bool_t range_check, Bool_t
 {
   if( hit_wire<=0 ) return;
 
-  std::string node_name;
+  TString node_name;
 
-  const std::string bcout_node_name[NumOfLayersBcOut]
+  const TString bcout_node_name[NumOfLayersBcOut]
     = { Form( "BC3x1_Node_%d", hit_wire ),
 	Form( "BC3x2_Node_%d", hit_wire ),
 	Form( "BC3u1_Node_%d", hit_wire ),
@@ -1516,7 +1596,11 @@ EventDisplay::DrawHitWire( Int_t lid, Int_t hit_wire, Bool_t range_check, Bool_t
 	Form( "BC4v1_Node_%d", hit_wire ),
 	Form( "BC4v2_Node_%d", hit_wire ) };
 
-  const std::string sdcin_node_name[NumOfLayersSdcIn]
+  const TString sft_node_name[NumOfLayersSFT]
+    = { Form( "SFTu_Node_%d", hit_wire ),
+	Form( "SFTv_Node_%d", hit_wire ),
+	Form( "SFTx_Node_%d", hit_wire ) };
+  const TString sdcin_node_name[NumOfLayersSdcIn]
     = { Form( "SDC1v1_Node_%d", hit_wire ),
 	Form( "SDC1v2_Node_%d", hit_wire ),
 	Form( "SDC1x1_Node_%d", hit_wire ),
@@ -1524,7 +1608,7 @@ EventDisplay::DrawHitWire( Int_t lid, Int_t hit_wire, Bool_t range_check, Bool_t
 	Form( "SDC1u1_Node_%d", hit_wire ),
 	Form( "SDC1u2_Node_%d", hit_wire ) };
 
-  const std::string sdcout_node_name[NumOfLayersSdcOut]
+  const TString sdcout_node_name[NumOfLayersSdcOut]
     = { Form( "SDC2x1_Node_%d", hit_wire ),
 	Form( "SDC2x2_Node_%d", hit_wire ),
 	Form( "SDC2y1_Node_%d", hit_wire ),
@@ -1535,6 +1619,19 @@ EventDisplay::DrawHitWire( Int_t lid, Int_t hit_wire, Bool_t range_check, Bool_t
 	Form( "SDC3x2_Node_%d", hit_wire ) };
 
   switch ( lid ) {
+
+    // SFT-UV
+  case 7: case 8:
+    if( hit_wire>NumOfSegSFT_UV ) return;
+    node_name = sft_node_name[lid-7];
+    break;
+    // SFT-X
+  case 10:
+    lid--;
+  case 9:
+    if( hit_wire>NumOfSegSFT_X ) return;
+    node_name = sft_node_name[lid-7];
+    break;
 
     // SDC1
   case 1: case 2: case 3: case 4: case 5: case 6:
@@ -1578,7 +1675,7 @@ EventDisplay::DrawHitWire( Int_t lid, Int_t hit_wire, Bool_t range_check, Bool_t
     return;
   }
 
-  TNode *node = m_geometry->GetNode( node_name.c_str() );
+  TNode *node = m_geometry->GetNode( node_name );
   if( !node ){
     hddaq::cout << "#E " << FUNC_NAME << " "
 		<< "no such node : " << node_name << std::endl;

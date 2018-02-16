@@ -41,6 +41,7 @@ RawData::RawData( void )
     m_TOFRawHC(),
     m_LCRawHC(),
     m_BFTRawHC(NumOfPlaneBFT),
+    m_SFTRawHC(NumOfPlaneSFT),
     m_SCHRawHC(),
     // m_BcInRawHC(NumOfLayersBcIn+1),
     m_BcOutRawHC(NumOfLayersBcOut+1),
@@ -177,6 +178,7 @@ RawData::ClearAll( void )
   utility::ClearContainer( m_TOFRawHC );
   utility::ClearContainer( m_LCRawHC );
   utility::ClearContainerAll( m_BFTRawHC );
+  utility::ClearContainerAll( m_SFTRawHC );
   utility::ClearContainer( m_SCHRawHC );
 
   // utility::ClearContainerAll( m_BcInRawHC );
@@ -249,11 +251,27 @@ RawData::DecodeHits( void )
     }
   }
 
+  //SFT
+  for( Int_t plane=0; plane<NumOfPlaneSFT; ++plane ){
+    for( Int_t seg = 0; seg<NumOfSegSFT[plane]; ++seg ){
+      Int_t nhit_l = gUnpacker.get_entries( DetIdSFT, plane, 0, seg, 0 );
+      Int_t nhit_t = gUnpacker.get_entries( DetIdSFT, plane, 0, seg, 1 );
+      if( nhit_l > 0 && nhit_l == nhit_t ){
+  	for( Int_t i = 0; i<nhit_l; ++i ){
+  	  Int_t leading  = gUnpacker.get( DetIdSFT, plane, 0, seg, 0, i )  ;
+  	  Int_t trailing = gUnpacker.get( DetIdSFT, plane, 0, seg, 1, i )  ;
+  	  AddHodoRawHit( m_SFTRawHC[plane], DetIdSFT, plane, seg , 0, 1, leading );
+  	  AddHodoRawHit( m_SFTRawHC[plane], DetIdSFT, plane, seg , 1, 1, trailing );
+  	}
+      }
+    }
+  }
+
   //SCH
-  for(Int_t seg=0; seg<NumOfSegSCH; ++seg){
+  for( Int_t seg=0; seg<NumOfSegSCH; ++seg ){
     Int_t nhit = gUnpacker.get_entries( DetIdSCH, 0, seg, 0, 0 );
     if( nhit>0 ){
-      for(Int_t i = 0; i<nhit; ++i){
+      for( Int_t i = 0; i<nhit; ++i ){
   	Int_t leading  = gUnpacker.get( DetIdSCH, 0, seg, 0, 0, i );
   	Int_t trailing = gUnpacker.get( DetIdSCH, 0, seg, 0, 1, i );
   	AddHodoRawHit( m_SCHRawHC, DetIdSCH, 0, seg , 0, 1, leading );

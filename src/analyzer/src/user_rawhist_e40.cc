@@ -1929,28 +1929,15 @@ process_event( void )
     int multiplicity[4] ; // includes each layers.
     int cmultiplicity[4]; // includes each layers.
 
-    for(int l=0; l<NumOfLayersSFT; ++l){
-      int sft_fiber = 0;
+    for(int l=0; l<NumOfPlaneSFT; ++l){
       multiplicity[l]  = 0; // includes each layers.
       cmultiplicity[l] = 0; // includes each layers.
       int tdc_prev      = 0;
-
-      if( l==0 || l==1 ){
-	// X & X'
-	sft_fiber = NumOfSegSFT_X;
-      }else{
-	// V & U
-	sft_fiber = NumOfSegSFT_UV;
-      }
-
-      for(int i = 0; i<sft_fiber; ++i){
-
+      for(int i = 0; i<NumOfSegSFT[l]; ++i){
         int nhit_l = gUnpacker.get_entries(k_device, l, 0, i, k_leading);
         int nhit_t = gUnpacker.get_entries(k_device, l, 0, i, k_trailing);
-
         int hit_l_max = 0;
         int hit_t_max = 0;
-
         if(nhit_l != 0){
           hit_l_max = gUnpacker.get(k_device, l, 0, i, k_leading,  nhit_l - 1);
         }

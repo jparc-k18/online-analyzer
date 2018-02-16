@@ -5767,8 +5767,8 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
   const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
-  const char* name_Layer[] = { "X", "XP", "V", "U" };
-  const char* name_Layer_1[] = { "X", "V", "U" };
+  const char* name_Layer[] = { "U", "V", "X", "XP" };
+  const char* name_Layer_1[] = { "V", "U", "X" };
   //  const Int_t NumOfSegSFT;
 
   // TDC---------------------------------------------------------
@@ -5782,7 +5782,7 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kSFT, 0, kTDC, 0);
     const char* sub_name = "TDC";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersSFT; ++i){
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
       sub_dir->Add(createTH1( ++target_id, title , // 1 origin
@@ -5804,7 +5804,7 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kSFT, 0, kTDC, 10);
     const char* sub_name = "CTDC";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersSFT; ++i){
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -5826,7 +5826,7 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kSFT, 0, kADC, 0);
     const char* sub_name = "TOT";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersSFT; ++i){
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -5848,7 +5848,7 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kSFT, 0, kADC, 10);
     const char* sub_name = "CTOT";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersSFT; ++i){
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -5870,18 +5870,12 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kSFT, 0, kHitPat, 0);
     const char* sub_name = "HitPat";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersSFT; ++i){
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-      if( i==0 || i==1 ){
-	sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			       NumOfSegSFT_X, 0, NumOfSegSFT_X,
-			       "Segment", ""));
-      }else{
-	sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			       NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
-			       "Segment", ""));
-      }
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     NumOfSegSFT[i], 0, NumOfSegSFT[i],
+			     "Segment", ""));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5898,18 +5892,12 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kSFT, 0, kHitPat, 10);
     const char* sub_name = "CHitPat";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersSFT; ++i){
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-      if( i==0 || i==1 ){
-	sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			       NumOfSegSFT_X, 0, NumOfSegSFT_X,
-			       "Segment", ""));
-      }else{
-	sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			       NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
-			       "Segment", ""));
-      }
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     NumOfSegSFT[i], 0, NumOfSegSFT[i],
+			     "Segment", ""));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5927,7 +5915,7 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kSFT, 0, kMulti, 0);
     const char* sub_name = "multiplicity";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersSFT-1; ++i){
+    for(Int_t i=0; i<NumOfPlaneSFT-1; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer_1[i] );
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -5950,7 +5938,7 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kSFT, 0, kMulti, 10);
     const char* sub_name = "CMulti";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersSFT-1; ++i){
+    for(Int_t i=0; i<NumOfPlaneSFT-1; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer_1[i] );
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -5972,20 +5960,13 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kSFT, 0, kTDC2D, 0);
     const char* sub_name = "CTDC";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersSFT; ++i){
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-      if( i==0 || i==1 ){
-	sub_dir->Add(createTH2(++target_id, title, // 1 origin
-			       NumOfSegSFT_X, 0, NumOfSegSFT_X,
-			       1024, 0, 1024,
-			       "Segment", "TDC [ch]"));
-      }else{
-	sub_dir->Add(createTH2(++target_id, title, // 1 origin
-			       NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
-			       1024, 0, 1024,
-			       "Segment", "TDC [ch]"));
-      }
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegSFT[i], 0, NumOfSegSFT[i],
+			     1024, 0, 1024,
+			     "Segment", "TDC [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -6002,20 +5983,13 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kSFT, 0, kADC2D, 0);
     const char* sub_name = "CTOT";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersSFT; ++i){
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-      if( i==0 || i==1 ){
-	sub_dir->Add(createTH2(++target_id, title, // 1 origin
-			       NumOfSegSFT_X, 0, NumOfSegSFT_X,
-			       200, -50, 150,
-			       "Segment", "TOT [ch]"));
-      }else{
-	sub_dir->Add(createTH2(++target_id, title, // 1 origin
-			       NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
-			       200, -50, 150,
-			       "Segment", "TOT [ch]"));
-      }
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegSFT[i], 0, NumOfSegSFT[i],
+			     200, -50, 150,
+			     "Segment", "TOT [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);

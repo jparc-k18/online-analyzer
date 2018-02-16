@@ -40,6 +40,7 @@ public:
   Double_t GetWidth( void )    const { return m_width;    }
   Double_t GetPosition( void ) const { return m_hit_u->GetPosition(); }
   Int_t    PairId( void )      const { return m_hit_u->PairId();      }
+  Int_t    PlaneId( void )     const { return m_hit_u->PlaneId(); }
   Double_t SegmentId( void )   const { return m_hit_u->SegmentId();   }
   void     SetJoined( void )         { m_flag_fljoin = true;          }
   Bool_t   Joined( void )      const { return m_flag_fljoin;          }

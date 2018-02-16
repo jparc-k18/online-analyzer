@@ -17,7 +17,7 @@ class FLHit;
 class FiberHit : public Hodo1Hit
 {
 public:
-  explicit  FiberHit( HodoRawHit *object, const char* name );
+  explicit  FiberHit( HodoRawHit *object, const TString& name );
   virtual  ~FiberHit( void );
 
 private:
@@ -26,7 +26,7 @@ private:
   FiberHit& operator =( const FiberHit& object );
 
 protected:
-  std::string         m_detector_name;
+  TString             m_detector_name;
   Int_t               m_segment;
   Double_t            m_position;
   Double_t            m_offset;
@@ -36,8 +36,7 @@ protected:
   std::vector<FLHit*> m_hit_container;
 
 public:
-  void     SetDetectorName( const char* name ){ m_detector_name = name; }
-  void     SetDetectorName( const std::string& name ){ m_detector_name = name; }
+  void     SetDetectorName( const TString& name ){ m_detector_name = name; }
   Bool_t   Calculate( void );
   Double_t GetLeading( Int_t n=0 )  const { return m_raw->GetTdc1(n);         }
   Double_t GetTrailing( Int_t n=0 ) const { return m_raw->GetTdc2(n);         }
@@ -58,6 +57,7 @@ public:
 
   static Bool_t CompFiberHit( const FiberHit* left, const FiberHit* right );
 
+  ClassDef(FiberHit,0);
 };
 
 //______________________________________________________________________________

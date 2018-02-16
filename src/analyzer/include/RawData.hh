@@ -35,6 +35,7 @@ private:
   HodoRHitContainer              m_TOFRawHC;
   HodoRHitContainer              m_LCRawHC;
   std::vector<HodoRHitContainer> m_BFTRawHC;
+  std::vector<HodoRHitContainer> m_SFTRawHC;
   HodoRHitContainer              m_SCHRawHC;
 
   std::vector<DCRHitContainer> m_BcInRawHC;
@@ -75,6 +76,7 @@ public:
   const HodoRHitContainer& GetTOFRawHC( void ) const { return m_TOFRawHC; }
   const HodoRHitContainer& GetLCRawHC( void ) const { return m_LCRawHC; }
   const HodoRHitContainer& GetBFTRawHC( Int_t plane ) const { return m_BFTRawHC[plane]; }
+  const HodoRHitContainer& GetSFTRawHC( Int_t plane ) const { return m_SFTRawHC[plane]; }
   const HodoRHitContainer& GetSCHRawHC( void ) const { return m_SCHRawHC; }
   // const DCRHitContainer&   GetBcInRawHC( Int_t layer ) const { return m_BcInRawHC[layer]; }
   const DCRHitContainer&   GetBcOutRawHC( Int_t layer ) const { return m_BcOutRawHC[layer]; }

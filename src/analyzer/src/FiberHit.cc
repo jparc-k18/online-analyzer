@@ -19,6 +19,8 @@
 #include "HodoPHCMan.hh"
 #include "RawData.hh"
 
+ClassImp(FiberHit);
+
 namespace
 {
   const DCGeomMan&    gGeom = DCGeomMan::GetInstance();
@@ -27,7 +29,7 @@ namespace
 }
 
 //______________________________________________________________________________
-FiberHit::FiberHit( HodoRawHit *object, const char* name )
+FiberHit::FiberHit( HodoRawHit *object, const TString& name )
   : Hodo1Hit(object),
     m_detector_name(name),
     m_segment(-1),

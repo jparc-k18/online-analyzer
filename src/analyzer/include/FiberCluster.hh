@@ -47,6 +47,7 @@ public:
   FLHit*   GetHit( Int_t i ) const;
   Bool_t   GoodForAnalysis( void ) const { return m_flag[kGoodForAnalysis]; }
   Bool_t   GoodForAnalysis( Bool_t status );
+  Int_t    PlaneId( void ) const;
   Bool_t   ReCalc( Bool_t applyRecusively=false );
 
 private:

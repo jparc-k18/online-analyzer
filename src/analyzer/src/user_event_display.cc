@@ -166,6 +166,21 @@ process_event( void )
     gEvDisp.PrintHit("BH2", 0.80, hit_flag);
   }
 
+  // SFT
+  {
+    Int_t ncl = hodoAna->GetNClustersSFT();
+    Bool_t hit_flag = false;
+    for( Int_t i=0; i<ncl; ++i ){
+      FiberCluster *cl = hodoAna->GetClusterSFT(i);
+      if( !cl ) continue;
+      Int_t seg   = (Int_t)cl->MeanSeg();
+      Int_t plane = cl->PlaneId();
+      hit_flag = true;
+      gEvDisp.DrawHitWire( plane+7, seg );
+    }
+    gEvDisp.PrintHit("SFT", 0.77, hit_flag);
+  }
+
   // SAC
   {
     const HodoRHitContainer &cont = rawData->GetSACRawHC();
@@ -177,7 +192,7 @@ process_event( void )
       Int_t Tu=hit->GetTdcUp(), Td=hit->GetTdcDown();
       if( Tu>0 || Td>0 ) hit_flag = true;
     }
-    gEvDisp.PrintHit("SAC", 0.77, hit_flag);
+    gEvDisp.PrintHit("SAC", 0.74, hit_flag);
   }
 
   // SCH

@@ -65,7 +65,8 @@ const Int_t NumOfLayersSsdIn  =  4;
 const Int_t NumOfLayersSsdOut =  4;
 const Int_t NumOfLayersBC3  = 6;
 const Int_t NumOfLayersBC4  = 6;
-const Int_t NumOfLayersSFT  = 4; //add
+const Int_t NumOfPlaneSFT   = 4; // U, V, X, XP
+const Int_t NumOfLayersSFT  = 3; // U, V, X
 const Int_t NumOfLayersCFT  =8;
 const Int_t NumOfLayersFBT = 2; //add
 const Int_t NumOfLayersSDC1 = 6;
@@ -104,6 +105,10 @@ const Int_t NumOfPlaneBFT = 2;
 const Int_t NumOfSegBFT  =  160;
 const Int_t NumOfSegSFT_X =  256; //add
 const Int_t NumOfSegSFT_UV =  320; //add
+const Int_t NumOfSegSFT[NumOfPlaneSFT] = { NumOfSegSFT_UV,
+					   NumOfSegSFT_UV,
+					   NumOfSegSFT_X,
+					   NumOfSegSFT_X };
 const Int_t NumOfSegCFT_UV1   = 426;
 const Int_t NumOfSegCFT_PHI1  = 584;
 const Int_t NumOfSegCFT_UV2   = 472 + 10; //471

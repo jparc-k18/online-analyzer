@@ -83,6 +83,9 @@ private:
   std::vector<TNode*>        m_BC4v2_node;
   std::vector<TNode*>        m_BC4x1_node;
   std::vector<TNode*>        m_BC4x2_node;
+  std::vector<TNode*>        m_SFTu_node;
+  std::vector<TNode*>        m_SFTv_node;
+  std::vector<TNode*>        m_SFTx_node;
   std::vector<TNode*>        m_SDC1v1_node;
   std::vector<TNode*>        m_SDC1v2_node;
   std::vector<TNode*>        m_SDC1x1_node;
@@ -157,7 +160,6 @@ public:
   void   DrawInitTrack( void );
   void   DrawHitWire( Int_t lid, Int_t hit_wire,
 		      Bool_t range_check=true, Bool_t tdc_check=true );
-  void   DrawTrackWire( Int_t lid, Int_t hit_wire, Int_t it );
   void   DrawText( void );
   void   DrawTrigger( const std::vector<Int_t>& flag );
   void   DrawHitHodoscope( Int_t lid, Int_t seg, Int_t Tu=1, Int_t Td=1 );

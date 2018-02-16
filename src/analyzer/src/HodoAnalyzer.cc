@@ -29,6 +29,7 @@ namespace
   const Double_t MaxTimeDifBH2 =  2.0;
   const Double_t MaxTimeDifTOF =  3.5;
   const Double_t MaxTimeDifBFT =  8.0;
+  const Double_t MaxTimeDifSFT =  8.0;
   const Double_t MaxTimeDifSCH = 10.0;
 }
 
@@ -50,6 +51,7 @@ HodoAnalyzer::~HodoAnalyzer( void )
   ClearTOFHits();
   ClearLCHits();
   ClearBFTHits();
+  ClearSFTHits();
   ClearSCHHits();
   debug::ObjectCounter::Decrease(ClassName());
 }
@@ -109,6 +111,14 @@ HodoAnalyzer::ClearBFTHits( void )
 
 //______________________________________________________________________________
 void
+HodoAnalyzer::ClearSFTHits( void )
+{
+  utility::ClearContainer( m_SFTCont );
+  utility::ClearContainer( m_SFTClCont );
+}
+
+//______________________________________________________________________________
+void
 HodoAnalyzer::ClearSCHHits( void )
 {
   utility::ClearContainer( m_SCHCont );
@@ -126,6 +136,7 @@ HodoAnalyzer::DecodeRawHits( RawData *rawData )
   DecodeTOFHits( rawData );
   DecodeLCHits( rawData );
   DecodeBFTHits( rawData );
+  DecodeSFTHits( rawData );
   DecodeSCHHits( rawData );
   return true;
 }
@@ -264,7 +275,6 @@ HodoAnalyzer::DecodeLCHits( RawData *rawData )
   return true;
 }
 
-
 //______________________________________________________________________________
 Bool_t
 HodoAnalyzer::DecodeBFTHits( RawData* rawData )
@@ -288,6 +298,35 @@ HodoAnalyzer::DecodeBFTHits( RawData* rawData )
 
 #if Cluster
   MakeUpClusters( m_BFTCont, m_BFTClCont, MaxTimeDifBFT, 3 );
+#endif
+
+  return true;
+}
+
+//______________________________________________________________________________
+Bool_t
+HodoAnalyzer::DecodeSFTHits( RawData* rawData )
+{
+  static std::vector<TString> name = { "SFT-U", "SFT-V", "SFT-X", "SFT-X" };
+  ClearSFTHits();
+  for( Int_t p=0; p<NumOfLayersSFT; ++p ){
+    const HodoRHitContainer &cont = rawData->GetSFTRawHC(p);
+    for( Int_t i=0, n=cont.size(); i<n; ++i ){
+      HodoRawHit *hit=cont[i];
+      if( !hit ) continue;
+      FiberHit *hp = new FiberHit(hit, name[p]);
+      if( !hp ) continue;
+      if( hp->Calculate() )
+	m_SFTCont.push_back(hp);
+      else
+	delete hp;
+    }
+  }
+
+  std::sort( m_SFTCont.begin(), m_SFTCont.end(), FiberHit::CompFiberHit );
+
+#if Cluster
+  MakeUpClusters( m_SFTCont, m_SFTClCont, MaxTimeDifSFT, 3 );
 #endif
 
   return true;
@@ -815,6 +854,13 @@ void
 HodoAnalyzer::TimeCutBFT( Double_t tmin, Double_t tmax )
 {
   TimeCut( m_BFTClCont, tmin, tmax );
+}
+
+//______________________________________________________________________________
+void
+HodoAnalyzer::TimeCutSFT( Double_t tmin, Double_t tmax )
+{
+  TimeCut( m_SFTClCont, tmin, tmax );
 }
 
 //______________________________________________________________________________

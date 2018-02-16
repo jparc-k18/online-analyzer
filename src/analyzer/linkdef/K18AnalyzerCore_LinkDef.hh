@@ -24,6 +24,7 @@
 #pragma link C++ class DCLocalTrack+;
 #pragma link C++ class DCLTrackHit+;
 #pragma link C++ class FiberCluster+;
+#pragma link C++ class FiberHit+;
 #pragma link C++ class FieldElements+;
 #pragma link C++ class FLHit+;
 #pragma link C++ class HodoAnalyzer+;

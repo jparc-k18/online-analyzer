@@ -169,3 +169,10 @@ FiberCluster::Debug( void )
     m_hit_container[i]->Dump();
   }
 }
+
+//______________________________________________________________________________
+Int_t
+FiberCluster::PlaneId( void ) const
+{
+  return m_hit_container.at(0)->PlaneId();
+}

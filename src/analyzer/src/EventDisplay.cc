@@ -314,6 +314,8 @@ EventDisplay::Initialize( void )
 
   ResetVisibility();
 
+  Update();
+
   m_is_ready = true;
   return m_is_ready;
 }
@@ -2133,14 +2135,23 @@ EventDisplay::DrawText( void )
 void
 EventDisplay::DrawTrigger( const std::vector<Int_t>& flag )
 {
+  // hddaq::cout << FUNC_NAME << std::endl;
   m_canvas->cd();
   std::bitset<NumOfSegTFlag> flag_bit;
   Int_t flag_ps = 0;
   for( Int_t i=0, n=flag.size(); i<n; ++i ){
-    if ( flag[i]>0 ){
-      flag_bit.set(i);
-      // if( i==kUBPS || i==kUBUBPS || i==kKPIPS || i==kKKPS )
-      // 	flag_ps += i;
+    // hddaq::cout << std::setw(10) << trigger::STriggerFlag[i] << " "
+    // 		<< flag[i] << std::endl;
+    if( flag[i] <= 0 ) continue;
+    flag_bit.set(i);
+    if( trigger::STriggerFlag.at(i).Contains("PS") ||
+	trigger::STriggerFlag.at(i).EqualTo("BH2K") ){
+      if( flag_ps == 0 ){
+	flag_ps = i;
+      } else {
+	// hddaq::cout << "#W " << FUNC_NAME << " found multi trigger : "
+	// 	    << std::setw(10) << trigger::STriggerFlag[i] << std::endl;
+      }
     }
   }
 
@@ -2149,8 +2160,8 @@ EventDisplay::DrawTrigger( const std::vector<Int_t>& flag )
   trig_all.ReplaceAll('1', '!');
   trig_all.ReplaceAll('0', '.');
   static TText *text = NewTText();
-  TString trig = "";//flag_ps!=0 ? sTriggerFlag[flag_ps].Data() : "Unknown";
-  text->DrawText( 0.050, 0.900,
+  TString trig = flag_ps!=0 ? trigger::STriggerFlag.at(flag_ps) : "Unknown";
+  text->DrawText( 0.040, 0.900,
 		  Form("Trigger  %s    %s", trig_all.Data(), trig.Data()) );
   m_canvas->Update();
 }
@@ -2504,4 +2515,11 @@ EventDisplay::SetStyle( void )
   gStyle->SetTextColor(FGColor);
   gStyle->SetFrameLineColor(FGColor);
   gStyle->SetLineColor(FGColor);
+}
+
+//______________________________________________________________________________
+void
+EventDisplay::Update( void )
+{
+  m_canvas->Update();
 }

@@ -10,7 +10,9 @@
 #include <TString.h>
 
 #include "ConfMan.hh"
+#include "DetectorID.hh"
 #include "DCDriftParamMan.hh"
+#include "Exception.hh"
 #include "FuncName.hh"
 
 ClassImp(DCDriftParamMan);
@@ -116,7 +118,7 @@ DCDriftParamMan::getParameter( Int_t PlaneId, Double_t WireId ) const
 
 //______________________________________________________________________________
 Double_t
-DCDriftParamMan::DriftLength1( Double_t dt, Double_t vel )
+DCDriftParamMan::DriftLength1( Double_t dt, Double_t vel ) const
 {
   return dt*vel;
 }
@@ -124,7 +126,7 @@ DCDriftParamMan::DriftLength1( Double_t dt, Double_t vel )
 //______________________________________________________________________________
 Double_t
 DCDriftParamMan::DriftLength2( Double_t dt, Double_t p1, Double_t p2, Double_t p3,
-			       Double_t st, Double_t p5, Double_t p6 )
+			       Double_t st, Double_t p5, Double_t p6 ) const
 {
   Double_t dtmax=10.+p2+1./p6;
   Double_t dl;
@@ -146,7 +148,7 @@ DCDriftParamMan::DriftLength2( Double_t dt, Double_t p1, Double_t p2, Double_t p
 //______________________________________________________________________________
 //DL = a0 + a1*Dt + a2*Dt^2
 Double_t
-DCDriftParamMan::DriftLength3( Double_t dt, Double_t p1, Double_t p2 ,Int_t PlaneId)
+DCDriftParamMan::DriftLength3( Double_t dt, Double_t p1, Double_t p2 ,Int_t PlaneId ) const
 {
   if (PlaneId>=1 && PlaneId <=4) {
     if (dt > 130.)
@@ -167,7 +169,7 @@ DCDriftParamMan::DriftLength3( Double_t dt, Double_t p1, Double_t p2 ,Int_t Plan
 
 //______________________________________________________________________________
 Double_t
-DCDriftParamMan::DriftLength4( Double_t dt, Double_t p1, Double_t p2 ,Double_t p3)
+DCDriftParamMan::DriftLength4( Double_t dt, Double_t p1, Double_t p2 ,Double_t p3 ) const
 {
   if (dt < p2)
     return dt*p1;
@@ -177,7 +179,7 @@ DCDriftParamMan::DriftLength4( Double_t dt, Double_t p1, Double_t p2 ,Double_t p
 
 //______________________________________________________________________________
 Double_t
-DCDriftParamMan::DriftLength5( Double_t dt, Double_t p1, Double_t p2 ,Double_t p3, Double_t p4, Double_t p5)
+DCDriftParamMan::DriftLength5( Double_t dt, Double_t p1, Double_t p2 ,Double_t p3, Double_t p4, Double_t p5 ) const
 {
   if (dt < p2)
     return dt*p1;
@@ -192,53 +194,66 @@ DCDriftParamMan::DriftLength5( Double_t dt, Double_t p1, Double_t p2 ,Double_t p
 //DL = a0 + a1*Dt + a2*Dt^2 + a3*Dt^3 + a4*Dt^4 + a5*Dt^5
 Double_t
 DCDriftParamMan::DriftLength6( Int_t PlaneId, Double_t dt,
-			       Double_t p1, Double_t p2 ,Double_t p3, Double_t p4, Double_t p5 )
+			       Double_t p1, Double_t p2 ,Double_t p3, Double_t p4, Double_t p5 ) const
 {
+  const Double_t dl =  dt*p1+dt*dt*p2+p3*pow(dt, 3.0)+p4*pow(dt, 4.0)+p5*pow(dt, 5.0);
+
+  //For BC3
+  if( PlaneId>=113 && PlaneId<=118 ){
+    if( dt < -10 )
+      return 999.9;
+    if( dl > MaxDriftLengthBC3 || dt > MaxDriftTimeBC3 )
+      return MaxDriftLengthBC3;
+    if( dl < 0 )
+      return 0;
+    else
+      return dl;
+  }
+  //For BC4
+  else if( PlaneId>=119 && PlaneId<=124 ){
+    if( dt < -10 )
+      return 999.9;
+    if( dl > MaxDriftLengthBC4 || dt > MaxDriftTimeBC4 )
+      return MaxDriftLengthBC4;
+    if( dl < 0 )
+      return 0;
+    else
+      return dl;
+  }
   //For SDC1
-  if (PlaneId>=5 && PlaneId<=10) {
-    if (dt<-20 || dt>70) // Tight drift time selection
-      //if (dt<-10 || dt>120) // Loose drift time selection
+  else if( PlaneId>=1 && PlaneId<=6 ){
+    if( dt < -10 )
       return 999.9;
-
-    if(dt>65) dt=65.;
-    Double_t dl =  dt*p1+dt*dt*p2+p3*pow(dt, 3.0)+p4*pow(dt, 4.0)+p5*pow(dt, 5.0);
-    if (dl > 2.5 )
-      return 2.5;
-    if (dl < 0)
+    if( dl > MaxDriftLengthSDC1 || dt > MaxDriftTimeSDC1 )
+      return MaxDriftLengthSDC1;
+    if( dl < 0 )
       return 0;
     else
       return dl;
-  }//For SDC3&4
-  else if (PlaneId>=31 && PlaneId<=42) {
-    if ( dt<-20 || dt>400 )
+  }//For SDC2
+  else if( PlaneId>=31 && PlaneId<=34 ){
+    if( dt < -20 )
       return 999.9;
-
-    Double_t dl = dt*p1+dt*dt*p2+p3*pow(dt, 3.0)+p4*pow(dt, 4.0)+p5*pow(dt, 5.0);
-    if (dl > 10.0 || dt>250 )
-      return 10.0;
-    if (dl < 0)
+    if( dl > MaxDriftLengthSDC2 || dt > MaxDriftTimeSDC2 )
+      return MaxDriftLengthSDC2;
+    if( dl < 0 )
       return 0;
     else
       return dl;
-  }//For BC3
-  else if (PlaneId>=113 && PlaneId<=124) {
-    if (dt<-10 || dt>50) // Tight drift time selection
-      //if (dt<-10 || dt>80) // Loose drift time selection
+  }
+  //For SDC3
+  else if( PlaneId>=35 && PlaneId<=38 ) {
+    if( dt < -20 )
       return 999.9;
-
-    if(dt>30) dt=30.;
-    Double_t dl =  dt*p1+dt*dt*p2+p3*pow(dt, 3.0)+p4*pow(dt, 4.0)+p5*pow(dt, 5.0);
-    if (dl > 1.5 )
-      return 1.5;
-    if (dl < 0)
+    if( dl > MaxDriftLengthSDC3 || dt > MaxDriftTimeSDC3 )
+      return MaxDriftLengthSDC3;
+    if( dl < 0 )
       return 0;
     else
       return dl;
   }
   else {
-    std::cerr << "DCDriftParamMan::DriftLength6 Invalid planeId="
-              << PlaneId << std::endl;
-    std::exit(-1);
+    throw Exception( FUNC_NAME+" Invalud PlaneId = "+TString::Itoa(PlaneId,10) );
   }
 }
 

@@ -183,6 +183,7 @@ public:
   void   GetCommand( void ) const;
   void   Run( Bool_t flag=kTRUE );
   void   SetStyle( void );
+  void   Update( void );
 
 private:
   void   ResetVisibility( TNode *& node, Color_t c=kBlack );

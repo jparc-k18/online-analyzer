@@ -5,11 +5,17 @@
 #include "EventAnalyzer.hh"
 #include "HodoAnalyzer.hh"
 #include "RawData.hh"
+#include "UserParamMan.hh"
 
 ClassImp(analyzer::EventAnalyzer);
 
 namespace analyzer
 {
+
+namespace
+{
+  const UserParamMan& gUser = UserParamMan::GetInstance();
+}
 
 //______________________________________________________________________________
 EventAnalyzer::EventAnalyzer( void )
@@ -57,6 +63,15 @@ void
 EventAnalyzer::DecodeHodoAnalyzer( void )
 {
   m_hodo_analyzer->DecodeRawHits( m_raw_data );
+}
+
+//______________________________________________________________________________
+void
+EventAnalyzer::TimeCutBFT( void )
+{
+  static const Double_t MinTimeBFT = gUser.GetParameter("TimeBFT", 0);
+  static const Double_t MaxTimeBFT = gUser.GetParameter("TimeBFT", 1);
+  m_hodo_analyzer->TimeCutBFT(MinTimeBFT, MaxTimeBFT);
 }
 
 //______________________________________________________________________________

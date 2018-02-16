@@ -46,13 +46,13 @@ private:
   DCDriftParamRecord* getParameter( Int_t PlaneId, Double_t WireId ) const;
   void clearElements( void );
 
-  static Double_t DriftLength1( Double_t dt, Double_t vel );
-  static Double_t DriftLength2( Double_t dt, Double_t p1, Double_t p2, Double_t p3,
-			      Double_t st, Double_t p5, Double_t p6 );
-  static Double_t DriftLength3( Double_t dt, Double_t p1, Double_t p2, Int_t PlaneId);
-  static Double_t DriftLength4( Double_t dt, Double_t p1, Double_t p2, Double_t p3);
-  static Double_t DriftLength5( Double_t dt, Double_t p1, Double_t p2, Double_t p3, Double_t p4, Double_t p5);
-  static Double_t DriftLength6( Int_t PlaneId, Double_t dt, Double_t p1, Double_t p2 ,Double_t p3, Double_t p4, Double_t p5);
+  Double_t DriftLength1( Double_t dt, Double_t vel ) const;
+  Double_t DriftLength2( Double_t dt, Double_t p1, Double_t p2, Double_t p3,
+			 Double_t st, Double_t p5, Double_t p6 ) const;
+  Double_t DriftLength3( Double_t dt, Double_t p1, Double_t p2, Int_t PlaneId) const;
+  Double_t DriftLength4( Double_t dt, Double_t p1, Double_t p2, Double_t p3) const;
+  Double_t DriftLength5( Double_t dt, Double_t p1, Double_t p2, Double_t p3, Double_t p4, Double_t p5) const;
+  Double_t DriftLength6( Int_t PlaneId, Double_t dt, Double_t p1, Double_t p2 ,Double_t p3, Double_t p4, Double_t p5) const;
 
   ClassDef(DCDriftParamMan,0);
 };

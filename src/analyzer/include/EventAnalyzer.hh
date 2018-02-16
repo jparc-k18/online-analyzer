@@ -35,6 +35,7 @@ public:
   void          DecodeRawData( void );
   void          DecodeDCAnalyzer( void );
   void          DecodeHodoAnalyzer( void );
+  void          TimeCutBFT( void );
 
   RawData*      GetRawData( void ) const { return m_raw_data; }
   DCAnalyzer*   GetDCAnalyzer( void ) const { return m_dc_analyzer; }

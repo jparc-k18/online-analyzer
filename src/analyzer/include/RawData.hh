@@ -45,7 +45,7 @@ private:
   std::vector<DCRHitContainer> m_SsdOutRawHC;
 
   // HodoRHitContainer              m_ScalerRawHC;
-  // HodoRHitContainer              m_TrigRawHC;
+  HodoRHitContainer              m_TrigRawHC;
   // HodoRHitContainer              m_VmeCalibRawHC;
   // HodoRHitContainer              m_MsTRMRawHC;
   // std::vector<HodoRHitContainer> m_MsTRawHC;
@@ -84,7 +84,7 @@ public:
   const DCRHitContainer&   GetSsdOutRawHC( Int_t layer ) const { return m_SsdOutRawHC[layer]; }
   const DCRHitContainer&   GetSsdOutSdcInRawHC( Int_t layer ) const;
   // const HodoRHitContainer& GetScalerRawHC( void ) const { return m_ScalerRawHC; }
-  // const HodoRHitContainer& GetTrigRawHC( void ) const { return m_TrigRawHC; }
+  const HodoRHitContainer& GetTrigRawHC( void ) const { return m_TrigRawHC; }
   // const HodoRHitContainer& GetVmeCalibRawHC( void ) const { return m_VmeCalibRawHC; }
   // const HodoRHitContainer& GetMsTRMRawHC( void ) const { return m_MsTRMRawHC; }
   // const HodoRHitContainer& GetMsTRawHC( Int_t layer ) const { return m_MsTRawHC.at(layer); }

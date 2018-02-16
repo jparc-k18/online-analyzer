@@ -4,30 +4,31 @@
 #define DETECTOR_ID_HH
 
 #include <Rtypes.h>
+#include <TString.h>
 
 const Int_t UorD = 2;
 const Int_t AorT = 2;
 
 // Counters
-const Int_t DetIdBH1  =  1;
-const Int_t DetIdBH2  =  2;
-const Int_t DetIdBAC  =  3;
-const Int_t DetIdSAC  =  9;
-const Int_t DetIdSCH  =  7;
-const Int_t DetIdBGO  = 114;
-const Int_t DetIdPiID = 115;
-const Int_t DetIdTOF  =  8;
+const Int_t DetIdBH1     =   1;
+const Int_t DetIdBH2     =   2;
+const Int_t DetIdBAC     =   3;
+const Int_t DetIdSAC     =   9;
+const Int_t DetIdSCH     =   7;
+const Int_t DetIdBGO     = 114;
+const Int_t DetIdPiID    = 115;
+const Int_t DetIdTOF     =   8;
 const Int_t DetIdTOF_HT  =  11;
-const Int_t DetIdLC   = 10; //add
-const Int_t NumOfSegBH1  = 11;
-const Int_t NumOfSegBH2  =  8; //add
-const Int_t NumOfSegBAC  =  2;
-const Int_t NumOfSegFBH  = 16;
+const Int_t DetIdLC      =  10; //add
+const Int_t NumOfSegBH1  =  11;
+const Int_t NumOfSegBH2  =   8; //add
+const Int_t NumOfSegBAC  =   2;
+const Int_t NumOfSegFBH  =  16;
 //const Int_t NumOfSegSAC  = 16; // 12 readout & 4 rooms //add
-const Int_t NumOfSegSCH  = 64;
-const Int_t NumOfSegBGO  = 24;
-const Int_t NumOfSegPiID = 32;
-const Int_t NumOfSegTOF  = 24;
+const Int_t NumOfSegSCH  =  64;
+const Int_t NumOfSegBGO  =  24;
+const Int_t NumOfSegPiID =  32;
+const Int_t NumOfSegTOF  =  24;
 //const Int_t NumOfSegTOF_HT  = 24;
 const Int_t NumOfSegTOF_HT  = 15;
 const Int_t NumOfSegClusteredFBH = 31;
@@ -76,6 +77,16 @@ const Int_t NumOfWireSDC1  =  64;
 const Int_t NumOfWireSDC2  = 128;
 const Int_t NumOfWireSDC3X =  96;
 const Int_t NumOfWireSDC3Y =  64;
+const Double_t MaxDriftLengthBC3  =  1.5;
+const Double_t MaxDriftLengthBC4  =  1.5;
+const Double_t MaxDriftLengthSDC1 =  3.0;
+const Double_t MaxDriftLengthSDC2 =  4.5;
+const Double_t MaxDriftLengthSDC3 = 10.0;
+const Double_t MaxDriftTimeBC3    =  80.0;
+const Double_t MaxDriftTimeBC4    =  80.0;
+const Double_t MaxDriftTimeSDC1   = 120.0;
+const Double_t MaxDriftTimeSDC2   = 120.0;
+const Double_t MaxDriftTimeSDC3   = 260.0;
 
 const Int_t PlMinBcOut  = 13;
 const Int_t PlMaxBcOut  = 24;
@@ -218,5 +229,78 @@ const Int_t NumOfWireSDC4uv =  120;
 const Int_t NumOfSegSSD0    = 1536;
 const Int_t PlMinBcIn  =  1;
 const Int_t PlMaxBcIn  = 12;
+
+// Trigger Flag
+namespace trigger
+{
+  enum ETriggerFlag
+    {
+      kBH2K_1,
+      kBH2K_2,
+      kBH2K_3,
+      kBH2K_4,
+      kBH2K_5,
+      kBH2K_6,
+      kBH2K_7,
+      kBH2K_8,
+      kBH2K,
+      kElseOR,
+      kBeam,
+      kBeamTOF,
+      kBeamPi,
+      kBeamP,
+      kCoin1,
+      kCoin2,
+      kE03,
+      kBH2KPS,
+      kBeamPS,
+      kBeamTOFPS,
+      kBeamPiPS,
+      kBeamPPS,
+      kCoin1PS,
+      kCoin2PS,
+      kE03PS,
+      kClock,
+      kReserve2,
+      kSpillEnd,
+      kMatrix,
+      k10MHzClock,
+      NTriggerFlag
+    };
+
+  const std::vector<TString> STriggerFlag =
+    {
+      "BH2K_1",
+      "BH2K_2",
+      "BH2K_3",
+      "BH2K_4",
+      "BH2K_5",
+      "BH2K_6",
+      "BH2K_7",
+      "BH2K_8",
+      "BH2K",
+      "ElseOR",
+      "Beam",
+      "BeamTOF",
+      "BeamPi",
+      "BeamP",
+      "Coin1",
+      "Coin2",
+      "E03",
+      "BH2KPS",
+      "BeamPS",
+      "BeamTOFPS",
+      "BeamPiPS",
+      "BeamPPS",
+      "Coin1PS",
+      "Coin2PS",
+      "E03PS",
+      "Clock",
+      "Reserve2",
+      "SpillEnd",
+      "Matrix",
+      "10MHzClock"
+    };
+}
 
 #endif

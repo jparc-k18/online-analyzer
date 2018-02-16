@@ -484,8 +484,8 @@ DCAnalyzer::DecodeRawHits( RawData *rawData )
 {
   ClearDCHits();
   DecodeBcOutHits( rawData );
-  // DecodeSdcInHits( rawData );
-  // DecodeSdcOutHits( rawData );
+  DecodeSdcInHits( rawData );
+  DecodeSdcOutHits( rawData );
   // DecodeSsdInHits( rawData );
   // DecodeSsdOutHits( rawData );
   return true;
@@ -1040,8 +1040,8 @@ void
 DCAnalyzer::ClearDCHits( void )
 {
   ClearBcOutHits();
-  // ClearSdcInHits();
-  // ClearSdcOutHits();
+  ClearSdcInHits();
+  ClearSdcOutHits();
   // ClearSsdInHits();
   // ClearSsdOutHits();
   // ClearTOFHits();

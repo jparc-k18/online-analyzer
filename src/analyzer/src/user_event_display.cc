@@ -27,6 +27,8 @@
 #include "DetectorID.hh"
 #include "EventAnalyzer.hh"
 #include "EventDisplay.hh"
+#include "FiberCluster.hh"
+#include "FiberHit.hh"
 #include "HistMaker.hh"
 #include "HodoAnalyzer.hh"
 #include "HodoParamMan.hh"
@@ -49,6 +51,7 @@ namespace analyzer
     const DCGeomMan&       gGeom      = DCGeomMan::GetInstance();
           BH2Filter&       gBH2Filter = BH2Filter::GetInstance();
           EventDisplay&    gEvDisp    = EventDisplay::GetInstance();
+    const UserParamMan&    gUser      = UserParamMan::GetInstance();
 
     std::vector<TH1*> hptr_array;
 
@@ -89,99 +92,225 @@ process_end( void )
 Int_t
 process_event( void )
 {
+  static const Double_t MaxMultiHitBcOut  = gUser.GetParameter("MaxMultiHitBcOut");
+  static const Double_t MaxMultiHitSdcIn  = gUser.GetParameter("MaxMultiHitSdcIn");
+  static const Double_t MaxMultiHitSdcOut = gUser.GetParameter("MaxMultiHitSdcOut");
+
   EventAnalyzer event;
   event.DecodeRawData();
   event.DecodeDCAnalyzer();
   event.DecodeHodoAnalyzer();
+  // event.TimeCutBFT();
 
+  const RawData*      const rawData = event.GetRawData();
   const HodoAnalyzer* const hodoAna = event.GetHodoAnalyzer();
-  const DCAnalyzer* const dcAna = event.GetDCAnalyzer();
+  const DCAnalyzer*   const dcAna   = event.GetDCAnalyzer();
 
   gEvDisp.DrawText();
 
-  // gEvDisp.DrawTrigger( std::vector<Int_t>() );
+  // Trigger Flag
+  {
+    const HodoRHitContainer &cont = rawData->GetTrigRawHC();
+    std::vector<Int_t> trigflag(NumOfSegTFlag);
+    Int_t nh = cont.size();
+    for( Int_t i=0; i<nh; ++i ){
+      HodoRawHit *hit = cont[i];
+      Int_t seg = hit->SegmentId()+1;
+      Int_t tdc = hit->GetTdc1();
+      trigflag[seg-1] = tdc;
+    }
+    gEvDisp.DrawTrigger( trigflag );
+    if( trigflag[SpillEndFlag]>0 ) return true;
+  }
 
-  // Int_t nhBh2 = hodoAna->GetNHitsBH2();
-  // Int_t segBh2 = -1.;
-  // for( Int_t i=0; i<nhBh2; ++i ){
-  //   const BH2Hit* const hit = hodoAna->GetHitBH2(i);
-  //   Int_t seg = hit->SegmentId();
-  //   if( nhBh2 == 1 ) segBh2 = seg;
-  //   static const Int_t hit_id = gHist.getSequentialID(kBH2, 0, kHitPat);
-  //   hptr_array[hit_id]->Fill( seg );
-  // }
+  // BH1
+  {
+    const HodoRHitContainer &cont = rawData->GetBH1RawHC();
+    Int_t nh = cont.size();
+    Bool_t hit_flag = false;
+    for( Int_t i=0; i<nh; ++i ){
+      HodoRawHit *hit = cont[i];
+      if( !hit ) continue;
+      Int_t Tu=hit->GetTdcUp(), Td=hit->GetTdcDown();
+      if( Tu>0 || Td>0 ) hit_flag = true;
+    }
+    gEvDisp.PrintHit("BH1", 0.86, hit_flag);
+  }
 
-  // BH2 % BcOut Hit
-  // if( segBh2 >= 0 ){
-  //   const std::vector<Double_t>& xmin = gBH2Filter.GetXmin( segBh2 );
-  //   const std::vector<Double_t>& xmax = gBH2Filter.GetXmax( segBh2 );
-  //   for( Int_t l=0; l<NumOfLayersBcOut; ++l ){
-  //     const DCHitContainer& cont = dcAna->GetBcOutHC(l+1);
-  //     Int_t nhOut = cont.size();
-  //     for( Int_t i=0; i<nhOut; ++i ){
-  // 	const DCHit* const hit = cont.at(i);
-  // 	Double_t pos   = hit->GetWirePosition();
-  // 	static const Int_t bh2raw_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
-  // 	static const Int_t bh2cut_id = gHist.getSequentialID(kMisc, 1, kHitPat2D);
-  // 	hptr_array[bh2raw_id+l]->Fill( pos, segBh2 );
-  // 	if( xmin.at(l) < pos && pos < xmax.at(l) ){
-  // 	  hptr_array[bh2cut_id+l]->Fill( pos, segBh2 );
+  // BFT
+  std::vector<Double_t> BftXCont;
+  {
+    Int_t ncl = hodoAna->GetNClustersBFT();
+    Bool_t hit_flag = false;
+    for( Int_t i=0; i<ncl; ++i ){
+      FiberCluster *cl = hodoAna->GetClusterBFT(i);
+      if( !cl ) continue;
+      Double_t pos = cl->MeanPosition();
+      BftXCont.push_back( pos );
+      hit_flag = true;
+    }
+    gEvDisp.PrintHit("BFT", 0.83, hit_flag);
+  }
+
+  // BH2
+  {
+    const HodoRHitContainer &cont = rawData->GetBH2RawHC();
+    Int_t nh=cont.size();
+    Bool_t hit_flag = false;
+    for( Int_t i=0; i<nh; ++i ){
+      HodoRawHit *hit = cont[i];
+      if( !hit ) continue;
+      Int_t Tu=hit->GetTdcUp(), Td=hit->GetTdcDown();
+      if( Tu>0 || Td>0 ) hit_flag = true;
+    }
+    gEvDisp.PrintHit("BH2", 0.80, hit_flag);
+  }
+
+  // SAC
+  {
+    const HodoRHitContainer &cont = rawData->GetSACRawHC();
+    Int_t nh=cont.size();
+    Bool_t hit_flag = false;
+    for( Int_t i=0; i<nh; ++i ){
+      HodoRawHit *hit = cont[i];
+      if( !hit ) continue;
+      Int_t Tu=hit->GetTdcUp(), Td=hit->GetTdcDown();
+      if( Tu>0 || Td>0 ) hit_flag = true;
+    }
+    gEvDisp.PrintHit("SAC", 0.77, hit_flag);
+  }
+
+  // SCH
+  {
+    Int_t nhSch = hodoAna->GetNHitsSCH();
+    Bool_t hit_flag = false;
+    for( Int_t i=0; i<nhSch; ++i ){
+      FiberHit *hit = hodoAna->GetHitSCH(i);
+      if( !hit ) continue;
+      Int_t mh  = hit->GetNumOfHit();
+      Int_t seg = hit->SegmentId();
+      bool flag = false;
+      for( Int_t m=0; m<mh; ++m ){
+        // Double_t leading = hit->GetLeading(m);
+        // if( MinTdcSCH<leading && leading<MaxTdcSCH ){
+          flag = true;
+        // }
+      }
+      if( flag ){
+        hit_flag = true;
+        gEvDisp.DrawHitHodoscope( gGeom.GetDetectorId("SCH"), seg );
+      }
+    }
+    gEvDisp.PrintHit("SCH", 0.65, hit_flag);
+  }
+
+  // TOF
+  {
+    const HodoRHitContainer &cont = rawData->GetTOFRawHC();
+    Int_t nh = cont.size();
+    Bool_t hit_flag = false;
+    for( Int_t i=0; i<nh; ++i ){
+      HodoRawHit *hit = cont[i];
+      if( !hit ) continue;
+      Int_t seg = hit->SegmentId();
+      Int_t Tu = hit->GetTdcUp(), Td = hit->GetTdcDown();
+      if( Tu>0 || Td>0 ){
+        hit_flag = true;
+        gEvDisp.DrawHitHodoscope( gGeom.GetDetectorId("TOF"), seg, Tu, Td );
+      }
+    }
+    gEvDisp.PrintHit("TOF", 0.62, hit_flag);
+  }
+  Hodo2HitContainer TOFCont;
+  Int_t nhTof = hodoAna->GetNHitsTOF();
+  for( Int_t i=0; i<nhTof; ++i ){
+    Hodo2Hit *hit = hodoAna->GetHitTOF(i);
+    if( !hit ) continue;
+    TOFCont.push_back( hit );
+  }
+  // if( nhTof==0 ) return true;
+
+  // BcOut
+  // Double_t multi_BcOut = 0.;
+  // for( Int_t layer=1; layer<=NumOfLayersBcOut; ++layer ){
+  //   const DCHitContainer &cont = dcAna->GetBcOutHC(layer);
+  //   Int_t nhIn=cont.size();
+  //   for( Int_t i=0; i<nhIn; ++i ){
+  //     DCHit*   hit  = cont[i];
+  //     Double_t wire = hit->GetWire();
+  //     Int_t      mhit = hit->GetTdcSize();
+  //     bool     goodFlag = false;
+  //     ++multi_BcOut;
+  //     for (Int_t j=0; j<mhit; j++) {
+  // 	if (hit->IsWithinRange(j)) {
+  // 	  goodFlag = true;
+  // 	  break;
   // 	}
+  //     }
+  //     if( goodFlag ){
+  // 	hddaq::cout << "BcOut : " << wire << std::endl;
+  // 	gEvDisp.DrawHitWire( layer+112, Int_t(wire) );
   //     }
   //   }
   // }
+  // multi_BcOut /= (Double_t)NumOfLayersBcOut;
+  // if( multi_BcOut > MaxMultiHitBcOut ) return true;
 
-  // BcOutTracking
-// #if !BH2FILTER
-//   event.TrackSearchBcOut();
-//   {
-//     Int_t ntBcOut = dcAna->GetNtracksBcOut();
-//     hptr_array[gHist.getSequentialID(kMisc, 0, kMulti, 1)]->Fill( ntBcOut );
-//     for( Int_t i=0; i<ntBcOut; ++i ){
-//       const DCLocalTrack* const track = dcAna->GetTrackBcOut(i);
-//       static const Int_t chisqr_id = gHist.getSequentialID(kMisc, 0, kChisqr, 1);
-//       Double_t chisqr = track->GetChiSquare();
-//       hptr_array[chisqr_id]->Fill( chisqr );
-//       if( !track || chisqr>10. ) continue;
-//       static const Int_t bh2raw_id = gHist.getSequentialID(kMisc, 2, kHitPat2D, 1);
-//       static const Double_t zBH2 = gGeom.GetLocalZ("BH2");
-//       hptr_array[bh2raw_id]->Fill( track->GetX(zBH2), segBh2 );
-//     }
-//   }
-// #endif
+  // SdcIn
+  Double_t multi_SdcIn = 0.;
+  for( int layer=1; layer<=NumOfLayersSdcIn; ++layer ){
+    const DCHitContainer &contIn = dcAna->GetSdcInHC(layer);
+    int nhIn=contIn.size();
+    if ( nhIn > MaxMultiHitSdcIn )
+      continue;
+    for( int i=0; i<nhIn; ++i ){
+      DCHit  *hit  = contIn[i];
+      Double_t  wire = hit->GetWire();
+      int     mhit = hit->GetTdcSize();
+      bool    goodFlag = false;
+      ++multi_SdcIn;
+      for (int j=0; j<mhit; j++) {
+	if (hit->IsWithinRange(j)) {
+	  goodFlag = true;
+	  break;
+	}
+      }
+      if( goodFlag )
+	gEvDisp.DrawHitWire( layer, int(wire) );
+    }
+  }
+  // multi_SdcIn /= (Double_t)NumOfLayersSdcIn;
+  // if( multi_SdcIn > MaxMultiHitSdcIn ) return true;
 
-//   event.ApplyBH2Filter();
-//   event.TrackSearchBcOut();
-//   {
-//     Int_t ntBcOut = dcAna->GetNtracksBcOut();
-//     hptr_array[gHist.getSequentialID(kMisc, 0, kMulti, 2)]->Fill( ntBcOut );
-//     for( Int_t i=0; i<ntBcOut; ++i ){
-//       const DCLocalTrack* const track = dcAna->GetTrackBcOut(i);
-//       static const Int_t chisqr_id = gHist.getSequentialID(kMisc, 0, kChisqr, 2);
-//       Double_t chisqr = track->GetChiSquare();
-//       hptr_array[chisqr_id]->Fill( chisqr );
-//       if( !track || chisqr>10. ) continue;
-//       // Double_t x0 = track->GetX0(); Double_t y0 = track->GetY0();
-//       // Double_t u0 = track->GetU0(); Double_t v0 = track->GetV0();
-//       for( Int_t j=0; j<NHist; ++j ){
-// 	Double_t z = dist_FF+FF_plus+TgtOrg_plus[j];
-// 	Double_t x = track->GetX(z); Double_t y = track->GetY(z);
-// 	static const Int_t xpos_id   = gHist.getSequentialID(kMisc, 0, kHitPat);
-// 	static const Int_t ypos_id   = gHist.getSequentialID(kMisc, 0, kHitPat, NHist+1);
-// 	static const Int_t xypos_id  = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
-// 	hptr_array[xpos_id+j]->Fill(x);
-// 	hptr_array[ypos_id+j]->Fill(y);
-// 	hptr_array[xypos_id+j]->Fill(x, y);
-//       }
-//       static const Int_t bh2cut_id = gHist.getSequentialID(kMisc, 2, kHitPat2D, 2);
-//       static const Double_t zBH2 = gGeom.GetLocalZ("BH2");
-//       hptr_array[bh2cut_id]->Fill( track->GetX(zBH2), segBh2 );
-//     }
-//   }
+  // SdcOut
+  Double_t multi_SdcOut = 0.;
+  for( int layer=1; layer<=NumOfLayersSdcOut; ++layer ){
+    const DCHitContainer &contOut = dcAna->GetSdcOutHC(layer);
+    int nhOut = contOut.size();
+    if ( nhOut > MaxMultiHitSdcOut )
+      continue;
+    for( int i=0; i<nhOut; ++i ){
+      DCHit  *hit  = contOut[i];
+      Double_t  wire = hit->GetWire();
+      ++multi_SdcOut;
+      gEvDisp.DrawHitWire( layer+30, int(wire) );
+    }
+  }
+  // multi_SdcOut /= (Double_t)NumOfLayersSdcOut;
+  // if( multi_SdcOut > MaxMultiHitSdcOut ) return true;
 
-// #if DEBUG
-//   std::cout << __FILE__ << " " << __LINE__ << std::endl;
-// #endif
+  event.ApplyBH2Filter();
+  event.TrackSearchBcOut();
+
+  Int_t ntBcOut = dcAna->GetNtracksBcOut();
+  for( Int_t it=0; it<ntBcOut; ++it ){
+    DCLocalTrack *tp = dcAna->GetTrackBcOut( it );
+    if( tp ) gEvDisp.DrawBcOutLocalTrack( tp );
+  }
+
+  // if( ntBcOut==0 ) return true;
+
+  gEvDisp.Update();
 
   gEvDisp.EndOfEvent();
 

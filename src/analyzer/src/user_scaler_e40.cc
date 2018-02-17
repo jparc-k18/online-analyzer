@@ -109,7 +109,7 @@ process_begin( const std::vector<std::string>& argv )
     // gScaler.Set( c, r++, ScalerInfo( "BGO-01",         1,  0 ) );
     // gScaler.Set( c, r++, ScalerInfo( "BGO-02",         1,  1 ) );
     gScaler.Set( c, r++, ScalerInfo( "BGO-03",         1,  2 ) );
-    gScaler.Set( c, r++, ScalerInfo( "BGO-04",         1,  3 ) );
+    gScaler.Set( c, r++, ScalerInfo( "BGO-04",         1, 13 ) );
     gScaler.Set( c, r++, ScalerInfo( "BGO-05",         1,  4 ) );
     gScaler.Set( c, r++, ScalerInfo( "BGO-06",         1,  5 ) );
     gScaler.Set( c, r++, ScalerInfo( "BGO-07",         1,  6 ) );

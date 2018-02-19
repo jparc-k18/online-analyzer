@@ -1718,6 +1718,7 @@ process_event( void )
   {
     // data typep
     static const int k_device_bh1  = gUnpacker.get_device_id("BH1");
+    static const int k_device_bft  = gUnpacker.get_device_id("BFT");
     static const int k_device_bh2  = gUnpacker.get_device_id("BH2");
     static const int k_device_sch  = gUnpacker.get_device_id("SCH");
     static const int k_device_tof  = gUnpacker.get_device_id("TOF");
@@ -1725,9 +1726,30 @@ process_event( void )
     static const int k_device_bc4  = gUnpacker.get_device_id("BC4");
     static const int k_device_sdc1 = gUnpacker.get_device_id("SDC1");
     static const int k_device_sdc2 = gUnpacker.get_device_id("SDC2");
+    static const int k_device_sdc3 = gUnpacker.get_device_id("SDC3");
 
     // sequential id
     int cor_id= gHist.getSequentialID(kCorrelation, 0, 0, 1);
+
+    // BH1 vs BFT
+    TH2* hcor_bh1bft = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+    for(int seg1 = 0; seg1<NumOfSegBH1; ++seg1){
+      for(int seg2 = 0; seg2<NumOfSegBFT; ++seg2){
+	int nhitBH1 = gUnpacker.get_entries(k_device_bh1, 0, seg1, 0, 1);
+	int nhitBFT = gUnpacker.get_entries(k_device_bft, 0, 0, seg2, 0);
+	if( nhitBH1 == 0 || nhitBFT == 0 ) continue;
+	bool hitBFT = false;
+	for( int m = 0; m<nhitBFT; ++m ){
+	  int tdc = gUnpacker.get(k_device_bft, 0, 0, seg2, 0, m);
+	  if( !hitBFT && tdc > 0 ) hitBFT = true;
+	}
+	int tdcBH1 = gUnpacker.get(k_device_bh1, 0, seg1, 0, 1);
+	bool hitBH1 = ( tdcBH1 > 0 );
+	if( hitBFT && hitBH1 ){
+	  hcor_bh1bft->Fill(seg1, seg2);
+	}
+      }
+    }
 
     // BH1 vs BH2
     TH2* hcor_bh1bh2 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
@@ -1778,6 +1800,17 @@ process_event( void )
 	int hitSDC2 = gUnpacker.get_entries(k_device_sdc2, 0, 0, wire2, 0);
 	if( hitSDC1 == 0 || hitSDC2 == 0 ) continue;
 	hcor_sdc1sdc2->Fill( wire1, wire2 );
+      }
+    }
+
+    // TOF vs SDC3
+    TH2* hcor_tofsdc3 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+    for( int seg=0; seg<NumOfSegTOF; ++seg ){
+      for( int wire=0; wire<NumOfWireSDC3X; ++wire ){
+	int hitTOF  = gUnpacker.get_entries(k_device_tof, 0, seg, 0, 1);
+	int hitSDC3 = gUnpacker.get_entries(k_device_sdc3, 2, 0, wire, 0);
+	if( hitTOF == 0 || hitSDC3 == 0 ) continue;
+	hcor_tofsdc3->Fill( wire, seg );
       }
     }
   }

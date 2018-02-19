@@ -159,9 +159,13 @@ process_event( void )
     Bool_t hit_flag = false;
     for( Int_t i=0; i<nh; ++i ){
       HodoRawHit *hit = cont[i];
+      Int_t seg = hit->SegmentId();
       if( !hit ) continue;
       Int_t Tu=hit->GetTdcUp(), Td=hit->GetTdcDown();
-      if( Tu>0 || Td>0 ) hit_flag = true;
+      if( Tu>0 || Td>0 ){
+	hit_flag = true;
+	gEvDisp.DrawHitHodoscope( gGeom.GetDetectorId("BH2"), seg, Tu, Td );
+      }
     }
     gEvDisp.PrintHit("BH2", 0.80, hit_flag);
   }
@@ -216,7 +220,7 @@ process_event( void )
         gEvDisp.DrawHitHodoscope( gGeom.GetDetectorId("SCH"), seg );
       }
     }
-    gEvDisp.PrintHit("SCH", 0.65, hit_flag);
+    gEvDisp.PrintHit("SCH", 0.71, hit_flag);
   }
 
   // TOF
@@ -234,7 +238,7 @@ process_event( void )
         gEvDisp.DrawHitHodoscope( gGeom.GetDetectorId("TOF"), seg, Tu, Td );
       }
     }
-    gEvDisp.PrintHit("TOF", 0.62, hit_flag);
+    gEvDisp.PrintHit("TOF", 0.68, hit_flag);
   }
   Hodo2HitContainer TOFCont;
   Int_t nhTof = hodoAna->GetNHitsTOF();

@@ -4170,6 +4170,12 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
 
   {
     Int_t target_id = getUniqueID(kCorrelation, 0, 0, 0);
+    // BH1 vs BFT -----------------------------------------------
+    top_dir->Add(createTH2( ++target_id, "BH1_BFT", // 1 origin
+			    NumOfSegBH1, 0, NumOfSegBH1,
+			    NumOfSegBFT, 0, NumOfSegBFT,
+			    "BFT seg", "BH1 seg" ) );
+
     // BH2 vs BH1 -----------------------------------------------
     top_dir->Add(createTH2(++target_id, "BH2_BH1", // 1 origin
 			   NumOfSegBH1, 0, NumOfSegBH1,
@@ -4193,6 +4199,12 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
 			   NumOfWireSDC1, 0, NumOfWireSDC1,
 			   NumOfWireSDC2, 0, NumOfWireSDC2,
 			   "SDC1 wire", "SDC2 wire"));
+
+    // TOF vs SDC3 --------------------------------------------
+    top_dir->Add(createTH2(++target_id, "TOF_SDC3x0", // 1 origin
+			   NumOfWireSDC3X, 0, NumOfWireSDC3X,
+			   NumOfSegTOF, 0, NumOfSegTOF,
+			   "SDC3 wire", "TOF seg"));
   }
 
   return top_dir;

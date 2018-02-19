@@ -56,6 +56,7 @@
 #include "DetectorID.hh"
 // #include "EMCAnalyzer.hh"
 #include "EventDisplay.hh"
+#include "Exception.hh"
 #include "FuncName.hh"
 #include "K18TrackD2U.hh"
 #include "KuramaTrack.hh"
@@ -65,10 +66,10 @@
 // Detector Construction
 #define BH2         1
 #define BcOut       1
+#define TARGET      1
 #define KURAMA      1
 #define SdcIn       1
 #define SdcOut      1
-#define FBH         1
 #define SCH         1
 #define TOF         1
 #define E07Detector 0
@@ -85,13 +86,13 @@ namespace
   using namespace hddaq::unpacker;
 
   const UnpackerManager& gUnpacker = GUnpacker::get_instance();
-  const DCGeomMan& gGeom = DCGeomMan::GetInstance();
+  const DCGeomMan&       gGeom     = DCGeomMan::GetInstance();
   // EMCAnalyzer&     gEMC  = EMCAnalyzer::GetInstance();
   // RMAnalyzer&      gRM   = RMAnalyzer::GetInstance();
 
-  const Color_t BGColor  = kBlack;
-  const Color_t FGColor  = kWhite;
-  const Color_t HitColor = kCyan;
+  const Color_t BGColor    = kBlack;
+  const Color_t FGColor    = kWhite;
+  const Color_t HitColor   = kCyan;
   const Width_t TrackColor = kRed;
   const Width_t TrackWidth = 1;
 
@@ -223,7 +224,9 @@ EventDisplay::Initialize( void )
   ConstructBH2();
 #endif
 
+#if TARGET
   ConstructTarget();
+#endif
 
 #if KURAMA
   ConstructKURAMA();
@@ -245,10 +248,6 @@ EventDisplay::Initialize( void )
   ConstructSdcOut();
 #endif
 
-#if FBH
-  ConstructFBH();
-#endif
-
 #if SCH
   ConstructSCH();
 #endif
@@ -264,7 +263,8 @@ EventDisplay::Initialize( void )
   m_geometry->Draw();
 
   gPad->SetPhi( 180. );
-  gPad->SetTheta( -20. );
+  gPad->SetTheta( -5.0 );
+  // gPad->SetTheta( -20. );
   gPad->GetView()->ZoomIn();
 
   m_canvas->Update();
@@ -272,6 +272,7 @@ EventDisplay::Initialize( void )
 #if Vertex
 
 #if E07Detector
+  ConstructFBH();
   ConstructEmulsion();
   ConstructSSD();
 #endif
@@ -328,16 +329,21 @@ EventDisplay::ConstructBH2( void )
 {
   const Int_t lid = gGeom.GetDetectorId("BH2");
 
-  Double_t rotMatBH2[9] = {};
-  Double_t BH2wallX = 120.0/2.; // X
-  Double_t BH2wallY =   6.0/2.; // Z
-  Double_t BH2wallZ =  40.0/2.; // Y
-  Double_t BH2SizeX[NumOfSegBH2] = { 120./2. }; // X
-  Double_t BH2SizeY[NumOfSegBH2] = {   6./2. }; // Z
-  Double_t BH2SizeZ[NumOfSegBH2] = {  40./2. }; // Y
-  Double_t BH2PosX[NumOfSegBH2]  = { 0./2. };
-  Double_t BH2PosY[NumOfSegBH2]  = { 0./2. };
-  Double_t BH2PosZ[NumOfSegBH2]  = { 0./2. };
+  Double_t rotMatBH2[NumOfMaxrixElements] = {};
+  Double_t BH2wallX = 118.0/2.; // X
+  Double_t BH2wallY =   5.0/2.; // Z
+  Double_t BH2wallZ =  60.0/2.; // Y
+  // Double_t BH2wallX = 120.0/2.; // X
+  // Double_t BH2wallY =   6.0/2.; // Z
+  // Double_t BH2wallZ =  40.0/2.; // Y
+  std::vector<Double_t> BH2SizeX =
+    { 35./2., 10./2., 7./2., 7./2., 7./2., 7./2., 10./2., 35./2. }; // X
+  std::vector<Double_t> BH2SizeY( NumOfSegBH2,  5./2. ); // Z
+  std::vector<Double_t> BH2SizeZ( NumOfSegBH2, 60./2. ); // Y
+  std::vector<Double_t> BH2PosX =
+    { -41.5/2., -19./2., -10.5/2., -3.5/2., 3.5/2., 10.5/2., 19./2., 41.5/2. };
+  std::vector<Double_t> BH2PosY( NumOfSegBH2, 0./2. );
+  std::vector<Double_t> BH2PosZ( NumOfSegBH2, 0./2. );
 
   CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		 gGeom.GetRotAngle1( lid ),
@@ -358,11 +364,11 @@ EventDisplay::ConstructBH2( void )
   for( Int_t i=0; i<NumOfSegBH2; ++i ){
     new TBRIK( Form( "BH2seg_brik_%d", i ),
 	       Form( "BH2seg_brik_%d", i ),
-	       "void", BH2SizeX[i], BH2SizeY[i], BH2SizeZ[i]);
+	       "void", BH2SizeX.at(i), BH2SizeY.at(i), BH2SizeZ.at(i) );
     m_BH2seg_node.push_back( new TNode( Form( "BH2seg_node_%d", i ),
 					Form( "BH2seg_node_%d", i ),
 					Form( "BH2seg_brik_%d", i ),
-					BH2PosX[i], BH2PosY[i], BH2PosZ[i] ) );
+					BH2PosX.at(i), BH2PosY.at(i), BH2PosZ.at(i) ) );
   }
   m_node->cd();
   ConstructionDone(__func__);
@@ -373,7 +379,7 @@ EventDisplay::ConstructBH2( void )
 Bool_t
 EventDisplay::ConstructKURAMA( void )
 {
-  Double_t Matrix[9] = {};
+  Double_t Matrix[NumOfMaxrixElements] = {};
 
   Double_t inner_x = 1400.0/2.; // X
   Double_t inner_y =  800.0/2.; // Z
@@ -451,12 +457,14 @@ EventDisplay::ConstructKURAMA( void )
 				   0., 0., 820.,
 				   "rotKURAMA", "void" );
 
-  m_kurama_inner_node->SetLineColor(FGColor);
-  m_kurama_outer_node->SetLineColor(FGColor);
-  uguard_inner->SetLineColor(FGColor);
-  uguard_outer->SetLineColor(FGColor);
-  dguard_inner->SetLineColor(FGColor);
-  dguard_outer->SetLineColor(FGColor);
+  // const Color_t c = FGColor;
+  const Color_t c = kGray+1;
+  m_kurama_inner_node->SetLineColor(c);
+  m_kurama_outer_node->SetLineColor(c);
+  uguard_inner->SetLineColor(c);
+  uguard_outer->SetLineColor(c);
+  dguard_inner->SetLineColor(c);
+  dguard_outer->SetLineColor(c);
 
   m_node->cd();
   ConstructionDone(__func__);
@@ -467,7 +475,7 @@ EventDisplay::ConstructKURAMA( void )
 Bool_t
 EventDisplay::ConstructCollimator( void )
 {
-  Double_t Matrix[9] = {};
+  Double_t Matrix[NumOfMaxrixElements] = {};
 
   Double_t offsetZ = -2714.4;
 
@@ -520,7 +528,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -546,7 +554,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -572,7 +580,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -598,7 +606,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -624,7 +632,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -650,7 +658,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -676,7 +684,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -702,7 +710,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -728,7 +736,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -754,7 +762,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -780,7 +788,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -806,7 +814,7 @@ EventDisplay::ConstructBcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -842,7 +850,7 @@ EventDisplay::ConstructSdcIn( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -868,7 +876,7 @@ EventDisplay::ConstructSdcIn( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -894,7 +902,7 @@ EventDisplay::ConstructSdcIn( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -920,7 +928,7 @@ EventDisplay::ConstructSdcIn( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -946,7 +954,7 @@ EventDisplay::ConstructSdcIn( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t Z    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -972,7 +980,7 @@ EventDisplay::ConstructSdcIn( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t Z    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -998,7 +1006,7 @@ EventDisplay::ConstructSdcIn( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t Z    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -1024,7 +1032,7 @@ EventDisplay::ConstructSdcIn( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t Z    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -1050,7 +1058,7 @@ EventDisplay::ConstructSdcIn( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t Z    = wireL/TMath::Cos(gGeom.GetTiltAngle(lid)*math::Deg2Rad())/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -1088,7 +1096,7 @@ EventDisplay::ConstructSdcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireLSDC2/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -1115,7 +1123,7 @@ EventDisplay::ConstructSdcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireLSDC2/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -1142,7 +1150,7 @@ EventDisplay::ConstructSdcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireLSDC2/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -1169,7 +1177,7 @@ EventDisplay::ConstructSdcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireLSDC2/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -1196,7 +1204,7 @@ EventDisplay::ConstructSdcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireLSDC3Y/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ), Matrix );
@@ -1222,7 +1230,7 @@ EventDisplay::ConstructSdcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireLSDC3Y/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -1249,7 +1257,7 @@ EventDisplay::ConstructSdcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireLSDC3X/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -1276,7 +1284,7 @@ EventDisplay::ConstructSdcOut( void )
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
     Double_t L    = wireLSDC3X/2.;
-    Double_t Matrix[9] = {};
+    Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
 		   gGeom.GetRotAngle2( lid ),
@@ -1308,7 +1316,7 @@ EventDisplay::ConstructEmulsion( void )
   Double_t EmulsionX = 100.0/2.0;
   Double_t EmulsionY =  12.0/2.0; // Z
   Double_t EmulsionZ = 100.0/2.0; // Y
-  Double_t rotMatEmulsion[9];
+  Double_t rotMatEmulsion[NumOfMaxrixElements];
 
   new TBRIK( "emulsion_brik", "emulsion_brik", "void",
 	     EmulsionX, EmulsionY, EmulsionZ );
@@ -1343,7 +1351,7 @@ EventDisplay::ConstructTarget( void )
   const Double_t TargetX = 50.0/2.0;
   const Double_t TargetY = 30.0/2.0; // Z
   const Double_t TargetZ = 30.0/2.0; // Y
-  Double_t rotMatTarget[9];
+  Double_t rotMatTarget[NumOfMaxrixElements];
 
   new TBRIK( "target_brik", "target_brik", "void",
 	     TargetX, TargetY, TargetZ );
@@ -1394,7 +1402,7 @@ EventDisplay::ConstructFBH( void )
 {
   const Int_t lid = gGeom.GetDetectorId("FBH");
 
-  Double_t rotMatFBH[9] = {};
+  Double_t rotMatFBH[NumOfMaxrixElements] = {};
   Double_t FBHwallX =  7.5/2.0*NumOfSegFBH; // X
   Double_t FBHwallY =  2.0/2.0*2.0; // Z
   Double_t FBHwallZ = 35.0/2.0; // Y
@@ -1459,7 +1467,7 @@ EventDisplay::ConstructSCH( void )
 {
   const Int_t lid = gGeom.GetDetectorId("SCH");
 
-  Double_t rotMatSCH[9] = {};
+  Double_t rotMatSCH[NumOfMaxrixElements] = {};
   Double_t SCHwallX =   11.5/2.0*NumOfSegSCH; // X
   Double_t SCHwallY =    2.0/2.0*2.0; // Z
   Double_t SCHwallZ =  450.0/2.0; // Y
@@ -1514,7 +1522,7 @@ EventDisplay::ConstructTOF( void )
 {
   const Int_t lid = gGeom.GetDetectorId("TOF");
 
-  Double_t rotMatTOF[9] = {};
+  Double_t rotMatTOF[NumOfMaxrixElements] = {};
   Double_t TOFwallX =   80.0/2.0*NumOfSegTOF; // X
   Double_t TOFwallY =   30.0/2.0*2.0; // Z
   Double_t TOFwallZ = 1800.0/2.0; // Y
@@ -1538,7 +1546,7 @@ EventDisplay::ConstructTOF( void )
 			      TOFwallPos.x(),
 			      TOFwallPos.y(),
 			      TOFwallPos.z(),
-			      "rotTOF", "void");
+			      "rotTOF", "void" );
 
   m_TOFwall_node->SetVisibility(0);
   m_TOFwall_node->cd();
@@ -1670,15 +1678,13 @@ EventDisplay::DrawHitWire( Int_t lid, Int_t hit_wire, Bool_t range_check, Bool_t
     break;
 
   default:
-    hddaq::cout << "#E " << FUNC_NAME << " "
-		<< "no such plane : " << lid << std::endl;
-    return;
+    throw Exception( FUNC_NAME+" no such plane : "+TString::Itoa(lid,10) );
   }
 
   TNode *node = m_geometry->GetNode( node_name );
   if( !node ){
-    hddaq::cout << "#E " << FUNC_NAME << " "
-		<< "no such node : " << node_name << std::endl;
+    // hddaq::cout << "#E " << FUNC_NAME << " "
+    // 		<< "no such node : " << node_name << std::endl;
     return;
   }
 
@@ -1705,23 +1711,27 @@ EventDisplay::DrawHitHodoscope( Int_t lid, Int_t seg, Int_t Tu, Int_t Td )
   if( seg<0 ) return;
 
   static const Int_t IdBH2    = gGeom.GetDetectorId("BH2");
-  static const Int_t IdFBH    = gGeom.GetDetectorId("FBH");
+  // static const Int_t IdFBH    = gGeom.GetDetectorId("FBH");
   static const Int_t IdSCH    = gGeom.GetDetectorId("SCH");
   static const Int_t IdTOF    = gGeom.GetDetectorId("TOF");
 
   if( lid == IdBH2 ){
     if( seg>=NumOfSegBH2 ) return;
     node_name = Form( "BH2seg_node_%d", seg );
-  } else if( lid == IdFBH ){
-    if( seg>=NumOfSegFBH ) return;
-    node_name = Form( "FBHseg_node_%d", seg );
-  } else if( lid == IdSCH ){
+  }
+  // else if( lid == IdFBH ){
+  //   if( seg>=NumOfSegFBH ) return;
+  //   node_name = Form( "FBHseg_node_%d", seg );
+  // }
+  else if( lid == IdSCH ){
     if( seg>=NumOfSegSCH ) return;
     node_name = Form( "SCHseg_node_%d", seg );
-  } else if( lid == IdTOF ){
+  }
+  else if( lid == IdTOF ){
     if( seg>=NumOfSegTOF ) return;
     node_name = Form( "TOFseg_node_%d", seg );
-  } else {
+  }
+  else {
     hddaq::cout << "#E " << FUNC_NAME << " "
 		<< "no such plane : " << lid << std::endl;
     return;
@@ -1729,19 +1739,17 @@ EventDisplay::DrawHitHodoscope( Int_t lid, Int_t seg, Int_t Tu, Int_t Td )
 
   TNode *node = m_geometry->GetNode( node_name );
   if( !node ){
-    hddaq::cout << "#E " << FUNC_NAME << " "
-		<< "no such node : " << node_name << std::endl;
+    // hddaq::cout << "#E " << FUNC_NAME << " "
+    // 		<< "no such node : " << node_name << std::endl;
     return;
   }
 
   node->SetVisibility(1);
 
-  if( Tu>0 && Td>0 ){
+  if( Tu>0 && Td>0 )
     node->SetLineColor( HitColor );
-  }
-  else {
+  else
     node->SetLineColor( kGreen );
-  }
 
   m_canvas->cd();
   m_geometry->Draw("same");
@@ -2430,7 +2438,7 @@ EventDisplay::ResetVisibility( void )
   ResetVisibility( m_FBHseg_node );
   ResetVisibility( m_SCHseg_node );
   ResetVisibility( m_TOFseg_node, kWhite );
-  ResetVisibility( m_target_node, kWhite );
+  ResetVisibility( m_target_node );
 
 #if Vertex
   if( m_SSD_y_hist ){

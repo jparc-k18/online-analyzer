@@ -132,6 +132,7 @@ private:
   TPolyLine                 *m_MissMomYZ_line;
 
 private:
+  static const Int_t NumOfMaxrixElements = 9;
   // for Print method
   enum eK18Tracking { kP3rd, kDelta, kDelta3rd, kK18XY, kK18UV,
 		      nK18Tracking };

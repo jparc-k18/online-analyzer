@@ -1507,11 +1507,13 @@ void PsMaker::create(TString& name)
 
   // Correlation ------------------------------------------------------------
   if(name == CONV_STRING(kCorrelation)){
-    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    par_list[kXdiv] = 3; par_list[kYdiv] = 2;
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 1));
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 2));
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 3));
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 4));
+    id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 5));
+    id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 6));
     drawOneCanvas(id_list, par_list, false, false, "box");
   }
 

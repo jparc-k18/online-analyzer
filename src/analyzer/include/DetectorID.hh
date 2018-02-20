@@ -59,7 +59,7 @@ const Int_t DetIdSdcIn  = 30;
 const Int_t DetIdSdcOut = 40;
 
 const Int_t NumOfLayersBcOut  = 12;
-const Int_t NumOfLayersSdcIn  =  6;
+const Int_t NumOfLayersSdcIn  =  9;
 const Int_t NumOfLayersSdcOut =  8;
 const Int_t NumOfLayersSsdIn  =  4;
 const Int_t NumOfLayersSsdOut =  4;

@@ -86,4 +86,43 @@ EventAnalyzer::TrackSearchBcOut( void )
     return m_dc_analyzer->TrackSearchBcOut( m_bh2filter_list );
 }
 
+//______________________________________________________________________________
+Bool_t
+EventAnalyzer::TrackSearchSdcIn( void )
+{
+  if( !m_dc_analyzer )
+    return false;
+
+  return m_dc_analyzer->TrackSearchSdcIn();
+}
+
+//______________________________________________________________________________
+Bool_t
+EventAnalyzer::TrackSearchSdcOut( void )
+{
+  if( !m_dc_analyzer )
+    return false;
+
+  Hodo2HitContainer TOFCont;
+  Int_t nhTof = m_hodo_analyzer->GetNHitsTOF();
+  for( Int_t i=0; i<nhTof; ++i ){
+    Hodo2Hit *hit = m_hodo_analyzer->GetHitTOF(i);
+    if( !hit ) continue;
+    TOFCont.push_back( hit );
+  }
+
+  // return m_dc_analyzer->TrackSearchSdcOut();
+  return m_dc_analyzer->TrackSearchSdcOut( TOFCont );
+}
+
+//______________________________________________________________________________
+Bool_t
+EventAnalyzer::TrackSearchKurama( void )
+{
+  if( !m_dc_analyzer )
+    return false;
+
+  return m_dc_analyzer->TrackSearchKurama();
+}
+
 }

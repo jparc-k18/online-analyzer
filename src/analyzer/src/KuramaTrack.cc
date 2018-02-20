@@ -162,7 +162,7 @@ KuramaTrack::DoFit( void )
     return false;
   }
 
-  static const ThreeVector gTof = gGeom.GetGlobalPosition( "TOF" );
+  static const ThreeVector gTof = gGeom.GetGlobalPosition( "VTOF" );
   const Double_t       xOut   = m_track_out->GetX( gTof.z() );
   const Double_t       yOut   = m_track_out->GetY( gTof.z() );
   const ThreeVector& posOut = ThreeVector( xOut, yOut, gTof.z() );

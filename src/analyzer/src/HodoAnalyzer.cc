@@ -113,8 +113,12 @@ HodoAnalyzer::ClearBFTHits( void )
 void
 HodoAnalyzer::ClearSFTHits( void )
 {
-  utility::ClearContainer( m_SFTCont );
-  utility::ClearContainer( m_SFTClCont );
+  for( auto itr = m_SFTCont.begin(); itr!=m_SFTCont.end(); ++itr ){
+    utility::ClearContainer( *itr );
+  }
+  for( auto itr = m_SFTClCont.begin(); itr!=m_SFTClCont.end(); ++itr ){
+    utility::ClearContainer( *itr );
+  }
 }
 
 //______________________________________________________________________________
@@ -308,25 +312,37 @@ Bool_t
 HodoAnalyzer::DecodeSFTHits( RawData* rawData )
 {
   static std::vector<TString> name = { "SFT-U", "SFT-V", "SFT-X", "SFT-X" };
+
   ClearSFTHits();
-  for( Int_t p=0; p<NumOfLayersSFT; ++p ){
+
+  m_SFTCont.resize( NumOfPlaneSFT );
+  m_SFTClCont.resize( NumOfLayersSFT );
+
+  for( Int_t p=0; p<NumOfPlaneSFT; ++p ){
     const HodoRHitContainer &cont = rawData->GetSFTRawHC(p);
     for( Int_t i=0, n=cont.size(); i<n; ++i ){
-      HodoRawHit *hit=cont[i];
+      HodoRawHit *hit = cont[i];
       if( !hit ) continue;
       FiberHit *hp = new FiberHit(hit, name[p]);
       if( !hp ) continue;
       if( hp->Calculate() )
-	m_SFTCont.push_back(hp);
+	m_SFTCont.at(p).push_back(hp);
       else
 	delete hp;
     }
+    std::sort( m_SFTCont.at(p).begin(), m_SFTCont.at(p).end(), FiberHit::CompFiberHit );
   }
 
-  std::sort( m_SFTCont.begin(), m_SFTCont.end(), FiberHit::CompFiberHit );
-
 #if Cluster
-  MakeUpClusters( m_SFTCont, m_SFTClCont, MaxTimeDifSFT, 3 );
+  // UV
+  MakeUpClusters( m_SFTCont.at(0), m_SFTClCont.at(0), MaxTimeDifSFT, 3 );
+  MakeUpClusters( m_SFTCont.at(1), m_SFTClCont.at(1), MaxTimeDifSFT, 3 );
+  // X
+  FiberHitContainer cont( m_SFTCont.at(2) );
+  cont.reserve( m_SFTCont.at(2).size() + m_SFTCont.at(3).size() );
+  cont.insert( cont.end(), m_SFTCont.at(3).begin(), m_SFTCont.at(3).end() );
+  std::sort( cont.begin(), cont.end(), FiberHit::CompFiberHit );
+  MakeUpClusters( cont, m_SFTClCont.at(2), MaxTimeDifSFT, 3 );
 #endif
 
   return true;
@@ -858,9 +874,9 @@ HodoAnalyzer::TimeCutBFT( Double_t tmin, Double_t tmax )
 
 //______________________________________________________________________________
 void
-HodoAnalyzer::TimeCutSFT( Double_t tmin, Double_t tmax )
+HodoAnalyzer::TimeCutSFT( Int_t l, Double_t tmin, Double_t tmax )
 {
-  TimeCut( m_SFTClCont, tmin, tmax );
+  TimeCut( m_SFTClCont.at(l), tmin, tmax );
 }
 
 //______________________________________________________________________________

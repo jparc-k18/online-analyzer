@@ -44,21 +44,21 @@ private:
   HodoAnalyzer& operator =( const HodoAnalyzer& );
 
 private:
-  Hodo2HitContainer     m_BH1Cont;
-  BH2HitContainer       m_BH2Cont;
-  Hodo1HitContainer     m_BACCont;
-  Hodo1HitContainer     m_SACCont;
-  Hodo2HitContainer     m_TOFCont;
-  Hodo2HitContainer     m_LCCont;
-  FiberHitContainer     m_BFTCont;
-  FiberHitContainer     m_SFTCont;
-  FiberHitContainer     m_SCHCont;
-  HodoClusterContainer  m_BH1ClCont;
-  BH2ClusterContainer   m_BH2ClCont;
-  HodoClusterContainer  m_TOFClCont;
-  FiberClusterContainer m_BFTClCont;
-  FiberClusterContainer m_SFTClCont;
-  FiberClusterContainer m_SCHClCont;
+  Hodo2HitContainer                  m_BH1Cont;
+  BH2HitContainer                    m_BH2Cont;
+  Hodo1HitContainer                  m_BACCont;
+  Hodo1HitContainer                  m_SACCont;
+  Hodo2HitContainer                  m_TOFCont;
+  Hodo2HitContainer                  m_LCCont;
+  FiberHitContainer                  m_BFTCont;
+  std::vector<FiberHitContainer>     m_SFTCont;
+  FiberHitContainer                  m_SCHCont;
+  HodoClusterContainer               m_BH1ClCont;
+  BH2ClusterContainer                m_BH2ClCont;
+  HodoClusterContainer               m_TOFClCont;
+  FiberClusterContainer              m_BFTClCont;
+  std::vector<FiberClusterContainer> m_SFTClCont;
+  FiberClusterContainer              m_SCHClCont;
 
 public:
   Bool_t DecodeRawHits( RawData* rawData );
@@ -78,13 +78,13 @@ public:
   Int_t  GetNHitsTOF( void )  const { return m_TOFCont.size(); };
   Int_t  GetNHitsLC( void ) const { return m_LCCont.size(); };
   Int_t  GetNHitsBFT( void )  const { return m_BFTCont.size(); };
-  Int_t  GetNHitsSFT( void )  const { return m_SFTCont.size(); };
+  Int_t  GetNHitsSFT( Int_t l )  const { return m_SFTCont.at(l).size(); };
   Int_t  GetNHitsSCH( void )  const { return m_SCHCont.size(); };
   Int_t  GetNClustersBH1( void ) const { return m_BH1ClCont.size(); };
   Int_t  GetNClustersBH2( void ) const { return m_BH2ClCont.size(); };
   Int_t  GetNClustersTOF( void ) const { return m_TOFClCont.size(); }
   Int_t  GetNClustersBFT( void ) const { return m_BFTClCont.size(); };
-  Int_t  GetNClustersSFT( void ) const { return m_SFTClCont.size(); };
+  Int_t  GetNClustersSFT( Int_t l ) const { return m_SFTClCont.at(l).size(); };
   Int_t  GetNClustersSCH( void ) const { return m_SCHClCont.size(); };
   Hodo2Hit* GetHitBH1( Int_t i ) const { return m_BH1Cont.at(i); }
   BH2Hit*   GetHitBH2( Int_t i ) const { return m_BH2Cont.at(i); }
@@ -93,13 +93,13 @@ public:
   Hodo2Hit* GetHitTOF( Int_t i ) const { return m_TOFCont.at(i); }
   Hodo2Hit* GetHitLC( Int_t i ) const { return m_LCCont.at(i); }
   FiberHit* GetHitBFT( Int_t i ) const { return m_BFTCont.at(i); }
-  FiberHit* GetHitSFT( Int_t i ) const { return m_SFTCont.at(i); }
+  FiberHit* GetHitSFT( Int_t l, Int_t i ) const { return m_SFTCont.at(l).at(i); }
   FiberHit* GetHitSCH( Int_t i ) const { return m_SCHCont.at(i); }
   HodoCluster*  GetClusterBH1( Int_t i ) const { return m_BH1ClCont.at(i); }
   BH2Cluster*   GetClusterBH2( Int_t i ) const { return m_BH2ClCont.at(i); }
   HodoCluster*  GetClusterTOF( Int_t i ) const { return m_TOFClCont.at(i); }
   FiberCluster* GetClusterBFT( Int_t i ) const { return m_BFTClCont.at(i); }
-  FiberCluster* GetClusterSFT( Int_t i ) const { return m_SFTClCont.at(i); }
+  FiberCluster* GetClusterSFT( Int_t l, Int_t i ) const { return m_SFTClCont.at(l).at(i); }
   FiberCluster* GetClusterSCH( Int_t i ) const { return m_SCHClCont.at(i); }
   Bool_t ReCalcBH1Hits( Bool_t applyRecursively=false );
   Bool_t ReCalcBH2Hits( Bool_t applyRecursively=false );
@@ -114,7 +114,7 @@ public:
   void TimeCutBH1( Double_t tmin, Double_t tmax );
   void TimeCutBH2( Double_t tmin, Double_t tmax );
   void TimeCutBFT( Double_t tmin, Double_t tmax );
-  void TimeCutSFT( Double_t tmin, Double_t tmax );
+  void TimeCutSFT( Int_t l, Double_t tmin, Double_t tmax );
   void TimeCutSCH( Double_t tmin, Double_t tmax );
 
 private:

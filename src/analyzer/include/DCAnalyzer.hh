@@ -136,8 +136,8 @@ public:
   Bool_t TrackSearchSsdInXY( void );
   Int_t GetNtracksBcIn( void )   const { return m_BcInTC.size(); }
   Int_t GetNtracksBcOut( void )  const { return m_BcOutTC.size(); }
-  // Int_t GetNtracksSdcIn( void )  const { return m_SdcInTC.size(); }
-  Int_t GetNtracksSdcIn( void )  const { return m_SsdOutSdcInTC.size(); }
+  Int_t GetNtracksSdcIn( void )  const { return m_SdcInTC.size(); }
+  // Int_t GetNtracksSdcIn( void )  const { return m_SsdOutSdcInTC.size(); }
   Int_t GetNtracksSdcOut( void ) const { return m_SdcOutTC.size(); }
   Int_t GetNtracksSsdIn( void )  const { return m_SsdInTC.size(); }
   Int_t GetNtracksSsdOut( void ) const { return m_SsdOutTC.size(); }
@@ -152,7 +152,8 @@ public:
 
   DCLocalTrack* GetTrackBcIn( Int_t i ) const { return m_BcInTC[i]; }
   DCLocalTrack* GetTrackBcOut( Int_t i ) const { return m_BcOutTC[i]; }
-  DCLocalTrack* GetTrackSdcIn( Int_t i ) const { return m_SsdOutSdcInTC[i]; }
+  DCLocalTrack* GetTrackSdcIn( Int_t i ) const { return m_SdcInTC[i]; }
+  // DCLocalTrack* GetTrackSdcIn( Int_t i ) const { return m_SsdOutSdcInTC[i]; }
   DCLocalTrack* GetTrackSdcOut( Int_t i ) const { return m_SdcOutTC[i]; }
   DCLocalTrack* GetTrackSsdIn( Int_t i ) const { return m_SsdInTC[i]; }
   DCLocalTrack* GetTrackSsdOut( Int_t i ) const { return m_SsdOutTC[i]; }

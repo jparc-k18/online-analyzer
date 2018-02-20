@@ -29,6 +29,7 @@
 #include "EventDisplay.hh"
 #include "FiberCluster.hh"
 #include "FiberHit.hh"
+#include "FieldMan.hh"
 #include "HistMaker.hh"
 #include "HodoAnalyzer.hh"
 #include "HodoParamMan.hh"
@@ -69,6 +70,7 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
   gConfMan.InitializeParameter<HodoParamMan>("HDPRM");
   gConfMan.InitializeParameter<HodoPHCMan>("HDPHC");
+  gConfMan.InitializeParameter<FieldMan>("KURAMA");
   gConfMan.InitializeParameter<UserParamMan>("USER");
   gConfMan.InitializeParameter<EventDisplay>();
   if( !gConfMan.IsGood() ) return -1;
@@ -172,17 +174,19 @@ process_event( void )
 
   // SFT
   {
-    Int_t ncl = hodoAna->GetNClustersSFT();
-    Bool_t hit_flag = false;
-    for( Int_t i=0; i<ncl; ++i ){
-      FiberCluster *cl = hodoAna->GetClusterSFT(i);
-      if( !cl ) continue;
-      Int_t seg   = (Int_t)cl->MeanSeg();
-      Int_t plane = cl->PlaneId();
-      hit_flag = true;
-      gEvDisp.DrawHitWire( plane+7, seg );
+    for( Int_t l=0; l<NumOfLayersSFT; ++l ){
+      Int_t ncl = hodoAna->GetNClustersSFT(l);
+      Bool_t hit_flag = false;
+      for( Int_t i=0; i<ncl; ++i ){
+	FiberCluster *cl = hodoAna->GetClusterSFT(l,i);
+	if( !cl ) continue;
+	Int_t seg   = (Int_t)cl->MeanSeg();
+	Int_t plane = cl->PlaneId();
+	hit_flag = true;
+	gEvDisp.DrawHitWire( plane+7, seg );
+      }
+      gEvDisp.PrintHit("SFT", 0.77, hit_flag);
     }
-    gEvDisp.PrintHit("SFT", 0.77, hit_flag);
   }
 
   // SAC
@@ -239,13 +243,6 @@ process_event( void )
       }
     }
     gEvDisp.PrintHit("TOF", 0.68, hit_flag);
-  }
-  Hodo2HitContainer TOFCont;
-  Int_t nhTof = hodoAna->GetNHitsTOF();
-  for( Int_t i=0; i<nhTof; ++i ){
-    Hodo2Hit *hit = hodoAna->GetHitTOF(i);
-    if( !hit ) continue;
-    TOFCont.push_back( hit );
   }
   // if( nhTof==0 ) return true;
 
@@ -328,6 +325,23 @@ process_event( void )
   }
 
   // if( ntBcOut==0 ) return true;
+
+  event.TrackSearchSdcIn();
+  Int_t ntSdcIn = dcAna->GetNtracksSdcIn();
+  for( Int_t it=0; it<ntSdcIn; ++it ){
+    DCLocalTrack *tp = dcAna->GetTrackSdcIn( it );
+    if( tp ) gEvDisp.DrawSdcInLocalTrack( tp );
+  }
+
+  event.TrackSearchSdcOut();
+  Int_t ntSdcOut = dcAna->GetNtracksSdcOut();
+  for( Int_t it=0; it<ntSdcOut; ++it ){
+    DCLocalTrack *tp = dcAna->GetTrackSdcOut( it );
+    if( tp ) gEvDisp.DrawSdcOutLocalTrack( tp );
+  }
+
+  event.TrackSearchKurama();
+  Int_t ntKurama = dcAna->GetNTracksKurama();
 
   gEvDisp.Update();
 

@@ -87,10 +87,10 @@ ConfMan::Initialize( const std::vector<std::string>& argv )
       key.ReplaceAll(":","");
       key.ReplaceAll(";","");
       key.ReplaceAll(" ","");
-      if( value[0] != '/' )
+      if( value[0] != '/' && !value.IsFloat() )
 	value = hddaq::realpath( std::string(dir+value) );
 
-      hddaq::cout << " key = " << key
+      hddaq::cout << " key = "   << std::setw(12) << std::left << key
 		  << " value = " << value << std::endl;
       m_key_map[key]    = value;
       m_int_map[key]    = value.Atoi();

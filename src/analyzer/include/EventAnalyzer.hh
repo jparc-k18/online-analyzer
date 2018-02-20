@@ -42,6 +42,9 @@ public:
   HodoAnalyzer* GetHodoAnalyzer( void ) const { return m_hodo_analyzer; }
 
   Bool_t        TrackSearchBcOut( void );
+  Bool_t        TrackSearchSdcIn( void );
+  Bool_t        TrackSearchSdcOut( void );
+  Bool_t        TrackSearchKurama( void );
 
   ClassDef(EventAnalyzer,0);
 };

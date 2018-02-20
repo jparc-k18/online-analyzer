@@ -263,7 +263,7 @@ EventDisplay::Initialize( void )
   m_geometry->Draw();
 
   gPad->SetPhi( 180. );
-  gPad->SetTheta( -5.0 );
+  gPad->SetTheta( 1.0 );
   // gPad->SetTheta( -20. );
   gPad->GetView()->ZoomIn();
 
@@ -1898,15 +1898,16 @@ EventDisplay::DrawSdcInLocalTrack( DCLocalTrack *tp )
 {
 #if SdcIn
   Double_t x0 = tp->GetX0(), y0 = tp->GetY0();
-  static const Int_t lid = gGeom.GetDetectorId("SSD1-Y1");
-  static const Double_t zSsd1y1 = gGeom.GetLocalZ( lid ) - 100.;
-  Double_t x1 = tp->GetX( zSsd1y1 ), y1 = tp->GetY( zSsd1y1 );
+  // static const Int_t lid = gGeom.GetDetectorId("SSD1-Y1");
+  static const Int_t lid = gGeom.GetDetectorId("SFT-U");
+  static const Double_t zSFTU = gGeom.GetLocalZ( lid ) - 100.;
+  Double_t x1 = tp->GetX( zSFTU ), y1 = tp->GetY( zSFTU );
   // static const Int_t lid = gGeom.GetDetectorId("SDC1-X1");
   // static const Double_t zSdc1x1 = gGeom.GetLocalZ( lid ) - 100.;
   // Double_t x1 = tp->GetX( zSdc1x1 ), y1 = tp->GetY( zSdc1x1 );
 
-  ThreeVector gPos0( x0+BeamAxis, y0, 0. );
-  ThreeVector gPos1( x1+BeamAxis, y1, zSsd1y1 );
+  ThreeVector gPos0( x0, y0, 0. );
+  ThreeVector gPos1( x1, y1, zSFTU );
   //ThreeVector gPos1( x1+BeamAxis, y1, zSdc1x1 );
 
   TPolyLine3D *p = new TPolyLine3D(2);

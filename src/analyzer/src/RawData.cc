@@ -253,16 +253,15 @@ RawData::DecodeHits( void )
 
   //SFT
   for( Int_t plane=0; plane<NumOfPlaneSFT; ++plane ){
-    for( Int_t seg = 0; seg<NumOfSegSFT[plane]; ++seg ){
-      Int_t nhit_l = gUnpacker.get_entries( DetIdSFT, plane, 0, seg, 0 );
-      Int_t nhit_t = gUnpacker.get_entries( DetIdSFT, plane, 0, seg, 1 );
-      if( nhit_l > 0 && nhit_l == nhit_t ){
-  	for( Int_t i = 0; i<nhit_l; ++i ){
-  	  Int_t leading  = gUnpacker.get( DetIdSFT, plane, 0, seg, 0, i )  ;
-  	  Int_t trailing = gUnpacker.get( DetIdSFT, plane, 0, seg, 1, i )  ;
-  	  AddHodoRawHit( m_SFTRawHC[plane], DetIdSFT, plane, seg , 0, 1, leading );
-  	  AddHodoRawHit( m_SFTRawHC[plane], DetIdSFT, plane, seg , 1, 1, trailing );
-  	}
+    for( Int_t seg=0; seg<NumOfSegSFT[plane]; ++seg ){
+      for( Int_t lort=0; lort<2; ++lort ){
+	Int_t nhit = gUnpacker.get_entries( DetIdSFT, plane, 0, seg, lort );
+	if( nhit>0 ){
+	  for( Int_t i=0; i<nhit; ++i ){
+	    Int_t data  = gUnpacker.get( DetIdSFT, plane, 0, seg, lort, i )  ;
+	    AddHodoRawHit( m_SFTRawHC[plane], DetIdSFT, plane, seg , lort, 1, data );
+	  }
+	}
       }
     }
   }

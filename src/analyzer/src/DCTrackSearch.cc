@@ -987,8 +987,9 @@ namespace track
 	  track->GetChiSquare()<MaxChisquare ){
 	TrackCont.push_back(track);
       }
-      else
+      else {
 	delete track;
+      }
     }
 
     FinalizeTrack( FUNC_NAME, TrackCont, DCLTrackCompSdcInFiber(), CandCont );

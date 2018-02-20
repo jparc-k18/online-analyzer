@@ -810,6 +810,10 @@ RungeKutta::MakeHPContainer( void )
   //   container.push_back( std::make_pair( plid, RKcalcHitPoint() ) );
   // }
 
+  for( std::size_t i=0; i<NumOfLayersSFT; ++i ){
+    std::size_t plid = i +NumOfLayersSDC1 +1;
+    container.push_back( std::make_pair( plid, RKcalcHitPoint() ) );
+  }
   for( std::size_t i=0; i<NumOfLayersSDC1; ++i ){
     std::size_t plid = i +PlOffsSdcIn +1;
     container.push_back( std::make_pair( plid, RKcalcHitPoint() ) );
@@ -841,9 +845,7 @@ RKHitPointContainer::HitPointOfLayer( Int_t lnum ) const
     if( lnum == itr->first )
       return itr->second;
   }
-  hddaq::cerr << FUNC_NAME << ": No Record. #Layer="
-  	      << lnum << std::endl;
-  throw Exception( FUNC_NAME+": No Record" );
+  throw Exception( FUNC_NAME+" No Record = "+TString::Itoa(lnum,10) );
 }
 
 //______________________________________________________________________________
@@ -855,7 +857,5 @@ RKHitPointContainer::HitPointOfLayer( Int_t lnum )
     if( lnum == itr->first )
       return itr->second;
   }
-  hddaq::cerr << FUNC_NAME << ": No Record. #Layer="
-  	      << lnum << std::endl;
-  throw Exception( FUNC_NAME+": No Record" );
+  throw Exception( FUNC_NAME+" No Record = "+TString::Itoa(lnum,10) );
 }

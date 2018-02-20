@@ -61,7 +61,7 @@ namespace
 {
   // using namespace K18Parameter;
   const ConfMan&      gConf   = ConfMan::GetInstance();
-  // const EventDisplay& gEvDisp = EventDisplay::GetInstance();
+  const EventDisplay& gEvDisp = EventDisplay::GetInstance();
   const DCGeomMan&    gGeom   = DCGeomMan::GetInstance();
   const UserParamMan& gUser   = UserParamMan::GetInstance();
 
@@ -333,13 +333,39 @@ DCAnalyzer::DecodeSdcInHits( RawData *rawData )
 
   ClearSdcInHits();
 
-  for( Int_t layer=1; layer<=NumOfLayersSdcIn; ++layer ){
+  // SFT
+  {
+    HodoAnalyzer hodoAna;
+    hodoAna.DecodeSFTHits( rawData );
+    for ( int l=0; l<NumOfLayersSFT; ++l ){
+      int layerId = l + PlMinSdcIn + NumOfLayersSDC1;
+      // hodoAna.TimeCutSFT( l, -10, 10 );
+      int ncl = hodoAna.GetNClustersSFT( l );
+      for( int j=0; j<ncl; ++j ){
+	FiberCluster* cl = hodoAna.GetClusterSFT( l, j );
+	double seg  = cl->MeanSeg();
+	double pos  = cl->MeanPosition();
+	double time = cl->CMeanTime();
+	DCHit *hit  = new DCHit( layerId, seg );
+	hit->SetTdcVal( static_cast<int>( time ) );
+	if ( hit->CalcFiberObservables() ) {
+	  hit->SetWirePosition( pos );
+	  m_SdcInHC[layerId].push_back( hit );
+	} else {
+	  delete hit;
+	}
+      }
+    }
+  }
+
+  // SDC1
+  for( Int_t layer=1; layer<=NumOfLayersSDC1; ++layer ){
     const DCRHitContainer &RHitCont=rawData->GetSdcInRawHC(layer);
     Int_t nh = RHitCont.size();
     for( Int_t i=0; i<nh; ++i ){
       DCRawHit *rhit  = RHitCont[i];
       DCHit    *hit   = new DCHit( rhit->PlaneId(), rhit->WireId() );
-      Int_t       nhtdc = rhit->GetTdcSize();
+      Int_t     nhtdc = rhit->GetTdcSize();
       if(!hit) continue;
       for( Int_t j=0; j<nhtdc; ++j ){
 	hit->SetTdcVal( rhit->GetTdc(j) );
@@ -350,6 +376,9 @@ DCAnalyzer::DecodeSdcInHits( RawData *rawData )
 	delete hit;
     }
   }
+
+
+
 
   m_is_decoded[k_SdcIn] = true;
   return true;
@@ -491,67 +520,72 @@ DCAnalyzer::DecodeRawHits( RawData *rawData )
   return true;
 }
 
-// //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::DecodeTOFHits( const Hodo2HitContainer& HitCont )
-// {
-//   if( m_is_decoded[k_TOF] ){
-//     hddaq::cout << "#D " << FUNC_NAME << " "
-// 		<< "already decoded" << std::endl;
-//     return true;
-//   }
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::DecodeTOFHits( const Hodo2HitContainer& HitCont )
+{
+  if( m_is_decoded[k_TOF] ){
+    hddaq::cout << "#D " << FUNC_NAME << " "
+		<< "already decoded" << std::endl;
+    return true;
+  }
 
-//   ClearTOFHits();
+  ClearTOFHits();
 
-//   static const Double_t RA2 = gGeom.GetRotAngle2("TOF");
-//   static const ThreeVector TOFPos[2] = {
-//     gGeom.GetGlobalPosition("TOF-UX"),
-//     gGeom.GetGlobalPosition("TOF-DX") };
+  static const Double_t RA2 = gGeom.GetRotAngle2("TOF");
+  static const ThreeVector TOFPos[2] = {
+    gGeom.GetGlobalPosition("TOF-UX"),
+    gGeom.GetGlobalPosition("TOF-DX") };
 
-//   const UInt_t nh = HitCont.size();
-//   for( UInt_t i=0; i<nh; ++i ){
-//     Hodo2Hit *hodo_hit = HitCont[i];
-//     if( !hodo_hit ) continue;
-//     const Double_t seg  = hodo_hit->SegmentId()+1;
-//     const Double_t dt   = hodo_hit->TimeDiff();
-//     Int_t layer_x = -1;
-//     Int_t layer_y = -1;
-//     if( (Int_t)seg%2==0 ){
-//       layer_x  = IdTOFUX;
-//       layer_y  = IdTOFUY;
-//     }
-//     if( (Int_t)seg%2==1 ){
-//       layer_x  = IdTOFDX;
-//       layer_y  = IdTOFDY;
-//     }
-//     Double_t wpos = gGeom.CalcWirePosition( layer_x, seg );
-//     ThreeVector w( wpos, 0., 0. );
-//     w.RotateY( RA2*math::Deg2Rad() );
-//     const ThreeVector& hit_pos = TOFPos[(Int_t)seg%2] + w
-//       + ThreeVector( 0., dt/0.01285, 0. );
-//     // X
-//     DCHit *dc_hit_x = new DCHit( layer_x, seg );
-//     dc_hit_x->SetTdcVal(0);
-//     dc_hit_x->SetWirePosition( hit_pos.x() );
-//     dc_hit_x->SetZ( hit_pos.z() );
-//     dc_hit_x->SetTiltAngle( 0. );
-//     dc_hit_x->SetDriftTime( 0. );
-//     dc_hit_x->SetDriftLength( 0. );
-//     m_TOFHC.push_back( dc_hit_x );
-//     // Y
-//     DCHit *dc_hit_y = new DCHit( layer_y, seg );
-//     dc_hit_y->SetTdcVal(0);
-//     dc_hit_y->SetWirePosition( hit_pos.y() ); // [ns] -> [mm]
-//     dc_hit_y->SetZ( hit_pos.z() );
-//     dc_hit_y->SetTiltAngle( 90. );
-//     dc_hit_y->SetDriftTime( 0. );
-//     dc_hit_y->SetDriftLength( 0. );
-//     m_TOFHC.push_back( dc_hit_y );
-//   }
+  static const Int_t IdTOFUX = gGeom.GetDetectorId("TOF-UX");
+  static const Int_t IdTOFUY = gGeom.GetDetectorId("TOF-UY");
+  static const Int_t IdTOFDX = gGeom.GetDetectorId("TOF-DX");
+  static const Int_t IdTOFDY = gGeom.GetDetectorId("TOF-DY");
 
-//   m_is_decoded[k_TOF] = true;
-//   return true;
-// }
+  const UInt_t nh = HitCont.size();
+  for( UInt_t i=0; i<nh; ++i ){
+    Hodo2Hit *hodo_hit = HitCont[i];
+    if( !hodo_hit ) continue;
+    const Double_t seg  = hodo_hit->SegmentId()+1;
+    const Double_t dt   = hodo_hit->TimeDiff();
+    Int_t layer_x = -1;
+    Int_t layer_y = -1;
+    if( (Int_t)seg%2==0 ){
+      layer_x  = IdTOFUX;
+      layer_y  = IdTOFUY;
+    }
+    if( (Int_t)seg%2==1 ){
+      layer_x  = IdTOFDX;
+      layer_y  = IdTOFDY;
+    }
+    Double_t wpos = gGeom.CalcWirePosition( layer_x, seg );
+    ThreeVector w( wpos, 0., 0. );
+    w.RotateY( RA2*math::Deg2Rad() );
+    const ThreeVector& hit_pos = TOFPos[(Int_t)seg%2] + w
+      + ThreeVector( 0., dt/0.01285, 0. );
+    // X
+    DCHit *dc_hit_x = new DCHit( layer_x, seg );
+    dc_hit_x->SetTdcVal(0);
+    dc_hit_x->SetWirePosition( hit_pos.x() );
+    dc_hit_x->SetZ( hit_pos.z() );
+    dc_hit_x->SetTiltAngle( 0. );
+    dc_hit_x->SetDriftTime( 0. );
+    dc_hit_x->SetDriftLength( 0. );
+    m_TOFHC.push_back( dc_hit_x );
+    // Y
+    DCHit *dc_hit_y = new DCHit( layer_y, seg );
+    dc_hit_y->SetTdcVal(0);
+    dc_hit_y->SetWirePosition( hit_pos.y() ); // [ns] -> [mm]
+    dc_hit_y->SetZ( hit_pos.z() );
+    dc_hit_y->SetTiltAngle( 90. );
+    dc_hit_y->SetDriftTime( 0. );
+    dc_hit_y->SetDriftLength( 0. );
+    m_TOFHC.push_back( dc_hit_y );
+  }
+
+  m_is_decoded[k_TOF] = true;
+  return true;
+}
 
 // //______________________________________________________________________________
 // Bool_t
@@ -676,11 +710,16 @@ DCAnalyzer::TrackSearchBcOut( const BH2Filter::FilterList& hc )
   return false;
 }
 
-// //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::TrackSearchSdcIn( void )
-// {
-//   static const Int_t MinLayer = gUser.GetParameter("MinLayerSdcIn");
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::TrackSearchSdcIn( void )
+{
+  static const Int_t MinLayer = gUser.GetParameter("MinLayerSdcIn");
+
+  track::LocalTrackSearchSdcInFiber( m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn,
+				     m_SdcInTC, MinLayer );
+
+  return true;
 
 // #if SdcIn_Pair //Pair Plane Tracking Routine for SdcIn
 
@@ -729,40 +768,40 @@ DCAnalyzer::TrackSearchBcOut( const BH2Filter::FilterList& hc )
 //   return true;
 // #endif
 
-//   return false;
-// }
+  return false;
+}
 
-// //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::TrackSearchSdcOut( void )
-// {
-//   static const Int_t MinLayer = gUser.GetParameter("MinLayerSdcOut");
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::TrackSearchSdcOut( void )
+{
+  static const Int_t MinLayer = gUser.GetParameter("MinLayerSdcOut");
 
-//   track::LocalTrackSearchSdcOut( m_SdcOutHC, PPInfoSdcOut, NPPInfoSdcOut,
-// 				 m_SdcOutTC, MinLayer );
+  track::LocalTrackSearchSdcOut( m_SdcOutHC, PPInfoSdcOut, NPPInfoSdcOut,
+				 m_SdcOutTC, MinLayer );
 
-//   return true;
-// }
+  return true;
+}
 
-// //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::TrackSearchSdcOut( const Hodo2HitContainer& TOFCont )
-// {
-//   static const Int_t MinLayer = gUser.GetParameter("MinLayerSdcOut");
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::TrackSearchSdcOut( const Hodo2HitContainer& TOFCont )
+{
+  static const Int_t MinLayer = gUser.GetParameter("MinLayerSdcOut");
 
-//   if( !DecodeTOFHits( TOFCont ) ) return false;
+  if( !DecodeTOFHits( TOFCont ) ) return false;
 
-// #if 0
-//   for( UInt_t i=0, n=m_TOFHC.size(); i<n; ++i ){
-//     m_TOFHC[i]->Print();
-//   }
-// #endif
+#if 0
+  for( UInt_t i=0, n=m_TOFHC.size(); i<n; ++i ){
+    m_TOFHC[i]->Print();
+  }
+#endif
 
-//   track::LocalTrackSearchSdcOut( m_TOFHC, m_SdcOutHC, PPInfoSdcOut, NPPInfoSdcOut,
-// 				 m_SdcOutTC, MinLayer );
+  track::LocalTrackSearchSdcOut( m_TOFHC, m_SdcOutHC, PPInfoSdcOut, NPPInfoSdcOut,
+				 m_SdcOutTC, MinLayer );
 
-//   return true;
-// }
+  return true;
+}
 
 // //______________________________________________________________________________
 // Bool_t
@@ -935,66 +974,66 @@ DCAnalyzer::TrackSearchBcOut( const BH2Filter::FilterList& hc )
 //   return true;
 // }
 
-// //______________________________________________________________________________
-// Bool_t
-// DCAnalyzer::TrackSearchKurama( void )
-// {
-//   ClearKuramaTracks();
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::TrackSearchKurama( void )
+{
+  ClearKuramaTracks();
 
-//   UInt_t nIn  = GetNtracksSdcIn();
-//   UInt_t nOut = GetNtracksSdcOut();
+  UInt_t nIn  = GetNtracksSdcIn();
+  UInt_t nOut = GetNtracksSdcOut();
 
-//   if( nIn==0 || nOut==0 )
-//     return false;
+  if( nIn==0 || nOut==0 )
+    return false;
 
-//   for( UInt_t iIn=0; iIn<nIn; ++iIn ){
-//     DCLocalTrack *trIn = GetTrackSdcIn( iIn );
-//     if( !trIn->GoodForTracking() ) continue;
-//     for( UInt_t iOut=0; iOut<nOut; ++iOut ){
-//       DCLocalTrack * trOut = GetTrackSdcOut( iOut );
-//       if( !trOut->GoodForTracking() ) continue;
+  for( UInt_t iIn=0; iIn<nIn; ++iIn ){
+    DCLocalTrack *trIn = GetTrackSdcIn( iIn );
+    if( !trIn->GoodForTracking() ) continue;
+    for( UInt_t iOut=0; iOut<nOut; ++iOut ){
+      DCLocalTrack * trOut = GetTrackSdcOut( iOut );
+      if( !trOut->GoodForTracking() ) continue;
 
-//       if( gEvDisp.IsReady() ){
-// 	Double_t v0In  = trIn->GetV0();
-// 	Double_t v0Out = trOut->GetV0();
-// 	Double_t y0In  = trIn->GetY0();
-// 	Double_t y0Out = trOut->GetY0();
-// 	if( TMath::Abs(v0In-v0Out)>0.050 )
-// 	  continue;
-// 	if( TMath::Abs(y0In-y0Out)>15. )
-// 	  continue;
-//       }
+      // if( gEvDisp.IsReady() ){
+      // 	Double_t v0In  = trIn->GetV0();
+      // 	Double_t v0Out = trOut->GetV0();
+      // 	Double_t y0In  = trIn->GetY0();
+      // 	Double_t y0Out = trOut->GetY0();
+      // 	if( TMath::Abs(v0In-v0Out)>0.050 )
+      // 	  continue;
+      // 	if( TMath::Abs(y0In-y0Out)>15. )
+      // 	  continue;
+      // }
 
-//       KuramaTrack *trKurama = new KuramaTrack( trIn, trOut );
-//       if( !trKurama ) continue;
-//       Double_t u0In    = trIn->GetU0();
-//       Double_t u0Out   = trOut->GetU0();
-//       Double_t bending = u0Out - u0In;
-//       Double_t p[3] = { 0.08493, 0.2227, 0.01572 };
-//       Double_t initial_momentum = p[0] + p[1]/( bending-p[2] );
-//       if( bending>0. && initial_momentum>0. )
-// 	trKurama->SetInitialMomentum( initial_momentum );
-//       else
-// 	trKurama->SetInitialMomentum( 1.8 );
+      KuramaTrack *trKurama = new KuramaTrack( trIn, trOut );
+      if( !trKurama ) continue;
+      Double_t u0In    = trIn->GetU0();
+      Double_t u0Out   = trOut->GetU0();
+      Double_t bending = u0Out - u0In;
+      Double_t p[3] = { 0.08493, 0.2227, 0.01572 };
+      Double_t initial_momentum = p[0] + p[1]/( bending-p[2] );
+      if( bending>0. && initial_momentum>0. )
+	trKurama->SetInitialMomentum( initial_momentum );
+      else
+	trKurama->SetInitialMomentum( 1.0 );
 
-//       if( trKurama->DoFit() && trKurama->Chisqr()<MaxChiSqrKuramaTrack ){
-// 	m_KuramaTC.push_back( trKurama );
-//       }
-//       else{
-// 	// trKurama->Print( "in "+FUNC_NAME );
-// 	delete trKurama;
-//       }
-//     }// for( iOut )
-//   }// for( iIn )
+      if( trKurama->DoFit() && trKurama->Chisqr()<MaxChiSqrKuramaTrack ){
+	m_KuramaTC.push_back( trKurama );
+      }
+      else{
+	trKurama->Print( "in "+FUNC_NAME );
+	delete trKurama;
+      }
+    }// for( iOut )
+  }// for( iIn )
 
-//   std::sort( m_KuramaTC.begin(), m_KuramaTC.end(), KuramaTrackComp() );
+  std::sort( m_KuramaTC.begin(), m_KuramaTC.end(), KuramaTrackComp() );
 
-// #if 0
-//   PrintKurama( "Before Deleting" );
-// #endif
+#if 0
+  PrintKurama( "Before Deleting" );
+#endif
 
-//   return true;
-// }
+  return true;
+}
 
 // //______________________________________________________________________________
 // Bool_t
@@ -1044,7 +1083,7 @@ DCAnalyzer::ClearDCHits( void )
   ClearSdcOutHits();
   // ClearSsdInHits();
   // ClearSsdOutHits();
-  // ClearTOFHits();
+  ClearTOFHits();
 }
 
 //______________________________________________________________________________

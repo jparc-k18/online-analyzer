@@ -27,6 +27,7 @@ const Int_t NumOfSegFBH  =  16;
 //const Int_t NumOfSegSAC  = 16; // 12 readout & 4 rooms //add
 const Int_t NumOfSegSCH  =  64;
 const Int_t NumOfSegBGO  =  24;
+const Int_t NumOfSegBGO_T  =  4;
 const Int_t NumOfSegPiID =  32;
 const Int_t NumOfSegTOF  =  24;
 //const Int_t NumOfSegTOF_HT  = 24;
@@ -38,7 +39,7 @@ const Int_t NumOfSegLC  = 28;
 // Misc
 const Int_t DetIdTFlag     = 21;
 const Int_t DetIdScaler    = 22;
-const Int_t NumOfSegTFlag  = 32;
+const Int_t NumOfSegTFlag  = 30;
 const Int_t NumOfSegScaler = 32;
 const Int_t SpillEndFlag   = 27; // 0-based
 const Int_t NumOfVmeRm     = 10;

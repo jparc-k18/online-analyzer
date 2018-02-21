@@ -15,7 +15,7 @@
 enum DetectorType {
   kDetectorZero,
   // Detector unique ID in the beam line
-  kBH1, kBFT, kBC3, kBC4, kBH2,
+  kBH1, kBFT, kBC3, kBC4, kBH2,kBH2MT,
   kMsT, kMtx3D,
   // Detector unique ID in the KURAMA system
   kCFT,kBGO,kPiID,kSFT, kSDC1, kSAC, kSCH, kFBT1,

@@ -912,6 +912,18 @@ process_event( void )
       }
     }
 
+    // Mean Timer
+    bh1t_id   = gHist.getSequentialID(kBH2, 0, kBH2MT, 1);
+    for(int seg=0; seg<NumOfSegBH2; ++seg){
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      for(int m = 0; m<nhit; ++m){
+	unsigned int mt = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
+	if(mt!=0){
+	  hptr_array[bh1t_id + seg]->Fill(mt);
+	}
+      }
+    }
+
 #if 0
     // Debug, dump data relating this detector
     gUnpacker.dump_data_device(k_device);
@@ -2010,15 +2022,15 @@ process_event( void )
         }
       }
     }
-    // X & X'
-    hptr_array[sft_mul_id]->Fill(multiplicity[0] + multiplicity[1]);
-    hptr_array[sft_cmul_id]->Fill(cmultiplicity[0] + cmultiplicity[1]);
-    // V
-    hptr_array[sft_mul_id+1]->Fill(multiplicity[2]);
-    hptr_array[sft_cmul_id+1]->Fill(cmultiplicity[2]);
     // U
-    hptr_array[sft_mul_id+2]->Fill(multiplicity[3]);
-    hptr_array[sft_cmul_id+2]->Fill(cmultiplicity[3]);
+    hptr_array[sft_mul_id]->Fill(multiplicity[0]);
+    hptr_array[sft_cmul_id]->Fill(cmultiplicity[0]);
+    // V
+    hptr_array[sft_mul_id+1]->Fill(multiplicity[1]);
+    hptr_array[sft_cmul_id+1]->Fill(cmultiplicity[1]);
+    // X & X'
+    hptr_array[sft_mul_id+2]->Fill(multiplicity[2] + multiplicity[3]);
+    hptr_array[sft_cmul_id+2]->Fill(cmultiplicity[2] + cmultiplicity[3]);
 #if 0
     // Debug, dump data relating this detector
     gUnpacker.dump_data_device(k_device);

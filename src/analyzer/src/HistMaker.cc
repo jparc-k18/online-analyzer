@@ -916,6 +916,31 @@ TList* HistMaker::createBH2( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
+  // MeanTimer (FPGA)----------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = "FPGA_TDC_MeanTimer";
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kBH2, 0, kBH2MT, 0);
+    for(Int_t i = 0; i<NumOfSegBH2; ++i){
+      const char* title = NULL;
+      Int_t seg = i+1; // 1 origin
+      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     //			     10000, 0, 400000,
+			     50000, 0, 2000000,
+			     "TDC [ch]", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
   // Hit parttern -----------------------------------------------
   {
     const char* title = "BH2_hit_pattern";
@@ -6053,6 +6078,28 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
       Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "TDC [ch]", ""));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // FADC TRGTiming & Clk ---------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = "Trigger_Timing";
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    const char* name_Layer[] = { "TrgTiming1", "TrgTiming2", "TrgTiming3", "clk" };
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kBGO, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegBGO_T; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s", nameDetector, name_Layer[i]);
+      sub_dir->Add(createTH1(target_id + NumOfSegBGO + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));
     }

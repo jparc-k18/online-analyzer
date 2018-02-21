@@ -436,6 +436,19 @@ process_event( void )
       }
     }
 
+    for(int seg=0; seg<NumOfSegBGO_T; ++seg){
+      unsigned int nhit_l = gUnpacker.get_entries(k_device, 1, seg, 0, k_leading);
+      nhit_l = gUnpacker.get_entries(k_device, 1, seg, 0, k_leading);
+      if(nhit_l!=0){
+        for(unsigned int m = 0; m<nhit_l; ++m){
+      	unsigned int tdc = gUnpacker.get(k_device, 1, seg, 0, k_leading, m);
+      	  if(tdc!=0){
+      	    hptr_array[bgo_t_id + NumOfSegBGO + seg]->Fill(tdc);
+      	  }
+        }
+      }
+    }
+
     hptr_array[bgo_mul_id]->Fill(multiplicity);
     hptr_array[bgo_cmul_id]->Fill(cmultiplicity); // CMulti
 
@@ -531,9 +544,10 @@ process_event( void )
     static const int k_device_cft   = gUnpacker.get_device_id("CFT");
     static const int k_device_bgo   = gUnpacker.get_device_id("BGO");
     static const int k_leading  = gUnpacker.get_data_id("CFT" , "leading");
-    static const int k_fadc      = gUnpacker.get_data_id("BGO", "fadc");
+//    static const int k_fadc      = gUnpacker.get_data_id("BGO", "fadc");
+    static const int k_BGOleading      = gUnpacker.get_data_id("BGO", "leading");
 //    int BGO_Vth = 1000;
-    static const int BGO_Vth = gUser.GetParameter("BGO_Vth", 0);
+//    static const int BGO_Vth = gUser.GetParameter("BGO_Vth", 0);
 
     // sequential id
     int cor_id= gHist.getSequentialID(kCorrelation_catch, 0, 0, 1);
@@ -543,17 +557,12 @@ process_event( void )
         for(int seg1 = 0; seg1<NumOfSegCFT[l*2+1]; ++seg1){
             for(int seg2 = 0; seg2<NumOfSegBGO; ++seg2){
                 int hitCFT = gUnpacker.get_entries(k_device_cft, l*2+1, seg1, 0, k_leading);
-                int hitBGO = gUnpacker.get_entries(k_device_bgo, 0, seg2, 0, k_fadc   );
+                int hitBGO = gUnpacker.get_entries(k_device_bgo, 0, seg2, 0, k_BGOleading);
                 if(hitCFT == 0 || hitBGO == 0)continue;
-                int tdcCFT = gUnpacker.get(k_device_cft, l*2+1, seg1, 0, k_leading, 1);
-                if(tdcCFT != 0){
-                    for(int i=0; i<hitBGO; ++i){
-                        int adcBGO = gUnpacker.get(k_device_bgo, 0, seg2, 0, k_fadc   , i);
-                        if(adcBGO <= BGO_Vth){
+                int tdcCFT = gUnpacker.get(k_device_cft, l*2+1, seg1, 0, k_leading);
+                int tdcBGO = gUnpacker.get(k_device_bgo, 0, seg2, 0, k_BGOleading);
+                if(tdcCFT != 0&&tdcBGO !=0){
                             hptr_array[cor_id + l]->Fill(seg1, seg2);
-                            continue;
-                        }
-                    }
                 }
             }
         }

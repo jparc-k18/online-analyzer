@@ -68,7 +68,7 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
   gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
   gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
-  gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D", "MATRIX3D");
+//  gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D", "MATRIX3D");
   gConfMan.InitializeParameter<MsTParamMan>("MASS");
   gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
@@ -104,6 +104,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createCFT());
   tab_hist->Add(gHist.createBGO());
   tab_hist->Add(gHist.createPiID());
+  tab_hist->Add(gHist.createCorrelation_catch());
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -373,76 +374,70 @@ process_event( void )
     //    static const int k_adc      = gUnpacker.get_data_id("BGO", "adc");
     //    static const int k_tdc      = gUnpacker.get_data_id("BGO", "tdc");
     static const int k_fadc      = gUnpacker.get_data_id("BGO", "fadc");
+    static const int k_leading   = gUnpacker.get_data_id("BGO", "leading");
+//    static const int k_trailing   = gUnpacker.get_data_id("BGO", "trailing");
 
-    //    // TDC gate range
-    //    static const unsigned int tdc_min
-    //      = UserParamMan::getInstance().GetParameter("BGO_TDC", 0);
-    //    static const unsigned int tdc_max
-    //      = UserParamMan::getInstance().GetParameter("BGO_TDC", 1);
+    // TDC gate range
+    static const unsigned int tdc_min = gUser.GetParameter("BGO_TDC", 0);
+    static const unsigned int tdc_max = gUser.GetParameter("BGO_TDC", 1);
 
-    //    int bgoa_id   = gHist.getSequentialID(kBGO, 0, kADC);
-    //    int bgot_id   = gHist.getSequentialID(kBGO, 0, kTDC);
-    //    int bgoawt_id = gHist.getSequentialID(kBGO, 0, kADCwTDC);
-    int bgofa_id = gHist.getSequentialID(kBGO, 0, kFADC);
+    int bgo_fa_id = gHist.getSequentialID(kBGO, 0, kFADC);
+    int bgo_fawt_id = gHist.getSequentialID(kBGO, 0, kADCwTDC);
+    int bgo_t_id = gHist.getSequentialID(kBGO, 0, kTDC);
+    int bgo_hit_id  = gHist.getSequentialID(kBGO, 0, kHitPat,  1);
+    int bgo_chit_id = gHist.getSequentialID(kBGO, 0, kHitPat,  2);
+    int bgo_mul_id  = gHist.getSequentialID(kBGO, 0, kMulti,   1);
+    int bgo_cmul_id = gHist.getSequentialID(kBGO, 0, kMulti,   2);
+    unsigned int multiplicity  = 0;
+    unsigned int cmultiplicity = 0;
+
     for(int seg=0; seg<NumOfSegBGO; ++seg){
-      //      // ADC
-      //      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
-      //      if(nhit!=0){
-      //	unsigned int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-      //	hptr_array[bgoa_id + seg]->Fill(adc);
-      //      }
-
       // FADC
       int nhit_f = gUnpacker.get_entries(k_device, 0, seg, 0, k_fadc);
       if(nhit_f==0) continue;
       for (int i=0; i<nhit_f; ++i) {
 	unsigned int fadc = gUnpacker.get(k_device, 0, seg, 0, k_fadc ,i);
-	hptr_array[bgofa_id + seg]->Fill( i+1, fadc);
+	hptr_array[bgo_fa_id + seg]->Fill( i+1, fadc);
       }
 
 
-      //      // TDC
-      //      nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      //      if(nhit!=0){
-      //	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
-      //	if(tdc!=0){
-      //	  hptr_array[bgot_id + seg]->Fill(tdc);
-      //	  // ADC wTDC
-      //	  if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
-      //	    unsigned int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-      //	    hptr_array[bgoawt_id + seg]->Fill( adc );
-      //	  }
-      //	}
-      //      }
+      // TDC && Hit pattern && multiplicity
+      unsigned int nhit_l = gUnpacker.get_entries(k_device, 0, seg, 0, k_leading);
+//      unsigned int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_trailing);
+//      unsigned int hit_l_max = 0;
+//      unsigned int hit_t_max = 0;
+//
+//      if(nhit_l != 0){
+//        hit_l_max = gUnpacker.get(k_device, 0, seg, 0, k_leading,  nhit_l - 1);
+//      }
+//      if(nhit_t != 0){
+//        hit_t_max = gUnpacker.get(k_device, 0, seg, 0, k_trailing, nhit_t - 1);
+//      }
+
+      if(nhit_l!=0){
+        for(unsigned int m = 0; m<nhit_l; ++m){
+      	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, k_leading, m);
+      	  if(tdc!=0){
+      	    hptr_array[bgo_t_id + seg]->Fill(tdc);
+	    hptr_array[bgo_hit_id]->Fill(seg);
+	    ++multiplicity;
+	    if(true && tdc_min < tdc && tdc < tdc_max){
+              hptr_array[bgo_chit_id]->Fill(seg);
+	      ++cmultiplicity;
+	    }
+
+      	    // ADC wTDC
+            for (int i=0; i<nhit_f; ++i) {
+              unsigned int fadc = gUnpacker.get(k_device, 0, seg, 0, k_fadc ,i);
+              hptr_array[bgo_fawt_id + seg]->Fill( i+1, fadc);
+            }
+      	  }
+        }
+      }
     }
-    //
-    //    // Hit pattern && multiplicity
-    //    static const int bgohit_id = gHist.getSequentialID(kBGO, 0, kHitPat);
-    //    static const int bgomul_id = gHist.getSequentialID(kBGO, 0, kMulti);
-    //    int multiplicity  = 0;
-    //    int cmultiplicity = 0;
-    //    for(int seg=0; seg<NumOfSegBGO; ++seg){
-    //      int nhit_bgo = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-    //      // AND
-    //      if(nhit_bgo!=0){
-    //	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
-    //	// TDC AND
-    //	if(tdc != 0){
-    //	  hptr_array[bgohit_id]->Fill(seg);
-    //	  ++multiplicity;
-    //	  // TDC range
-    //	  if(true
-    //	     && tdc_min < tdc && tdc < tdc_max
-    //	     ){
-    //	    hptr_array[bgohit_id+1]->Fill(seg); // CHitPat
-    //	    ++cmultiplicity;
-    //	  }// TDC range OK
-    //	}// TDC AND
-    //      }// AND
-    //    }// for(seg)
-    //
-    //    hptr_array[bgomul_id]->Fill(multiplicity);
-    //    hptr_array[bgomul_id+1]->Fill(cmultiplicity); // CMulti
+
+    hptr_array[bgo_mul_id]->Fill(multiplicity);
+    hptr_array[bgo_cmul_id]->Fill(cmultiplicity); // CMulti
 
 #if 0
     // Debug, dump data relating this detector
@@ -531,7 +526,46 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+  // Correlation (2D histograms) -------------------------------------
+  {
+    static const int k_device_cft   = gUnpacker.get_device_id("CFT");
+    static const int k_device_bgo   = gUnpacker.get_device_id("BGO");
+    static const int k_leading  = gUnpacker.get_data_id("CFT" , "leading");
+    static const int k_fadc      = gUnpacker.get_data_id("BGO", "fadc");
+//    int BGO_Vth = 1000;
+    static const int BGO_Vth = gUser.GetParameter("BGO_Vth", 0);
+
+    // sequential id
+    int cor_id= gHist.getSequentialID(kCorrelation_catch, 0, 0, 1);
+
+    // CFT vs BGO
+    for(int l = 0; l<NumOfLayersCFT-4; ++l){
+        for(int seg1 = 0; seg1<NumOfSegCFT[l*2+1]; ++seg1){
+            for(int seg2 = 0; seg2<NumOfSegBGO; ++seg2){
+                int hitCFT = gUnpacker.get_entries(k_device_cft, l*2+1, seg1, 0, k_leading);
+                int hitBGO = gUnpacker.get_entries(k_device_bgo, 0, seg2, 0, k_fadc   );
+                if(hitCFT == 0 || hitBGO == 0)continue;
+                int tdcCFT = gUnpacker.get(k_device_cft, l*2+1, seg1, 0, k_leading, 1);
+                if(tdcCFT != 0){
+                    for(int i=0; i<hitBGO; ++i){
+                        int adcBGO = gUnpacker.get(k_device_bgo, 0, seg2, 0, k_fadc   , i);
+                        if(adcBGO <= BGO_Vth){
+                            hptr_array[cor_id + l]->Fill(seg1, seg2);
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+  }// Correlation 
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
   return 0;
 } //process_event()
+
 
 } //analyzer

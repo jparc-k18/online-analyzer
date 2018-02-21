@@ -18,8 +18,8 @@ bin_dir=$ana_dir/bin
 exe_file=$bin_dir/raw_hist_catch
 
 ##### data directory
-#data_dir=$ana_dir/data
-data_dir=/home/sks/work/suharu/data/catch_data
+data_dir=$ana_dir/data
+#data_dir=/home/sks/work/suharu/data/catch_data
 
 ##### configure file
 conf_file=/param/conf/analyzer.conf

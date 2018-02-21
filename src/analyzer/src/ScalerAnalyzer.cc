@@ -415,13 +415,13 @@ ScalerAnalyzer::PrintScalerSheet( void )
 	       "p-Beam", SeparateComma( Get("p-Beam") ),
 	       "Delay", "[s]" );
   DrawOneLine( "TM", SeparateComma( Get("TM") ),
-	       "(pi,TOF)", SeparateComma( Get("(pi,TOF)") ),
+	       "(BH2,TOF)", SeparateComma( Get("(BH2,TOF)") ),
 	       "Width", "[s]" );
 
   DrawOneLine( "BH1",    "BH1-SUM",  "L1-Req"  );
   DrawOneLine( "BH2",    "BH2-SUM",  "L1-Acc"  );
-  DrawOneLine( "SAC",    "(pi,pi)",  "Matrix"  );
-  DrawOneLine( "SCH",    "(pi,p)",   "Mst-Acc" );
+  DrawOneLine( "SAC",    "(BH2,pi)",  "Matrix"  );
+  DrawOneLine( "SCH",    "(BH2,p)",   "Mst-Acc" );
   DrawOneLine( "TOF",    "K-Scat",   "Mst-Clr" );
   DrawOneLine( "TOF-HT", "(BH2,K)",  "Clear"   );
   DrawOneLine( "TOF-24", "CFT-Phi1", "L2-Req"  );

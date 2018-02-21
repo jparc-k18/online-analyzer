@@ -68,7 +68,7 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
   gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
   gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
-  gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D", "MATRIX3D");
+//  gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D", "MATRIX3D");
   gConfMan.InitializeParameter<MsTParamMan>("MASS");
   gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;

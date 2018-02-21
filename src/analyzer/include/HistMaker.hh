@@ -31,7 +31,8 @@ enum DetectorType {
   kBH2_E07, kBAC_E07, kSSD0, kSAC1, kKFAC,
   kKIC, kHDC, kSDC4, kTOFMT, kLAC,
   // Others
-  kTriggerFlag, kDAQ, kCorrelation, kMisc,
+  kTriggerFlag, kDAQ, kCorrelation,
+  kCorrelation_catch, kMisc,
   kTimeStamp, kDCEff,
   sizeDetectorType,
   factorDetectorType = 10000000
@@ -149,6 +150,7 @@ public:
   TList* createMtx3D( Bool_t flag_ps=false );
   TList* createTriggerFlag( Bool_t flag_ps=true );
   TList* createCorrelation( Bool_t flag_ps=true );
+  TList* createCorrelation_catch( Bool_t flag_ps=true );
   TList* createDAQ( Bool_t flag_ps=true );
   TList* createDCEff( Bool_t flag_ps=true );
 

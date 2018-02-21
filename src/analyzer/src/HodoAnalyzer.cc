@@ -135,7 +135,7 @@ HodoAnalyzer::DecodeRawHits( RawData *rawData )
 {
   DecodeBH1Hits( rawData );
   DecodeBH2Hits( rawData );
-  DecodeBACHits( rawData );
+  // DecodeBACHits( rawData );
   DecodeSACHits( rawData );
   DecodeTOFHits( rawData );
   DecodeLCHits( rawData );
@@ -287,7 +287,7 @@ HodoAnalyzer::DecodeBFTHits( RawData* rawData )
   for( Int_t p=0; p<NumOfPlaneBFT; ++p ){
     const HodoRHitContainer &cont = rawData->GetBFTRawHC(p);
     for( Int_t i=0, n=cont.size(); i<n; ++i ){
-      HodoRawHit *hit=cont[i];
+      HodoRawHit* hit = cont[i];
       if( !hit ) continue;
       FiberHit *hp = new FiberHit(hit, "BFT");
       if( !hp ) continue;

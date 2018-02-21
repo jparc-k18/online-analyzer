@@ -13,21 +13,19 @@
 #include "FuncName.hh"
 #include "HttpServer.hh"
 
-// ClassImp(HttpServer);
+ClassImp(HttpServer);
 
 //______________________________________________________________________________
 HttpServer::HttpServer( void )
-  : //TObject(),
+  : TObject(),
     m_server(0),
     m_port(8080)
 {
-  //  DEBUG_PRINT;
 }
 
 //______________________________________________________________________________
 HttpServer::~HttpServer( void )
 {
-  //  DEBUG_PRINT;
 }
 
 //______________________________________________________________________________

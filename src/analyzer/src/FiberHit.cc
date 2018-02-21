@@ -108,7 +108,8 @@ FiberHit::Calculate( void )
 		<< " SizeTdc1/2 mismatch ["
 		<< size_tdc1 << "/" << size_tdc2 << "]" << std::endl;
   }
-  m_multi_hit = m_raw->SizeTdc1();
+  m_multi_hit = TMath::Min( m_raw->SizeTdc1(),
+			    m_raw->SizeTdc2() );
 
   Bool_t has_trailing = ( m_raw->GetTdc2() != -1 );
 

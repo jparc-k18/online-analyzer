@@ -72,8 +72,11 @@ my_tgt_rawhist_catch	:= $(bin_dir)/raw_hist_catch
 my_obj_rawhist_vmeeasiroc	:= $(core_obj) user_rawhist_vmeeasiroc.o $(gui_obj)
 my_tgt_rawhist_vmeeasiroc	:= $(bin_dir)/raw_hist_vmeeasiroc
 
-my_obj_http_server	:= $(core_obj) user_http_server.o
-my_tgt_http_server	:= $(bin_dir)/http_server
+my_obj_jsroot_e07	:= $(core_obj) user_jsroot_e07.o
+my_tgt_jsroot_e07	:= $(bin_dir)/jsroot_e07
+
+my_obj_jsroot_e40	:= $(core_obj) user_jsroot_e40.o
+my_tgt_jsroot_e40	:= $(bin_dir)/jsroot_e40
 
 my_obj_emc_position	:= $(core_obj) user_emc_position.o
 my_tgt_emc_position	:= $(bin_dir)/emc_position
@@ -131,7 +134,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_beamprofile_e03) \
 	$(my_tgt_beamprofile_e40) \
 	$(my_tgt_scaler_e40) \
-	$(my_tgt_http_server) \
+	$(my_tgt_jsroot_e40) \
 	$(core_dict_lib)
 #	$(my_old_tgt)
 
@@ -142,7 +145,8 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 	$(my_tgt_rawhist_e07) \
 	$(my_tgt_emc_position) \
 	$(my_tgt_emc_ssd_monitor) \
-	$(my_tgt_scaler_e07)
+	$(my_tgt_scaler_e07) \
+	$(my_tgt_jsroot_e07)
 
 #_______________________________________________________________________________
 $(my_dir)/dict/%_Dict.cc: $(my_dir)/include/%.hh $(my_dir)/linkdef/%_LinkDef.hh
@@ -236,12 +240,19 @@ $(eval $(call make-lib,$(my_lib_rawhist_vmeeasiroc),$(my_obj_rawhist_vmeeasiroc)
 $(eval $(call make-gui-target,$(my_tgt_rawhist_vmeeasiroc),$(my_lib_rawhist_vmeeasiroc)))
 #
 #_______________________________________________________________________________
-my_obj_http_server	:= $(addprefix $(my_dir)/src/,$(my_obj_http_server))
-my_obj_http_server	:= $(my_obj_http_server)
-my_lib_http_server	:= libmyhttp_server.so
-$(eval $(call make-lib,$(my_lib_http_server),$(my_obj_http_server)))
-$(eval $(call make-nogui-target,$(my_tgt_http_server),$(my_lib_http_server)))
-
+my_obj_jsroot_e07	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_e07))
+my_obj_jsroot_e07	:= $(my_obj_jsroot_e07)
+my_lib_jsroot_e07	:= libmyjsroot_e07.so
+$(eval $(call make-lib,$(my_lib_jsroot_e07),$(my_obj_jsroot_e07)))
+$(eval $(call make-nogui-target,$(my_tgt_jsroot_e07),$(my_lib_jsroot_e07)))
+#
+#_______________________________________________________________________________
+my_obj_jsroot_e40	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_e40))
+my_obj_jsroot_e40	:= $(my_obj_jsroot_e40)
+my_lib_jsroot_e40	:= libmyjsroot_e40.so
+$(eval $(call make-lib,$(my_lib_jsroot_e40),$(my_obj_jsroot_e40)))
+$(eval $(call make-nogui-target,$(my_tgt_jsroot_e40),$(my_lib_jsroot_e40)))
+#
 #_______________________________________________________________________________
 my_obj_emc_position := $(addprefix $(my_dir)/src/,$(my_obj_emc_position))
 my_obj_emc_position := $(my_obj_emc_position)

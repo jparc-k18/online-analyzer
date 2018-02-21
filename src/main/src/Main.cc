@@ -10,6 +10,7 @@
 #include <sys/time.h>
 
 #include <TStyle.h>
+#include <TSystem.h>
 #include <TThread.h>
 
 #include <std_ostream.hh>
@@ -256,7 +257,8 @@ Main::run()
   else
     {
       g_unpacker.initialize();
-      for ( ; !g_unpacker.eof(); ++g_unpacker ){
+      for ( ; !g_unpacker.eof() && !gSystem->ProcessEvents();
+	    ++g_unpacker ){
 	debug::ObjectCounter::Check();
 	int ret = process_event();
 	if( ret!=0 ){

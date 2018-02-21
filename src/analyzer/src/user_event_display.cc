@@ -122,7 +122,7 @@ process_event( void )
       trigflag[seg-1] = tdc;
     }
     gEvDisp.DrawTrigger( trigflag );
-    if( trigflag[SpillEndFlag]>0 ) return true;
+    if( trigflag[SpillEndFlag]>0 ) return 0;
   }
 
   // BH1

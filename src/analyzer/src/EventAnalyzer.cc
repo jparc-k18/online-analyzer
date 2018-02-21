@@ -2,7 +2,9 @@
 
 #include "BH2Filter.hh"
 #include "DCAnalyzer.hh"
+#include "Exception.hh"
 #include "EventAnalyzer.hh"
+#include "FuncName.hh"
 #include "HodoAnalyzer.hh"
 #include "RawData.hh"
 #include "UserParamMan.hh"
@@ -48,21 +50,33 @@ EventAnalyzer::ApplyBH2Filter( void )
 void
 EventAnalyzer::DecodeRawData( void )
 {
-  m_raw_data->DecodeHits();
+  try {
+    m_raw_data->DecodeHits();
+  } catch( const std::exception& e ){
+    throw Exception( FUNC_NAME+" "+e.what() );
+  }
 }
 
 //______________________________________________________________________________
 void
 EventAnalyzer::DecodeDCAnalyzer( void )
 {
-  m_dc_analyzer->DecodeRawHits( m_raw_data );
+  try {
+    m_dc_analyzer->DecodeRawHits( m_raw_data );
+  } catch( const std::exception& e ){
+    throw Exception( FUNC_NAME+" "+e.what() );
+  }
 }
 
 //______________________________________________________________________________
 void
 EventAnalyzer::DecodeHodoAnalyzer( void )
 {
-  m_hodo_analyzer->DecodeRawHits( m_raw_data );
+  try {
+    m_hodo_analyzer->DecodeRawHits( m_raw_data );
+  } catch( const std::exception& e ){
+    throw Exception( FUNC_NAME+" "+e.what() );
+  }
 }
 
 //______________________________________________________________________________

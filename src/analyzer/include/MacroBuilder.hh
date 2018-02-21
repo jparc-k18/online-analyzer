@@ -20,14 +20,17 @@ namespace macro
 // for HttpServer
 namespace http
 {
+  TCanvas* HitPattern( void );
   TCanvas* BH1ADC( void );
   TCanvas* BH1TDC( void );
   TCanvas* BFT( void );
-  TCanvas* BH2( void );
+  TCanvas* BH2ADC( void );
+  TCanvas* BH2TDC( void );
   TCanvas* ACs( void );
   TCanvas* FBHTDC( void );
   TCanvas* FBHTOT( void );
   TCanvas* FBHHitMulti( void );
+  TCanvas* SFT( void );
   TCanvas* SCHTDC( void );
   TCanvas* SCHTOT( void );
   TCanvas* SCHHitMulti( void );
@@ -45,9 +48,9 @@ namespace http
   TCanvas* SDC2HitMulti( void );
   TCanvas* SDC3TDC( void );
   TCanvas* SDC3HitMulti( void );
-  TCanvas* HitPattern( void );
 
   // E07
+  TCanvas* HitPatternE07( void );
   TCanvas* SSD1ADCTDC( void );
   TCanvas* SSD2ADCTDC( void );
   TCanvas* SSD1HitMulti( void );
@@ -63,6 +66,7 @@ namespace http
   TCanvas* EMC( void );
 
   // E40
+  TCanvas* HitPatternE40( void );
   TCanvas* SFT( void );
   TCanvas* FBT1TDC( void );
   TCanvas* FBT1TOT( void );

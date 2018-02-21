@@ -34,7 +34,7 @@ namespace hddaq
   namespace gui
   {
 
-    namespace 
+    namespace
     {
       using analyzer::Main;
 
@@ -106,7 +106,7 @@ namespace hddaq
 // 		      << "  " << class_name << std::endl;
 	    if (class_name=="TPad")
 	      reset_hist(dynamic_cast<TPad*>(obj));
-	    
+
 	    if (0==class_name.find("TH1"))
 	      {
 		TH1* h = dynamic_cast<TH1*>(obj);
@@ -128,9 +128,9 @@ namespace hddaq
 	pad->SetLogz(logz);
 	return true;
       }
-      
+
     }
-    
+
 
 //______________________________________________________________________________
 Updater&
@@ -269,7 +269,7 @@ Updater::reset()
       for (TPad* pad = canvas;
 	   reset_hist(pad);
 	   pad=dynamic_cast<TPad*>(pad_iterator.Next()));
-	   
+
       canvas->UseCurrentStyle();
 
       canvas->SetLogx(logx);
@@ -298,7 +298,7 @@ Updater::resetAll()
       return;
     }
   root_folder->FindObject("ROOT Memory");
-  TFolder* root_memory 
+  TFolder* root_memory
     = dynamic_cast<TFolder*>(root_folder->FindObject("ROOT Memory"));
   if (!root_memory)
     {
@@ -345,7 +345,7 @@ Updater::run()
 
 	  if (wait()<0)
 	    continue;
-	  
+
 	  update();
 	}
     }
@@ -365,9 +365,9 @@ Updater::setInterval(double interval)
       mode[k_events]  = "events";
       mode[k_clicked] = "clicked";
     }
-  
+
   std::string interval_str = d2a(interval);
-  std::cout << "#D Updater::set_interval() " 
+  std::cout << "#D Updater::set_interval() "
 	    << ((m_mode==k_clicked) ? "" : interval_str)
 	    << " " << mode[m_mode] << std::endl;
   m_refresh_interval = interval;
@@ -431,7 +431,7 @@ Updater::stop()
 //   int ret = g.m_mutex->UnLock();
 //   return ret;
 // }
-    
+
 //______________________________________________________________________________
 void
 Updater::update()
@@ -470,7 +470,7 @@ Updater::update()
 
   g_controller.enableCommand(Controller::k_refresh);
   g_controller.setIntervalTextColor();
-  
+
   this->setUpdating(false);
 
   return;
@@ -487,8 +487,8 @@ Updater::wait()
     {
     case k_seconds:
       {
-//       std::cout << "#D Updater::wait() " << m_refresh_interval 
-// 		<< " seconds" << std::endl; 
+//       std::cout << "#D Updater::wait() " << m_refresh_interval
+// 		<< " seconds" << std::endl;
       if (m_refresh_interval>=0)
 	{
 	  ::usleep(static_cast<unsigned int>
@@ -500,7 +500,7 @@ Updater::wait()
     case k_events:
       {
 //       std::cout << "#D Updater::wait() " << n_events
-// 		<< " events" << std::endl; 
+// 		<< " events" << std::endl;
       if (n_events>0)
 	{
 	  if (0==(Main::getInstance().getCounter() & n_events))
@@ -514,8 +514,8 @@ Updater::wait()
       {
 	TColor* c = gROOT->GetColor(kGray);
 	Controller::getInstance().setIntervalTextColor(c);
-      
-//       std::cout << "#D Updater::wait() clicked" << std::endl; 
+
+//       std::cout << "#D Updater::wait() clicked" << std::endl;
 
       }
     default:

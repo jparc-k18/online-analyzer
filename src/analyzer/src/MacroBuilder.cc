@@ -51,6 +51,13 @@ namespace http
 
 //____________________________________________________________________________
 TCanvas*
+HitPattern( void )
+{
+  return HitPatternE40();
+}
+
+//____________________________________________________________________________
+TCanvas*
 BH1ADC( void )
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
@@ -139,29 +146,43 @@ BFT( void )
 
 //____________________________________________________________________________
 TCanvas*
-BH2( void )
+BH2ADC( void )
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
-  c1->Divide(2,2);
-  Int_t icanvas = 0;
-  for( Int_t j=0; j<kUorD; ++j ){
-    c1->cd(++icanvas)->SetLogy();
-    TH1 *h = GHist::get( HistMaker::getUniqueID(kBH2, 0, kADC, j+1) );
-    if( !h ) continue;
-    h->GetXaxis()->SetRangeUser(0,2000);
-    h->Draw();
-    TH1 *hh = GHist::get( HistMaker::getUniqueID(kBH2, 0, kADCwTDC, j+1) );
-    if( !hh ) continue;
-    hh->SetLineColor(kRed);
-    hh->GetXaxis()->SetRangeUser(0,2000);
-    hh->Draw("same");
-    c1->cd(++icanvas)->SetLogy();
-    TH1 *hhh = GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, j+1) );
-    if( !hhh ) continue;
-    hhh->GetXaxis()->SetRangeUser(0,2000);
-    hhh->Draw();
+  c1->Divide(4,2);
+  for( Int_t i=0; i<NumOfSegBH2; ++i ){
+    for( Int_t j=0; j<kUorD; ++j ){
+      c1->cd(i+1+j*(NumOfSegBH2+1))->SetLogy();
+      TH1 *h = GHist::get( HistMaker::getUniqueID(kBH2, 0, kADC, i+j*NumOfSegBH2+1) );
+      if( !h ) continue;
+      h->GetXaxis()->SetRangeUser(0,2000);
+      h->Draw();
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kBH2, 0, kADCwTDC, i+j*NumOfSegBH2+1) );
+      if( !hh ) continue;
+      hh->GetXaxis()->SetRangeUser(0,2000);
+      hh->SetLineColor(kRed);
+      hh->Draw("same");
+    }
   }
+  return c1;
+}
 
+//____________________________________________________________________________
+TCanvas*
+BH2TDC( void )
+{
+  Int_t id = HistMaker::getUniqueID(kBH2, 0, kTDC);
+
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4,2);
+  for( Int_t i=0; i<NumOfSegBH2; ++i ){
+    for( Int_t j=0; j<kUorD; ++j ){
+      c1->cd(i+1+j*(NumOfSegBH2+1))->SetLogy();
+      TH1 *h = GHist::get(id+i+j*NumOfSegBH2);
+      if( !h ) continue;
+      h->Draw();
+    }
+  }
   return c1;
 }
 
@@ -263,6 +284,52 @@ FBHHitMulti( void )
     TH1 *h = GHist::get( id[i] );
     if( !h ) return 0;
     h->Draw("colz");
+  }
+
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+SFT( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(1,2);
+
+  {
+    c1->cd(1)->Divide(4,2);
+    std::vector<Int_t> id = {
+      HistMaker::getUniqueID(kSFT, 0, kTDC),
+      HistMaker::getUniqueID(kSFT, 0, kADC),
+      HistMaker::getUniqueID(kSFT, 0, kHitPat),
+      HistMaker::getUniqueID(kSFT, 0, kMulti)
+    };
+    for( Int_t i=0, n=id.size(); i<n; ++i ){
+      for( Int_t j=0; j<kUorD; ++j ){
+	c1->cd(1)->cd(i+1+j*n);
+	if( i==n-1 && j==kD ) continue;
+	TH1 *h = GHist::get(id[i]+j);
+	if( !h ) continue;
+	h->Draw();
+      }
+    }
+  }
+
+  {
+    c1->cd(2)->Divide(2,2);
+    std::vector<Int_t> id = {
+      HistMaker::getUniqueID(kBFT, 0, kTDC2D),
+      HistMaker::getUniqueID(kBFT, 0, kADC2D)
+    };
+
+    for( Int_t i=0, n=id.size(); i<n; ++i ){
+      for( Int_t j=0; j<kUorD; ++j ){
+	c1->cd(2)->cd(i+1+j*n);
+	TH1 *h = GHist::get(id[i]+j);
+	if( !h ) continue;
+	h->Draw("colz");
+      }
+    }
   }
 
   return c1;
@@ -585,7 +652,42 @@ SDC3HitMulti( void )
 
 //____________________________________________________________________________
 TCanvas*
-HitPattern( void )
+HitPatternE40( void )
+{
+  std::vector<Int_t> id = {
+    HistMaker::getUniqueID(kBH1,  0, kHitPat),
+    HistMaker::getUniqueID(kBFT,  0, kHitPat),
+    HistMaker::getUniqueID(kBC4,  0, kHitPat, 6),
+    HistMaker::getUniqueID(kBH2,  0, kHitPat),
+    HistMaker::getUniqueID(kSDC1, 0, kHitPat, 1),
+    HistMaker::getUniqueID(kSCH,  0, kHitPat),
+    HistMaker::getUniqueID(kSDC2, 0, kHitPat, 1),
+    HistMaker::getUniqueID(kTOF,  0, kHitPat)
+    // HistMaker::getUniqueID(kFBT1, 0, kHitPat),
+    // HistMaker::getUniqueID(kFBT1, 0, kHitPat,FBTOffset),
+    // HistMaker::getUniqueID(kFBT1, 1, kHitPat),
+    // HistMaker::getUniqueID(kFBT1, 1, kHitPat,FBTOffset),
+    // HistMaker::getUniqueID(kFBT2, 0, kHitPat),
+    // HistMaker::getUniqueID(kFBT2, 0, kHitPat,FBTOffset),
+    // HistMaker::getUniqueID(kFBT2, 1, kHitPat),
+    // HistMaker::getUniqueID(kFBT2, 1, kHitPat,FBTOffset),
+  };
+
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4,2);
+  for( Int_t i=0, n=id.size(); i<n; ++i ){
+    c1->cd(i+1);
+    TH1* h = GHist::get( id.at(i) );
+    if( !h ) continue;
+    h->SetMinimum(0);
+    h->Draw();
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+HitPatternE07( void )
 {
   std::vector<Int_t> id = {
     HistMaker::getUniqueID(kBH1,  0, kHitPat),
@@ -594,15 +696,7 @@ HitPattern( void )
     HistMaker::getUniqueID(kFBH,  0, kHitPat),
     HistMaker::getUniqueID(kSDC1, 0, kHitPat, 1),
     HistMaker::getUniqueID(kSCH,  0, kHitPat),
-    HistMaker::getUniqueID(kFBT1,  0, kHitPat),
-    HistMaker::getUniqueID(kFBT1,  0, kHitPat,FBTOffset),
-    HistMaker::getUniqueID(kFBT1,  1, kHitPat),
-    HistMaker::getUniqueID(kFBT1,  1, kHitPat,FBTOffset),
     HistMaker::getUniqueID(kSDC2, 0, kHitPat, 1),
-    HistMaker::getUniqueID(kFBT2,  0, kHitPat),
-    HistMaker::getUniqueID(kFBT2,  0, kHitPat,FBTOffset),
-    HistMaker::getUniqueID(kFBT2,  1, kHitPat),
-    HistMaker::getUniqueID(kFBT2,  1, kHitPat,FBTOffset),
     HistMaker::getUniqueID(kTOF,  0, kHitPat)
   };
 

@@ -1,9 +1,12 @@
-#ifndef GUIPS_H
-#define GUIPS_H
+// -*- C++ -*-
+
+#ifndef GUI_PS_H
+#define GUI_PS_H
 
 #include <vector>
 
 #include <TGFrame.h>
+#include <TObject.h>
 
 class TGCompositeFrame;
 class TGCheckButton;
@@ -12,8 +15,9 @@ class TGTextEntry;
 
 namespace hddaq
 {
-  namespace gui
-  {
+
+namespace gui
+{
 
 class GuiPs
 {
@@ -31,19 +35,19 @@ private:
   TGCompositeFrame*           m_frame;
   std::vector<TGTextButton*>  m_command;
   std::vector<TGCheckButton*> m_optButton;
-  std::vector<std::string>    m_optList;
+  std::vector<TString>        m_optList;
   std::vector<TGCheckButton*> m_devButton;
-  std::vector<std::string>    m_devList;
+  std::vector<TString>        m_devList;
   TGTextEntry*                m_textFilename;
-  std::string                 m_filename;
+  TString                     m_filename;
 
 public:
   static GuiPs& getInstance();
   virtual ~GuiPs();
 
-  static std::string getFilename();
-  void initialize(const std::vector<std::string>& optList,
-		  const std::vector<std::string>& devList);
+  static TString getFilename();
+  void initialize(const std::vector<TString>& optList,
+		  const std::vector<TString>& devList);
   static bool isDevOn(int i);
   static bool isOptOn(int i);
   void print();
@@ -65,5 +69,3 @@ private:
   }
 }
 #endif
-
-

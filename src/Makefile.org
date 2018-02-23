@@ -2,39 +2,19 @@ subdir := main analyzer
 
 #_______________________________________________________________________________
 all:
-	@ for dir in $(subdir); \
-	do \
-		cd $$dir; \
-		$(MAKE); \
-		cd ..; \
-	done;
+	@ for dir in $(subdir); do $(MAKE) -C $$dir; done;
 
 #_______________________________________________________________________________
 show:
 	@ echo "Package List = $(subdir)"
-	@ for dir in $(subdir); \
-	do \
-		cd $$dir; \
-		$(MAKE) show; \
-		cd ..; \
-	done;
+	@ for dir in $(subdir); do $(MAKE) -C $$dir show; done;
 
 #_______________________________________________________________________________
 clean::
 	@ rm -fv *~
-	@ for dir in $(subdir); \
-	do \
-		cd $$dir; \
-		$(MAKE) clean; \
-		cd ..; \
-	done;
+	@ for dir in $(subdir); do $(MAKE) -C $$dir clean; done;
 
 #_______________________________________________________________________________
 distclean::
 	@ rm -fv ../lib/* ../include/* ../bin/*
-	@ for dir in $(subdir); \
-	do \
-		cd $$dir; \
-		$(MAKE) distclean; \
-		cd ..; \
-	done;
+	@ for dir in $(subdir); do $(MAKE) -C $$dir distclean; done;

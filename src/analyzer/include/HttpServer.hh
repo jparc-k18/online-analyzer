@@ -3,13 +3,15 @@
 #ifndef HTTP_SERVER_HH
 #define HTTP_SERVER_HH
 
+#include <TObject.h>
+
 class TCanvas;
 class THttpServer;
 class TMacro;
 class TObject;
 
 //______________________________________________________________________________
-class HttpServer
+class HttpServer : public TObject
 {
 public:
   static HttpServer& GetInstance( void );
@@ -32,6 +34,7 @@ public:
   void Register( TString dir, TString command );
   void SetPort( Int_t port ){ m_port = port; }
 
+  ClassDef(HttpServer,0);
 };
 
 //______________________________________________________________________________

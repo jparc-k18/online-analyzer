@@ -3,6 +3,7 @@
 #  shell script for CATCH online/semi CATCH  online analyzer
 ##
 
+#HDDAQ
 ebhost=eb0
 
 dis_port=8901

@@ -21,7 +21,7 @@ exe_file=$bin_dir/beamprofile_e40
 data_dir=$ana_dir/data
 
 ##### configure file
-conf_file=/param/conf/analyzer_20170901.conf
+conf_file=/param/conf/analyzer.conf
 
 #######################################################################
 if [ ! -f $exe_file ]; then
@@ -44,7 +44,7 @@ elif [ $# = 1 ]; then
     fi
 
     $exe_file $conf_file $data_file
-    
+
 else
     echo "#D Usage: $(basename $0) [run number]"
 fi

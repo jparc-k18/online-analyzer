@@ -4,7 +4,8 @@
 *.pcm
 *.so
 *~
-\#*\#
+\#*
+.\#*
 *.swp
 bin/*
 include/*

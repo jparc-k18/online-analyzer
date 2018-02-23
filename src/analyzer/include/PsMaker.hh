@@ -1,21 +1,24 @@
-#ifndef H_PSMAKERIMPL
-#define H_PSMAKERIMPL
+// -*- C++ -*-
 
-#include<vector>
-#include<string>
+#ifndef PS_MAKER_HH
+#define PS_MAKER_HH
+
+#include <vector>
+#include <TString.h>
 
 class TCanvas;
 class TPostScript;
 
-class PsMaker{
+class PsMaker
+{
   // Option list which are displayed in the Ps tab
   enum OptionList{
-    kExpDataSheet, 
+    kExpDataSheet,
     kFixXaxis,
     kLogyADC, kLogyTDC,//, kLogyHitPat, kLogyMulti,
     sizeOptionList
   };
-  std::vector<std::string> name_option_;
+  std::vector<TString> name_option_;
 
   // Parameter list controlling the histogram drawing
   enum ParameterList{
@@ -30,19 +33,19 @@ class PsMaker{
 public:
   virtual ~PsMaker();
   static PsMaker& getInstance();
-  
-  void getListOfOption(std::vector<std::string>& vec);
+
+  void getListOfOption(std::vector<TString>& vec);
   void makePs();
 
 private:
   void drawRunNumber();
-  void create(std::string& name);
+  void create(TString& name);
   void drawOneCanvas(std::vector<int>& id_list, std::vector<int>& par_list,
 		     bool flag_xaxis, bool flag_log,
 		     const char* optDraw = ""
 		     );
   void drawDCEff( void );
-  void clearOneCanvas(int npad);  
+  void clearOneCanvas(int npad);
 
   PsMaker();
   PsMaker(const PsMaker& object);

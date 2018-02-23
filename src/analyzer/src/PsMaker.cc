@@ -58,7 +58,7 @@ PsMaker::~PsMaker()
 // -------------------------------------------------------------------------
 // getListOfOption
 // -------------------------------------------------------------------------
-void PsMaker::getListOfOption(std::vector<std::string>& vec)
+void PsMaker::getListOfOption(std::vector<TString>& vec)
 {
   PsMaker& g = PsMaker::getInstance();
   std::copy(g.name_option_.begin(),
@@ -80,8 +80,8 @@ void PsMaker::makePs()
   gStyle->SetStatH(.25);
 
   // make ps file instance
-  const std::string& filename = GuiPs::getFilename();
-  ps_  = new TPostScript(filename.c_str(), 112);
+  const TString& filename = GuiPs::getFilename();
+  ps_  = new TPostScript( filename, 112 );
   cps_ = new TCanvas("cps","");
 
   std::cout << std::endl << "PSFile = " << filename
@@ -91,7 +91,7 @@ void PsMaker::makePs()
   drawRunNumber();
 
   // start draw histograms of each detector
-  std::vector<std::string> name_detectors;
+  std::vector<TString> name_detectors;
   HistMaker::getListOfPsFiles(name_detectors);
   const int NofDetector = name_detectors.size();
   for(int i = 0; i<NofDetector; ++i){
@@ -117,7 +117,7 @@ void PsMaker::makePs()
 // -------------------------------------------------------------------------
 // create
 // -------------------------------------------------------------------------
-void PsMaker::create(std::string& name)
+void PsMaker::create(TString& name)
 {
   std::vector<int> id_list;
   std::vector<int> par_list(sizeParameterList);
@@ -373,7 +373,7 @@ void PsMaker::create(std::string& name)
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 
-    // Pede 
+    // Pede
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
@@ -443,31 +443,31 @@ void PsMaker::create(std::string& name)
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, false, false);
 
-    // HitPattern 
+    // HitPattern
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     base_id = HistMaker::getUniqueID(kCFT, 0, kHitPat, 1);
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, false, false);
 
-    // CHitPattern 
+    // CHitPattern
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     base_id = HistMaker::getUniqueID(kCFT, 0, kHitPat, 11);
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, false, false);
 
-    // Multiplicity 
+    // Multiplicity
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     base_id = HistMaker::getUniqueID(kCFT, 0, kMulti, 1);
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, false, false);
 
-    // CMultiplicity 
+    // CMultiplicity
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     base_id = HistMaker::getUniqueID(kCFT, 0, kMulti, 11);
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, false, false);
 
-    // HitPattern Multiplicity 
+    // HitPattern Multiplicity
     par_list[kXdiv] = 2; par_list[kYdiv] = 2;
     id_list.push_back(HistMaker::getUniqueID(kCFT, 0, kMulti,  9));
     id_list.push_back(HistMaker::getUniqueID(kCFT, 0, kMulti, 10));
@@ -480,12 +480,12 @@ void PsMaker::create(std::string& name)
   // BGO ----------------------------------------------------------------
   if(name == CONV_STRING(kBGO)){
     int base_id = 0;
-    // FADC  1-12       
+    // FADC  1-12
     par_list[kXdiv] = 4; par_list[kYdiv] = 3;
     base_id = HistMaker::getUniqueID(kBGO, 0, kFADC);
     for(int i = 0; i<12; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, false, false);
-    // FADC  13-24         
+    // FADC  13-24
     par_list[kXdiv] = 4; par_list[kYdiv] = 3;
     for(int i = 0; i<12; ++i){id_list.push_back(base_id + i + 12);}
     drawOneCanvas(id_list, par_list, false, false);
@@ -505,7 +505,7 @@ void PsMaker::create(std::string& name)
     for(int i = 0; i<16; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 
-    // ADC 17-32 
+    // ADC 17-32
     par_list[kXdiv] = 4; par_list[kYdiv] = 4;
     base_id = HistMaker::getUniqueID(kPiID, 0, kADC, 16);
     for(int i = 0; i<16; ++i){id_list.push_back(base_id + i);}
@@ -517,12 +517,12 @@ void PsMaker::create(std::string& name)
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
 
-    // TDC 1-16 
+    // TDC 1-16
     base_id = HistMaker::getUniqueID(kPiID, 0, kTDC);
     for(int i = 0; i<16; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 
-    // TDC 17-32 
+    // TDC 17-32
     par_list[kXdiv] = 4; par_list[kYdiv] = 4;
     base_id = HistMaker::getUniqueID(kPiID, 0, kTDC, 16);
     for(int i = 0; i<16; ++i){id_list.push_back(base_id + i);}
@@ -1507,11 +1507,13 @@ void PsMaker::create(std::string& name)
 
   // Correlation ------------------------------------------------------------
   if(name == CONV_STRING(kCorrelation)){
-    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    par_list[kXdiv] = 3; par_list[kYdiv] = 2;
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 1));
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 2));
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 3));
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 4));
+    id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 5));
+    id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 6));
     drawOneCanvas(id_list, par_list, false, false, "box");
   }
 
@@ -1570,7 +1572,7 @@ void PsMaker::drawOneCanvas(std::vector<int>& id_list,
 			    const char* optDraw
 			    )
 {
-  static const std::string MyFunc = "drawOneCanvas ";
+  static const TString MyFunc = "drawOneCanvas ";
   // error check
   int NofPad  = par_list[kXdiv]*par_list[kYdiv];
   int NofHist = id_list.size();
@@ -1677,7 +1679,7 @@ void PsMaker::drawRunNumber()
 // -------------------------------------------------------------------------
 void PsMaker::drawDCEff( void )
 {
-  static const std::string MyFunc = "drawDCEff ";
+  static const TString MyFunc = "drawDCEff ";
 
   TLatex text;
   text.SetNDC();

@@ -14,7 +14,7 @@
 #include "user_analyzer.hh"
 #include "UnpackerManager.hh"
 #include "ConfMan.hh"
-#include "DCAnalyzer.hh"
+#include "DCAnalyzerOld.hh"
 #include "DetectorID.hh"
 #include "HistMaker.hh"
 #include "MacroBuilder.hh"
@@ -25,7 +25,7 @@ namespace analyzer
   using namespace hddaq;
 
   std::vector<TH1*> hptr_array;
-  
+
   enum HistName
     {
       FF_200, FF_400,  FF_580, FF_800, FF_1000,
@@ -40,12 +40,12 @@ namespace analyzer
 int
 process_begin(const std::vector<std::string>& argv)
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
-  gConfMan.initializeDCGeomMan();
-  gConfMan.initializeDCTdcCalibMan();
-  gConfMan.initializeDCDriftParamMan();
-  if(!gConfMan.isGood()){return -1;}
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
+  gConfMan.InitializeDCGeomMan();
+  gConfMan.InitializeDCTdcCalibMan();
+  gConfMan.InitializeDCDriftParamMan();
+  if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
   // Make tabs
@@ -148,7 +148,6 @@ process_event()
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-  
 
   return 0;
 }

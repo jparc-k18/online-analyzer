@@ -1,1101 +1,2229 @@
-// -*- C++ -*-
+// // -*- C++ -*-
 
-// Author : Hitoshi Sugimura
-
-#include "DCAnalyzer.hh"
-
-#include <iostream>
-#include <vector>
-#include <string>
+#include <algorithm>
 #include <iomanip>
-#include <cmath>
+#include <iostream>
+#include <set>
+#include <sstream>
 
-#include "UnpackerManager.hh"
-#include "UserParamMan.hh"
-#include "DetectorID.hh"
-#include "DCTdcCalibMan.hh"
-#include "DCGeomMan.hh"
+#include <TString.h>
+
+#include "ConfMan.hh"
+#include "BH2Filter.hh"
+#include "DCAnalyzer.hh"
 #include "DCDriftParamMan.hh"
+#include "DCGeomMan.hh"
+#include "DCHit.hh"
+#include "DCLocalTrack.hh"
+#include "DCRawHit.hh"
+#include "DCTrackSearch.hh"
+#include "DebugCounter.hh"
+#include "DebugTimer.hh"
+#include "EventDisplay.hh"
+#include "FiberCluster.hh"
+#include "FuncName.hh"
+#include "Hodo1Hit.hh"
+#include "Hodo2Hit.hh"
+#include "HodoAnalyzer.hh"
+#include "HodoCluster.hh"
+#include "K18Parameters.hh"
+#include "K18TrackD2U.hh"
+#include "KuramaTrack.hh"
+#include "MathTools.hh"
+// #include "MWPCCluster.hh"
+#include "RawData.hh"
+#include "SsdCluster.hh"
+#include "UserParamMan.hh"
+#include "DeleteUtility.hh"
 
-#define DEBUG  0
-#define TDC1st 1
+#define DefStatic
+#include "DCParameters.hh"
+#undef DefStatic
+
+// Tracking routine selection __________________________________________________
+/* BcOutTracking */
+#define BcOut_XUV  0 // XUV Tracking (slow but accerate)
+#define BcOut_Pair 1 // Pair plane Tracking (fast but bad for large angle track)
+/* SdcInTracking */
+#define UseSsdCluster     1 // use SSD Cluster
+#define SdcIn_XUV         0 // XUV Tracking (not used in KURAMA)
+#define SdcIn_Pair        1 // Pair plane Tracking (fast but bad for large angle track)
+#define SdcIn_SsdPreTrack 1 // SsdPreTracking for too many combinations
+#define SdcIn_Deletion    1 // Deletion method for too many combinations
+
+// SsdSlopeFilter  _____________________________________________________________
+#define SlopeFilter_Tight 0 // 0->1->2->3 : Up   4->5->6->7 : Down
+#define SlopeFilter_Wide  1 // 0->1->2    : Up      5->6->7 : Down
+
+ClassImp(DCAnalyzer);
 
 namespace
 {
-  using namespace hddaq::unpacker;
-  using namespace hddaq;
+  // using namespace K18Parameter;
+  const ConfMan&      gConf   = ConfMan::GetInstance();
+  const EventDisplay& gEvDisp = EventDisplay::GetInstance();
+  const DCGeomMan&    gGeom   = DCGeomMan::GetInstance();
+  const UserParamMan& gUser   = UserParamMan::GetInstance();
 
-  UnpackerManager& g_unpacker = GUnpacker::get_instance();
+  //______________________________________________________________________________
+  // const Double_t& pK18 = ConfMan::Get<Double_t>("PK18");
+  // const Int_t& IdTOFUX = gGeom.DetectorId("TOF-UX");
+  // const Int_t& IdTOFUY = gGeom.DetectorId("TOF-UY");
+  // const Int_t& IdTOFDX = gGeom.DetectorId("TOF-DX");
+  // const Int_t& IdTOFDY = gGeom.DetectorId("TOF-DY");
 
-  DCTdcCalibMan&   t0man    = DCTdcCalibMan::GetInstance();
-  DCDriftParamMan& driftman = DCDriftParamMan::GetInstance();
-  DCGeomMan&       geomman  = DCGeomMan::GetInstance();
-  // tdc cut
-  const int tdc_min = 550;
-  const int tdc_max = 700;
-  const int sdc2_tdc_min = 550;
-  const int sdc2_tdc_max = 700;
-}
+  const Double_t MaxChiSqrKuramaTrack = 10000.;
+  const Double_t MaxTimeDifMWPC       =   100.;
 
-//______________________________________________________________________________
-DCRHC::DCRHC( int DetectorID )
-{
-  if(DetectorID==DetIdBcOut)  init_BcOut();
-  if(DetectorID==DetIdSdcIn)  init_SdcIn();
-  if(DetectorID==DetIdSdcOut) init_SdcOut();
-  if(DetectorID==DetIdSsd)    init_Ssd();
-  detid = DetectorID;
-  chi2 = -1;
-}
-//______________________________________________________________________________
-void DCRHC::init_BcOut( void )
-{
-  m_hitwire.resize(NumOfLayersBcOut);
-  m_hitpos.resize(NumOfLayersBcOut);
-  m_tdc.resize(NumOfLayersBcOut);
+  const Double_t kMWPCClusteringWireExtension =  1.0; // [mm]
+  const Double_t kMWPCClusteringTimeExtension = 10.0; // [nsec]
 
-  for(int id=113;id<125;++id)
-    {
-      std::vector<double> tilt = angle(geomman.GetTiltAngle(id));
-      sinvector.push_back(tilt[0]);
-      cosvector.push_back(tilt[1]);
-      z.push_back(geomman.GetLocalZ(id));
-    }
-}
-//______________________________________________________________________________
-void DCRHC::init_SdcIn( void )
-{
-  m_hitwire.resize(NumOfLayersSdcIn);
-  m_hitpos.resize(NumOfLayersSdcIn);
-  m_tdc.resize(NumOfLayersSdcIn);
-
-  for(int id=1;id<8;++id)
-    {
-      std::vector<double> tilt = angle(geomman.GetTiltAngle(id));
-      sinvector.push_back(tilt[0]);
-      cosvector.push_back(tilt[1]);
-      z.push_back(geomman.GetLocalZ(id));
-    }
-}
-//______________________________________________________________________________
-void DCRHC::init_SdcOut( void )
-{
-  m_hitwire.resize(NumOfLayersSdcOut);
-  m_hitpos.resize(NumOfLayersSdcOut);
-  m_tdc.resize(NumOfLayersSdcOut);
-
-  for(int id=31;id<38;++id)
-    {
-      std::vector<double> tilt = angle(geomman.GetTiltAngle(id));
-      sinvector.push_back(tilt[0]);
-      cosvector.push_back(tilt[1]);
-      z.push_back(geomman.GetLocalZ(id));
-    }
-}
-//______________________________________________________________________________
-void DCRHC::init_Ssd( void )
-{
-  m_hitwire.resize(NumOfLayersSsd);
-  m_hitpos.resize(NumOfLayersSsd);
-  m_tdc.resize(NumOfLayersSsd);
-
-  for(int id=141; id<=150; ++id){
-    std::vector<double> tilt = angle(geomman.GetTiltAngle(id));
-    sinvector.push_back(tilt[0]);
-    cosvector.push_back(tilt[1]);
-    z.push_back(geomman.GetLocalZ(id));
-  }
-}
-//______________________________________________________________________________
-DCRHC::~DCRHC( void )
-{
-  m_hitwire.clear();
-  m_hitpos.clear();
-  m_tdc.clear();
-  m_dtime.clear();
-  m_dlength.clear();
-  lr.clear();
-}
-//______________________________________________________________________________
-void DCRHC::hoge( void )
-{
-  std::cout<<"////////// vector ////////////"<<std::endl;
-  std::cout<<"[ ";
-  for(int i=0;i<12;++i)
-    {
-      std::cout<<sinvector[i]<<" ";
-    }
-  std::cout<<"]"<<std::endl;
-  std::cout<<"////////// Hit Wire ////////////"<<std::endl;
-  for(unsigned int i=0;i<m_hitwire.size();++i)
-    {
-      std::cout<<"[";
-      for(unsigned int j=0;j<m_hitwire[i].size();++j)
-	{
-	  std::cout <<" "<< m_hitwire[i][j];
-	}
-      std::cout<<" ]"<<std::endl;
-    }
-  std::cout<<"////////// tdc ////////////"<<std::endl;
-  for(unsigned int i=0;i<m_tdc.size();++i)
-    {
-      std::cout<<"[";
-      for(unsigned int j=0;j<m_tdc[i].size();++j)
-	{
-	  std::cout <<" "<< m_tdc[i][j];
-	}
-      std::cout<<" ]"<<std::endl;
-    }
-  std::cout<<"///// Drift Time /////"<<std::endl;
-  for(unsigned int i=0;i<m_dtime.size();++i)
-    {
-      std::cout<<"[ ";
-      for(unsigned int j=0;j<m_dtime[i].size();++j)
-	{
-	  std::cout<<m_dtime[i][j]<<" ";
-	}
-      std::cout<<"]"<<std::endl;
-    }
-  std::cout<<"///// Drift Length /////"<<std::endl;
-  for(unsigned int i=0;i<m_dlength.size();++i)
-    {
-      std::cout<<"[ ";
-      for(unsigned int j=0;j<m_dlength[i].size();++j)
-	{
-	  std::cout<<m_dlength[i][j]<<" ";
-	}
-      std::cout<<"]"<<std::endl;
-    }
-
-}
-//______________________________________________________________________________
-void DCRHC::pushback( int DetectorID )
-{
-  if(DetectorID==DetIdBcOut)  pushback_BcOut();
-  if(DetectorID==DetIdSdcIn)  pushback_SdcIn();
-  if(DetectorID==DetIdSdcOut) pushback_SdcOut();
-  if(DetectorID==DetIdSsd)    pushback_Ssd();
-  return ;
-}
-//______________________________________________________________________________
-void DCRHC::pushback_BcOut( void )
-{
-  static UserParamMan &paramMan = UserParamMan::getInstance();
-  static const double MinTdcBC3 = paramMan.getParameter("BC3_TDC", 0);
-  static const double MaxTdcBC3 = paramMan.getParameter("BC3_TDC", 1);
-  static const double MinTdcBC4 = paramMan.getParameter("BC4_TDC", 0);
-  static const double MaxTdcBC4 = paramMan.getParameter("BC4_TDC", 1);
-
-  for( int layer=0; layer<NumOfLayersBcOut; ++layer ){
-      m_hitwire[layer].clear();
-      m_tdc[layer].clear();
-  }
-  for( int layer=0; layer<NumOfLayersBC3; ++layer ){
-    for( int wire=0; wire<NumOfWireBC3; ++wire ){
-      int nhits = g_unpacker.get_entries( DetIdBC3, layer, 0, wire, 0 );
-      if( nhits==0 ) continue;
-#if TDC1st
-      int tdc1st = 0;
-#endif
-      for( int i=0; i<nhits; ++i ){
-	int tdc = g_unpacker.get(DetIdBC3,layer,0,wire,0,i);
-	if( tdc<MinTdcBC3 || MaxTdcBC3<tdc ) continue;
-#if TDC1st
-	if( tdc1st < tdc ) tdc1st = tdc;
-#else
-	m_hitwire[layer].push_back(wire);
-	m_tdc[layer].push_back(tdc);
-#endif
-      }
-#if TDC1st
-      if( tdc1st>0 ){
-	m_hitwire[layer].push_back(wire);
-	m_tdc[layer].push_back(tdc1st);
-      }
-#endif
-    }
-  }
-
-  for( int layer=0; layer<NumOfLayersBC4; ++layer ){
-    for( int wire=0; wire<NumOfWireBC4; ++wire ){
-      int nhits = g_unpacker.get_entries( DetIdBC4, layer, 0, wire, 0 );
-      if( nhits==0 ) continue;
-#if TDC1st
-      int tdc1st = 0;
-#endif
-      for( int i=0; i<nhits; ++i ){
-	int tdc = g_unpacker.get( DetIdBC4, layer, 0, wire, 0, i );
-	if( tdc<MinTdcBC4 && MaxTdcBC4<tdc ) continue;
-#if TDC1st
-	if( tdc1st < tdc ) tdc1st = tdc;
-#else
-	m_hitwire[layer + NumOfLayersBC3].push_back(wire);
-	m_tdc[layer + NumOfLayersBC3].push_back(tdc);
-#endif
-      }
-#if TDC1st
-      if( tdc1st>0 ){
-	m_hitwire[layer + NumOfLayersBC3].push_back(wire);
-	m_tdc[layer + NumOfLayersBC3].push_back(tdc1st);
-      }
-#endif
-    }
-  }
-
-#if DEBUG
-  std::cout<<"///////Hit Wire////"<<std::endl;
-  for(int i=0;i<12;++i)
-    for(int j = 0;j<m_hitwire[i].size();++j)
-      {
-	std::cout<<"[ "<<m_hitwire[i][j]
-		 <<"]"<<std::endl;
-      }
-#endif
-}
-//______________________________________________________________________________
-void DCRHC::pushback_SdcIn( void )
-{
-  static UserParamMan &paramMan = UserParamMan::getInstance();
-  static const double MinTdcSDC1 = paramMan.getParameter("SDC1_TDC", 0);
-  static const double MaxTdcSDC1 = paramMan.getParameter("SDC1_TDC", 1);
-
-  for( int layer=0; layer<NumOfLayersSdcIn; ++layer )
-    m_hitwire[layer].clear();
-  for( int layer=0; layer<NumOfLayersSDC1; ++layer ){
-    for( int wire=0; wire<NumOfWireSDC1; ++wire ){
-      int nhits = g_unpacker.get_entries( DetIdSDC1, layer, 0, wire, 0 );
-      if(nhits==0) continue;
-#if TDC1st
-      int tdc1st = 0;
-#endif
-      for( int i=0; i<nhits; ++i ){
-	int tdc = g_unpacker.get( DetIdSDC1, layer, 0, wire, 2, i );
-	if( tdc<MinTdcSDC1 && MaxTdcSDC1<tdc ) continue;
-#if TDC1st
-	if( tdc1st < tdc ) tdc1st = tdc;
-#else
-	m_hitwire[layer].push_back(wire);
-	m_tdc[layer].push_back(tdc);
-#endif
-      }
-#if TDC1st
-      if( tdc1st>0 ){
-	m_hitwire[layer].push_back(wire);
-	m_tdc[layer].push_back(tdc1st);
-      }
-#endif
-    }
-  }
-}
-//______________________________________________________________________________
-void DCRHC::pushback_SdcOut( void )
-{
-  static UserParamMan &paramMan = UserParamMan::getInstance();
-  static const double MinTdcSDC2 = paramMan.getParameter("SDC2_TDC", 0);
-  static const double MaxTdcSDC2 = paramMan.getParameter("SDC2_TDC", 1);
-  //  static const double MinTdcSDC3 = paramMan.getParameter("SDC3_TDC", 0);
-  //  static const double MaxTdcSDC3 = paramMan.getParameter("SDC3_TDC", 1);
-
-  for(int layer=0;layer<NumOfLayersSdcOut;++layer)
-    m_hitwire[layer].clear();
-  for( int layer=0; layer<NumOfLayersSDC2; ++layer ){
-    for( int wire=0; wire<NumOfWireSDC2; ++wire ){
-      int nhits = g_unpacker.get_entries( DetIdSDC2, layer, 0, wire, 0 );
-      if( nhits==0 ) continue;
-      for( int i=0; i<nhits; ++i ){
-	int tdc = g_unpacker.get(DetIdSDC2,layer,0,wire,2,i);
-	if( tdc<MinTdcSDC2 && MaxTdcSDC2<tdc ) continue;
-	m_hitwire[layer + NumOfLayersSDC1].push_back(wire);
-	m_tdc[layer + NumOfLayersSDC1].push_back(tdc);
-      }
-    }
-  }
-
-  for(int layer=0;layer<NumOfLayersSDC3;++layer)
-    {
-      ////// x-plane //////
-      if(layer==1 || layer==4)
-	{
-	  for(int wire=0;wire<NumOfWireSDC3x;++wire)
-	    {
-	      int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
-	      if(hit==0)continue;
-	      int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
-	      m_hitwire[layer].push_back(wire);
-	      m_tdc[layer].push_back(tdc);
-	    }
-	}
-      ////// u,v-plane //////
-      else
-	for(int wire=0;wire<NumOfWireSDC3uv;++wire)
-	  {
-	    int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
-	    if(hit==0)continue;
-	    int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
-	    m_hitwire[layer].push_back(wire);
-	    m_tdc[layer].push_back(tdc);
-	  }
-    }
-  for(int layer=0;layer<NumOfLayersSDC4;++layer)
-    {
-      ////// x-plane //////
-      if(layer==1 || layer==4)
-	{
-	  for(int wire=0;wire<NumOfWireSDC4x;++wire)
-	    {
-	      int hit = g_unpacker.get_entries(DetIdSDC4,layer,0,wire,0);
-	      if(hit==0)continue;
-	      int tdc = g_unpacker.get(DetIdSDC4,layer,0,wire,0);
-	      m_hitwire[layer + NumOfLayersSDC3].push_back(wire);
-	      m_tdc[layer + NumOfLayersSDC3].push_back(tdc);
-	    }
-	}
-      ////// u,v-plane //////
-      else
-	for(int wire=0;wire<NumOfWireSDC4uv;++wire)
-	  {
-	    int hit = g_unpacker.get_entries(DetIdSDC4,layer,0,wire,0);
-	    if(hit==0)continue;
-	    int tdc = g_unpacker.get(DetIdSDC4,layer,0,wire,0);
-	    m_hitwire[layer + NumOfLayersSDC3].push_back(wire);
-	    m_tdc[layer + NumOfLayersSDC3].push_back(tdc);
-	  }
-    }
-}
-//______________________________________________________________________________
-void DCRHC::pushback_Ssd( void )
-{
-  for(int layer=0; layer<NumOfLayersSsd; ++layer){
-    m_hitwire[layer].clear();
-    m_tdc[layer].clear();
-  }
-  for(int layer=0; layer<NumOfLayersSSD1; ++layer){
-    for(int wire=0; wire<NumOfSegSSD1; ++wire){
-      int nhits = g_unpacker.get_entries(DetIdSSD1, layer, wire, 0, 1);
-      if(nhits==0)continue;
-      m_hitwire[layer + NumOfLayersSSD0].push_back(wire);
-      m_tdc[layer + NumOfLayersSSD0].push_back(0);
-    }
-  }
-  for(int layer=0; layer<NumOfLayersSSD2; ++layer){
-    for(int wire=0; wire<NumOfSegSSD2; ++wire){
-      int nhits = g_unpacker.get_entries(DetIdSSD2, layer, wire, 0, 1);
-      if(nhits==0)continue;
-      m_hitwire[layer + NumOfLayersSSD0 + NumOfLayersSSD1].push_back(wire);
-      m_tdc[layer + NumOfLayersSSD0 + NumOfLayersSSD1].push_back(0);
-    }
-  }
-
-#if DEBUG
-  std::cout<<"///////Hit Wire////"<<std::endl;
-  for(int i=0; i<NumOfLayersSsd; ++i){
-    for(int j = 0;j<m_hitwire[i].size();++j){
-      std::cout<<"[ "<<m_hitwire[i][j]
-	       <<"]"<<std::endl;
-    }
-  }
-#endif
-}
-//______________________________________________________________________________
-void DCRHC::HitPosition( int DetectorID )
-{
-  std::vector<double> wire_offset, pitch, wire_center;
-
-  int plid=0;
-  if(DetectorID==DetIdBcOut)  plid = 113;
-  if(DetectorID==DetIdSdcIn)  plid =   1;
-  if(DetectorID==DetIdSdcOut) plid =  31;
-  if(DetectorID==DetIdSsd)    plid = 141;
-  for(unsigned int plane=0;plane<m_hitwire.size();++plane, ++plid)
-    {
-      ////////// require Multiplicity = 1 /////////////
-      if(m_hitwire[plane].size()!=1) continue;
-      int wireid = m_hitwire[plane][0]+1;
-      double hitposition = geomman.calcWirePosition(plid, wireid);
-      m_hitpos[plane].push_back(hitposition);
-    }
-
-#if DEBUG
-  std::cout<<"///////////Hit Position/////////////"<<std::endl;
-  for(unsigned int i=0;i<m_hitpos.size();++i)
-    {
-      std::cout<<"[ ";
-      if(m_hitpos[i].size()==1)
-	{
-	  std::cout<<m_hitpos[i][0]<<" ";
-	}
-      std::cout<<"]"<<std::endl;
-    }
-#endif
-  return;
-}
-
-//______________________________________________________________________________
-void DCRHC::makeHvector( int DetectorID )
-{
-  if(DetectorID==DetIdSdcOut||DetectorID==DetIdSsd)
-    {
-      for(unsigned int i=0;i<m_hitpos.size();++i)
-	{
-	  if(m_hitpos[i].size()==1)
-	    H.push_back(1);
-	  else
-	    H.push_back(0);
-	}
-    }
-  else
-    {
-      for(unsigned int i=0;i<m_hitpos.size()/2;++i)
-	{
-	  if(m_hitpos[2*i].size()==1 && m_hitpos[2*i+1].size()==1)
-	    {
-	      H.push_back(1);
-	      H.push_back(1);
-	    }
-	  else
-	    {
-	      H.push_back(0);
-	      H.push_back(0);
-	    }
-	}
-    }
+  //______________________________________________________________________________
+  inline Bool_t /* for MWPCCluster */
+  isConnectable( Double_t wire1, Double_t leading1, Double_t trailing1,
+		 Double_t wire2, Double_t leading2, Double_t trailing2,
+		 Double_t wExt,  Double_t tExt )
+  {
+    Double_t w1Min = wire1 - wExt;
+    Double_t w1Max = wire1 + wExt;
+    Double_t t1Min = leading1  - tExt;
+    Double_t t1Max = trailing1 + tExt;
+    Double_t w2Min = wire2 - wExt;
+    Double_t w2Max = wire2 + wExt;
+    Double_t t2Min = leading2  - tExt;
+    Double_t t2Max = trailing2 + tExt;
+    Bool_t isWireOk = !(w1Min>w2Max || w1Max<w2Min);
+    Bool_t isTimeOk = !(t1Min>t2Max || t1Max<t2Min);
 #if 0
-  std::cout<<"///////// H vector /////////"<<std::endl;
-  std::cout<<"[ ";
-  for(unsigned int i=0;i<m_hitwire.size();++i)
-    {
-      std::cout<<H[i]<<" ";
-    }
-  std::cout<<"]"<<std::endl;
+    hddaq::cout << FUNC_NAME << std::endl
+		<< " w1 = " << wire1
+		<< " le1 = " << leading1
+		<< " tr1 = " << trailing1 << "\n"
+		<< " w2 = " << wire2
+		<< " le2 = " << leading2
+		<< " tr2 = " << trailing2 << "\n"
+		<< " w1(" << w1Min << " -- " << w1Max << "), t1("
+		<< t1Min << " -- " << t1Max << ")\n"
+		<< " w2(" << w2Min << " -- " << w2Max << "), t2("
+		<< t2Min << " -- " << t2Max << ")\n"
+		<< " wire : " << isWireOk
+		<< ", time : " << isTimeOk
+		<< std::endl;
 #endif
+    return ( isWireOk && isTimeOk );
+  }
 
-  return;
-}
-//______________________________________________________________________________
-void DCRHC::makeAvector( void )
-{
-  double a,b,c,d;
-  a=b=c=d=0;
-  for(unsigned int plane=0;plane<m_hitwire.size();++plane)
-    {
-      if(H[plane])
-	{
-	  a += H[plane] * m_hitpos[plane][0] * cosvector[plane];
-	  b += H[plane] * m_hitpos[plane][0] * z[plane] * cosvector[plane];
-	  c += H[plane] * m_hitpos[plane][0] * sinvector[plane];
-	  d += H[plane] * m_hitpos[plane][0] * z[plane] * sinvector[plane];
-	}
+  //______________________________________________________________________________
+  inline void
+  printConnectionFlag( const std::vector<std::deque<Bool_t> >& flag )
+  {
+    for( UInt_t i=0, n=flag.size(); i<n; ++i ){
+      hddaq::cout << std::endl;
+      for( UInt_t j=0, m=flag[i].size(); j<m; ++j ){
+	hddaq::cout << " " << flag[i][j];
+      }
     }
-  A.push_back(a);
-  A.push_back(b);
-  A.push_back(c);
-  A.push_back(d);
-#if DEBUG
-  std::cout<<"///// A vector /////"<<std::endl;
-  for(unsigned int i=0;i<A.size();++i)
-    {
-      std::cout<<A[i]<<" "<<std::endl;
-    }
-#endif
-  return;
-}
-//______________________________________________________________________________
-void DCRHC::makeMatrix( void )
-{
-  // 4*4 matrix
-  // A B C D
-  // B E D G
-  // C D I F
-  // D G F H
-  double paraA,paraB,paraC,paraD,paraE,paraF,paraG,paraH,paraI;
-  paraA=paraB=paraC=paraD=paraE=paraF=paraG=paraH=paraI=0;
+    hddaq::cout << std::endl;
+  }
 
-  for(unsigned int i=0;i<m_hitwire.size();++i)
-    {
-      paraA += H[i]*cosvector[i]*cosvector[i];
-      paraB += H[i]*cosvector[i]*cosvector[i]*z[i];
-      paraC += H[i]*sinvector[i]*cosvector[i];
-      paraD += H[i]*sinvector[i]*cosvector[i]*z[i];
-      paraE += H[i]*cosvector[i]*cosvector[i]*z[i]*z[i];
-      paraF += H[i]*sinvector[i]*sinvector[i]*z[i];
-      paraG += H[i]*sinvector[i]*cosvector[i]*z[i]*z[i];
-      paraH += H[i]*sinvector[i]*sinvector[i]*z[i]*z[i];
-      paraI += H[i]*sinvector[i]*sinvector[i];
+  //______________________________________________________________________________
+  inline Bool_t /* for SsdCluster */
+  IsClusterable( const DCHitContainer& HitCont, DCHit* CandHit )
+  {
+    if( !CandHit )
+      return false;
+    if( !CandHit->IsGoodWaveForm() )
+      return false;
+
+    for( UInt_t i=0, n=HitCont.size(); i<n; ++i ){
+      DCHit* hit      = HitCont[i];
+      Int_t  wire     = hit->GetWire();
+      Int_t  CandWire = CandHit->GetWire();
+      // Double_t time     = hit->GetPeakTime();
+      // Double_t CandTime = CandHit->GetPeakTime();
+      if( std::abs( wire-CandWire )==1
+	  // && std::abs( time-CandTime )<25.
+	  ){
+	return true;
+      }
     }
-  double trackMatrix[4][4];
-  trackMatrix[0][0] = paraA;
-  trackMatrix[0][1] = paraB;
-  trackMatrix[0][2] = paraC;
-  trackMatrix[0][3] = paraD;
-  trackMatrix[1][0] = paraB;
-  trackMatrix[1][1] = paraE;
-  trackMatrix[1][2] = paraD;
-  trackMatrix[1][3] = paraG;
-  trackMatrix[2][0] = paraC;
-  trackMatrix[2][1] = paraD;
-  trackMatrix[2][2] = paraI;
-  trackMatrix[2][3] = paraF;
-  trackMatrix[3][0] = paraD;
-  trackMatrix[3][1] = paraG;
-  trackMatrix[3][2] = paraF;
-  trackMatrix[3][3] = paraH;
-#if DEBUG
-  std::cout<<"///// Tracking Matrix /////"<<std::endl;
-  for(int i=0;i<4;++i)
-    {
-      std::cout<<"[ ";
-      for(int j=0;j<4;++j)
-	{
-	  std::cout<<std::setw(15)<<trackMatrix[i][j]<<" ";
-	}
-      std::cout<<"]"<<std::endl;
-    }
-#endif
-  std::vector<std::vector<double> > matrix(4);
-  //  std::vector<std::vector<double> > inv_matrix;
-  for(int i=0;i<4;++i)
-    for(int j=0;j<4;++j)
-      {
-	matrix[i].push_back(trackMatrix[i][j]);
+    return false;
+  }
+}
+
+//______________________________________________________________________________
+DCAnalyzer::DCAnalyzer( void )
+  : TObject(),
+    m_is_decoded(n_type),
+    m_much_combi(n_type),
+    m_MWPCClCont(NumOfLayersBcIn+1),
+    m_TempBcInHC(NumOfLayersBcIn+1),
+    m_BcInHC(NumOfLayersBcIn+1),
+    m_BcOutHC(NumOfLayersBcOut+1),
+    m_SdcInHC(NumOfLayersSdcIn+1),
+    m_SdcOutHC(NumOfLayersSdcOut+1),
+    m_SsdInHC(NumOfLayersSsdIn+1),
+    m_SsdOutHC(NumOfLayersSsdOut+1),
+    m_SsdInClCont(NumOfLayersSsdIn+1),
+    m_SsdOutClCont(NumOfLayersSsdOut+1),
+    m_SdcInExTC(NumOfLayersSdcIn+1),
+    m_SdcOutExTC(NumOfLayersSdcOut+1)
+{
+  for( Int_t i=0; i<n_type; ++i ){
+    m_is_decoded[i] = false;
+    m_much_combi[i] = 0;
+  }
+  debug::ObjectCounter::Increase(ClassName());
+}
+
+//______________________________________________________________________________
+DCAnalyzer::~DCAnalyzer( void )
+{
+  ClearKuramaTracks();
+  ClearK18TracksD2U();
+  ClearTracksSsdOut();
+  ClearTracksSsdIn();
+  ClearTracksSsdXY();
+  ClearTracksSdcOut();
+  ClearTracksSdcIn();
+  ClearTracksBcOut();
+  ClearTracksBcOutSdcIn();
+  ClearTracksBcOutSsdIn();
+  ClearTracksSsdOutSdcIn();
+  ClearTracksSdcInSdcOut();
+  ClearDCHits();
+  // ClearVtxHits();
+  debug::ObjectCounter::Decrease(ClassName());
+}
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::PrintKurama( const TString& arg ) const
+// {
+//   Int_t nn = m_KuramaTC.size();
+//   hddaq::cout << FUNC_NAME << " " << arg << std::endl
+// 	      << "   KuramaTC.size : " << nn << std::endl;
+//   for( Int_t i=0; i<nn; ++i ){
+//     KuramaTrack *tp = m_KuramaTC[i];
+//     hddaq::cout << std::setw(3) << i
+// 		<< " Niter=" << std::setw(3) << tp->Niteration()
+// 		<< " ChiSqr=" << tp->Chisqr()
+// 		<< " P=" << tp->PrimaryMomentum().Mag()
+// 		<< " PL(TOF)=" << tp->PathLengthToTOF()
+// 		<< std::endl;
+//   }
+// }
+
+// //______________________________________________________________________________
+// #if UseBcIn
+// Bool_t
+// DCAnalyzer::DecodeBcInHits( RawData *rawData )
+// {
+//   if( m_is_decoded[k_BcIn] ){
+//     hddaq::cout << "#D " << FUNC_NAME << " "
+// 		<< "already decoded" << std::endl;
+//     return true;
+//   }
+
+//   ClearBcInHits();
+
+//   for( Int_t layer=1; layer<=NumOfLayersBcIn; ++layer ){
+//     const DCRHitContainer &RHitCont = rawData->GetBcInRawHC(layer);
+//     Int_t nh = RHitCont.size();
+//     for( Int_t i=0; i<nh; ++i ){
+//       DCRawHit *rhit  = RHitCont[i];
+//       DCHit    *thit  = new DCHit( rhit->PlaneId()+PlOffsBc, rhit->WireId() );
+//       Int_t       nhtdc = rhit->GetTdcSize();
+//       if(!thit) continue;
+//       for( Int_t j=0; j<nhtdc; ++j ){
+// 	thit->SetTdcVal( rhit->GetTdc(j) );
+// 	thit->SetTdcTrailing( rhit->GetTrailing(j) );
+//       }
+
+//       if(thit->CalcMWPCObservables())
+// 	m_TempBcInHC[layer].push_back(thit);
+//       else
+// 	delete thit;
+//     }
+
+//     // hddaq::cout<<"*************************************"<<std::endl;
+//     Int_t ncl = clusterizeMWPCHit( m_TempBcInHC[layer], m_MWPCClCont[layer]);
+//     // hddaq::cout<<"numCl="<< ncl << std::endl;
+//      for( Int_t i=0; i<ncl; ++i ){
+//       MWPCCluster *p = m_MWPCClCont[layer][i];
+//       if(!p) continue;
+
+//       const MWPCCluster::Statistics& mean  = p->GetMean();
+//       const MWPCCluster::Statistics& first = p->GetFirst();
+//       Double_t mwire    = mean.m_wire;
+//       Double_t mwirepos = mean.m_wpos;
+//       Double_t mtime    = mean.m_leading;
+//       Double_t mtrail   = mean.m_trailing;
+
+//       DCHit *hit = new DCHit( layer+PlOffsBc, mwire );
+//       if(!hit) continue;
+//       hit->SetClusterSize( p->GetClusterSize() );
+//       hit->SetMWPCFlag( true );
+//       hit->SetWire( mwire );
+//       hit->SetMeanWire( mwire );
+//       hit->SetMeanWirePosition( mwirepos );
+//       hit->SetDriftTime( mtime );
+//       hit->SetTrailingTime( mtrail );
+//       hit->SetDriftLength( 0. );
+//       hit->SetTdcVal( 0 );
+//       hit->SetTdcTrailing( 0 );
+
+//       if( hit->CalcMWPCObservables() )
+// 	m_BcInHC[layer].push_back(hit);
+//       else
+// 	delete hit;
+//     }
+//     // hddaq::cout << "nh="<< m_BcInHC[layer].size() <<std::endl;
+//   }
+
+//   m_is_decoded[k_BcIn] = true;
+//   return true;
+// }
+// #endif
+
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::DecodeBcOutHits( RawData *rawData )
+{
+  if( m_is_decoded[k_BcOut] ){
+    hddaq::cout << "#D " << FUNC_NAME << " "
+		<< "already decoded" << std::endl;
+    return true;
+  }
+
+  ClearBcOutHits();
+
+  for( Int_t layer=1; layer<=NumOfLayersBcOut; ++layer ){
+    const DCRHitContainer &RHitCont=rawData->GetBcOutRawHC(layer);
+    Int_t nh = RHitCont.size();
+    for( Int_t i=0; i<nh; ++i ){
+      DCRawHit *rhit  = RHitCont[i];
+      DCHit    *hit   = new DCHit( rhit->PlaneId()+PlOffsBc, rhit->WireId() );
+      Int_t     nhtdc = rhit->GetTdcSize();
+      if(!hit) continue;
+      for( Int_t j=0; j<nhtdc; ++j ){
+	hit->SetTdcVal( rhit->GetTdc(j) );
       }
 
-  inv_matrix = InvMatrix(matrix);
-#if DEBUG
-  std::cout<<"///// Inverse Tracking Matrix /////"<<std::endl;
-  for(int i=0;i<4;++i)
-    {
-      std::cout<<"[ ";
-      for(int j=0;j<4;++j)
-	{
-	  std::cout<<std::setw(15)<<inv_matrix[i][j]<<" ";
-	}
-      std::cout<<"]"<<std::endl;
+      if( hit->CalcDCObservables() )
+	m_BcOutHC[layer].push_back(hit);
+      else
+	delete hit;
     }
-#endif
-  return;
-}
-//______________________________________________________________________________
-bool DCRHC::make_MinimumPoint( double& dxdZ,double& dydZ,double& x0,double& y0 )
-{
-  double a,b,c,d;
-  a=b=c=d=0;
+  }
 
-  makeMatrix();
-  for(int i=0;i<4;++i)
-    {
-      a += inv_matrix[0][i] * A[i];
-      b += inv_matrix[1][i] * A[i];
-      c += inv_matrix[2][i] * A[i];
-      d += inv_matrix[3][i] * A[i];
-    }
-
-  dXdZ = b;
-  dYdZ = d;
-  X0 = a;
-  Y0 = c;
-
-  dxdZ = b;
-  dydZ = d;
-  x0 = a;
-  y0 = c;
-#if DEBUG
-  std::cout<<"//// Minimum Parameter ////"<<std::endl;
-  std::cout<<"dXdZ = "<<std::setw(14)<<b<<std::endl;
-  std::cout<<"dYdZ = "<<std::setw(14)<<d<<std::endl;
-  std::cout<<"X0   = "<<std::setw(14)<<a<<std::endl;
-  std::cout<<"Y0   = "<<std::setw(14)<<c<<std::endl;
-#endif
+  m_is_decoded[k_BcOut] = true;
   return true;
 }
+
 //______________________________________________________________________________
-bool DCRHC::TrackSearch(int min_plane)
+Bool_t
+DCAnalyzer::DecodeSdcInHits( RawData *rawData )
 {
-  pushback(detid);
-  HitPosition(detid);
-  makeHvector(detid);
-  makeDriftTime(detid);
-  makeDriftLength(detid);
-  ReHitPosition(detid);
-  //  hoge();
-  //  getchar();
-  int num_plane=0;
-  for(unsigned int i=0;i<m_hitwire.size();++i)
-    {
-      num_plane += H[i];
-    }
-  if(num_plane>min_plane)
-    {
-      if(detid==DetIdSdcOut)
-	{
-	  FullTrackSearch();
+  if( m_is_decoded[k_SdcIn] ){
+    hddaq::cout << "#D " << FUNC_NAME << " "
+		<< "already decoded" << std::endl;
+    return true;
+  }
+
+  ClearSdcInHits();
+
+  // SFT
+  {
+    HodoAnalyzer hodoAna;
+    hodoAna.DecodeSFTHits( rawData );
+    for ( int l=0; l<NumOfLayersSFT; ++l ){
+      int layerId = l + PlMinSdcIn + NumOfLayersSDC1;
+      // hodoAna.TimeCutSFT( l, -10, 10 );
+      int ncl = hodoAna.GetNClustersSFT( l );
+      for( int j=0; j<ncl; ++j ){
+	FiberCluster* cl = hodoAna.GetClusterSFT( l, j );
+	double seg  = cl->MeanSeg();
+	double pos  = cl->MeanPosition();
+	double time = cl->CMeanTime();
+	DCHit *hit  = new DCHit( layerId, seg );
+	hit->SetTdcVal( static_cast<int>( time ) );
+	if ( hit->CalcFiberObservables() ) {
+	  hit->SetWirePosition( pos );
+	  m_SdcInHC[layerId].push_back( hit );
+	} else {
+	  delete hit;
 	}
-      makeAvector();
-      double dxdZ,dydZ,x0,y0;
-      make_MinimumPoint(dxdZ,dydZ,x0,y0);
-      makeChisquare(detid);
-      if( chi2 < 10. )
-	return true;
+      }
     }
+  }
+
+  // SDC1
+  for( Int_t layer=1; layer<=NumOfLayersSDC1; ++layer ){
+    const DCRHitContainer &RHitCont=rawData->GetSdcInRawHC(layer);
+    Int_t nh = RHitCont.size();
+    for( Int_t i=0; i<nh; ++i ){
+      DCRawHit *rhit  = RHitCont[i];
+      DCHit    *hit   = new DCHit( rhit->PlaneId(), rhit->WireId() );
+      Int_t     nhtdc = rhit->GetTdcSize();
+      if(!hit) continue;
+      for( Int_t j=0; j<nhtdc; ++j ){
+	hit->SetTdcVal( rhit->GetTdc(j) );
+      }
+      if( hit->CalcDCObservables() )
+	m_SdcInHC[layer].push_back(hit);
+      else
+	delete hit;
+    }
+  }
+
+
+
+
+  m_is_decoded[k_SdcIn] = true;
+  return true;
+}
+
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::DecodeSdcOutHits( RawData *rawData )
+{
+  if( m_is_decoded[k_SdcOut] ){
+    hddaq::cout << "#D " << FUNC_NAME << " "
+		<< "already decoded" << std::endl;
+    return true;
+  }
+
+  ClearSdcOutHits();
+
+  for( Int_t layer=1; layer<=NumOfLayersSdcOut; ++layer ){
+    const DCRHitContainer &RHitCont = rawData->GetSdcOutRawHC(layer);
+    Int_t nh = RHitCont.size();
+    for( Int_t i=0; i<nh; ++i ){
+      DCRawHit *rhit  = RHitCont[i];
+      DCHit    *hit   = new DCHit( rhit->PlaneId(), rhit->WireId() );
+      Int_t       nhtdc = rhit->GetTdcSize();
+      if(!hit) continue;
+      for( Int_t j=0; j<nhtdc; ++j ){
+	hit->SetTdcVal( rhit->GetTdc(j) );
+      }
+      if( hit->CalcDCObservables() )
+	m_SdcOutHC[layer].push_back(hit);
+      else
+	delete hit;
+    }
+  }
+
+  m_is_decoded[k_SdcOut] = true;
+  return true;
+}
+
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::DecodeSsdInHits( RawData *rawData )
+{
+  if( m_is_decoded[k_SsdIn] ){
+    hddaq::cout << "#D " << FUNC_NAME << " "
+		<< "already decoded" << std::endl;
+    return true;
+  }
+
+  ClearSsdInHits();
+
+  for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer){
+    const DCRHitContainer &RHitCont = rawData->GetSsdInRawHC(layer);
+    Int_t nh = RHitCont.size();
+    for( Int_t i=0; i<nh; ++i ){
+      DCRawHit *rhit = RHitCont[i];
+      DCHit    *hit  = new DCHit( rhit->PlaneId()+PlOffsSsd, rhit->WireId() );
+      if(!hit) continue;
+      // zero suppression flag
+      if( rhit->GetTrailingSize()>0 )
+      	hit->SetTdcTrailing( rhit->GetTrailing(0) );
+
+      Int_t nhadc = rhit->GetTdcSize();
+      Int_t adc[nhadc];
+      Int_t tdc[nhadc];
+      for( Int_t j=0; j<nhadc; ++j ){
+	adc[j] = rhit->GetTdc(j);
+	tdc[j] = j+1;
+	hit->SetAdcVal( adc[j] );
+	hit->SetTdcVal( tdc[j] );
+      }
+      if( hit->CalcSsdObservables() )
+	m_SsdInHC[layer].push_back(hit);
+      else
+	delete hit;
+    }
+    ClusterizeSsd( m_SsdInHC[layer], m_SsdInClCont[layer] );
+  }
+
+  m_is_decoded[k_SsdIn] = true;
+  return true;
+}
+
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::DecodeSsdOutHits( RawData *rawData )
+{
+  if( m_is_decoded[k_SsdOut] ){
+    hddaq::cout << "#D " << FUNC_NAME << " "
+		<< "already decoded" << std::endl;
+    return true;
+  }
+
+  ClearSsdOutHits();
+
+  for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer){
+    const DCRHitContainer &RHitCont = rawData->GetSsdOutRawHC(layer);
+    Int_t nh = RHitCont.size();
+    for( Int_t i=0; i<nh; ++i ){
+      DCRawHit *rhit = RHitCont[i];
+      DCHit    *hit  = new DCHit(rhit->PlaneId()+PlOffsSsd,
+				 rhit->WireId());
+      if(!hit) continue;
+      // zero suppression flag
+      if( rhit->GetTrailingSize()>0 )
+	hit->SetTdcTrailing( rhit->GetTrailing(0) );
+
+      Int_t nhadc = rhit->GetTdcSize();
+      Int_t adc[nhadc];
+      Int_t tdc[nhadc];
+      for( Int_t j=0; j<nhadc; ++j ){
+	adc[j] = rhit->GetTdc(j);
+	tdc[j] = j+1;
+	hit->SetAdcVal( adc[j] );
+	hit->SetTdcVal( tdc[j] );
+      }
+      if( hit->CalcSsdObservables() )
+	m_SsdOutHC[layer].push_back(hit);
+      else
+	delete hit;
+    }
+    ClusterizeSsd( m_SsdOutHC[layer], m_SsdOutClCont[layer] );
+  }
+
+  m_is_decoded[k_SsdOut] = true;
+  return true;
+}
+
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::DecodeRawHits( RawData *rawData )
+{
+  ClearDCHits();
+  DecodeBcOutHits( rawData );
+  DecodeSdcInHits( rawData );
+  DecodeSdcOutHits( rawData );
+  // DecodeSsdInHits( rawData );
+  // DecodeSsdOutHits( rawData );
+  return true;
+}
+
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::DecodeTOFHits( const Hodo2HitContainer& HitCont )
+{
+  if( m_is_decoded[k_TOF] ){
+    hddaq::cout << "#D " << FUNC_NAME << " "
+		<< "already decoded" << std::endl;
+    return true;
+  }
+
+  ClearTOFHits();
+
+  static const Double_t RA2 = gGeom.GetRotAngle2("TOF");
+  static const ThreeVector TOFPos[2] = {
+    gGeom.GetGlobalPosition("TOF-UX"),
+    gGeom.GetGlobalPosition("TOF-DX") };
+
+  static const Int_t IdTOFUX = gGeom.GetDetectorId("TOF-UX");
+  static const Int_t IdTOFUY = gGeom.GetDetectorId("TOF-UY");
+  static const Int_t IdTOFDX = gGeom.GetDetectorId("TOF-DX");
+  static const Int_t IdTOFDY = gGeom.GetDetectorId("TOF-DY");
+
+  const UInt_t nh = HitCont.size();
+  for( UInt_t i=0; i<nh; ++i ){
+    Hodo2Hit *hodo_hit = HitCont[i];
+    if( !hodo_hit ) continue;
+    const Double_t seg  = hodo_hit->SegmentId()+1;
+    const Double_t dt   = hodo_hit->TimeDiff();
+    Int_t layer_x = -1;
+    Int_t layer_y = -1;
+    if( (Int_t)seg%2==0 ){
+      layer_x  = IdTOFUX;
+      layer_y  = IdTOFUY;
+    }
+    if( (Int_t)seg%2==1 ){
+      layer_x  = IdTOFDX;
+      layer_y  = IdTOFDY;
+    }
+    Double_t wpos = gGeom.CalcWirePosition( layer_x, seg );
+    ThreeVector w( wpos, 0., 0. );
+    w.RotateY( RA2*math::Deg2Rad() );
+    const ThreeVector& hit_pos = TOFPos[(Int_t)seg%2] + w
+      + ThreeVector( 0., dt/0.01285, 0. );
+    // X
+    DCHit *dc_hit_x = new DCHit( layer_x, seg );
+    dc_hit_x->SetTdcVal(0);
+    dc_hit_x->SetWirePosition( hit_pos.x() );
+    dc_hit_x->SetZ( hit_pos.z() );
+    dc_hit_x->SetTiltAngle( 0. );
+    dc_hit_x->SetDriftTime( 0. );
+    dc_hit_x->SetDriftLength( 0. );
+    m_TOFHC.push_back( dc_hit_x );
+    // Y
+    DCHit *dc_hit_y = new DCHit( layer_y, seg );
+    dc_hit_y->SetTdcVal(0);
+    dc_hit_y->SetWirePosition( hit_pos.y() ); // [ns] -> [mm]
+    dc_hit_y->SetZ( hit_pos.z() );
+    dc_hit_y->SetTiltAngle( 90. );
+    dc_hit_y->SetDriftTime( 0. );
+    dc_hit_y->SetDriftLength( 0. );
+    m_TOFHC.push_back( dc_hit_y );
+  }
+
+  m_is_decoded[k_TOF] = true;
+  return true;
+}
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::DecodeTOFHits( const HodoClusterContainer& ClCont )
+// {
+//   if( m_is_decoded[k_TOF] ){
+//     hddaq::cout << "#D " << FUNC_NAME << " "
+// 		<< "already decoded" << std::endl;
+//     return true;
+//   }
+
+//   ClearTOFHits();
+
+//   static const Double_t RA2 = gGeom.GetRotAngle2("TOF");
+//   static const ThreeVector TOFPos[2] = {
+//     gGeom.GetGlobalPosition("TOF-UX"),
+//     gGeom.GetGlobalPosition("TOF-DX") };
+
+//   const UInt_t nh = ClCont.size();
+//   for( UInt_t i=0; i<nh; ++i ){
+//     HodoCluster *hodo_cluster = ClCont[i];
+//     if( !hodo_cluster ) continue;
+//     const Double_t seg  = hodo_cluster->MeanSeg()+1;
+//     const Double_t dt   = hodo_cluster->TimeDif();
+//     Int_t layer_x = -1;
+//     Int_t layer_y = -1;
+//     if( (Int_t)seg%2==0 ){
+//       layer_x  = IdTOFUX;
+//       layer_y  = IdTOFUY;
+//     }
+//     if( (Int_t)seg%2==1 ){
+//       layer_x  = IdTOFDX;
+//       layer_y  = IdTOFDY;
+//     }
+//     Double_t wpos = gGeom.CalcWirePosition( layer_x, seg );
+//     ThreeVector w( wpos, 0., 0. );
+//     w.RotateY( RA2*math::Deg2Rad() );
+//     const ThreeVector& hit_pos = TOFPos[(Int_t)seg%2] + w
+//       + ThreeVector( 0., dt/0.01285, 0. );
+//     // X
+//     DCHit *dc_hit_x = new DCHit( layer_x, seg );
+//     dc_hit_x->SetWirePosition( hit_pos.x() );
+//     dc_hit_x->SetZ( hit_pos.z() );
+//     dc_hit_x->SetTiltAngle( 0. );
+//     dc_hit_x->SetDriftTime( 0. );
+//     dc_hit_x->SetDriftLength( 0. );
+//     m_TOFHC.push_back( dc_hit_x );
+//     // Y
+//     DCHit *dc_hit_y = new DCHit( layer_y, seg );
+//     dc_hit_y->SetWirePosition( hit_pos.y() ); // [ns] -> [mm]
+//     dc_hit_y->SetZ( hit_pos.z() );
+//     dc_hit_y->SetTiltAngle( 90. );
+//     dc_hit_y->SetDriftTime( 0. );
+//     dc_hit_y->SetDriftLength( 0. );
+//     m_TOFHC.push_back( dc_hit_y );
+//   }
+
+//   m_is_decoded[k_TOF] = true;
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// #if UseBcIn
+// Bool_t
+// DCAnalyzer::TrackSearchBcIn( void )
+// {
+//   track::MWPCLocalTrackSearch( &(m_BcInHC[1]), m_BcInTC );
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::TrackSearchBcIn( const std::vector<std::vector<DCHitContainer> >& hc )
+// {
+//   track::MWPCLocalTrackSearch( hc, m_BcInTC );
+//   return true;
+// }
+// #endif
+
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::TrackSearchBcOut( void )
+{
+  static const Int_t MinLayer = gUser.GetParameter("MinLayerBcOut");
+
+  ClearTracksBcOut();
+
+#if BcOut_Pair //Pair Plane Tracking Routine for BcOut
+  track::LocalTrackSearch( m_BcOutHC, PPInfoBcOut, NPPInfoBcOut,
+			   m_BcOutTC, MinLayer );
+  return true;
+#endif
+
+#if BcOut_XUV  //XUV Tracking Routine for BcOut
+  track::LocalTrackSearchVUX( m_BcOutHC, PPInfoBcOut, NPPInfoBcOut,
+			      m_BcOutTC, MinLayer );
+  return true;
+#endif
 
   return false;
 }
+
 //______________________________________________________________________________
-double DCRHC::GetPosX( int PosZ )
+// Use with BH2Filter
+Bool_t
+DCAnalyzer::TrackSearchBcOut( const BH2Filter::FilterList& hc )
 {
-  return dXdZ * PosZ + X0;
-}
-//______________________________________________________________________________
-double DCRHC::GetPosY( int PosZ )
-{
-  return dYdZ * PosZ + Y0;
-}
-//______________________________________________________________________________
-int DCRHC::num_Hitplane( void )
-{
-  int a=0;
-  for(unsigned int i=0;i<m_hitwire.size();++i)
-    {
-      a += H[i];
-    }
-  return a;
-}
-//______________________________________________________________________________
-double DCRHC::GetResidual( int plane )
-{
-  double residue=200;
-  double axis = cosvector[plane]*(X0 + dXdZ*z[plane])+sinvector[plane]*(Y0+dYdZ*z[plane]);
-  if(H[plane]==1)
-    residue = m_hitpos[plane][0] - axis;
-  return residue;
-}
-//______________________________________________________________________________
-void DCRHC::makeChisquare( int DetectorID )
-{
-  int plid=0;
-  if(DetectorID==DetIdBcOut)  plid = 113;
-  if(DetectorID==DetIdSdcIn)  plid =   1;
-  if(DetectorID==DetIdSdcOut) plid =  31;
-  if(DetectorID==DetIdSsd)    plid = 141;
-  chi2 = 0;
-  int j = 0;
-  for(unsigned int plane=0;plane<m_hitwire.size();++plane ,++plid)
-    {
-      if(H[plane]==0)continue;
-      double resolution = geomman.GetResolution(plid);
-      double residual   = GetResidual(plane);
-      chi2 += residual*residual/resolution/resolution;
-      ++j;
-    }
-  chi2 = chi2/(j-2);
-}
-//______________________________________________________________________________
-void DCRHC::makeDriftTime( int DetectorID )
-{
-  int plid=0;
-  if(DetectorID==DetIdBcOut)  plid = 113;
-  if(DetectorID==DetIdSdcIn)  plid =   1;
-  if(DetectorID==DetIdSdcOut) plid =  31;
-  m_dtime.clear();
-  m_dtime.resize(m_hitwire.size());
-  for(unsigned int i=0;i<m_hitwire.size();++i,++plid)
-    {
-      for(unsigned int j=0;j<m_hitwire[i].size();++j)
-	{
-	  if(DetectorID==DetIdSsd){
-	    m_dtime[i].push_back(0);
-	    continue;
-	  }
-	  int wireid = m_hitwire[i][j]+1;
-	  //	  p0 = t0man.GetParam0(plid,wireid);
-	  //	  p1 = t0man.GetParam1(plid,wireid);
-	  //	  double drift_time = - (m_tdc[i][j] * p1) - p0;
-	  double drift_time;
-	  t0man.GetTime(plid, wireid, m_tdc[i][j], drift_time);
-	  m_dtime[i].push_back(drift_time);
-	}
-    }
-#if DEBUG
-  std::cout<<"///// Drift Time /////"<<std::endl;
-  for(unsigned int i=0;i<m_dtime.size();++i)
-    {
-      std::cout<<"[ ";
-      for(unsigned int j=0;j<m_dtime[i].size();++j)
-	{
-	  std::cout<<m_dtime[i][j]<<" ";
-	}
-      std::cout<<"]"<<std::endl;
-    }
+  static const Int_t MinLayer = gUser.GetParameter("MinLayerBcOut");
+
+  ClearTracksBcOut();
+
+#if BcOut_Pair //Pair Plane Tracking Routine for BcOut
+  track::LocalTrackSearch( hc, PPInfoBcOut, NPPInfoBcOut, m_BcOutTC, MinLayer );
+  return true;
 #endif
-}
-//______________________________________________________________________________
-double DCRHC::GetDriftTime( int plane )
-{
-  if(m_dtime[plane].size()>0)
-    return m_dtime[plane][0];
-  else
-    return -10;
-}
-//______________________________________________________________________________
-void DCRHC::makeDriftLength( int DetectorID )
-{
-  int plid;
-  if(DetectorID==DetIdBcOut)  plid = 113;
-  if(DetectorID==DetIdSdcIn)  plid =   1;
-  if(DetectorID==DetIdSdcOut) plid =  31;
-  m_dlength.clear();
-  m_dlength.resize(m_hitwire.size());
-  double drift_length,t;
-  for(unsigned int i=0;i<m_dtime.size();++i,++plid)
-    {
-      for(unsigned int j=0;j<m_dtime[i].size();++j)
-	{
-	  if(DetectorID==DetIdSsd){
-	    m_dlength[i].push_back(0);
-	    continue;
-	  }
-	  int wireid = m_hitwire[i][j]+1;
-	  double dt;
-	  t = m_dtime[i][j];
-	  driftman.calcDrift(plid, wireid, t, dt, drift_length);
-	  m_dlength[i].push_back(drift_length);
-	}
-    }
-#if DEBUG
-  std::cout<<"///// Drift Length /////"<<std::endl;
-  for(unsigned int i=0;i<m_dlength.size();++i)
-    {
-      std::cout<<"[ ";
-      for(unsigned int j=0;j<m_dlength[i].size();++j)
-	{
-	  std::cout<<m_dlength[i][j]<<" ";
-	}
-      std::cout<<"]"<<std::endl;
-    }
+
+#if BcOut_XUV  //XUV Tracking Routine for BcOut
+  track::LocalTrackSearchVUX( hc, PPInfoBcOut, NPPInfoBcOut, m_BcOutTC, MinLayer );
+  return true;
 #endif
+
+  return false;
 }
+
 //______________________________________________________________________________
-double DCRHC::GetDriftLength( int plane )
+Bool_t
+DCAnalyzer::TrackSearchSdcIn( void )
 {
-  if(m_dlength[plane].size()>0)
-    return m_dlength[plane][0];
-  else
-    return -20;
+  static const Int_t MinLayer = gUser.GetParameter("MinLayerSdcIn");
+
+  track::LocalTrackSearchSdcInFiber( m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn,
+				     m_SdcInTC, MinLayer );
+
+  return true;
+
+// #if SdcIn_Pair //Pair Plane Tracking Routine for SdcIn
+
+// # if UseSsdCluster
+//   Int_t ntrack =
+//     track::LocalTrackSearchSsdOutSdcIn( m_SsdInClCont, m_SsdOutClCont,
+// 					m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn,
+// 					m_SsdOutSdcInTC, MinLayer );
+
+//   if( ntrack>=0 ) return true;
+//   if( ntrack<0 ) m_much_combi[k_SdcIn]++;
+
+// #  if SdcIn_SsdPreTrack
+//   ClearTracksSsdOutSdcIn();
+
+//   track::PreTrackSearchSsdXY( m_SsdInClCont, m_SsdOutClCont,
+// 			      m_SsdXTC, m_SsdYTC );
+
+//   ntrack =
+//     track::LocalTrackSearchSsdOutSdcIn( m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn,
+// 					m_SsdXTC, m_SsdYTC, m_SsdOutSdcInTC,
+// 					MinLayer );
+//   if( ntrack<0 ) m_much_combi[k_SdcIn]++;
+//   else return true;
+
+// #  endif
+// #  if SdcIn_Deletion
+//   ClearTracksSsdOutSdcIn();
+
+//   track::LocalTrackSearchSsdOutSdcIn( m_SsdInClCont, m_SsdOutClCont,
+// 				      m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn,
+// 				      m_SsdOutSdcInTC, MinLayer, true );
+// #  endif
+
+// # else // UseSsdCluster
+//   track::LocalTrackSearchSsdOutSdcIn( m_SsdInHC, m_SsdOutHC,
+// 				      m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn,
+// 				      m_SsdOutSdcInTC, MinLayer );
+// # endif
+//   // track::LocalTrackSearch( m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn, m_SdcInTC, MinLayer );
+//   return true;
+// #endif
+
+// #if SdcIn_XUV  //XUV Tracking Routine for SdcIn
+//   track::LocalTrackSearchVUX( m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn, m_SdcInTC, MinLayer );
+//   return true;
+// #endif
+
+  return false;
 }
+
 //______________________________________________________________________________
-std::vector<double> DCRHC::resolveLR( double left1,double right1,
-				      double left2,double right2 )
+Bool_t
+DCAnalyzer::TrackSearchSdcOut( void )
 {
-  std::vector<double> LeftRight(2),RightLeft(2);
-  LeftRight[0] = left1;
-  LeftRight[1] = right2;
-  RightLeft[0] = right1;
-  RightLeft[1] = left2;
-  double selection = fabs(left1 - right2) - fabs(right1 - left2);
-  if(selection<0)
-    {
-      lr.push_back(-1);
-      lr.push_back(1);
-      return LeftRight;
-    }
-  else
-    {
-      lr.push_back(1);
-      lr.push_back(-1);
-      return RightLeft;
-    }
+  static const Int_t MinLayer = gUser.GetParameter("MinLayerSdcOut");
+
+  track::LocalTrackSearchSdcOut( m_SdcOutHC, PPInfoSdcOut, NPPInfoSdcOut,
+				 m_SdcOutTC, MinLayer );
+
+  return true;
 }
+
 //______________________________________________________________________________
-void DCRHC::ReHitPosition( int DetectorID )
+Bool_t
+DCAnalyzer::TrackSearchSdcOut( const Hodo2HitContainer& TOFCont )
 {
-  if(DetectorID==DetIdSsd) return;
-  if(DetectorID==DetIdBcOut || DetectorID==DetIdSdcIn)
-    {
-      for(unsigned int i=0;i<m_hitpos.size()/2;++i)
-	{
-	  if(m_hitpos[2*i].size()==0 || m_hitpos[2*i+1].size()==0)
-	    {
-	      lr.push_back(0);
-	      lr.push_back(0);
-	      continue;
-	    }
-	  double left1  = m_hitpos[2*i][0] - m_dlength[2*i][0];
-	  double right1 = m_hitpos[2*i][0] + m_dlength[2*i][0];
-	  double left2  = m_hitpos[2*i+1][0] - m_dlength[2*i+1][0];
-	  double right2 = m_hitpos[2*i+1][0] + m_dlength[2*i+1][0];
-	  std::vector<double> selection = resolveLR(left1,right1,left2,right2);
-	  m_hitpos[2*i][0] = selection[0];
-	  m_hitpos[2*i+1][0] = selection[1];
-	}
-    }
-  else
-    {
-      for(unsigned int i=0;i<m_hitpos.size();++i)
-	{
-	  if(m_hitpos[i].size()!=1)continue;
-	  double left  = m_hitpos[i][0] - m_dlength[i][0];
-	  double right = m_hitpos[i][0] + m_dlength[i][0];
-	  m_hitpos[i].clear();
-	  m_hitpos[i].push_back(left);
-	  m_hitpos[i].push_back(right);
-	}
-    }
-#if DEBUG
-  std::cout<<"/////// ReCalc Hit Position /////////"<<std::endl;
-  for(unsigned int i=0;i<m_hitpos.size();++i)
-    {
-      std::cout<<"[ ";
-      if(m_hitpos[i].size()==1 || m_hitpos[i].size()==2)
-	{
-	  std::cout<<m_hitpos[i][0]<<" ";
-	}
-      std::cout<<"]"<<std::endl;
-    }
-#endif
-}
-//______________________________________________________________________________
-std::vector<int > DCRHC::GetTdc( int plane )
-{
-  return m_tdc[plane];
-}
-//______________________________________________________________________________
-std::vector<int > DCRHC::GetHitWire( int plane )
-{
-  return m_hitwire[plane];
-}
-//______________________________________________________________________________
-void DCRHC::FullTrackSearch( void )
-{
-  double buf_chi2 = -1;
-  buf_chi2=10000;
-  std::vector<double> bufbuf_hitpos;
+  static const Int_t MinLayer = gUser.GetParameter("MinLayerSdcOut");
+
+  if( !DecodeTOFHits( TOFCont ) ) return false;
+
 #if 0
-  std::cout<<"#D DCRHC::FullTrackSearch()"<<std::endl;
-#endif
-  for(int p12=0;p12<2;++p12){for(int p11=0;p11<2;++p11){
-      for(int p10=0;p10<2;++p10){
-	for(int p9=0;p9<2;++p9){for(int p8=0;p8<2;++p8){for(int p7=0;p7<2;++p7){
-	      for(int p6=0;p6<2;++p6){for(int p5=0;p5<2;++p5){for(int p4=0;p4<2;++p4){
-		    for(int p3=0;p3<2;++p3){for(int p2=0;p2<2;++p2){
-			for(int p1=0;p1<2;++p1){
-			  if(H[0]==1)
-			    buf_hitpos.push_back(m_hitpos[0][p1]);
-			  else
-			    buf_hitpos.push_back(0);
-			  if(H[1]==1)
-			    buf_hitpos.push_back(m_hitpos[1][p2]);
-			  else
-			    buf_hitpos.push_back(0);
-			  if(H[2]==1)
-			    buf_hitpos.push_back(m_hitpos[2][p3]);
-			  else
-			    buf_hitpos.push_back(0);
-			  if(H[3]==1)
-			    buf_hitpos.push_back(m_hitpos[3][p4]);
-			  else
-			    buf_hitpos.push_back(0);
-			  if(H[4]==1)
-			    buf_hitpos.push_back(m_hitpos[4][p5]);
-			  else
-			    buf_hitpos.push_back(0);
-			  if(H[5]==1)
-			    buf_hitpos.push_back(m_hitpos[5][p6]);
-			  else
-			    buf_hitpos.push_back(0);
-			  if(H[6]==1)
-			    buf_hitpos.push_back(m_hitpos[6][p7]);
-			  else
-			    buf_hitpos.push_back(0);
-			  if(H[7]==1)
-			    buf_hitpos.push_back(m_hitpos[7][p8]);
-			  else
-			    buf_hitpos.push_back(0);
-			  if(H[8]==1)
-			    buf_hitpos.push_back(m_hitpos[8][p9]);
-			  else
-			    buf_hitpos.push_back(0);
-			  if(H[9]==1)
-			    buf_hitpos.push_back(m_hitpos[9][p10]);
-			  else
-			    buf_hitpos.push_back(0);
-			  if(H[10]==1)
-			    buf_hitpos.push_back(m_hitpos[10][p11]);
-			  else
-			    buf_hitpos.push_back(0);
-			  if(H[11]==1)
-			    buf_hitpos.push_back(m_hitpos[11][p12]);
-			  else
-			    buf_hitpos.push_back(0);
-			  double a,b,c,d;
-			  a=b=c=d=0;
-			  for(unsigned int plane=0;plane<m_hitwire.size();++plane)
-			    {
-			      a += H[plane] * buf_hitpos[plane] * cosvector[plane];
-			      b += H[plane] * buf_hitpos[plane] * z[plane] * cosvector[plane];
-			      c += H[plane] * buf_hitpos[plane] * sinvector[plane];
-			      d += H[plane] * buf_hitpos[plane] * z[plane] * sinvector[plane];
-			    }
-
-			  A.push_back(a);
-			  A.push_back(b);
-			  A.push_back(c);
-			  A.push_back(d);
-			  double dxdZ,dydZ,x0,y0;
-			  make_MinimumPoint(dxdZ,dydZ,x0,y0);
-			  makeChisquareSdcOut();
-			  if(buf_chi2>chi2)
-			    {
-			      lr.clear();
-			      buf_chi2 = chi2;
-			      bufbuf_hitpos = buf_hitpos;
-			      lr.push_back(p1);
-			      lr.push_back(p2);
-			      lr.push_back(p3);
-			      lr.push_back(p4);
-			      lr.push_back(p5);
-			      lr.push_back(p6);
-			      lr.push_back(p7);
-			      lr.push_back(p8);
-			      lr.push_back(p9);
-			      lr.push_back(p10);
-			      lr.push_back(p11);
-			      lr.push_back(p12);
-			    }
-			  buf_hitpos.clear();
-			  A.clear();
-			}}}}}}}}}}}
+  for( UInt_t i=0, n=m_TOFHC.size(); i<n; ++i ){
+    m_TOFHC[i]->Print();
   }
-  // scan end
-  for(int i=0;i<12;++i)
-    {
-      m_hitpos[i].clear();
-    }
-  if(bufbuf_hitpos.size()>11)
-    {
-      for(int i=0;i<12;++i)
-	{
-	  m_hitpos[i].push_back(bufbuf_hitpos[i]);
-	}
-    }
-#if DEBUG
-  std::cout<<"///////// Hit Position after search //////////"<<std::endl;
-
-  for(unsigned int i=0;i<m_hitpos.size();++i)
-    {
-      std::cout<<"[ ";
-      for(unsigned int j=0;j<m_hitpos[i].size();++j)
-	{
-	  std::cout<<m_hitpos[i][j]<<" ";
-	}
-      std::cout<<"]"<<std::endl;
-    }
-
 #endif
+
+  track::LocalTrackSearchSdcOut( m_TOFHC, m_SdcOutHC, PPInfoSdcOut, NPPInfoSdcOut,
+				 m_SdcOutTC, MinLayer );
+
+  return true;
 }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::TrackSearchSdcOut( const HodoClusterContainer& TOFCont )
+// {
+//   static const Int_t MinLayer = gUser.GetParameter("MinLayerSdcOut");
+
+//   if( !DecodeTOFHits( TOFCont ) ) return false;
+
+//   track::LocalTrackSearchSdcOut( m_TOFHC, m_SdcOutHC, PPInfoSdcOut, NPPInfoSdcOut+2,
+// 				 m_SdcOutTC, MinLayer );
+
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::TrackSearchSsdIn( Bool_t delete_flag )
+// {
+//   static const Int_t MinLayer = gUser.GetParameter("MinLayerSsdIn");
+
+// #if UseSsdCluster
+//   track::LocalTrackSearchSsdIn( m_SsdInClCont, m_SsdInTC, MinLayer, delete_flag );
+// #else
+//   track::LocalTrackSearchSsdIn( m_SsdInHC, m_SsdInTC, MinLayer,  delete_flag );
+// #endif
+
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::TrackSearchSsdOut( void )
+// {
+//   static const Int_t MinLayer = gUser.GetParameter("MinLayerSsdOut");
+
+//   track::LocalTrackSearchSsdOut( m_SsdOutHC, m_SsdOutTC, MinLayer );
+
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::TrackSearchSsdInXY( void )
+// {
+// #if UseSsdCluster
+//   track::LocalTrackSearchSsdInXY( m_SsdInClCont, m_SsdInXTC, m_SsdInYTC );
+// #else
+//   track::LocalTrackSearchSsdInXY( m_SsdInHC, m_SsdInXTC, m_SsdInYTC );
+// #endif
+
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::TrackSearchBcOutSdcIn( void )
+// {
+//   static const Int_t MinLayer = gUser.GetParameter("MinLayerBcOutSdcIn");
+
+//   track::LocalTrackSearchBcOutSdcIn( m_BcOutHC, PPInfoBcOut,
+// 				     m_SdcInHC, PPInfoSdcIn,
+// 				     NPPInfoBcOut,NPPInfoSdcIn,
+// 				     m_BcOutSdcInTC, MinLayer );
+
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::TrackSearchBcOutSsdIn( void )
+// {
+//   static const Int_t MinLayer = gUser.GetParameter("MinLayerBcOutSsdIn");
+
+//   track::LocalTrackSearchBcOutSsdIn( m_BcOutHC, PPInfoBcOut, NPPInfoBcOut,
+// 				     m_SsdInHC,
+// 				     m_BcOutSsdInTC, MinLayer );
+
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::TrackSearchSsdOutSdcIn( void )
+// {
+//   static const Int_t MinLayer = gUser.GetParameter("MinLayerSsdOutSdcIn");
+
+//   track::LocalTrackSearchSsdOutSdcIn( m_SsdInHC, m_SsdOutHC,
+// 				      m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn,
+// 				      m_SsdOutSdcInTC, MinLayer );
+
+//   // track::LocalTrackSearchSsdOutSdcIn( m_SsdOutHC,
+//   // 			       m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn,
+//   // 			       m_SsdOutSdcInTC, MinLayer );
+
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::TrackSearchK18D2U( const std::vector<Double_t>& XinCont )
+// {
+//   ClearK18TracksD2U();
+
+//   UInt_t nIn  = XinCont.size();
+//   UInt_t nOut = m_BcOutTC.size();
+
+//   if( nIn==0 || nOut==0 )
+//     return true;
+
+//   for( UInt_t iIn=0; iIn<nIn; ++iIn ){
+//     Double_t LocalX = XinCont[iIn];
+//     for( UInt_t iOut=0; iOut<nOut; ++iOut ){
+//       DCLocalTrack *trOut = m_BcOutTC[iOut];
+// #if 0
+//       hddaq::cout << "TrackOut :" << std::setw(2) << iOut
+// 		  << " X0=" << trOut->GetX0() << " Y0=" << trOut->GetY0()
+// 		  << " U0=" << trOut->GetU0() << " V0=" << trOut->GetV0()
+// 		  << std::endl;
+// #endif
+//       if( !trOut->GoodForTracking() ||
+// 	  trOut->GetX0()<MinK18OutX || trOut->GetX0()>MaxK18OutX ||
+// 	  trOut->GetY0()<MinK18OutY || trOut->GetY0()>MaxK18OutY ||
+// 	  trOut->GetU0()<MinK18OutU || trOut->GetU0()>MaxK18OutU ||
+// 	  trOut->GetV0()<MinK18OutV || trOut->GetV0()>MaxK18OutV ) continue;
+
+// #if 0
+//       hddaq::cout << FUNC_NAME
+// 		  << "Out -> " << trOut->GetChiSquare()
+// 		  << " (" << std::setw(2) << trOut->GetNHit() << ") "
+// 		  << std::endl;
+// #endif
+
+//       K18TrackD2U *track = new K18TrackD2U( LocalX, trOut, pK18 );
+//       if( !track ) continue;
+//       track->CalcMomentumD2U();
+//       m_K18D2UTC.push_back(track);
+//     }
+//   }
+
+// #if 0
+//   hddaq::cout<<"********************"<<std::endl;
+//   {
+//     Int_t nn = m_K18D2UTC.size();
+//     hddaq::cout << FUNC_NAME << ": Before sorting. #Track="
+// 		<< nn << std::endl;
+//     for( Int_t i=0; i<nn; ++i ){
+//       K18TrackD2U *tp = m_K18D2UTC[i];
+//       hddaq::cout << std::setw(3) << i
+// 		  << " ChiSqr=" << tp->chisquare()
+// 		  << " Delta=" << tp->Delta()
+// 		  << " P=" << tp->P() << "\n";
+// //      hddaq::cout<<"********************"<<std::endl;
+// //      hddaq::cout << "In :"
+// // 	       << " X " << tp->Xin() << "(" << tp->TrackIn()->GetX0() << ")"
+// // 	       << " Y " << tp->Yin() << "(" << tp->TrackIn()->GetY0() << ")"
+// // 	       << " U " << tp->Uin() << "(" << tp->TrackIn()->GetU0() << ")"
+// // 	       << " V " << tp->Vin() << "(" << tp->TrackIn()->GetV0() << ")"
+// // 	       << "\n";
+// //      hddaq::cout << "Out:"
+// // 	       << " X " << tp->Xout() << "(" << tp->TrackOut()->GetX0() << ")"
+// // 	       << " Y " << tp->Yout() << "(" << tp->TrackOut()->GetY0() << ")"
+// // 	       << " U " << tp->Uout() << "(" << tp->TrackOut()->GetU0() << ")"
+// // 	       << " V " << tp->Vout() << "(" << tp->TrackOut()->GetV0() << ")"
+// // 	       << std::endl;
+//    }
+//  }
+// #endif
+
+//   return true;
+// }
+
 //______________________________________________________________________________
-double DCRHC::GetResidualSdcOut( int plane )
+Bool_t
+DCAnalyzer::TrackSearchKurama( void )
 {
-  double residue=200;
-  double axis = cosvector[plane]*(X0 + dXdZ*z[plane])+sinvector[plane]*(Y0+dYdZ*z[plane]);
-  if(H[plane]==1)
-    {
-      residue = buf_hitpos[plane] - axis;
-    }
-  return residue;
+  ClearKuramaTracks();
+
+  UInt_t nIn  = GetNtracksSdcIn();
+  UInt_t nOut = GetNtracksSdcOut();
+
+  if( nIn==0 || nOut==0 )
+    return false;
+
+  for( UInt_t iIn=0; iIn<nIn; ++iIn ){
+    DCLocalTrack *trIn = GetTrackSdcIn( iIn );
+    if( !trIn->GoodForTracking() ) continue;
+    for( UInt_t iOut=0; iOut<nOut; ++iOut ){
+      DCLocalTrack * trOut = GetTrackSdcOut( iOut );
+      if( !trOut->GoodForTracking() ) continue;
+
+      // if( gEvDisp.IsReady() ){
+      // 	Double_t v0In  = trIn->GetV0();
+      // 	Double_t v0Out = trOut->GetV0();
+      // 	Double_t y0In  = trIn->GetY0();
+      // 	Double_t y0Out = trOut->GetY0();
+      // 	if( TMath::Abs(v0In-v0Out)>0.050 )
+      // 	  continue;
+      // 	if( TMath::Abs(y0In-y0Out)>15. )
+      // 	  continue;
+      // }
+
+      KuramaTrack *trKurama = new KuramaTrack( trIn, trOut );
+      if( !trKurama ) continue;
+      Double_t u0In    = trIn->GetU0();
+      Double_t u0Out   = trOut->GetU0();
+      Double_t bending = u0Out - u0In;
+      Double_t p[3] = { 0.08493, 0.2227, 0.01572 };
+      Double_t initial_momentum = p[0] + p[1]/( bending-p[2] );
+      if( bending>0. && initial_momentum>0. )
+	trKurama->SetInitialMomentum( initial_momentum );
+      else
+	trKurama->SetInitialMomentum( 1.0 );
+
+      if( trKurama->DoFit() && trKurama->Chisqr()<MaxChiSqrKuramaTrack ){
+	m_KuramaTC.push_back( trKurama );
+      }
+      else{
+	trKurama->Print( "in "+FUNC_NAME );
+	delete trKurama;
+      }
+    }// for( iOut )
+  }// for( iIn )
+
+  std::sort( m_KuramaTC.begin(), m_KuramaTC.end(), KuramaTrackComp() );
+
+#if 0
+  PrintKurama( "Before Deleting" );
+#endif
+
+  return true;
 }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::TrackSearchKurama( Double_t initial_momentum )
+// {
+//   ClearKuramaTracks();
+
+//   Int_t nIn  = GetNtracksSdcIn();
+//   Int_t nOut = GetNtracksSdcOut();
+
+//   if( nIn==0 || nOut==0 ) return true;
+
+//   for( Int_t iIn=0; iIn<nIn; ++iIn ){
+//     DCLocalTrack *trIn = GetTrackSdcIn( iIn );
+//     if( !trIn->GoodForTracking() ) continue;
+//     for( Int_t iOut=0; iOut<nOut; ++iOut ){
+//       DCLocalTrack * trOut = GetTrackSdcOut( iOut );
+//       if( !trOut->GoodForTracking() ) continue;
+//       KuramaTrack *trKurama = new KuramaTrack( trIn, trOut );
+//       if( !trKurama ) continue;
+//       trKurama->SetInitialMomentum( initial_momentum );
+//       if( trKurama->DoFit() && trKurama->Chisqr()<MaxChiSqrKuramaTrack ){
+// 	m_KuramaTC.push_back( trKurama );
+//       }
+//       else{
+// 	// trKurama->Print( " in "+FUNC_NAME );
+// 	delete trKurama;
+//       }
+//     }// for( iOut )
+//   }// for( iIn )
+
+//   std::sort( m_KuramaTC.begin(), m_KuramaTC.end(), KuramaTrackComp() );
+
+// #if 0
+//   PrintKurama( "Before Deleting" );
+// #endif
+
+//   return true;
+// }
+
 //______________________________________________________________________________
-void DCRHC::makeChisquareSdcOut( void )
+void
+DCAnalyzer::ClearDCHits( void )
 {
-  int plid =  31;
-  chi2 = 0;
-  int j = 0;
-  for(unsigned int plane=0;plane<m_hitwire.size();++plane ,++plid)
-    {
-      if(H[plane]==0)continue;
-      double resolution = geomman.GetResolution(plid);
-      double residual   = GetResidualSdcOut(plane);
-      chi2 += residual*residual/resolution/resolution;
-      ++j;
-    }
-  chi2 = chi2/(j-2);
+  ClearBcOutHits();
+  ClearSdcInHits();
+  ClearSdcOutHits();
+  // ClearSsdInHits();
+  // ClearSsdOutHits();
+  ClearTOFHits();
 }
+
 //______________________________________________________________________________
-int DCRHC::Getlr( int plane )
+void
+DCAnalyzer::ClearBcOutHits( void )
 {
-  return lr[plane];
+  utility::ClearContainerAll( m_BcOutHC );
 }
+
 //______________________________________________________________________________
-
-#include"cmath"
-
-std::vector<std::vector<double> >
-InvMatrix( std::vector<std::vector<double> > Matrix )
+void
+DCAnalyzer::ClearSdcInHits( void )
 {
-  std::vector<std::vector<double> > inv_matrix(4);
-  double buf;
-  //make unit matrix
-  for(int i=0;i<4;++i)
-    {
-      for(int j=0;j<4;++j)
-	{
-	  if(i==j)
-	    inv_matrix[i].push_back(1);
-	  else
-	    inv_matrix[i].push_back(0);
-	}
-    }
-
-  for(int i=0;i<4;++i)
-    {
-      buf = 1/Matrix[i][i];
-      for(int j=0;j<4;++j)
-	{
-	  Matrix[i][j] *= buf;
-	  inv_matrix[i][j] *= buf;
-	}
-      for(int j=0;j<4;++j)
-	{
-	  if(i!=j)
-	    {
-	      buf=Matrix[j][i];
-	      for(int k=0;k<4;++k)
-		{
-		  Matrix[j][k] -= Matrix[i][k]*buf;
-		  inv_matrix[j][k] -= inv_matrix[i][k]*buf;
-		}
-	    }
-	}
-    }
-  //output
-  //   for(int i=0;i<4;++i)
-  //     {
-  //       std::cout<<"[ ";
-  //       for(int j=0;j<4;++j)
-  // 	{
-  // 	  std::cout<<inv_matrix[i][j]<<" ";
-  // 	}
-  //       std::cout <<"]"<<std::endl;
-  //     }
-
-  return inv_matrix;
-
+  utility::ClearContainerAll( m_SdcInHC );
 }
 
-std::vector<double>
-angle( int degree )
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearSdcOutHits( void )
 {
-  double pi,unit,ragian;
-  pi = 2.0*asin(1.0);
-  unit = pi/180.0;
-  //  ragian1 = 75*unit;
-  ragian = degree*unit;
-  //  ragian_30 = 30*unit;
-  std::vector<double> tilt;
-
-  tilt.push_back(sin(ragian));
-  tilt.push_back(cos(ragian));
-  tilt.push_back(tan(ragian));
-  //   tilt.push_back(sin(ragian_30));
-  //   tilt.push_back(cos(ragian_30));
-  //   tilt.push_back(tan(ragian_30));
-  return tilt;
+  utility::ClearContainerAll( m_SdcOutHC );
 }
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearSsdInHits( void )
+{
+  utility::ClearContainerAll( m_SsdInHC );
+  utility::ClearContainerAll( m_SsdInClCont );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearSsdOutHits( void )
+{
+  utility::ClearContainerAll( m_SsdOutHC );
+  utility::ClearContainerAll( m_SsdOutClCont );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearVtxHits( void )
+{
+  utility::ClearContainer( m_VtxPoint );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearTOFHits( void )
+{
+  utility::ClearContainer( m_TOFHC );
+}
+
+//______________________________________________________________________________
+#if UseBcIn
+void
+DCAnalyzer::ClearTracksBcIn( void )
+{
+  utility::ClearContainer( m_BcInTC );
+}
+#endif
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearTracksBcOut( void )
+{
+  utility::ClearContainer( m_BcOutTC );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearTracksSdcIn( void )
+{
+  utility::ClearContainer( m_SdcInTC );
+  utility::ClearContainerAll( m_SdcInExTC );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearTracksSdcOut( void )
+{
+  utility::ClearContainer( m_SdcOutTC );
+  utility::ClearContainerAll( m_SdcOutExTC );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearTracksSsdIn( void )
+{
+  utility::ClearContainer( m_SsdInTC );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearTracksSsdOut( void )
+{
+  utility::ClearContainer( m_SsdOutTC );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearTracksSsdXY( void )
+{
+  utility::ClearContainer( m_SsdXTC );
+  utility::ClearContainer( m_SsdYTC );
+  utility::ClearContainer( m_SsdInXTC );
+  utility::ClearContainer( m_SsdInYTC );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearK18TracksD2U( void )
+{
+  utility::ClearContainer( m_K18D2UTC );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearKuramaTracks( void )
+{
+  utility::ClearContainer( m_KuramaTC );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearTracksBcOutSdcIn( void )
+{
+  utility::ClearContainer( m_BcOutSdcInTC );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearTracksBcOutSsdIn( void )
+{
+  utility::ClearContainer( m_BcOutSsdInTC );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearTracksSsdOutSdcIn( void )
+{
+  utility::ClearContainer( m_SsdOutSdcInTC );
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::ClearTracksSdcInSdcOut( void )
+{
+  utility::ClearContainer( m_SdcInSdcOutTC );
+}
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcMWPCHits( std::vector<DCHitContainer>& cont,
+// 			    Bool_t applyRecursively )
+// {
+//   const UInt_t n = cont.size();
+//   for( UInt_t l=0; l<n; ++l ){
+//     const UInt_t m = cont[l].size();
+//     for( UInt_t i=0; i<m; ++i ){
+//       DCHit *hit = (cont[l])[i];
+//       if( !hit ) continue;
+//       hit->ReCalcMWPC(applyRecursively);
+//     }
+//   }
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcDCHits( std::vector<DCHitContainer>& cont,
+// 			  Bool_t applyRecursively )
+// {
+//   const UInt_t n = cont.size();
+//   for( UInt_t l=0; l<n; ++l ){
+//     const UInt_t m = cont[l].size();
+//     for( UInt_t i=0; i<m; ++i ){
+//       DCHit *hit = (cont[l])[i];
+//       if( !hit ) continue;
+//       hit->ReCalcDC(applyRecursively);
+//     }
+//   }
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcDCHits( Bool_t applyRecursively )
+// {
+// #if UseBcIn
+//   ReCalcMWPCHits( m_TempBcInHC, applyRecursively );
+//   ReCalcMWPCHits( m_BcInHC, applyRecursively );
+// #endif
+
+//   ReCalcDCHits( m_BcOutHC, applyRecursively );
+//   ReCalcDCHits( m_SdcInHC, applyRecursively );
+//   ReCalcDCHits( m_SdcOutHC, applyRecursively );
+//   ReCalcDCHits( m_SsdInHC, applyRecursively );
+//   ReCalcDCHits( m_SsdOutHC, applyRecursively );
+
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcTrack( DCLocalTrackContainer& cont,
+// 			 Bool_t applyRecursively )
+// {
+//   const UInt_t n = cont.size();
+//   for( UInt_t i=0; i<n; ++i ){
+//     DCLocalTrack *track = cont[i];
+//     if( track ) track->ReCalc( applyRecursively );
+//   }
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcTrack( K18TrackD2UContainer& cont,
+// 			 Bool_t applyRecursively )
+// {
+//   const UInt_t n = cont.size();
+//   for( UInt_t i=0; i<n; ++i ){
+//     K18TrackD2U *track = cont[i];
+//     if( track ) track->ReCalc( applyRecursively );
+//   }
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcTrack( KuramaTrackContainer& cont,
+// 			 Bool_t applyRecursively )
+// {
+//   const UInt_t n = cont.size();
+//   for( UInt_t i=0; i<n; ++i ){
+//     KuramaTrack *track = cont[i];
+//     if( track ) track->ReCalc( applyRecursively );
+//   }
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// #if UseBcIn
+// Bool_t
+// DCAnalyzer::ReCalcTrackBcIn( Bool_t applyRecursively )
+// {
+//   return ReCalcTrack( m_BcInTC );
+// }
+// #endif
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcTrackBcOut( Bool_t applyRecursively )
+// {
+//   return ReCalcTrack( m_BcOutTC );
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcTrackSdcIn( Bool_t applyRecursively )
+// {
+//   return ReCalcTrack( m_SdcInTC );
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcTrackSdcOut( Bool_t applyRecursively )
+// {
+//   return ReCalcTrack( m_SdcOutTC );
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcTrackSsdIn( Bool_t applyRecursively )
+// {
+//   return ReCalcTrack( m_SsdInTC );
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcTrackSsdOut( Bool_t applyRecursively )
+// {
+//   return ReCalcTrack( m_SsdOutTC );
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcK18TrackD2U( Bool_t applyRecursively )
+// {
+//   return ReCalcTrack( m_K18D2UTC, applyRecursively );
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcKuramaTrack( Bool_t applyRecursively )
+// {
+//   return ReCalcTrack( m_KuramaTC, applyRecursively );
+// }
+
+// //______________________________________________________________________________
+// Bool_t
+// DCAnalyzer::ReCalcAll( void )
+// {
+//   ReCalcDCHits();
+//   ReCalcTrackBcOut();
+//   ReCalcTrackSdcIn();
+//   ReCalcTrackSdcOut();
+//   ReCalcTrackSsdIn();
+//   ReCalcTrackSsdOut();
+
+//   //ReCalcK18TrackD2U();
+//   ReCalcKuramaTrack();
+
+//   return true;
+// }
+
+// //______________________________________________________________________________
+// // Int_t
+// // clusterizeMWPCHit(const DCHitContainer& hits,
+// // 		  MWPCClusterContainer& clusters)
+// // {
+// //   if (!clusters.empty()){
+// //       std::for_each(clusters.begin(), clusters.end(), DeleteObject());
+// //       clusters.clear();
+// //   }
+
+// //   const Int_t nhits = hits.size();
+// //   //   hddaq::cout << "#D " << __func__ << " " << nhits << std::endl;
+// //   if (nhits==0)
+// //     return 0;
+
+// //   Int_t n = 0;
+// //   for (Int_t i=0; i<nhits; ++i){
+// //     const DCHit* h = hits[i];
+// //     if (!h)
+// //       continue;
+// //     n += h->GetTdcSize();
+// //   }
+
+// //   DCHitContainer singleHits;
+// //   singleHits.reserve(n);
+// //   for (Int_t i=0; i<nhits; ++i){
+// //     const DCHit* h = hits[i];
+// //     if (!h)
+// //       continue;
+// //     Int_t nn = h->GetTdcSize();
+// //     for (Int_t ii=0; ii<nn; ++ii){
+// //       DCHit* htmp = new DCHit(h->GetLayer(), h->GetWire());
+// //       htmp->SetTdcVal(h->GetTdcVal());
+// //       htmp->SetTdcTrailing(h->GetTdcTrailing());
+// //       htmp->SetTrailingTime(h->GetTrailingTime());
+// //       htmp->SetDriftTime(h->GetDriftTime());
+// //       htmp->SetDriftLength(h->GetDriftLength());
+// //       htmp->SetTiltAngle(h->GetTiltAngle());
+// //       htmp->SetWirePosition(h->GetWirePosition());
+// //       htmp->setRangeCheckStatus(h->rangecheck(), 0);
+// //       singleHits.push_back(htmp);
+// //     }
+// //   }
+
+// //   std::vector<std::deque<Bool_t> > flag(n, std::deque<Bool_t>(n, false));
+// //   n = singleHits.size();
+// //   for (Int_t i=0;  i<n; ++i){
+// //     flag[i][i] = true;
+// //     const DCHit* h1 = singleHits[i];
+// //     //       h1->print("h1");
+// //     for (Int_t j=i+1; j<n; ++j){
+// //       const DCHit* h2 = singleHits[j];
+// //       // 	  h2->print("h2");
+// //       // 	  hddaq::cout << " (i,j) = (" << i << ", " << j << ")" << std::endl;
+// //       Bool_t val
+// // 	= isConnectable(h1->GetWirePosition(),
+// // 			h1->GetDriftTime(),
+// // 			h1->GetTrailingTime(),
+// // 			h2->GetWirePosition(),
+// // 			h2->GetDriftTime(),
+// // 			h2->GetTrailingTime(),
+// // 			kMWPCClusteringWireExtension,
+// // 			kMWPCClusteringTimeExtension);
+// //       // 	  hddaq::cout << "#D val = " << val << std::endl;
+// //       flag[i][j] = val;
+// //       flag[j][i] = val;
+// //     }
+// //   }
+
+// //   //   hddaq::cout << "#D " << __func__ << "  before " << std::endl;
+// //   //   printConnectionFlag(flag);
+
+// //   const Int_t maxLoop = static_cast<Int_t>(std::log(x)/std::log(2.))+1;
+// //   for (Int_t loop=0; loop<maxLoop; ++loop){
+// //     std::vector<std::deque<Bool_t> > tmp(n, std::deque<Bool_t>(n, false));
+// //     for (Int_t i=0; i<n; ++i){
+// //       for (Int_t j=i; j<n; ++j){
+// // 	for (Int_t k=0; k<n; ++k){
+// // 	  tmp[i][j] |= (flag[i][k] && flag[k][j]);
+// // 	  tmp[j][i] = tmp[i][j];
+// // 	}
+// //       }
+// //     }
+// //     flag = tmp;
+// //     //       hddaq::cout << " n iteration = " << loop << std::endl;
+// //     //       printConnectionFlag(flag);
+// //   }
+
+// //   //   hddaq::cout << "#D " << __func__ << "  after " << std::endl;
+// //   //   printConnectionFlag(flag);
+
+// //   std::set<Int_t> checked;
+// //   for (Int_t i=0; i<n; ++i){
+// //     if (checked.find(i)!=checked.end())
+// //       continue;
+// //     MWPCCluster* c = 0;
+// //     for (Int_t j=i; j<n; ++j){
+// //       if (flag[i][j]){
+// // 	checked.insert(j);
+// // 	if (!c) {
+// // 	  c = new MWPCCluster;
+// // 	  // 		  hddaq::cout << " new cluster " << std::endl;
+// // 	}
+// // 	// 	      hddaq::cout << " " << i << "---" << j << std::endl;
+// // 	c->Add(singleHits[j]);
+// //       }
+// //     }
+
+// //     if (c){
+// //       c->Calculate();
+// //       clusters.push_back(c);
+// //     }
+// //   }
+
+// //   //   hddaq::cout << " end of " << __func__
+// //   // 	    << " : n = " << n << ", " << checked.size()
+// //   // 	    << std::endl;
+
+// //   //   hddaq::cout << __func__ << " n clusters = " << clusters.size() << std::endl;
+
+// //   return clusters.size();
+// // }
+
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::ClusterizeSsd( void )
+{
+  for( Int_t l=1; l<NumOfLayersSsdIn+1; ++l )
+    ClusterizeSsd( m_SsdInHC[l], m_SsdInClCont[l] );
+  for( Int_t l=1; l<NumOfLayersSsdOut+1; ++l )
+    ClusterizeSsd( m_SsdOutHC[l], m_SsdOutClCont[l] );
+  return true;
+}
+
+//______________________________________________________________________________
+Bool_t
+DCAnalyzer::ClusterizeSsd( const DCHitContainer& HitCont,
+			   SsdClusterContainer& ClCont,
+			   Double_t MaxTimeDiff )
+{
+  utility::ClearContainer( ClCont );
+
+  const UInt_t nh = HitCont.size();
+  if( nh==0 )
+    return false;
+
+  std::vector<Int_t> flag( nh, 0 );
+
+  for( UInt_t i=0; i<nh; ++i ){
+    if( flag[i]>0 )
+      continue;
+    DCHitContainer CandCont;
+    DCHit* hitA = HitCont[i];
+    if( !hitA || !hitA->IsGoodWaveForm() )
+      continue;
+    CandCont.push_back( hitA );
+    ++flag[i];
+
+    for( UInt_t j=0; j<nh; ++j ){
+      if( CandCont.size()==SsdCluster::MaxClusterSize() )
+	break;
+      if( i==j || flag[j]>0 )
+	continue;
+      DCHit* hitB = HitCont[j];
+      if( !hitB || !hitB->IsGoodWaveForm() )
+	continue;
+      if( IsClusterable( CandCont, hitB ) ){
+	CandCont.push_back( hitB );
+	++flag[j];
+      }
+    }
+    SsdCluster *cluster = new SsdCluster( CandCont );
+    if( cluster ) ClCont.push_back( cluster );
+  }
+
+  return true;
+}
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::DoTimeCorrectionSsd( const std::vector<Double_t>& t0 )
+// {
+//   DoTimeCorrectionSsdIn( t0 );
+//   DoTimeCorrectionSsdOut( t0 );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::DoTimeCorrectionSsdIn( const std::vector<Double_t>& t0 )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdIn+1; ++layer ){
+//     const DCHitContainer& HitCont = GetSsdInHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit *hit = HitCont[i];
+//       if( !hit ) continue;
+//       Double_t offset = 0.;
+//       switch( layer ){
+//       case 1: case 2: offset = t0[1]; break;
+//       case 3: case 4: offset = t0[1]; break;
+//       }
+//       hit->DoTimeCorrection( offset );
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::DoTimeCorrectionSsdOut( const std::vector<Double_t>& t0 )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdOut+1; ++layer ){
+//     const DCHitContainer &HitCont = GetSsdOutHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit *hit = HitCont[i];
+//       if( !hit ) continue;
+//       Double_t offset = 0.;
+//       switch(layer){
+//       case 1: case 2: offset = t0[1]; break;
+//       case 3: case 4: offset = t0[1]; break;
+//       }
+//       hit->DoTimeCorrection( offset );
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ResetStatusSsd( void )
+// {
+//   ResetStatusSsdIn();
+//   ResetStatusSsdOut();
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ResetStatusSsdIn( void )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer){
+//     const DCHitContainer &HitCont = GetSsdInHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit* hit = HitCont[i];
+//       if( !hit ) continue;
+//       hit->SetGoodWaveForm( true );
+//     }
+//     const SsdClusterContainer &ClCont = GetClusterSsdIn(layer);
+//     const UInt_t ncl = ClCont.size();
+//     for( UInt_t i=0; i<ncl; ++i ){
+//       SsdCluster *cluster = ClCont[i];
+//       if( !cluster ) continue;
+//       cluster->GoodForAnalysis( true );
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ResetStatusSsdOut( void )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer){
+//     const DCHitContainer &HitCont = GetSsdOutHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit *hit = HitCont[i];
+//       if( !hit ) continue;
+//       hit->SetGoodWaveForm( true );
+//     }
+//     const SsdClusterContainer &ClCont = GetClusterSsdOut(layer);
+//     const UInt_t ncl = ClCont.size();
+//     for( UInt_t i=0; i<ncl; ++i ){
+//       SsdCluster *cluster = ClCont[i];
+//       if( !cluster ) continue;
+//       cluster->GoodForAnalysis( true );
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::SlopeFilterSsd( void )
+// {
+//   SlopeFilterSsdIn();
+//   SlopeFilterSsdOut();
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::SlopeFilterSsdIn( void )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer){
+//     const DCHitContainer &HitCont = GetSsdInHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit *hit = HitCont[i];
+//       if( !hit ) continue;
+//       if( !hit->IsGoodWaveForm() ) continue;
+
+//       std::vector<Double_t> waveform = hit->GetWaveform();
+//       if( waveform.size()!=NumOfSampleSSD ) continue;
+
+//       Bool_t slope[NumOfSampleSSD];
+//       for( Int_t s=0; s<NumOfSampleSSD; ++s ){
+// 	if( s>0 ) slope[s-1] = ( waveform[s]>waveform[s-1] );
+//       }
+
+//       Bool_t status = true;
+// #if SlopeFilter_Tight
+//       status = slope[0] && slope[1] && slope[2]
+//       	&& !slope[4] && !slope[5] && !slope[6];
+// #elif SlopeFilter_Wide
+//       status = slope[0] && slope[1] && !slope[5] && !slope[6];
+// #endif
+//       hit->SetGoodWaveForm(status);
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::SlopeFilterSsdOut( void )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer){
+//     const DCHitContainer &HitCont = GetSsdOutHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit *hit = HitCont[i];
+//       if( !hit ) continue;
+//       if( !hit->IsGoodWaveForm() ) continue;
+
+//       std::vector<Double_t> waveform = hit->GetWaveform();
+//       if( waveform.size()!=NumOfSampleSSD ) continue;
+
+//       Bool_t slope[NumOfSampleSSD];
+//       for( Int_t s=0; s<NumOfSampleSSD; ++s ){
+// 	if(s>0) slope[s-1] = waveform[s] > waveform[s-1];
+//       }
+
+//       Bool_t status = true;
+// #if SlopeFilter_Tight
+//       status = slope[0] && slope[1] && slope[2]
+//       	&& !slope[4] && !slope[5] && !slope[6];
+// #elif SlopeFilter_Wide
+//       status = slope[0] && slope[1] && !slope[5] && !slope[6];
+// #endif
+//       hit->SetGoodWaveForm(status);
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::AdcPeakHeightFilterSsd( Double_t min, Double_t max )
+// {
+//   AdcPeakHeightFilterSsdIn( min, max );
+//   AdcPeakHeightFilterSsdOut( min, max );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::AdcPeakHeightFilterSsdIn( Double_t min, Double_t max )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer ){
+//     const DCHitContainer &HitCont = GetSsdInHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit *hit = HitCont[i];
+//       if( !hit ) continue;
+//       if( !hit->IsGoodWaveForm() ) continue;
+//       Double_t peak_height = hit->GetAdcPeakHeight();
+//       Double_t pedestal    = hit->GetPedestal();
+//       peak_height -= pedestal;
+//       if( peak_height<min || max<peak_height ){
+// 	hit->SetGoodWaveForm( false );
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::AdcPeakHeightFilterSsdOut( Double_t min, Double_t max )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer ){
+//     const DCHitContainer &HitCont = GetSsdOutHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit *hit = HitCont[i];
+//       if( !hit ) continue;
+//       if( !hit->IsGoodWaveForm() ) continue;
+//       Double_t peak_height = hit->GetAdcPeakHeight();
+//       Double_t pedestal    = hit->GetPedestal();
+//       peak_height -= pedestal;
+//       if( peak_height<min || max<peak_height ){
+// 	hit->SetGoodWaveForm( false );
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::AmplitudeFilterSsd( Double_t min, Double_t max, Bool_t cluster_flag /*=false*/ )
+// {
+//   AmplitudeFilterSsdIn( min, max, cluster_flag );
+//   AmplitudeFilterSsdOut( min, max, cluster_flag );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::AmplitudeFilterSsdIn( Double_t min, Double_t max, Bool_t cluster_flag /*=false*/ )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer ){
+//     if( !cluster_flag ){
+//       const DCHitContainer &HitCont = GetSsdInHC(layer);
+//       const UInt_t nh = HitCont.size();
+//       for( UInt_t i=0; i<nh; ++i ){
+// 	DCHit *hit = HitCont[i];
+// 	if( !hit ) continue;
+// 	if( !hit->IsGoodWaveForm() ) continue;
+// 	Double_t amplitude = hit->GetAmplitude();
+// 	if( amplitude<min || max<amplitude ){
+// 	  hit->SetGoodWaveForm(false);
+// 	}
+//       }
+//     }
+//     if( cluster_flag ){
+//       const SsdClusterContainer &ClCont = GetClusterSsdIn(layer);
+//       const UInt_t ncl = ClCont.size();
+//       for( UInt_t i=0; i<ncl; ++i ){
+// 	SsdCluster *cluster = ClCont[i];
+// 	if( !cluster ) continue;
+// 	if( !cluster->GoodForAnalysis() ) continue;
+// 	Double_t amplitude = cluster->Amplitude();
+// 	if( amplitude<min || max<amplitude ){
+// 	  cluster->GoodForAnalysis(false);
+// 	}
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::AmplitudeFilterSsdOut( Double_t min, Double_t max, Bool_t cluster_flag /*=false*/ )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer){
+//     if( !cluster_flag ){
+//       const DCHitContainer &HitCont = GetSsdOutHC(layer);
+//       const UInt_t nh = HitCont.size();
+//       for( UInt_t i=0; i<nh; ++i ){
+// 	DCHit *hit = HitCont[i];
+// 	if( !hit ) continue;
+// 	if( !hit->IsGoodWaveForm() ) continue;
+// 	Double_t amplitude = hit->GetAmplitude();
+// 	if( amplitude<min || max<amplitude ){
+// 	  hit->SetGoodWaveForm(false);
+// 	}
+//       }
+//     }
+//     if( cluster_flag ){
+//       const SsdClusterContainer &ClCont = GetClusterSsdOut(layer);
+
+//       const UInt_t ncl = ClCont.size();
+//       for( UInt_t i=0; i<ncl; ++i ){
+// 	SsdCluster *cluster = ClCont[i];
+// 	if( !cluster ) continue;
+// 	if( !cluster->GoodForAnalysis() ) continue;
+// 	Double_t amplitude = cluster->Amplitude();
+// 	if( amplitude<min || max<amplitude ){
+// 	  cluster->GoodForAnalysis(false);
+// 	}
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::DeltaEFilterSsd( Double_t min, Double_t max, Bool_t cluster_flag /*=false*/ )
+// {
+//   DeltaEFilterSsdIn( min, max, cluster_flag );
+//   DeltaEFilterSsdOut( min, max, cluster_flag );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::DeltaEFilterSsdIn( Double_t min, Double_t max, Bool_t cluster_flag /*=false*/ )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer){
+//     if( !cluster_flag ){
+//       const DCHitContainer &HitCont = GetSsdInHC(layer);
+//       const UInt_t nh = HitCont.size();
+//       for( UInt_t i=0; i<nh; ++i ){
+// 	DCHit *hit = HitCont[i];
+// 	if( !hit ) continue;
+// 	if( !hit->IsGoodWaveForm() ) continue;
+// 	Double_t de = hit->GetDe();
+// 	if( de<min || max<de ){
+// 	  hit->SetGoodWaveForm(false);
+// 	}
+//       }
+//     }
+//     if( cluster_flag ){
+//       const SsdClusterContainer &ClCont = GetClusterSsdIn(layer);
+//       const UInt_t ncl = ClCont.size();
+//       for( UInt_t i=0; i<ncl; ++i ){
+// 	SsdCluster *cluster = ClCont[i];
+// 	if( !cluster ) continue;
+// 	if( !cluster->GoodForAnalysis() ) continue;
+// 	Double_t de = cluster->DeltaE();
+// 	if( de<min || max<de ){
+// 	  cluster->GoodForAnalysis(false);
+// 	}
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::DeltaEFilterSsdOut( Double_t min, Double_t max, Bool_t cluster_flag /*=false*/ )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer){
+//     if( !cluster_flag ){
+//       const DCHitContainer &HitCont = GetSsdOutHC(layer);
+//       const UInt_t nh = HitCont.size();
+//       for( UInt_t i=0; i<nh; ++i ){
+// 	DCHit *hit = HitCont[i];
+// 	if( !hit ) continue;
+// 	if( !hit->IsGoodWaveForm() ) continue;
+// 	Double_t de = hit->GetDe();
+// 	if( de<min || max<de ){
+// 	  hit->SetGoodWaveForm(false);
+// 	}
+//       }
+//     }
+//     if( cluster_flag ){
+//       const SsdClusterContainer &ClCont = GetClusterSsdOut(layer);
+//       const UInt_t ncl = ClCont.size();
+//       for( UInt_t i=0; i<ncl; ++i ){
+// 	SsdCluster *cluster = ClCont[i];
+// 	if( !cluster ) continue;
+// 	if( !cluster->GoodForAnalysis() ) continue;
+// 	Double_t de = cluster->DeltaE();
+// 	if( de<min || max<de ){
+// 	  cluster->GoodForAnalysis(false);
+// 	}
+//       }
+//     }
+//   }
+// }
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::RmsFilterSsd( Double_t min, Double_t max )
+// {
+//   RmsFilterSsdIn(min, max);
+//   RmsFilterSsdOut(min, max);
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::RmsFilterSsdIn( Double_t min, Double_t max )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer){
+//     const DCHitContainer &HitCont = GetSsdInHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit *hit = HitCont[i];
+//       if(!hit) continue;
+//       if(!hit->IsGoodWaveForm()) continue;
+//       Double_t de  = hit->GetDe();
+//       Double_t rms = hit->GetRms();
+//       if( de<min*rms || max*rms<de )
+// 	hit->SetGoodWaveForm(false);
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::RmsFilterSsdOut( Double_t min, Double_t max )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer){
+//     const DCHitContainer &HitCont = GetSsdOutHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit *hit = HitCont[i];
+//       if( !hit ) continue;
+//       if( !hit->IsGoodWaveForm() ) continue;
+//       Double_t de  = hit->GetDe();
+//       Double_t rms = hit->GetRms();
+//       if( de<min*rms||max*rms<de ){
+// 	hit->SetGoodWaveForm(false);
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::DeviationFilterSsd( Double_t min, Double_t max )
+// {
+//   DeviationFilterSsdIn( min, max );
+//   DeviationFilterSsdOut( min, max );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::DeviationFilterSsdIn( Double_t min, Double_t max )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer){
+//     const DCHitContainer &HitCont = GetSsdInHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit *hit = HitCont[i];
+//       if( !hit ) continue;
+//       if( !hit->IsGoodWaveForm() ) continue;
+//       Double_t deviation = hit->GetDeviation();
+//       if( deviation<min || max<deviation ){
+// 	hit->SetGoodWaveForm(false);
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::DeviationFilterSsdOut( Double_t min, Double_t max )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer){
+//     const DCHitContainer &HitCont = GetSsdOutHC(layer);
+//     const UInt_t nh = HitCont.size();
+//     for( UInt_t i=0; i<nh; ++i ){
+//       DCHit *hit = HitCont[i];
+//       if( !hit ) continue;
+//       if( !hit->IsGoodWaveForm() ) continue;
+//       Double_t deviation = hit->GetDeviation();
+//       if( deviation<min || max<deviation ){
+// 	hit->SetGoodWaveForm(false);
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::TimeFilterSsd( Double_t min, Double_t max, Bool_t cluster_flag /*=false*/ )
+// {
+//   TimeFilterSsdIn( min, max, cluster_flag );
+//   TimeFilterSsdOut( min, max, cluster_flag );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::TimeFilterSsdIn( Double_t min, Double_t max, Bool_t cluster_flag /*=false*/ )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer){
+//     if( !cluster_flag ){
+//       const DCHitContainer &HitCont = GetSsdInHC(layer);
+//       const UInt_t nh = HitCont.size();
+//       for( UInt_t i=0; i<nh; ++i ){
+// 	DCHit *hit = HitCont[i];
+// 	if( !hit ) continue;
+// 	if( !hit->IsGoodWaveForm() ) continue;
+// 	Double_t peaktime = hit->GetPeakTime();
+// 	if( peaktime<min || max<peaktime ){
+// 	  hit->SetGoodWaveForm(false);
+// 	}
+//       }
+//     }
+//     if( cluster_flag ){
+//       const SsdClusterContainer &ClCont = GetClusterSsdIn(layer);
+//       const UInt_t ncl = ClCont.size();
+//       for( UInt_t i=0; i<ncl; ++i ){
+// 	SsdCluster *cluster = ClCont[i];
+// 	if( !cluster ) continue;
+// 	if( !cluster->GoodForAnalysis() ) continue;
+// 	Double_t time = cluster->Time();
+// 	if( time<min || max<time ){
+// 	  cluster->GoodForAnalysis(false);
+// 	}
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::TimeFilterSsdOut( Double_t min, Double_t max, Bool_t cluster_flag /*=false*/ )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer){
+//     if( !cluster_flag ){
+//       const DCHitContainer &HitCont = GetSsdOutHC(layer);
+//       const UInt_t nh = HitCont.size();
+//       for( UInt_t i=0; i<nh; ++i ){
+// 	DCHit *hit = HitCont[i];
+// 	if( !hit ) continue;
+// 	if( !hit->IsGoodWaveForm() ) continue;
+// 	Double_t peaktime = hit->GetPeakTime();
+// 	if( peaktime<min || max<peaktime ){
+// 	  hit->SetGoodWaveForm(false);
+// 	}
+//       }
+//     }
+//     if( cluster_flag ){
+//       const SsdClusterContainer &ClCont = GetClusterSsdOut(layer);
+//       const UInt_t ncl = ClCont.size();
+//       for( UInt_t i=0; i<ncl; ++i ){
+// 	SsdCluster *cluster = ClCont[i];
+// 	if( !cluster ) continue;
+// 	if( !cluster->GoodForAnalysis() ) continue;
+// 	Double_t time = cluster->Time();
+// 	if( time<min || max<time ){
+// 	  cluster->GoodForAnalysis(false);
+// 	}
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ChisqrFilterSsd( Double_t maxchi2 )
+// {
+//   ChisqrFilterSsdIn( maxchi2 );
+//   ChisqrFilterSsdOut( maxchi2 );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ChisqrFilterSsdIn( Double_t maxchi2 )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdIn+1;++layer){
+//     const DCHitContainer &HitCont = GetSsdInHC(layer);
+//     Int_t nh = HitCont.size();
+//     for(Int_t i=0;i<nh;++i){
+//       DCHit *hit = HitCont[i];
+//       if(!hit) continue;
+//       if(!hit->IsGoodWaveForm()) continue;
+//       Double_t chisqr = hit->GetChisquare();
+//       if( chisqr>maxchi2 ){
+// 	hit->SetGoodWaveForm(false);
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ChisqrFilterSsdOut( Double_t maxchi2 )
+// {
+//   for( Int_t layer=1; layer<NumOfLayersSsdOut+1;++layer){
+//     const DCHitContainer &HitCont = GetSsdOutHC(layer);
+//     Int_t nh = HitCont.size();
+//     for(Int_t i=0;i<nh;++i){
+//       DCHit *hit = HitCont[i];
+//       if(!hit) continue;
+//       if(!hit->IsGoodWaveForm()) continue;
+//       Double_t chisqr = hit->GetChisquare();
+//       if( chisqr>maxchi2 ){
+// 	hit->SetGoodWaveForm(false);
+//       }
+//     }
+//   }
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ChiSqrCutBcOut( Double_t chisqr )
+// {
+//   ChiSqrCut( m_BcOutTC, chisqr );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ChiSqrCutSdcIn( Double_t chisqr )
+// {
+//   ChiSqrCut( m_SdcInTC, chisqr );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ChiSqrCutSdcOut( Double_t chisqr )
+// {
+//   ChiSqrCut( m_SdcOutTC, chisqr );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ChiSqrCutSsdIn( Double_t chisqr )
+// {
+//   ChiSqrCut( m_SsdInTC, chisqr );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ChiSqrCutSsdOut( Double_t chisqr )
+// {
+//   ChiSqrCut( m_SsdOutTC, chisqr );
+// }
+
+// //______________________________________________________________________________
+// void
+// DCAnalyzer::ChiSqrCut( DCLocalTrackContainer& TrackCont,
+// 		       Double_t chisqr )
+// {
+//   DCLocalTrackContainer DeleteCand;
+//   DCLocalTrackContainer ValidCand;
+//   Int_t NofTrack = TrackCont.size();
+//   for( Int_t i=NofTrack-1; i>=0; --i ){
+//     DCLocalTrack* tempTrack = TrackCont[i];
+//     if(tempTrack->GetChiSquare() > chisqr){
+//       DeleteCand.push_back(tempTrack);
+//     }else{
+//       ValidCand.push_back(tempTrack);
+//     }
+//   }
+
+//   utility::ClearContainer( DeleteCand );
+
+//   TrackCont.clear();
+//   TrackCont.resize( ValidCand.size() );
+//   std::copy( ValidCand.begin(), ValidCand.end(), TrackCont.begin() );
+//   ValidCand.clear();
+// }

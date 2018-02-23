@@ -1,33 +1,38 @@
+// -*- C++ -*-
+
 #ifndef HISTMAKER_HH
 #define HISTMAKER_HH
 
-#include<vector>
-#include<map>
-#include<bitset>
-#include<string>
+#include <vector>
+#include <map>
+#include <bitset>
+#include <string>
 
-#include<TROOT.h>
+#include <TObject.h>
+#include <TROOT.h>
+#include <TString.h>
 
 enum DetectorType {
   kDetectorZero,
   // Detector unique ID in the beam line
-  kBH1, kBFT, kBC3, kBC4, kBH2, 
+  kBH1, kBFT, kBC3, kBC4, kBH2,kBH2MT,
   kMsT, kMtx3D,
   // Detector unique ID in the KURAMA system
   kCFT,kBGO,kPiID,kSFT, kSDC1, kSAC, kSCH, kFBT1,
   kSDC2, kSDC3, kFBT2, kTOF,kTOF_HT,kLC,
-  // VMEEASIROC unique ID 
+  // VMEEASIROC unique ID
   kVMEEASIROC,
   // Old detectors E07
   kBAC, kFBH,
   kSSDT, kSSD1, kSSD2,
-  kPVAC, kFAC, kEMC, 
+  kPVAC, kFAC, kEMC,
   // Old detectors
   kBMW, kBAC_SAC, kSFV_SAC3, kGe, kPWO, kSP0,
   kBH2_E07, kBAC_E07, kSSD0, kSAC1, kKFAC,
-  kKIC, kHDC, kSDC4, kTOFMT, kLAC, 
+  kKIC, kHDC, kSDC4, kTOFMT, kLAC,
   // Others
-  kTriggerFlag, kDAQ, kCorrelation, kMisc,
+  kTriggerFlag, kDAQ, kCorrelation,
+  kCorrelation_catch, kMisc,
   kTimeStamp, kDCEff,
   sizeDetectorType,
   factorDetectorType = 10000000
@@ -60,7 +65,7 @@ enum DataType{
   kADCwTDC, kFADC,
   kDeltaE, kCTime, kDeltaE2D, kCTime2D,
   kChisqr,
-  // Extra data type for CFT 
+  // Extra data type for CFT
   kHighGain,kLowGain,kPede,
   // Extra data type for EMC
   kSerial, kXpos, kYpos, kXYpos, kTime,
@@ -71,142 +76,140 @@ enum DataType{
   factorDataType = 1000
 };
 
-std::string getStr_FromEnum(const char* c);
+TString getStr_FromEnum(const char* c);
 
 class TH1;
 class TH2;
 class TList;
 
-class HistMaker {
+class HistMaker : public TObject
+{
   // Declaration of the private parameters ---------------------------------
   // histogram unique and sequential ID
-  int current_hist_id_;
-  std::map<int, int>         idmap_seq_from_unique_;
-  std::map<int, int>         idmap_unique_from_seq_;
-  std::map<std::string, int> idmap_seq_from_name_;
+  Int_t current_hist_id_;
+  std::map<Int_t, Int_t>   idmap_seq_from_unique_;
+  std::map<Int_t, Int_t>   idmap_unique_from_seq_;
+  std::map<TString, Int_t> idmap_seq_from_name_;
 
   // data set of string which means the created detector name
-  std::vector<std::string>      name_created_detectors_;
-  std::vector<std::string>      name_ps_files_;
+  std::vector<TString>     name_created_detectors_;
+  std::vector<TString>     name_ps_files_;
 
   // return value of insert
-  typedef std::pair<std::map<int, int>::iterator, bool> TypeRetInsert;
+  typedef std::pair<std::map<Int_t, Int_t>::iterator, Bool_t> TypeRetInsert;
 
 public:
   // Public functions ------------------------------------------------------
-  virtual ~HistMaker( void );
+  ~HistMaker( void );
   static HistMaker& getInstance( void );
-  static void getListOfDetectors(std::vector<std::string>& vec);
-  static void getListOfPsFiles(std::vector<std::string>& vec);
+  static void       getListOfDetectors( std::vector<TString>& vec );
+  static void       getListOfPsFiles( std::vector<TString>& vec );
+  static Int_t      getNofHist( void );
+  static Int_t      getUniqueID( Int_t detector_type, Int_t subdetector_type,
+				 Int_t data_type, Int_t channel=1 );
+  static Int_t      getUniqueID( Int_t sequential_id );
+  static Int_t      getSequentialID( Int_t detector_type, Int_t subdetector_type,
+				     Int_t data_type, Int_t channel=1 );
+  static Int_t      getSequentialID( Int_t unique_id );
+  static Int_t      getSequentialID( const TString& name );
 
-  static int  getNofHist();
+  Int_t  setHistPtr( std::vector<TH1*>& vec );
 
-  static int  getUniqueID(int detector_type, int subdetector_type,
-			 int data_type, int channel=1 );
-  static int  getUniqueID(int sequential_id);
+  TH1*   createTH1( Int_t unique_id, const TString& title,
+		    Int_t nbinx, Int_t xmin, Int_t xmax,
+		    const TString& xtitle="", const TString& ytitle="" );
+  TH2*   createTH2( Int_t unique_id, const TString& title,
+		    Int_t nbinx, Int_t xmin, Int_t xmax,
+		    Int_t nbiny, Int_t ymin, Int_t ymax,
+		    const TString& xtitle="", const TString& ytitle="" );
 
-  static int  getSequentialID(int detector_type, int subdetector_type,
-			     int data_type, int channel=1 );
-  static int  getSequentialID(int unique_id);
-  static int  getSequentialID(const char* name_hist);
+  TString MakeDetectorName( const TString& name );
 
-  int  setHistPtr(std::vector<TH1*>& vec);
-
-  TH1* createTH1(int unique_id, const char* title,
-		 int nbinx, int xmin, int xmax,
-		 const char* xtitle="", const char* ytitle=""
-		 );
-
-  TH2* createTH2(int unique_id, const char* title,
-  		 int nbinx, int xmin, int xmax,
-  		 int nbiny, int ymin, int ymax,
-  		 const char* xtitle="", const char* ytitle=""
-  		 );
-
-  TList* createTimeStamp(bool flag_ps=true);
-  TList* createBH1(bool flag_ps=true);
-  TList* createBFT(bool flag_ps=true);
-  TList* createBC3(bool flag_ps=true);
-  TList* createBC4(bool flag_ps=true);
-  TList* createBH2(bool flag_ps=true);
-  TList* createSFT(bool flag_ps=true);
-  TList* createVMEEASIROC(bool flag_ps=true);
-  TList* createCFT(bool flag_ps=true);
-  TList* createBGO(bool flag_ps=true);
-  TList* createPiID(bool flag_ps=true);
-  TList* createSDC1(bool flag_ps=true);
-  TList* createSAC(bool flag_ps=true);
-  TList* createSCH(bool flag_ps=true);
-  TList* createFBT1(bool flag_ps=true);
-  TList* createSDC2(bool flag_ps=true);
-  TList* createSDC3(bool flag_ps=true);
-  TList* createFBT2(bool flag_ps=true);
-  TList* createTOF(bool flag_ps=true);
-  TList* createTOF_HT(bool flag_ps=true);
-  TList* createLC(bool flag_ps=true);
-  TList* createMsT(bool flag_ps=true);
-  TList* createMtx3D(bool flag_ps=false);
-  TList* createTriggerFlag(bool flag_ps=true);
-  TList* createCorrelation(bool flag_ps=true);
-  TList* createDAQ(bool flag_ps=true);
-  TList* createDCEff(bool flag_ps=true);
+  TList* createTimeStamp( Bool_t flag_ps=true );
+  TList* createBH1( Bool_t flag_ps=true );
+  TList* createBFT( Bool_t flag_ps=true );
+  TList* createBC3( Bool_t flag_ps=true );
+  TList* createBC4( Bool_t flag_ps=true );
+  TList* createBH2( Bool_t flag_ps=true );
+  TList* createSFT( Bool_t flag_ps=true );
+  TList* createVMEEASIROC( Bool_t flag_ps=true );
+  TList* createCFT( Bool_t flag_ps=true );
+  TList* createBGO( Bool_t flag_ps=true );
+  TList* createPiID( Bool_t flag_ps=true );
+  TList* createSDC1( Bool_t flag_ps=true );
+  TList* createSAC( Bool_t flag_ps=true );
+  TList* createSCH( Bool_t flag_ps=true );
+  TList* createFBT1( Bool_t flag_ps=true );
+  TList* createSDC2( Bool_t flag_ps=true );
+  TList* createSDC3( Bool_t flag_ps=true );
+  TList* createFBT2( Bool_t flag_ps=true );
+  TList* createTOF( Bool_t flag_ps=true );
+  TList* createTOF_HT( Bool_t flag_ps=true );
+  TList* createLC( Bool_t flag_ps=true );
+  TList* createMsT( Bool_t flag_ps=true );
+  TList* createMtx3D( Bool_t flag_ps=false );
+  TList* createTriggerFlag( Bool_t flag_ps=true );
+  TList* createCorrelation( Bool_t flag_ps=true );
+  TList* createCorrelation_catch( Bool_t flag_ps=true );
+  TList* createDAQ( Bool_t flag_ps=true );
+  TList* createDCEff( Bool_t flag_ps=true );
 
   // Old functions E07
-  TList* createBAC(bool flag_ps=true);
-  TList* createFBH(bool flag_ps=true);
-  TList* createSSDT(bool flag_ps=true);
-  TList* createSSD1(bool flag_ps=true);
-  TList* createSSD2(bool flag_ps=true);
-  TList* createPVAC(bool flag_ps=true);
-  TList* createFAC(bool flag_ps=true);
-  TList* createEMC(bool flag_ps=true);
+  TList* createBAC( Bool_t flag_ps=true );
+  TList* createFBH( Bool_t flag_ps=true );
+  TList* createSSDT( Bool_t flag_ps=true );
+  TList* createSSD1( Bool_t flag_ps=true );
+  TList* createSSD2( Bool_t flag_ps=true );
+  TList* createPVAC( Bool_t flag_ps=true );
+  TList* createFAC( Bool_t flag_ps=true );
+  TList* createEMC( Bool_t flag_ps=true );
   // Old functions
-  TList* createBMW(bool flag_ps=true);
-  TList* createBAC_SAC(bool flag_ps=true);
-  TList* createSFV_SAC3(bool flag_ps=true);
-  TList* createGe(bool flag_ps=true);
-  TList* createPWO(bool flag_ps=true);
-  TList* createBH2_E07(bool flag_ps=true);
-  TList* createBAC_E07(bool flag_ps=true);
-  TList* createSSD0(bool flag_ps=true);
-  TList* createSAC1(bool flag_ps=true);
-  TList* createKFAC(bool flag_ps=true);
-  TList* createKIC(bool flag_ps=true);
-  TList* createHDC(bool flag_ps=true);
-  TList* createSP0(bool flag_ps=true);
-  TList* createSDC4(bool flag_ps=true);
-  TList* createTOFMT(bool flag_ps=true);
-  TList* createLAC(bool flag_ps=true);
-  TList* createTriggerFlag_E07(bool flag_ps=true);
-  TList* createPWO_E05(bool flag_ps=true);
+  TList* createBMW( Bool_t flag_ps=true );
+  TList* createBAC_SAC( Bool_t flag_ps=true );
+  TList* createSFV_SAC3( Bool_t flag_ps=true );
+  TList* createGe( Bool_t flag_ps=true );
+  TList* createPWO( Bool_t flag_ps=true );
+  TList* createBH2_E07( Bool_t flag_ps=true );
+  TList* createBAC_E07( Bool_t flag_ps=true );
+  TList* createSSD0( Bool_t flag_ps=true );
+  TList* createSAC1( Bool_t flag_ps=true );
+  TList* createKFAC( Bool_t flag_ps=true );
+  TList* createKIC( Bool_t flag_ps=true );
+  TList* createHDC( Bool_t flag_ps=true );
+  TList* createSP0( Bool_t flag_ps=true );
+  TList* createSDC4( Bool_t flag_ps=true );
+  TList* createTOFMT( Bool_t flag_ps=true );
+  TList* createLAC( Bool_t flag_ps=true );
+  TList* createTriggerFlag_E07( Bool_t flag_ps=true );
+  TList* createPWO_E05( Bool_t flag_ps=true );
 
 private:
-  HistMaker();
-  HistMaker(const HistMaker& object);
-  HistMaker& operator=(const HistMaker& object);
+  HistMaker( void );
+  HistMaker( const HistMaker& object );
+  HistMaker& operator=( const HistMaker& object );
 
   ClassDef(HistMaker, 0)
 };
 
 // getInstance -----------------------------------------------------------
-inline HistMaker& HistMaker::getInstance()
+inline HistMaker& HistMaker::getInstance( void )
 {
   static HistMaker object;
   return object;
 }
 
 // getNofHist ------------------------------------------------------------
-inline int HistMaker::getNofHist()
+inline Int_t HistMaker::getNofHist( void )
 {
   HistMaker& g= HistMaker::getInstance();
   return g.idmap_unique_from_seq_.size();
 }
 
 // getUniqueID -----------------------------------------------------------
-inline int HistMaker::getUniqueID(int detector_type, int subdetector_type,
-				  int data_type, int channel)
+inline Int_t HistMaker::getUniqueID( Int_t detector_type, Int_t subdetector_type,
+				     Int_t data_type, Int_t channel )
 {
-  int unique_id = 0;
+  Int_t unique_id = 0;
   unique_id += detector_type*factorDetectorType;
   unique_id += subdetector_type*factorSubDetectorType;
   unique_id += data_type*factorDataType;
@@ -215,34 +218,32 @@ inline int HistMaker::getUniqueID(int detector_type, int subdetector_type,
 }
 
 // getUniqueID -----------------------------------------------------------
-inline int HistMaker::getUniqueID(int sequential_id)
+inline Int_t HistMaker::getUniqueID( Int_t sequential_id )
 {
   HistMaker& g= HistMaker::getInstance();
   return g.idmap_unique_from_seq_[sequential_id];
 }
 
 // getSequentialID -------------------------------------------------------
-inline int HistMaker::getSequentialID(int detector_type, int subdetector_type,
-				      int data_type, int channel)
+inline Int_t HistMaker::getSequentialID( Int_t detector_type, Int_t subdetector_type,
+					 Int_t data_type, Int_t channel )
 {
   HistMaker& g= HistMaker::getInstance();
-  int unique_id = g.getUniqueID(detector_type, subdetector_type, data_type, channel);
+  Int_t unique_id = g.getUniqueID(detector_type, subdetector_type, data_type, channel);
   return g.idmap_seq_from_unique_[unique_id];
 }
 
 // getSequentialID -------------------------------------------------------
-inline int HistMaker::getSequentialID(int unique_id)
+inline Int_t HistMaker::getSequentialID( Int_t unique_id )
 {
   HistMaker& g= HistMaker::getInstance();
   return g.idmap_seq_from_unique_[unique_id];
 }
 
 // getSequentialID -------------------------------------------------------
-inline int HistMaker::getSequentialID(const char* name)
+inline Int_t HistMaker::getSequentialID( const TString& name )
 {
-  HistMaker& g= HistMaker::getInstance();
-  std::string nameStr = name;
-  return g.idmap_seq_from_name_[nameStr];
+  return HistMaker::getInstance().idmap_seq_from_name_[name];
 }
 
 

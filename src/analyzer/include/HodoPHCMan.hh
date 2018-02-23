@@ -1,16 +1,15 @@
-/*
-  HodoPHCMan.hh
-
-  2012/1/24
-*/
+// -*- C++ -*-
 
 #ifndef HODO_PHC_MAN_H
 #define HODO_PHC_MAN_H
 
 #include <map>
-#include <string>
 
-class HodoPHCParam
+#include <TObject.h>
+#include <TString.h>
+
+//______________________________________________________________________________
+class HodoPHCParam : public TObject
 {
 public:
   HodoPHCParam( int type, int np, double *parlist );
@@ -30,38 +29,47 @@ private:
   double type1RCorrection( double time, double de );
 };
 
-class HodoPHCMan
+//______________________________________________________________________________
+class HodoPHCMan : public TObject
 {
-private:
-  std::string PHCFileName;
 public:
-  HodoPHCMan();
-  ~HodoPHCMan();
-  static HodoPHCMan& GetInstance(){static HodoPHCMan obj; return obj;}
-  
-private:
-  HodoPHCMan( const HodoPHCMan & );
-  HodoPHCMan & operator = ( const HodoPHCMan & );
-  
-public:
-  void SetFileName( const std::string & filename ) { PHCFileName=filename; } 
+  ~HodoPHCMan( void );
+  static HodoPHCMan& GetInstance( void );
 
 private:
-  typedef std::map <int, HodoPHCParam *> PhcPContainer;
-  typedef std::map <int, HodoPHCParam *>::const_iterator PhcPIterator;
+  HodoPHCMan( void );
+  HodoPHCMan( const HodoPHCMan& );
+  HodoPHCMan& operator =( const HodoPHCMan& );
 
-  PhcPContainer Container;
+private:
+  typedef std::map <int, HodoPHCParam *> PHCPContainer;
+  typedef PHCPContainer::const_iterator  PHCPIterator;
+  Bool_t        m_is_initialized;
+  TString       m_file_name;
+  PHCPContainer m_map;
 
 public:
-  bool Initialize( void );
-  bool doCorrection( int cid, int plid, int seg, int ud, double time,
-                     double de, double &ctime );
-  bool doRCorrection( int cid, int plid, int seg, int ud, double time,
-                      double de, double &ctime );
+  void   SetFileName( const TString& file_name ) { m_file_name = file_name; }
+  Bool_t Initialize( void );
+  Bool_t Initialize( const TString& file_name ) { SetFileName(file_name); return Initialize(); }
+  Bool_t IsReady( void ) const { return m_is_initialized; }
+  Bool_t DoCorrection( int cid, int plid, int seg, int ud, double time,
+                     double de, double &ctime ) const;
+  Bool_t DoRCorrection( int cid, int plid, int seg, int ud, double time,
+                      double de, double &ctime ) const;
 private:
-  HodoPHCParam * GetMap( int cid, int plid, int seg, int ud ); 
+  HodoPHCParam * GetMap( int cid, int plid, int seg, int ud ) const;
   void clearMap( void );
+
+  ClassDef(HodoPHCMan,0);
 };
 
+//______________________________________________________________________________
+inline HodoPHCMan&
+HodoPHCMan::GetInstance( void )
+{
+  static HodoPHCMan g_instance;
+  return g_instance;
+}
 
 #endif

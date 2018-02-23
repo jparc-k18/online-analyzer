@@ -23,18 +23,20 @@
 
 #include "ConfMan.hh"
 #include "DetectorID.hh"
+#include "Exception.hh"
 #include "FuncName.hh"
 #include "ScalerAnalyzer.hh"
 #include "UserParamMan.hh"
+
+ClassImp(ScalerAnalyzer);
 
 namespace
 {
   using namespace hddaq::unpacker;
   const UnpackerManager& gUnpacker = GUnpacker::get_instance();
+  const std::vector<TString> sFlag =
+    { "SeparateComma", "SpillBySpill", "SemiOnline", "ScalerSheet" };
 }
-
-const std::vector<TString> ScalerAnalyzer::sFlag =
-  { "SeparateComma", "SpillBySpill", "SemiOnline", "ScalerSheet" };
 
 //______________________________________________________________________________
 ScalerAnalyzer::ScalerAnalyzer( void )
@@ -60,7 +62,7 @@ ScalerAnalyzer::~ScalerAnalyzer( void )
 
 //______________________________________________________________________________
 void
-ScalerAnalyzer::Clear( void )
+ScalerAnalyzer::Clear( Option_t* )
 {
   for( Int_t i=0; i<MaxColumn; ++i ){
     for( Int_t j=0; j<MaxRow; ++j ){
@@ -304,10 +306,9 @@ ScalerAnalyzer::Has( const TString& name ) const
 
 //______________________________________________________________________________
 void
-ScalerAnalyzer::Print( const TString& arg ) const
+ScalerAnalyzer::Print( Option_t* ) const
 {
   m_ost << "\033[2J" << std::endl;
-    // << FUNC_NAME << " " << arg << std::endl << std::endl;
 
   // Double_t kpi_ratio = (Double_t)Get("K-Beam")/Get("pi-Beam");
   TString end_mark = m_is_spill_end ? "Spill End" : "";
@@ -414,13 +415,13 @@ ScalerAnalyzer::PrintScalerSheet( void )
 	       "p-Beam", SeparateComma( Get("p-Beam") ),
 	       "Delay", "[s]" );
   DrawOneLine( "TM", SeparateComma( Get("TM") ),
-	       "(pi,TOF)", SeparateComma( Get("(pi,TOF)") ),
+	       "(BH2,TOF)", SeparateComma( Get("(BH2,TOF)") ),
 	       "Width", "[s]" );
 
   DrawOneLine( "BH1",    "BH1-SUM",  "L1-Req"  );
   DrawOneLine( "BH2",    "BH2-SUM",  "L1-Acc"  );
-  DrawOneLine( "SAC",    "(pi,pi)",  "Matrix"  );
-  DrawOneLine( "SCH",    "(pi,p)",   "Mst-Acc" );
+  DrawOneLine( "SAC",    "(BH2,pi)",  "Matrix"  );
+  DrawOneLine( "SCH",    "(BH2,p)",   "Mst-Acc" );
   DrawOneLine( "TOF",    "K-Scat",   "Mst-Clr" );
   DrawOneLine( "TOF-HT", "(BH2,K)",  "Clear"   );
   DrawOneLine( "TOF-24", "CFT-Phi1", "L2-Req"  );
@@ -449,9 +450,8 @@ ScalerAnalyzer::Set( Int_t i, Int_t j, const ScalerInfo& info )
   if( i >= MaxColumn || j >= MaxRow ){
     m_ost << "#E " << FUNC_NAME << std::endl
 	  << " * Exceed Column/Row : " << info.name << std::endl;
-    throw std::out_of_range( std::string(FUNC_NAME+" "+info.name) );
-  }
-  else {
+    throw Exception( FUNC_NAME+" "+info.name );
+  } else {
     m_info[i][j] = info;
   }
 }

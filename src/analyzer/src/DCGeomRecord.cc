@@ -1,20 +1,52 @@
-/*
-  DCGeomRecord.cc
-
-  2012/1/24
-*/
-
-#include "DCGeomRecord.hh"
+// -*- C++ -*-
 
 #include <cmath>
 
-const double Deg2Rad = acos(-1.)/180.;
+#include <TMath.h>
 
-void DCGeomRecord::calcVectors( void )
+#include "DCGeomRecord.hh"
+#include "FuncName.hh"
+
+ClassImp(DCGeomRecord);
+
+//______________________________________________________________________________
+DCGeomRecord::DCGeomRecord( Int_t id, const TString& name,
+			    Double_t x, Double_t y, Double_t z, Double_t ta,
+			    Double_t ra1, Double_t ra2, Double_t length, Double_t resol,
+			    Double_t w0, Double_t dd, Double_t ofs )
+  : TObject(),
+    id_(id), name_(name), pos_(x,y,z), tiltAngle_(ta),
+    rotAngle1_(ra1), rotAngle2_(ra2),
+    length_(length), resol_(resol), w0_(w0), dd_(dd), ofs_(ofs)
 {
-  double ct1=cos(rotAngle1_*Deg2Rad), st1=sin(rotAngle1_*Deg2Rad);
-  double ct2=cos(rotAngle2_*Deg2Rad), st2=sin(rotAngle2_*Deg2Rad);
-  double ct0=cos(tiltAngle_*Deg2Rad), st0=sin(tiltAngle_*Deg2Rad);
+  calcVectors();
+}
+
+//______________________________________________________________________________
+DCGeomRecord::DCGeomRecord( Int_t id, const TString& name,
+			    const ThreeVector pos, Double_t ta,
+			    Double_t ra1, Double_t ra2, Double_t length, Double_t resol,
+			    Double_t w0, Double_t dd, Double_t ofs )
+  : TObject(),
+    id_(id), name_(name), pos_(pos),  tiltAngle_(ta),
+    rotAngle1_(ra1), rotAngle2_(ra2),
+    length_(length), resol_(resol), w0_(w0), dd_(dd), ofs_(ofs)
+{
+  calcVectors();
+}
+
+//______________________________________________________________________________
+DCGeomRecord::~DCGeomRecord( void )
+{
+}
+
+//______________________________________________________________________________
+void
+DCGeomRecord::calcVectors( void )
+{
+  Double_t ct1=cos(rotAngle1_*TMath::DegToRad()), st1=sin(rotAngle1_*TMath::DegToRad());
+  Double_t ct2=cos(rotAngle2_*TMath::DegToRad()), st2=sin(rotAngle2_*TMath::DegToRad());
+  Double_t ct0=cos(tiltAngle_*TMath::DegToRad()), st0=sin(tiltAngle_*TMath::DegToRad());
 
   dxds_ =  ct0*ct2-st0*ct1*st2;
   dxdt_ = -st0*ct2-ct0*ct1*st2;
@@ -42,11 +74,13 @@ void DCGeomRecord::calcVectors( void )
   dudz_ =  ct1;
 }
 
-int DCGeomRecord::WireNumber( double pos ) const
+//______________________________________________________________________________
+Int_t
+DCGeomRecord::WireNumber( Double_t pos ) const
 {
-  double dw=((pos-ofs_)/dd_)+w0_;
-  int iw=int(dw);
-  if((dw-double(iw))>0.5)
+  Double_t dw = ((pos-ofs_)/dd_)+w0_;
+  Int_t    iw = (Int_t)(dw);
+  if( (dw-(Double_t)(iw))>0.5 )
     return iw+1;
   else
     return iw;

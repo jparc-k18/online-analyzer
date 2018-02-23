@@ -1,55 +1,58 @@
-/*
-  GeAdcCalibMan.cc
-*/
-
-#include "GeAdcCalibMan.hh"
-#include "ConfMan.hh"
+// -*- C++ -*-
 
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
 
-// initialize GeAdcCalibMan ----------------------------------------------
-void ConfMan::initializeGeAdcCalibMan()
+#include "ConfMan.hh"
+#include "FuncName.hh"
+#include "GeAdcCalibMan.hh"
+
+ClassImp(GeAdcCalibMan);
+
+#define frand() (-0.5+(Double_t) rand() / RAND_MAX)
+
+namespace
 {
-  if(name_file_["GEADC:"] != ""){
-    GeAdcCalibMan& gGeAdcCalib = GeAdcCalibMan::GetInstance();
-    flag_[kIsGood] = gGeAdcCalib.Initialize(name_file_["GEADC:"]);
-  }else{
-    std::cout << "#E ConfMan"
-	      << " File path does not exist in " << name_file_["GEADC:"] 
-	      << std::endl;
-    flag_.reset(kIsGood);
-  }
+
+const Int_t BufSize = 200;
+
+//______________________________________________________________________________
+inline UInt_t MakeKey( Int_t seg )
+{
+  return seg;
 }
-// initialize GeAdcCalibMan ----------------------------------------------
 
-#define frand() (-0.5+(double) rand() / RAND_MAX)
-
-const int BufSize = 200;
+}
 
 //Adc1,Adc2,Adc3,Adc4,Adc5
-struct GeAdcCalibMap {
-  GeAdcCalibMap( double q0, double q1, double q2, double q3, double q4 )
+//______________________________________________________________________________
+struct GeAdcCalibMap
+{
+  GeAdcCalibMap( Double_t q0, Double_t q1, Double_t q2, Double_t q3, Double_t q4 )
     : p0(q0), p1(q1), p2(q2), p3(q3), p4(q4)
   {}
-  double p0, p1, p2, p3, p4; 
+  Double_t p0, p1, p2, p3, p4;
 };
 
-GeAdcCalibMan::GeAdcCalibMan()
+//______________________________________________________________________________
+GeAdcCalibMan::GeAdcCalibMan( void )
+  : TObject()
 {
-  
 }
 
-GeAdcCalibMan::~GeAdcCalibMan()
+//______________________________________________________________________________
+GeAdcCalibMan::~GeAdcCalibMan( void )
 {
   clearElements();
 }
 
-void GeAdcCalibMan::clearElements( void )
+//______________________________________________________________________________
+void
+GeAdcCalibMan::clearElements( void )
 {
-  std::map <unsigned int, GeAdcCalibMap *>::iterator itr;
+  std::map <UInt_t, GeAdcCalibMap *>::iterator itr;
   for( itr=Cont_.begin(); itr!=Cont_.end(); ++itr ){
     delete itr->second;
     itr->second = 0;
@@ -57,68 +60,65 @@ void GeAdcCalibMan::clearElements( void )
   Cont_.clear();
 }
 
-inline unsigned int SortKey( int seg )
+//______________________________________________________________________________
+Bool_t
+GeAdcCalibMan::Initialize( const TString& filename )
 {
-  return seg;
-}
-
-
-bool GeAdcCalibMan::Initialize( const std::string& filename)
-{
-  static const std::string funcname = "[GeAdcCalibMan::Initialize]";
-
   ParamFileName_ = filename;
 
-  int seg;
-  double p0, p1, p2 ,p3, p4;
+  Int_t seg;
+  Double_t p0, p1, p2 ,p3, p4;
   FILE *fp;
   char buf[BufSize];
 
-  if((fp=fopen(ParamFileName_.c_str(),"r"))==0){
-    std::cerr << funcname << ": file open fail" << std::endl;
-    exit(-1);
+  if((fp=fopen(ParamFileName_.Data(),"r"))==0){
+    std::cerr << FUNC_NAME << ": file open fail" << std::endl;
+    return false;
   }
 
   while( fgets( buf, BufSize, fp ) ){
     if( buf[0]!='#' ){
       if( sscanf( buf, "%d %lf %lf %lf %lf %lf",
 		  &seg, &p0, &p1, &p2, &p3, &p4 )==6 ){
-	unsigned int key = SortKey( seg );
+	UInt_t key = MakeKey( seg );
 	GeAdcCalibMap *p=new GeAdcCalibMap( p0, p1, p2, p3, p4 );
 	if(p){
 	  if( Cont_[key] ) delete Cont_[key];
 	  Cont_[key]=p;
 	}
 	else{
-	  std::cerr << funcname << ": new fail. "
-		    << " Seg=" << std::setw(3) << std::dec << seg 
+	  std::cerr << FUNC_NAME << ": new fail. "
+		    << " Seg=" << std::setw(3) << std::dec << seg
 		    << std::endl;
 	}
       }
       else{
-	std::cerr << funcname << ": Bad format => "
-		  << std::string(buf) << std::endl;
+	std::cerr << FUNC_NAME << ": Bad format => "
+		  << TString(buf) << std::endl;
       }
     }
   }
   fclose(fp);
 
-  std::cout << funcname << ": Initialization finished" << std::endl;
+  std::cout << FUNC_NAME << ": Initialization finished" << std::endl;
   return true;
 }
 
-GeAdcCalibMap * GeAdcCalibMan::getMap( int seg ) const
+//______________________________________________________________________________
+GeAdcCalibMap*
+GeAdcCalibMan::getMap( Int_t seg ) const
 {
-  unsigned int key=SortKey( seg );
+  UInt_t key = MakeKey( seg );
   return Cont_[key];
-}  
+}
 
-double GeAdcCalibMan::CalibAdc( int seg, int adc, double &a_ ) 
+//______________________________________________________________________________
+Double_t
+GeAdcCalibMan::CalibAdc( Int_t seg, Int_t adc, Double_t &a_ )
 {
-  static const std::string funcname = "[GeAdcCalibMan::CalibAdc]";
   GeAdcCalibMap *p=getMap( seg );
   if(p){
-    double adcCH=adc+frand();
+    Double_t adcCH=adc+frand();
     if( adc>0 ){
       a_=(p->p0)
 	+(p->p1)*adcCH
@@ -129,7 +129,7 @@ double GeAdcCalibMan::CalibAdc( int seg, int adc, double &a_ )
     return true;
   }
   else{
-    std::cerr << funcname << ": No record. "
+    std::cerr << FUNC_NAME << ": No record. "
 	      << " Seg=" << std::setw(3) << std::dec << seg
     	      << std::endl;
     return -1;

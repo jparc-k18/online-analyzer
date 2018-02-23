@@ -1,5 +1,13 @@
 #!/usr/bin/make
 
+#### analyzer ####
+top_dir		:= $(CURDIR)/../..
+src_top_dir	:= $(top_dir)/src
+bin_dir		:= $(top_dir)/bin
+include_top_dir	:= $(top_dir)/include
+lib_dir		:= $(top_dir)/lib
+link_opt	:= -Wl,-rpath,$(lib_dir) -L$(lib_dir)
+
 #### configuration ####
 color		:= 1
 arch		:= $(shell uname)
@@ -10,16 +18,12 @@ CXX		:= g++
 OUT_PUT_OPT	:= -o
 LD		:= g++
 #LDFLAGS	:= -export-dynamic
-#CXXFLAGS	:= -std=c++0x -O3 -Wall -fPIC
-CXXFLAGS	:= -std=c++11 -O3 -Wall -fPIC
-#DEBUGFLAGS	:= -pg -g
+CXXFLAGS	:= -O3 -Wall -fPIC
+DEBUGFLAGS	+= -DMemoryLeak
 CXXFLAGS	+= -pg -p
 SOFLAGS		:= -shared
 #SOFLAGS	:= -shared -Wl,-soname,
-CPPFLAGS	+= $(addprefix -I,\
-                $(include_top_dir) \
-                $(root_include_dir) \
-                $(unpacker_include_dir))
+CXXFLAGS	+= -I$(include_top_dir) $(DEBUGFLAGS)
 
 #AR	:= ar
 CP	:= cp -vf
@@ -37,7 +41,6 @@ QUIET	:= @
 
 #### ROOT Libraries ####
 root_config		:= root-config
-root_include_dir	:= $(shell $(root_config) --incdir)
 root_cflags		:= $(shell $(root_config) --cflags)
 root_ld_flags		:= $(shell $(root_config) --ldflags)
 root_libs		:= $(shell $(root_config) --libs)
@@ -45,7 +48,7 @@ root_glibs		:= $(shell $(root_config) --glibs)
 #root_libs		:= $(shell $(root_config) --new --libs)
 #root_glibs		:= $(shell $(root_config) --new --glibs)
 
-#root_glibs	+= -lRHTTP
+root_glibs	+= -lRHTTP
 
 # for TEveBrowser
 root_glibs += \
@@ -58,26 +61,19 @@ root_glibs += \
 # -lRGL
 
 rootcint	:= rootcint
+CXXFLAGS	+= $(root_cflags)
 
 #### HD DAQ Unpacker ####
 unpacker_config		:= unpacker-config
-unpacker_include_dir	:= $(shell $(unpacker_config) --incdir)
 unpacker_cflags		:= $(shell $(unpacker_config) --include)
 unpacker_lib_dir	:= $(shell $(unpacker_config) --libdir)
 unpacker_libs		:= $(shell $(unpacker_config) --libs)
-
-#### analyzer ####
-top_dir		:= $(HOME)/online/dev
-src_top_dir	:= $(top_dir)/src
-bin_dir		:= $(top_dir)/bin
-include_top_dir	:= $(top_dir)/include
-lib_dir		:= $(top_dir)/lib
-link_opt	:= -Wl,-rpath,$(lib_dir) -L$(lib_dir)
+CXXFLAGS		+= $(unpacker_cflags)
 
 #my_name	:=
-headers		:= $(filter %.hh,$(wildcard $(PWD)/include/*))
+headers		:= $(filter %.hh,$(wildcard $(CURDIR)/include/*))
 top_headers	:= $(addprefix $(include_top_dir)/,$(notdir $(headers)))
-sources		:= $(filter %.cc,$(wildcard $(PWD)/src/*))
+sources		:= $(filter %.cc,$(wildcard $(CURDIR)/src/*))
 objects		:= $(subst .cc,.o,$(sources))
 linkdefs	:=
 #libraries	=
@@ -128,7 +124,7 @@ $(eval $(call copy-headers))
 %.o: %.cc
 	$(call make-depend,$<,$@,$(subst .o,.d,$@))
 	$(QUIET) $(ECHO) "$(green)=== compiling $@$(default_color)"
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OUT_PUT_OPT) $@ -c $<
+	$(CXX) $(CXXFLAGS) $(OUT_PUT_OPT) $@ -c $<
 
 #_______________________________________________________________________________
 # usage $(call make-depend,source-file,object-file,depend-file)
@@ -138,9 +134,8 @@ define make-depend
 	-MF $3      \
 	-MP         \
 	-MT $2      \
-	-std=c++11  \
 	$(CFLAGS)   \
-	$(CPPFLAGS) \
+	$(CXXFLAGS) \
 	$1
 endef
 
@@ -187,7 +182,7 @@ $1:: \
 	$(QUIET) $(ECHO) "$(blue)==== Generating dictionary $$@ $(default_color): $$^";
 	$(rootcint) -f $$@ -c -p $$^;
 	$(QUIET) if [ -f $(subst .cc,_rdict.pcm,$1) ]; then \
-	$(MV) $(subst .cc,_rdict.pcm,$1) $(lib_dir); fi
+	$(CP) $(subst .cc,_rdict.pcm,$1) $(lib_dir); fi
 endef
 
 $(eval $(call make-dict))
@@ -199,12 +194,13 @@ $(strip $1):: \
   $(src_top_dir)/main/src/main.o \
   $(lib_dir)/$(strip $2) \
   $(lib_dir)/libMain.so \
-  $(lib_dir)/libHistHelper.so
+  $(lib_dir)/libHistHelper.so \
+  $(lib_dir)/libK18AnalyzerCore.so
 	$(QUIET) $(ECHO) "$(magenta) ==== create program $$@ $(default_color): $$^"
 	$(LD) $(OUT_PUT_OPT) $$@ \
 	$(LDFLAGS) $(ext_libs) $(unpacker_libs) $(root_glibs) \
 	$(link_opt) \
-         -lMain -lHistHelper \
+         -lMain -lHistHelper -lK18AnalyzerCore \
 	$(addprefix -l,$(subst .so,,$(subst lib,,$(strip $2)))) \
 	$$<
 endef
@@ -214,12 +210,13 @@ $(strip $1):: \
   $(src_top_dir)/main/src/nogui_main.o \
   $(lib_dir)/$(strip $2) \
   $(lib_dir)/libNoGuiMain.so \
-  $(lib_dir)/libHistHelper.so
+  $(lib_dir)/libHistHelper.so \
+  $(lib_dir)/libK18AnalyzerCore.so
 	$(QUIET) $(ECHO) "$(magenta) ==== create program $$@ $(default_color): $$^"
 	$(LD) $(OUT_PUT_OPT) $$@ \
 	$(LDFLAGS) $(ext_libs) $(unpacker_libs) $(root_glibs) \
 	$(link_opt) \
-         -lNoGuiMain -lHistHelper \
+         -lNoGuiMain -lHistHelper -lK18AnalyzerCore \
 	$(addprefix -l,$(subst .so,,$(subst lib,,$(strip $2)))) \
 	$$<
 endef
@@ -229,12 +226,13 @@ define make-gui-target
   $(src_top_dir)/main/src/gui_main.o \
   $(lib_dir)/$(strip $2) \
   $(lib_dir)/libGuiMain.so \
-  $(lib_dir)/libHistHelper.so
+  $(lib_dir)/libHistHelper.so \
+  $(lib_dir)/libK18AnalyzerCore.so
 	$(QUIET) $(ECHO) "$(magenta) ==== create program $$@ $(default_color): $$^"
 	$(LD) $(OUT_PUT_OPT) $$@ \
 	$(LDFLAGS) $(ext_libs) $(unpacker_libs) $(root_glibs) \
 	$(link_opt) \
-         -lGuiMain -lHistHelper \
+         -lGuiMain -lHistHelper -lK18AnalyzerCore \
          $(addprefix -l,$(subst .so,,$(subst lib,,$(strip $2)))) \
 	$$<
 endef

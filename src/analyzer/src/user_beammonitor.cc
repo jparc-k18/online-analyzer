@@ -16,11 +16,19 @@
 #include <TStyle.h>
 #include <TString.h>
 
+#include <DAQNode.hh>
+#include <filesystem_util.hh>
+#include <Unpacker.hh>
+#include <UnpackerManager.hh>
+
 #include "Controller.hh"
 #include "user_analyzer.hh"
-#include "UnpackerManager.hh"
+
 #include "ConfMan.hh"
 #include "DetectorID.hh"
+#include "DCDriftParamMan.hh"
+#include "DCGeomMan.hh"
+#include "DCTdcCalibMan.hh"
 #include "HistMaker.hh"
 #include "Updater.hh"
 
@@ -45,12 +53,12 @@ namespace analyzer
 Int_t
 process_begin( const std::vector<std::string>& argv )
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
-  gConfMan.initializeDCGeomMan();
-  gConfMan.initializeDCTdcCalibMan();
-  gConfMan.initializeDCDriftParamMan();
-  if(!gConfMan.isGood()){return -1;}
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
+  gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
+  gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
+  gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
+  if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
   // Make tabs

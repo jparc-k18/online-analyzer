@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "DetectorID.hh"
+#include "FuncName.hh"
 #include "HistHelper.hh"
 #include "HistMaker.hh"
 
@@ -19,21 +20,19 @@
 ClassImp(HistMaker)
 
 // getStr_FromEnum ----------------------------------------------------------
-// The method to get std::string from enum value
+// The method to get TString from enum value
 #define CONV_STRING(x) getStr_FromEnum(#x)
-std::string getStr_FromEnum(const char* c){
-  std::string str = c;
-  return str.substr(1);
+TString getStr_FromEnum(const char* c){
+  TString str = c;
+  return str.Remove(0,1);
 }
 
-namespace
-{
-  const std::string& MyName("HistMaker::");
-}
+// #define DETECTOR_NAME(x) TString(x).ReplaceAll("create", "");
 
 // Constructor -------------------------------------------------------------
 HistMaker::HistMaker( void )
-  : current_hist_id_(0)
+  : TObject(),
+    current_hist_id_(0)
 {
 }
 
@@ -45,72 +44,62 @@ HistMaker::~HistMaker( void )
 // -------------------------------------------------------------------------
 // getListOfDetectors
 // -------------------------------------------------------------------------
-void HistMaker::getListOfDetectors(std::vector<std::string>& vec)
+void HistMaker::getListOfDetectors( std::vector<TString>& vec )
 {
   HistMaker& g = HistMaker::getInstance();
-  std::copy(g.name_created_detectors_.begin(),
-	    g.name_created_detectors_.end(),
-	    back_inserter(vec)
-	    );
-
+  std::copy( g.name_created_detectors_.begin(),
+	     g.name_created_detectors_.end(),
+	     back_inserter(vec) );
 }
 
 // -------------------------------------------------------------------------
 // getListOfPsFiles
 // -------------------------------------------------------------------------
-void HistMaker::getListOfPsFiles(std::vector<std::string>& vec)
+void HistMaker::getListOfPsFiles( std::vector<TString>& vec )
 {
   HistMaker& g = HistMaker::getInstance();
-  std::copy(g.name_ps_files_.begin(),
-	    g.name_ps_files_.end(),
-	    back_inserter(vec)
-	    );
-
+  std::copy( g.name_ps_files_.begin(),
+	     g.name_ps_files_.end(),
+	     back_inserter(vec) );
 }
 
 // -------------------------------------------------------------------------
 // setHistPtr
 // -------------------------------------------------------------------------
-int HistMaker::setHistPtr(std::vector<TH1*>& vec)
+Int_t HistMaker::setHistPtr( std::vector<TH1*>& vec )
 {
-  static const std::string MyFunc = "setHistPtr ";
-
   vec.resize(current_hist_id_);
-  for(int i = 0; i<current_hist_id_; ++i){
-    int unique_id = getUniqueID(i);
+  for( Int_t i = 0; i<current_hist_id_; ++i ){
+    Int_t unique_id = getUniqueID(i);
     vec[i] = GHist::get(unique_id);
-    if(vec[i] == NULL){
-      std::cerr << "#E: " << MyName << MyFunc
-		<< "Pointer is NULL\n"
-		<< " Unique ID    : " << unique_id << "\n"
+    if( !vec[i] ){
+      std::cerr << "#E " << FUNC_NAME
+		<< " Pointer is NULL" << std::endl
+		<< " Unique ID    : " << unique_id << std::endl
 		<< " Sequential ID: " << i << std::endl;
       gDirectory->ls();
       return -1;
     }
   }
-
   return 0;
 }
 
 // -------------------------------------------------------------------------
 // CreateTH1
 // -------------------------------------------------------------------------
-TH1* HistMaker::createTH1(int unique_id, const char* title,
-			  int nbinx, int xmin, int xmax,
-			  const char* xtitle, const char* ytitle
-			  )
+TH1* HistMaker::createTH1( Int_t unique_id, const TString& title,
+			   Int_t nbinx, Int_t xmin, Int_t xmax,
+			   const TString& xtitle, const TString& ytitle )
 {
-  static const std::string MyFunc = "createTH1 ";
-
   // Add information to dictionaries which will be used to find the histogram
-  int sequential_id = current_hist_id_++;
+  Int_t sequential_id = current_hist_id_++;
   TypeRetInsert ret =
-  idmap_seq_from_unique_.insert(std::make_pair(unique_id,     sequential_id));
-  idmap_seq_from_name_.insert(  std::make_pair(title,         sequential_id));
-  idmap_unique_from_seq_.insert(std::make_pair(sequential_id, unique_id));
+    idmap_seq_from_unique_.insert( std::make_pair( unique_id, sequential_id ) );
+  idmap_seq_from_name_.insert( std::make_pair( title, sequential_id ) );
+  idmap_unique_from_seq_.insert( std::make_pair( sequential_id, unique_id ) );
   if(!ret.second){
-    std::cerr << "#E: " << MyName << MyFunc
-	      << "The unique id overlaps with other id"
+    std::cerr << "#E " << FUNC_NAME
+	      << " The unique id overlaps with other id"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
     std::exit(-1);
@@ -119,8 +108,8 @@ TH1* HistMaker::createTH1(int unique_id, const char* title,
   // create histogram using the static method of HistHelper class
   TH1 *h = GHist::I1(unique_id, title, nbinx, xmin, xmax);
   if(!h){
-    std::cerr << "#E: " << MyName << MyFunc
-	      << "Fail to create TH1"
+    std::cerr << "#E " << FUNC_NAME
+	      << " Fail to create TH1"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
     std::exit(-1);
@@ -135,35 +124,32 @@ TH1* HistMaker::createTH1(int unique_id, const char* title,
 // -------------------------------------------------------------------------
 // CreateTH2
 // -------------------------------------------------------------------------
-TH2* HistMaker::createTH2(int unique_id, const char* title,
-			  int nbinx, int xmin, int xmax,
-			  int nbiny, int ymin, int ymax,
-			  const char* xtitle, const char* ytitle
-			  )
+TH2* HistMaker::createTH2( Int_t unique_id, const TString& title,
+			   Int_t nbinx, Int_t xmin, Int_t xmax,
+			   Int_t nbiny, Int_t ymin, Int_t ymax,
+			   const TString& xtitle, const TString& ytitle )
 {
-  static const std::string MyFunc = "createTH2 ";
-
   // Add information to dictionaries which will be used to find the histogram
-  int sequential_id = current_hist_id_++;
+  Int_t sequential_id = current_hist_id_++;
   TypeRetInsert ret =
-  idmap_seq_from_unique_.insert(std::make_pair(unique_id,     sequential_id));
-  idmap_seq_from_name_.insert(  std::make_pair(title,         sequential_id));
-  idmap_unique_from_seq_.insert(std::make_pair(sequential_id, unique_id));
-  if(!ret.second){
-    std::cerr << "#E: " << MyName << MyFunc
-	      << "The unique id overlaps with other id"
+    idmap_seq_from_unique_.insert( std::make_pair(unique_id, sequential_id ) );
+  idmap_seq_from_name_.insert( std::make_pair(title, sequential_id ) );
+  idmap_unique_from_seq_.insert( std::make_pair(sequential_id, unique_id ) );
+  if( !ret.second ){
+    std::cerr << "#E " << FUNC_NAME
+	      << " The unique id overlaps with other id"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
     std::exit(-1);
   }
 
   // create histogram using the static method of HistHelper class
-  TH2 *h = GHist::I2(unique_id, title,
-		  nbinx, xmin, xmax,
-		  nbiny, ymin, ymax);
+  TH2 *h = GHist::I2( unique_id, title,
+		      nbinx, xmin, xmax,
+		      nbiny, ymin, ymax );
   if(!h){
-    std::cerr << "#E: " << MyName << MyFunc
-	      << "Fail to create TH2"
+    std::cerr << "#E " << FUNC_NAME
+	      << " Fail to create TH2"
 	      << std::endl;
     std::cerr << " " << unique_id << " " << title << std::endl;
     std::exit(-1);
@@ -175,49 +161,45 @@ TH2* HistMaker::createTH2(int unique_id, const char* title,
   return h;
 }
 
+//______________________________________________________________________________
+TString
+HistMaker::MakeDetectorName( const TString& name )
+{
+  TString det = name;
+  return det.ReplaceAll("create", "");
+}
+
 //_____________________________________________________________________
 TList*
-HistMaker::createTimeStamp( bool flag_ps )
+HistMaker::createTimeStamp( Bool_t flag_ps )
 {
-  // Determine the detector name
-  std::string strDet = CONV_STRING(kTimeStamp);
-  // name list of crearted detector
-  name_created_detectors_.push_back(strDet);
-  if(flag_ps){
-    // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet);
-  }
+  TString det_name = MakeDetectorName(__func__);
+  name_created_detectors_.push_back( det_name );
 
-  // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  if( flag_ps )
+    name_ps_files_.push_back( det_name );
+
   TList *top_dir = new TList;
-  top_dir->SetName(nameDetector);
+  top_dir->SetName( det_name );
 
-  {
-    // Make histogram and add it
-    // Make unique ID
-    int target_id = getUniqueID( kTimeStamp, 0, kTDC, 0);
-    for( int i=0; i<NumOfVmeRm; ++i ){
-      int seg = i+1; // 1 origin
-      const char* title = Form("%s_%d", nameDetector, seg);
-      top_dir->Add( createTH1( ++target_id, title, // 1 origin
-			       0x1000, -0x1000, 0x1000,
-			       "TimeStamp", ""));
-    }
+  Int_t target_id = getUniqueID( kTimeStamp, 0, kTDC );
+  for( Int_t i=0; i<NumOfVmeRm; ++i ){
+    top_dir->Add( createTH1( target_id++,
+			     Form("%s_%d", det_name.Data(), i+1),
+			     0x1000, -0x1000, 0x1000,
+			     "TimeStamp", ""));
   }
 
-  // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
 
 // -------------------------------------------------------------------------
 // createBH1
 // -------------------------------------------------------------------------
-TList* HistMaker::createBH1(bool flag_ps)
+TList* HistMaker::createBH1( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kBH1);
+  TString strDet = CONV_STRING(kBH1);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -226,29 +208,29 @@ TList* HistMaker::createBH1(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // Make unique ID
-    int target_id = getUniqueID(kBH1, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegBH1*2; ++i){
+    Int_t target_id = getUniqueID(kBH1, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegBH1*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegBH1){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegBH1; // 1 origin
+	Int_t seg = i+1-NumOfSegBH1; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
@@ -264,21 +246,21 @@ TList* HistMaker::createBH1(bool flag_ps)
   // ADC w/TDC ---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADCwTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADCwTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // Make unique ID
-    int target_id = getUniqueID(kBH1, 0, kADCwTDC, 0);
-    for( int i=0; i<NumOfSegBH1*2; ++i ){
+    Int_t target_id = getUniqueID(kBH1, 0, kADCwTDC, 0);
+    for( Int_t i=0; i<NumOfSegBH1*2; ++i ){
       const char* title = NULL;
       if( i<NumOfSegBH1 ){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegBH1; // 1 origin
+	Int_t seg = i+1-NumOfSegBH1; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
@@ -294,20 +276,20 @@ TList* HistMaker::createBH1(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBH1, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegBH1*2; ++i){
+    Int_t target_id = getUniqueID(kBH1, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegBH1*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegBH1){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegBH1; // 1 origin
+	Int_t seg = i+1-NumOfSegBH1; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
@@ -323,20 +305,20 @@ TList* HistMaker::createBH1(bool flag_ps)
   // TDC (FPGA)----------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = "FPGA_TDC";
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = "FPGA_TDC";
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBH1, 0, kTDC, NumOfSegBH1*2);
-    for(int i = 0; i<NumOfSegBH1*2; ++i){
+    Int_t target_id = getUniqueID(kBH1, 0, kTDC, NumOfSegBH1*2);
+    for(Int_t i = 0; i<NumOfSegBH1*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegBH1){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegBH1; // 1 origin
+	Int_t seg = i+1-NumOfSegBH1; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
@@ -352,7 +334,7 @@ TList* HistMaker::createBH1(bool flag_ps)
 
   // Hit parttern -----------------------------------------------
   {
-    int target_id = getUniqueID(kBH1, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kBH1, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BH1_hit_pattern", // 1 origin
 			   NumOfSegBH1, 0, NumOfSegBH1,
@@ -365,7 +347,7 @@ TList* HistMaker::createBH1(bool flag_ps)
 
   // Multiplicity -----------------------------------------------
   {
-    int target_id = getUniqueID(kBH1, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kBH1, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BH1_multiplicity", // 1 origin
 			   NumOfSegBH1, 0, NumOfSegBH1,
@@ -383,10 +365,10 @@ TList* HistMaker::createBH1(bool flag_ps)
 // -------------------------------------------------------------------------
 // createBFT
 // -------------------------------------------------------------------------
-TList* HistMaker::createBFT(bool flag_ps)
+TList* HistMaker::createBFT( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kBFT);
+  TString strDet = CONV_STRING(kBFT);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -395,14 +377,14 @@ TList* HistMaker::createBFT(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // TDC---------------------------------------------------------
   {
-    int target_id = getUniqueID(kBFT, 0, kTDC, 0);
+    Int_t target_id = getUniqueID(kBFT, 0, kTDC, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BFT_TDC_U", // 1 origin
 			   1024, 0, 1024,
@@ -415,7 +397,7 @@ TList* HistMaker::createBFT(bool flag_ps)
 
   // TDC (after cut) --------------------------------------------
   {
-    int target_id = getUniqueID(kBFT, 0, kTDC, 10);
+    Int_t target_id = getUniqueID(kBFT, 0, kTDC, 10);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BFT_CTDC_U", // 1 origin
 			   1024, 0, 1024,
@@ -428,7 +410,7 @@ TList* HistMaker::createBFT(bool flag_ps)
 
   // TOT---------------------------------------------------------
   {
-    int target_id = getUniqueID(kBFT, 0, kADC, 0);
+    Int_t target_id = getUniqueID(kBFT, 0, kADC, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BFT_TOT_U", // 1 origin
 			   200, -50, 150,
@@ -441,7 +423,7 @@ TList* HistMaker::createBFT(bool flag_ps)
 
   // TOT (after cut) --------------------------------------------
   {
-    int target_id = getUniqueID(kBFT, 0, kADC, 10);
+    Int_t target_id = getUniqueID(kBFT, 0, kADC, 10);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BFT_CTOT_U", // 1 origin
 			   200, -50, 150,
@@ -454,7 +436,7 @@ TList* HistMaker::createBFT(bool flag_ps)
 
   // Hit parttern -----------------------------------------------
   {
-    int target_id = getUniqueID(kBFT, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kBFT, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BFT_HitPat_U", // 1 origin
 			   NumOfSegBFT, 0, NumOfSegBFT,
@@ -467,7 +449,7 @@ TList* HistMaker::createBFT(bool flag_ps)
 
   // Hit parttern (after cut) -----------------------------------
   {
-    int target_id = getUniqueID(kBFT, 0, kHitPat, 10);
+    Int_t target_id = getUniqueID(kBFT, 0, kHitPat, 10);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BFT_CHitPat_U", // 1 origin
 			   NumOfSegBFT, 0, NumOfSegBFT,
@@ -481,7 +463,7 @@ TList* HistMaker::createBFT(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     const char* title = "BFT_multiplicity";
-    int target_id = getUniqueID(kBFT, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kBFT, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   30, 0, 30,
@@ -491,7 +473,7 @@ TList* HistMaker::createBFT(bool flag_ps)
   // Multiplicity (after cut)------------------------------------
   {
     const char* title = "BFT_CMulti";
-    int target_id = getUniqueID(kBFT, 0, kMulti, 10);
+    Int_t target_id = getUniqueID(kBFT, 0, kMulti, 10);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   30, 0, 30,
@@ -500,7 +482,7 @@ TList* HistMaker::createBFT(bool flag_ps)
 
   // TDC-2D (after cut) --------------------------------------------
   {
-    int target_id = getUniqueID(kBFT, 0, kTDC2D, 0);
+    Int_t target_id = getUniqueID(kBFT, 0, kTDC2D, 0);
     // Add to the top directory
     top_dir->Add(createTH2(++target_id, "BFT_CTDC_U_2D", // 1 origin
 			   NumOfSegBFT, 0, NumOfSegBFT,
@@ -515,7 +497,7 @@ TList* HistMaker::createBFT(bool flag_ps)
 
   // TOT-2D (after cut) --------------------------------------------
   {
-    int target_id = getUniqueID(kBFT, 0, kADC2D, 0);
+    Int_t target_id = getUniqueID(kBFT, 0, kADC2D, 0);
     // Add to the top directory
     top_dir->Add(createTH2(++target_id, "BFT_CTOT_U_2D", // 1 origin
 			   NumOfSegBFT, 0, NumOfSegBFT,
@@ -535,10 +517,10 @@ TList* HistMaker::createBFT(bool flag_ps)
 // -------------------------------------------------------------------------
 // createBC3
 // -------------------------------------------------------------------------
-TList* HistMaker::createBC3(bool flag_ps)
+TList* HistMaker::createBC3( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kBC3);
+  TString strDet = CONV_STRING(kBC3);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -547,8 +529,8 @@ TList* HistMaker::createBC3(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -558,14 +540,14 @@ TList* HistMaker::createBC3(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBC3, 0, kTDC, 0);
-    for(int i = 0; i<NumOfLayersBC3; ++i){
+    Int_t target_id = getUniqueID(kBC3, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfLayersBC3; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -573,7 +555,7 @@ TList* HistMaker::createBC3(bool flag_ps)
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kBC3, 0, kTDC2D, 0);
-    for(int i = 0; i<NumOfLayersBC3; ++i){
+    for(Int_t i = 0; i<NumOfLayersBC3; ++i){
       const char* title = NULL;
       title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -588,14 +570,14 @@ TList* HistMaker::createBC3(bool flag_ps)
   // HitPat------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBC3, 0, kHitPat, 0);
-    for(int i = 0; i<NumOfLayersBC3; ++i){
+    Int_t target_id = getUniqueID(kBC3, 0, kHitPat, 0);
+    for(Int_t i = 0; i<NumOfLayersBC3; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -610,15 +592,15 @@ TList* HistMaker::createBC3(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // without TDC gate
-    int target_id = getUniqueID(kBC3, 0, kMulti, 0);
-    for(int i = 0; i<NumOfLayersBC3; ++i){
+    Int_t target_id = getUniqueID(kBC3, 0, kMulti, 0);
+    for(Int_t i = 0; i<NumOfLayersBC3; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -628,7 +610,7 @@ TList* HistMaker::createBC3(bool flag_ps)
 
     // with TDC gate
     target_id = getUniqueID(kBC3, 0, kMulti, NumOfLayersBC3);
-    for(int i = 0; i<NumOfLayersBC3; ++i){
+    for(Int_t i = 0; i<NumOfLayersBC3; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -647,10 +629,10 @@ TList* HistMaker::createBC3(bool flag_ps)
 // -------------------------------------------------------------------------
 // createBC4
 // -------------------------------------------------------------------------
-TList* HistMaker::createBC4(bool flag_ps)
+TList* HistMaker::createBC4( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kBC4);
+  TString strDet = CONV_STRING(kBC4);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -659,8 +641,8 @@ TList* HistMaker::createBC4(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -670,14 +652,14 @@ TList* HistMaker::createBC4(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBC4, 0, kTDC, 0);
-    for(int i = 0; i<NumOfLayersBC4; ++i){
+    Int_t target_id = getUniqueID(kBC4, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfLayersBC4; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -685,7 +667,7 @@ TList* HistMaker::createBC4(bool flag_ps)
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kBC4, 0, kTDC2D, 0);
-    for(int i = 0; i<NumOfLayersBC4; ++i){
+    for(Int_t i = 0; i<NumOfLayersBC4; ++i){
       const char* title = NULL;
       title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -700,14 +682,14 @@ TList* HistMaker::createBC4(bool flag_ps)
   // HitPat------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBC4, 0, kHitPat, 0);
-    for(int i = 0; i<NumOfLayersBC4; ++i){
+    Int_t target_id = getUniqueID(kBC4, 0, kHitPat, 0);
+    for(Int_t i = 0; i<NumOfLayersBC4; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -722,15 +704,15 @@ TList* HistMaker::createBC4(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // without TDC gate
-    int target_id = getUniqueID(kBC4, 0, kMulti, 0);
-    for(int i = 0; i<NumOfLayersBC4; ++i){
+    Int_t target_id = getUniqueID(kBC4, 0, kMulti, 0);
+    for(Int_t i = 0; i<NumOfLayersBC4; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -740,7 +722,7 @@ TList* HistMaker::createBC4(bool flag_ps)
 
     // with TDC gate
     target_id = getUniqueID(kBC4, 0, kMulti, NumOfLayersBC4);
-    for(int i = 0; i<NumOfLayersBC4; ++i){
+    for(Int_t i = 0; i<NumOfLayersBC4; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -759,10 +741,10 @@ TList* HistMaker::createBC4(bool flag_ps)
 // -------------------------------------------------------------------------
 // createBMW
 // -------------------------------------------------------------------------
-TList* HistMaker::createBMW(bool flag_ps)
+TList* HistMaker::createBMW( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kBMW);
+  TString strDet = CONV_STRING(kBMW);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -771,14 +753,14 @@ TList* HistMaker::createBMW(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // ADC---------------------------------------------------------
   {
-    int target_id = getUniqueID(kBMW, 0, kADC, 0);
+    Int_t target_id = getUniqueID(kBMW, 0, kADC, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, "BMW_ADC", // 1 origin
 			   0x1000, 0, 0x1000,
@@ -787,7 +769,7 @@ TList* HistMaker::createBMW(bool flag_ps)
 
   // TDC---------------------------------------------------------
   {
-    int target_id = getUniqueID(kBMW, 0, kTDC, 0);
+    Int_t target_id = getUniqueID(kBMW, 0, kTDC, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, "BMW_TDC", // 1 origin
 			   0x1000, 0, 0x1000,
@@ -801,10 +783,10 @@ TList* HistMaker::createBMW(bool flag_ps)
 // -------------------------------------------------------------------------
 // createBH2
 // -------------------------------------------------------------------------
-TList* HistMaker::createBH2(bool flag_ps)
+TList* HistMaker::createBH2( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kBH2);
+  TString strDet = CONV_STRING(kBH2);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -813,28 +795,28 @@ TList* HistMaker::createBH2(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBH2, 0, kADC, 0);
-    for( int i=0; i<NumOfSegBH2*2; ++i ){
+    Int_t target_id = getUniqueID(kBH2, 0, kADC, 0);
+    for( Int_t i=0; i<NumOfSegBH2*2; ++i ){
       const char* title = NULL;
       if( i<NumOfSegBH2 ){
-	int seg = i +1; // 1 origin
+	Int_t seg = i +1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i +1 -NumOfSegBH2; // 1 origin
+	Int_t seg = i +1 -NumOfSegBH2; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
@@ -850,20 +832,20 @@ TList* HistMaker::createBH2(bool flag_ps)
   // ADC w/TDC ---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADCwTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADCwTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBH2, 0, kADCwTDC, 0);
-    for( int i=0; i<NumOfSegBH2*2; ++i ){
+    Int_t target_id = getUniqueID(kBH2, 0, kADCwTDC, 0);
+    for( Int_t i=0; i<NumOfSegBH2*2; ++i ){
       const char* title = NULL;
       if( i<NumOfSegBH2 ){
-	int seg = i +1; // 1 origin
+	Int_t seg = i +1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i +1 -NumOfSegBH2; // 1 origin
+	Int_t seg = i +1 -NumOfSegBH2; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
@@ -879,20 +861,20 @@ TList* HistMaker::createBH2(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBH2, 0, kTDC, 0);
-    for( int i=0; i<NumOfSegBH2*2; ++i ){
+    Int_t target_id = getUniqueID(kBH2, 0, kTDC, 0);
+    for( Int_t i=0; i<NumOfSegBH2*2; ++i ){
       const char* title = NULL;
       if( i<NumOfSegBH2 ){
-	int seg = i +1; // 1 origin
+	Int_t seg = i +1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i +1 -NumOfSegBH2; // 1 origin
+	Int_t seg = i +1 -NumOfSegBH2; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -907,22 +889,47 @@ TList* HistMaker::createBH2(bool flag_ps)
   // TDC (FPGA)----------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = "FPGA_TDC";
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = "FPGA_TDC";
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBH2, 0, kTDC, NumOfSegBH2*2);
-    for(int i = 0; i<NumOfSegBH2*2; ++i){
+    Int_t target_id = getUniqueID(kBH2, 0, kTDC, NumOfSegBH2*2);
+    for(Int_t i = 0; i<NumOfSegBH2*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegBH2){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegBH2; // 1 origin
+	Int_t seg = i+1-NumOfSegBH2; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
+
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     //			     10000, 0, 400000,
+			     50000, 0, 2000000,
+			     "TDC [ch]", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // MeanTimer (FPGA)----------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = "FPGA_TDC_MeanTimer";
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kBH2, 0, kBH2MT, 0);
+    for(Int_t i = 0; i<NumOfSegBH2; ++i){
+      const char* title = NULL;
+      Int_t seg = i+1; // 1 origin
+      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     //			     10000, 0, 400000,
@@ -937,7 +944,7 @@ TList* HistMaker::createBH2(bool flag_ps)
   // Hit parttern -----------------------------------------------
   {
     const char* title = "BH2_hit_pattern";
-    int target_id = getUniqueID(kBH2, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kBH2, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegBH2, 0, NumOfSegBH2,
@@ -947,7 +954,7 @@ TList* HistMaker::createBH2(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     const char* title = "BH2_multiplicity";
-    int target_id = getUniqueID(kBH2, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kBH2, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegBH2+1, 0, NumOfSegBH2+1,
@@ -961,30 +968,30 @@ TList* HistMaker::createBH2(bool flag_ps)
 // -------------------------------------------------------------------------
 // createBH2_E07
 // -------------------------------------------------------------------------
-TList* HistMaker::createBH2_E07(bool flag_ps)
+TList* HistMaker::createBH2_E07( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kBH2_E07);   // Determine the detector name
+  TString strDet = CONV_STRING(kBH2_E07);   // Determine the detector name
   name_created_detectors_.push_back(strDet);    // name list of crearted detector
   if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
 
-  const char* nameDetector = strDet.c_str();
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   { // ADC---------------------------------------------------------
-    std::string strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kBH2_E07, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegBH2_E07*2; ++i){
+    Int_t target_id = getUniqueID(kBH2_E07, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegBH2_E07*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegBH2_E07){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegBH2_E07; // 1 origin
+	Int_t seg = i+1-NumOfSegBH2_E07; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -995,19 +1002,19 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
   }
 
   { // TDC---------------------------------------------------------
-    std::string strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kBH2_E07, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegBH2_E07*2; ++i){
+    Int_t target_id = getUniqueID(kBH2_E07, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegBH2_E07*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegBH2_E07){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegBH2_E07; // 1 origin
+	Int_t seg = i+1-NumOfSegBH2_E07; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -1019,7 +1026,7 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
 
   { // Hit parttern -----------------------------------------------
     const char* title = "BH2_E07_hit_pattern";
-    int target_id = getUniqueID(kBH2_E07, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kBH2_E07, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   NumOfSegBH2_E07, 0, NumOfSegBH2_E07,
 			   "Segment", ""));
@@ -1027,7 +1034,7 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
 
   { // Multiplicity -----------------------------------------------
     const char* title = "BH2_E07_multiplicity";
-    int target_id = getUniqueID(kBH2_E07, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kBH2_E07, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   NumOfSegBH2_E07+1, 0, NumOfSegBH2_E07+1,
 			   "Multiplicity", ""));
@@ -1039,13 +1046,13 @@ TList* HistMaker::createBH2_E07(bool flag_ps)
 // -------------------------------------------------------------------------
 // createBAC
 // -------------------------------------------------------------------------
-TList* HistMaker::createBAC(bool flag_ps)
+TList* HistMaker::createBAC( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kBAC);       // Determine the detector name
+  TString strDet = CONV_STRING(kBAC);       // Determine the detector name
   name_created_detectors_.push_back(strDet);    // name list of crearted detector
   if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
 
-  const char* nameDetector = strDet.c_str(); // Declaration of the directory
+  const char* nameDetector = strDet.Data(); // Declaration of the directory
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -1053,13 +1060,13 @@ TList* HistMaker::createBAC(bool flag_ps)
 
   // ADC ---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName( nameSubDir );
 
-    int target_id = getUniqueID(kBAC, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegBAC; ++i){
+    Int_t target_id = getUniqueID(kBAC, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegBAC; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -1071,13 +1078,13 @@ TList* HistMaker::createBAC(bool flag_ps)
 
   // ADC w/TDC ---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADCwTDC); // Declaration of the sub-directory
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADCwTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName( nameSubDir );
 
-    int target_id = getUniqueID(kBAC, 0, kADCwTDC, 0);
-    for( int i=0; i<NumOfSegBAC; ++i ){
+    Int_t target_id = getUniqueID(kBAC, 0, kADCwTDC, 0);
+    for( Int_t i=0; i<NumOfSegBAC; ++i ){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -1089,13 +1096,13 @@ TList* HistMaker::createBAC(bool flag_ps)
 
   // TDC---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kBAC, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegBAC; ++i){
+    Int_t target_id = getUniqueID(kBAC, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegBAC; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -1106,14 +1113,14 @@ TList* HistMaker::createBAC(bool flag_ps)
   }
 
   { // Hit parttern -----------------------------------------------
-    int target_id = getUniqueID(kBAC, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kBAC, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "BAC_hit_pattern",
 			   NumOfSegBAC, 0, NumOfSegBAC,
 			   "Segment", ""));
   }
 
   { // Multiplicity -----------------------------------------------
-    int target_id = getUniqueID(kBAC, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kBAC, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, "BAC_multiplicity",
 			   NumOfSegBAC+1, 0, NumOfSegBAC+1,
 			   "Multiplicity", ""));
@@ -1125,13 +1132,13 @@ TList* HistMaker::createBAC(bool flag_ps)
 // -------------------------------------------------------------------------
 // createBAC_E07
 // -------------------------------------------------------------------------
-TList* HistMaker::createBAC_E07(bool flag_ps)
+TList* HistMaker::createBAC_E07( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kBAC_E07);   // Determine the detector name
+  TString strDet = CONV_STRING(kBAC_E07);   // Determine the detector name
   name_created_detectors_.push_back(strDet);    // name list of crearted detector
   if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
 
-  const char* nameDetector = strDet.c_str(); // Declaration of the directory
+  const char* nameDetector = strDet.Data(); // Declaration of the directory
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -1140,13 +1147,13 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
   };
 
   { // ADC---------------------------------------------------------
-    std::string strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kBAC_E07, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegBAC_E07; ++i){
+    Int_t target_id = getUniqueID(kBAC_E07, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegBAC_E07; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1( ++target_id, title, // 1 origin
@@ -1157,13 +1164,13 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
   }
 
   { // TDC---------------------------------------------------------
-    std::string strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kBAC_E07, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegBAC_E07; ++i){
+    Int_t target_id = getUniqueID(kBAC_E07, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegBAC_E07; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -1174,14 +1181,14 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
   }
 
   { // Hit parttern -----------------------------------------------
-    int target_id = getUniqueID(kBAC_E07, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kBAC_E07, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "BAC_E07_hit_pattern",
 			   NumOfSegBAC_E07, 0, NumOfSegBAC_E07,
 			   "Segment", ""));
   }
 
   { // Multiplicity -----------------------------------------------
-    int target_id = getUniqueID(kBAC_E07, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kBAC_E07, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, "BAC_E07_multiplicity",
 			   NumOfSegBAC_E07+1, 0, NumOfSegBAC_E07+1,
 			   "Multiplicity", ""));
@@ -1193,10 +1200,10 @@ TList* HistMaker::createBAC_E07(bool flag_ps)
 // -------------------------------------------------------------------------
 // createFBH
 // -------------------------------------------------------------------------
-TList* HistMaker::createFBH(bool flag_ps)
+TList* HistMaker::createFBH( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kFBH);
+  TString strDet = CONV_STRING(kFBH);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -1204,19 +1211,19 @@ TList* HistMaker::createFBH(bool flag_ps)
     name_ps_files_.push_back(strDet);
   }
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // TDC---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kFBH, 0, kTDC, 0);
-    for(int i=0; i<NumOfSegFBH*2; ++i){
+    Int_t target_id = getUniqueID(kFBH, 0, kTDC, 0);
+    for(Int_t i=0; i<NumOfSegFBH*2; ++i){
       if( i<NumOfSegFBH ){
 	sub_dir->Add(createTH1(++target_id, Form("%s_%s_%dU", // 1 origin
 						 nameDetector, nameSubDir, i+1),
@@ -1236,8 +1243,8 @@ TList* HistMaker::createFBH(bool flag_ps)
     const char* nameSubDir = "TOT";
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kFBH, 0, kADC, 0);
-    for(int i=0; i<NumOfSegFBH*2; ++i){
+    Int_t target_id = getUniqueID(kFBH, 0, kADC, 0);
+    for(Int_t i=0; i<NumOfSegFBH*2; ++i){
       if(i<NumOfSegFBH){
 	sub_dir->Add(createTH1(++target_id, Form("%s_%s_%dU", // 1 origin
 						 nameDetector, nameSubDir, i+1),
@@ -1267,7 +1274,7 @@ TList* HistMaker::createFBH(bool flag_ps)
   }
   // TDC-2D --------------------------------------------
   {
-    int target_id = getUniqueID(kFBH, 0, kTDC2D, 0);
+    Int_t target_id = getUniqueID(kFBH, 0, kTDC2D, 0);
     top_dir->Add(createTH2(++target_id, "FBH_TDC2D", // 1 origin
 			   NumOfSegFBH*2, 0, NumOfSegFBH*2,
 			   1024, 0, 1024,
@@ -1275,7 +1282,7 @@ TList* HistMaker::createFBH(bool flag_ps)
   }
   // TOT-2D --------------------------------------------
   {
-    int target_id = getUniqueID(kFBH, 0, kADC2D, 0);
+    Int_t target_id = getUniqueID(kFBH, 0, kADC2D, 0);
     top_dir->Add(createTH2(++target_id, "FBH_TOT2D", // 1 origin
 			   NumOfSegFBH*2, 0, NumOfSegFBH*2,
 			   200, -50, 150,
@@ -1283,7 +1290,7 @@ TList* HistMaker::createFBH(bool flag_ps)
   }
   // Hit parttern --------------------------------------------
   {
-    int target_id = getUniqueID(kFBH, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kFBH, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "FBH_HitPat", // 1 origin
 			   NumOfSegFBH, 0, NumOfSegFBH,
 			   "Segment", ""));
@@ -1291,7 +1298,7 @@ TList* HistMaker::createFBH(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     const char* title = "FBH_multiplicity";
-    int target_id = getUniqueID(kFBH, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kFBH, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   NumOfSegFBH, 0, NumOfSegFBH,
 			   "Multiplicity", ""));
@@ -1302,23 +1309,23 @@ TList* HistMaker::createFBH(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSSDT
 // -------------------------------------------------------------------------
-TList* HistMaker::createSSDT(bool flag_ps)
+TList* HistMaker::createSSDT( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kSSDT);
+  TString strDet = CONV_STRING(kSSDT);
   name_created_detectors_.push_back(strDet);
   if(flag_ps) name_ps_files_.push_back(strDet);
 
-  const char* nameDetector = strDet.c_str();
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   { // TDC --------------------------------------------------------
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSDT, 0, kTDC, 0);
-    for(int seg=0; seg<NumOfSegSSDT; ++seg){
+    Int_t target_id = getUniqueID(kSSDT, 0, kTDC, 0);
+    for(Int_t seg=0; seg<NumOfSegSSDT; ++seg){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%d", nameDetector, nameSubDir, seg+1),
 			     0x1000, 0, 0x1000,
@@ -1333,13 +1340,13 @@ TList* HistMaker::createSSDT(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSSD0
 // -------------------------------------------------------------------------
-TList* HistMaker::createSSD0(bool flag_ps)
+TList* HistMaker::createSSD0( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kSSD0);
+  TString strDet = CONV_STRING(kSSD0);
   name_created_detectors_.push_back(strDet);
   if(flag_ps) name_ps_files_.push_back(strDet);
 
-  const char* nameDetector = strDet.c_str();
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -1347,12 +1354,12 @@ TList* HistMaker::createSSD0(bool flag_ps)
 
   // ADC --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD0, 0, kADC2D, 0);
-    for(int l=0; l<NumOfLayersSSD0; ++l){
+    Int_t target_id = getUniqueID(kSSD0, 0, kADC2D, 0);
+    for(Int_t l=0; l<NumOfLayersSSD0; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD0, 0, NumOfSegSSD0, 0x3ff, 0, 0x3ff,
@@ -1363,12 +1370,12 @@ TList* HistMaker::createSSD0(bool flag_ps)
 
   // TDC --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD0, 0, kTDC2D, 0);
-    for(int l=0; l<NumOfLayersSSD0; ++l){
+    Int_t target_id = getUniqueID(kSSD0, 0, kTDC2D, 0);
+    for(Int_t l=0; l<NumOfLayersSSD0; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD0, 0, NumOfSegSSD0, NumOfSamplesSSD+1, 0, NumOfSamplesSSD+1,
@@ -1379,12 +1386,12 @@ TList* HistMaker::createSSD0(bool flag_ps)
 
   // Hit parttern -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD0, 0, kHitPat, 0);
-    for(int l=0; l<NumOfLayersSSD0; ++l){
+    Int_t target_id = getUniqueID(kSSD0, 0, kHitPat, 0);
+    for(Int_t l=0; l<NumOfLayersSSD0; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD0, 0, NumOfSegSSD0,
@@ -1407,12 +1414,12 @@ TList* HistMaker::createSSD0(bool flag_ps)
   }
 
   { // Multiplicity -----------------------------------------------
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD0, 0, kMulti, 0);
-    for(int l=0; l<NumOfLayersSSD0; ++l){
+    Int_t target_id = getUniqueID(kSSD0, 0, kMulti, 0);
+    for(Int_t l=0; l<NumOfLayersSSD0; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD0+1, 0, NumOfSegSSD0+1,
@@ -1431,13 +1438,13 @@ TList* HistMaker::createSSD0(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSSD1
 // -------------------------------------------------------------------------
-TList* HistMaker::createSSD1(bool flag_ps)
+TList* HistMaker::createSSD1( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kSSD1);
+  TString strDet = CONV_STRING(kSSD1);
   name_created_detectors_.push_back(strDet);
   if(flag_ps) name_ps_files_.push_back(strDet);
 
-  const char* nameDetector = strDet.c_str();
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -1445,12 +1452,12 @@ TList* HistMaker::createSSD1(bool flag_ps)
 
   // ADC --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD1, 0, kADC2D, 0);
-    for(int l=0; l<NumOfLayersSSD1; ++l){
+    Int_t target_id = getUniqueID(kSSD1, 0, kADC2D, 0);
+    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD1, 0, NumOfSegSSD1, 0x3ff, 0, 0x3ff,
@@ -1461,12 +1468,12 @@ TList* HistMaker::createSSD1(bool flag_ps)
 
   // TDC --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD1, 0, kTDC2D, 0);
-    for(int l=0; l<NumOfLayersSSD1; ++l){
+    Int_t target_id = getUniqueID(kSSD1, 0, kTDC2D, 0);
+    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD1, 0, NumOfSegSSD1, NumOfSamplesSSD+1, 0, NumOfSamplesSSD+1,
@@ -1477,12 +1484,12 @@ TList* HistMaker::createSSD1(bool flag_ps)
 
   // Hit parttern -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD1, 0, kHitPat, 0);
-    for(int l=0; l<NumOfLayersSSD1; ++l){
+    Int_t target_id = getUniqueID(kSSD1, 0, kHitPat, 0);
+    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD1, 0, NumOfSegSSD1,
@@ -1506,12 +1513,12 @@ TList* HistMaker::createSSD1(bool flag_ps)
 
   // Multiplicity -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD1, 0, kMulti, 0);
-    for(int l=0; l<NumOfLayersSSD1; ++l){
+    Int_t target_id = getUniqueID(kSSD1, 0, kMulti, 0);
+    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     100, 0., 100.,
@@ -1526,12 +1533,12 @@ TList* HistMaker::createSSD1(bool flag_ps)
 
   // DeltaE --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kDeltaE);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kDeltaE);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD1, 0, kDeltaE, 0);
-    for(int l=0; l<NumOfLayersSSD1; ++l){
+    Int_t target_id = getUniqueID(kSSD1, 0, kDeltaE, 0);
+    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     200, 0., 40000., "DeltaE  "));
@@ -1541,12 +1548,12 @@ TList* HistMaker::createSSD1(bool flag_ps)
 
   // DeltaE2D --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kDeltaE2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kDeltaE2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD1, 0, kDeltaE2D, 0);
-    for(int l=0; l<NumOfLayersSSD1; ++l){
+    Int_t target_id = getUniqueID(kSSD1, 0, kDeltaE2D, 0);
+    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD1/4, 0, NumOfSegSSD1, 200, 0., 40000.,
@@ -1557,12 +1564,12 @@ TList* HistMaker::createSSD1(bool flag_ps)
 
   // Time --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kCTime);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kCTime);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD1, 0, kCTime, 0);
-    for(int l=0; l<NumOfLayersSSD1; ++l){
+    Int_t target_id = getUniqueID(kSSD1, 0, kCTime, 0);
+    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     200., 0, 200., "Peak Time [ns] "));
@@ -1572,12 +1579,12 @@ TList* HistMaker::createSSD1(bool flag_ps)
 
   // Time2D --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kCTime2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kCTime2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD1, 0, kCTime2D, 0);
-    for(int l=0; l<NumOfLayersSSD1; ++l){
+    Int_t target_id = getUniqueID(kSSD1, 0, kCTime2D, 0);
+    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD1/4, 0, NumOfSegSSD1, 200., 0, 200.,
@@ -1588,12 +1595,12 @@ TList* HistMaker::createSSD1(bool flag_ps)
 
   // Chisqr --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kChisqr);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kChisqr);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD1, 0, kChisqr, 0);
-    for(int l=0; l<NumOfLayersSSD1; ++l){
+    Int_t target_id = getUniqueID(kSSD1, 0, kChisqr, 0);
+    for(Int_t l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     500., 0, 500., "Chisqr  "));
@@ -1607,13 +1614,13 @@ TList* HistMaker::createSSD1(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSSD2
 // -------------------------------------------------------------------------
-TList* HistMaker::createSSD2(bool flag_ps)
+TList* HistMaker::createSSD2( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kSSD2);
+  TString strDet = CONV_STRING(kSSD2);
   name_created_detectors_.push_back(strDet);
   if(flag_ps) name_ps_files_.push_back(strDet);
 
-  const char* nameDetector = strDet.c_str();
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -1621,12 +1628,12 @@ TList* HistMaker::createSSD2(bool flag_ps)
 
   // ADC --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD2, 0, kADC2D, 0);
-    for(int l=0; l<NumOfLayersSSD2; ++l){
+    Int_t target_id = getUniqueID(kSSD2, 0, kADC2D, 0);
+    for(Int_t l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD2, 0, NumOfSegSSD2, 0x3ff, 0, 0x3ff,
@@ -1637,12 +1644,12 @@ TList* HistMaker::createSSD2(bool flag_ps)
 
   // TDC --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD2, 0, kTDC2D, 0);
-    for(int l=0; l<NumOfLayersSSD2; ++l){
+    Int_t target_id = getUniqueID(kSSD2, 0, kTDC2D, 0);
+    for(Int_t l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD2, 0, NumOfSegSSD2, NumOfSamplesSSD+1, 0, NumOfSamplesSSD+1,
@@ -1653,12 +1660,12 @@ TList* HistMaker::createSSD2(bool flag_ps)
 
   // Hit parttern -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD2, 0, kHitPat, 0);
-    for(int l=0; l<NumOfLayersSSD2; ++l){
+    Int_t target_id = getUniqueID(kSSD2, 0, kHitPat, 0);
+    for(Int_t l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD2, 0, NumOfSegSSD2,
@@ -1682,12 +1689,12 @@ TList* HistMaker::createSSD2(bool flag_ps)
 
   // Multiplicity -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD2, 0, kMulti, 0);
-    for(int l=0; l<NumOfLayersSSD2; ++l){
+    Int_t target_id = getUniqueID(kSSD2, 0, kMulti, 0);
+    for(Int_t l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     100, 0., 100.,
@@ -1702,12 +1709,12 @@ TList* HistMaker::createSSD2(bool flag_ps)
 
   // DeltaE --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kDeltaE);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kDeltaE);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD2, 0, kDeltaE, 0);
-    for(int l=0; l<NumOfLayersSSD2; ++l){
+    Int_t target_id = getUniqueID(kSSD2, 0, kDeltaE, 0);
+    for(Int_t l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     200, 0., 40000., "DeltaE  "));
@@ -1717,12 +1724,12 @@ TList* HistMaker::createSSD2(bool flag_ps)
 
   // DeltaE2D --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kDeltaE2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kDeltaE2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD2, 0, kDeltaE2D, 0);
-    for(int l=0; l<NumOfLayersSSD2; ++l){
+    Int_t target_id = getUniqueID(kSSD2, 0, kDeltaE2D, 0);
+    for(Int_t l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD2/4, 0, NumOfSegSSD2, 200, 0., 40000.,
@@ -1733,12 +1740,12 @@ TList* HistMaker::createSSD2(bool flag_ps)
 
   // Time --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kCTime);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kCTime);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD2, 0, kCTime, 0);
-    for(int l=0; l<NumOfLayersSSD2; ++l){
+    Int_t target_id = getUniqueID(kSSD2, 0, kCTime, 0);
+    for(Int_t l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     200., 0, 200., "Peak Time [ns] "));
@@ -1748,12 +1755,12 @@ TList* HistMaker::createSSD2(bool flag_ps)
 
   // Time2D --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kCTime2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kCTime2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD2, 0, kCTime2D, 0);
-    for(int l=0; l<NumOfLayersSSD2; ++l){
+    Int_t target_id = getUniqueID(kSSD2, 0, kCTime2D, 0);
+    for(Int_t l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     NumOfSegSSD2/4, 0, NumOfSegSSD2, 200., 0, 200.,
@@ -1764,12 +1771,12 @@ TList* HistMaker::createSSD2(bool flag_ps)
 
   // Chisqr --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kChisqr);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kChisqr);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSSD2, 0, kChisqr, 0);
-    for(int l=0; l<NumOfLayersSSD2; ++l){
+    Int_t target_id = getUniqueID(kSSD2, 0, kChisqr, 0);
+    for(Int_t l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH1(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
 			     500., 0, 500., "Chisqr  "));
@@ -1783,13 +1790,13 @@ TList* HistMaker::createSSD2(bool flag_ps)
 // -------------------------------------------------------------------------
 // createPVAC
 // -------------------------------------------------------------------------
-TList* HistMaker::createPVAC(bool flag_ps)
+TList* HistMaker::createPVAC( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kPVAC);
+  TString strDet = CONV_STRING(kPVAC);
   name_created_detectors_.push_back(strDet);
   if(flag_ps) name_ps_files_.push_back(strDet);
 
-  const char* nameDetector = strDet.c_str();
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -1797,13 +1804,13 @@ TList* HistMaker::createPVAC(bool flag_ps)
 
   // ADC---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kPVAC, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegPVAC; ++i){
+    Int_t target_id = getUniqueID(kPVAC, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegPVAC; ++i){
       sub_dir->Add(createTH1( ++target_id,
 			      Form("%s_%s", name_acs[i], nameSubDir),
 			      0x1000, 0, 0x1000,
@@ -1814,13 +1821,13 @@ TList* HistMaker::createPVAC(bool flag_ps)
 
   // ADC---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADCwTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADCwTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kPVAC, 0, kADCwTDC, 0);
-    for(int i = 0; i<NumOfSegPVAC; ++i){
+    Int_t target_id = getUniqueID(kPVAC, 0, kADCwTDC, 0);
+    for(Int_t i = 0; i<NumOfSegPVAC; ++i){
       sub_dir->Add(createTH1( ++target_id,
 			      Form("%s_%s", name_acs[i], nameSubDir),
 			      0x1000, 0, 0x1000,
@@ -1831,13 +1838,13 @@ TList* HistMaker::createPVAC(bool flag_ps)
 
   // TDC---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kPVAC, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegPVAC; ++i){
+    Int_t target_id = getUniqueID(kPVAC, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegPVAC; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -1849,7 +1856,7 @@ TList* HistMaker::createPVAC(bool flag_ps)
 
   // Hit parttern -----------------------------------------------
   {
-    int target_id = getUniqueID(kPVAC, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kPVAC, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "PVAC_hit_pattern",
 			   NumOfSegPVAC, 0, NumOfSegPVAC,
 			   "Segment", ""));
@@ -1857,7 +1864,7 @@ TList* HistMaker::createPVAC(bool flag_ps)
 
   // Multiplicity -----------------------------------------------
   {
-    int target_id = getUniqueID(kPVAC, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kPVAC, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, "PVAC_multiplicity",
 			   NumOfSegPVAC+1, 0, NumOfSegPVAC+1,
 			   "Multiplicity", ""));
@@ -1869,13 +1876,13 @@ TList* HistMaker::createPVAC(bool flag_ps)
 // -------------------------------------------------------------------------
 // createFAC
 // -------------------------------------------------------------------------
-TList* HistMaker::createFAC(bool flag_ps)
+TList* HistMaker::createFAC( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kFAC);
+  TString strDet = CONV_STRING(kFAC);
   name_created_detectors_.push_back(strDet);
   if(flag_ps) name_ps_files_.push_back(strDet);
 
-  const char* nameDetector = strDet.c_str();
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -1883,13 +1890,13 @@ TList* HistMaker::createFAC(bool flag_ps)
 
   // ADC---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kFAC, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegFAC; ++i){
+    Int_t target_id = getUniqueID(kFAC, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegFAC; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -1901,13 +1908,13 @@ TList* HistMaker::createFAC(bool flag_ps)
 
   // ADC ---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADCwTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADCwTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kFAC, 0, kADCwTDC, 0);
-    for( int i=0; i<NumOfSegFAC; ++i ){
+    Int_t target_id = getUniqueID(kFAC, 0, kADCwTDC, 0);
+    for( Int_t i=0; i<NumOfSegFAC; ++i ){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -1919,13 +1926,13 @@ TList* HistMaker::createFAC(bool flag_ps)
 
   // TDC---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kFAC, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegFAC; ++i){
+    Int_t target_id = getUniqueID(kFAC, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegFAC; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -1937,7 +1944,7 @@ TList* HistMaker::createFAC(bool flag_ps)
 
   // Hit parttern -----------------------------------------------
   {
-    int target_id = getUniqueID(kFAC, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kFAC, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "FAC_hit_pattern",
 			   NumOfSegFAC, 0, NumOfSegFAC,
 			   "Segment", ""));
@@ -1945,7 +1952,7 @@ TList* HistMaker::createFAC(bool flag_ps)
 
   // Multiplicity -----------------------------------------------
   {
-    int target_id = getUniqueID(kFAC, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kFAC, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, "FAC_multiplicity",
 			   NumOfSegFAC+1, 0, NumOfSegFAC+1,
 			   "Multiplicity", ""));
@@ -1957,13 +1964,13 @@ TList* HistMaker::createFAC(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSAC1
 // -------------------------------------------------------------------------
-TList* HistMaker::createSAC1(bool flag_ps)
+TList* HistMaker::createSAC1( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kSAC1);
+  TString strDet = CONV_STRING(kSAC1);
   name_created_detectors_.push_back(strDet);
   if(flag_ps) name_ps_files_.push_back(strDet);
 
-  const char* nameDetector = strDet.c_str();
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -1971,13 +1978,13 @@ TList* HistMaker::createSAC1(bool flag_ps)
 
   // ADC---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSAC1, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegSAC1; ++i){
+    Int_t target_id = getUniqueID(kSAC1, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegSAC1; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -1989,13 +1996,13 @@ TList* HistMaker::createSAC1(bool flag_ps)
 
   // ADC w/TDC ---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADCwTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADCwTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSAC1, 0, kADCwTDC, 0);
-    for( int i=0; i<NumOfSegSAC1; ++i ){
+    Int_t target_id = getUniqueID(kSAC1, 0, kADCwTDC, 0);
+    for( Int_t i=0; i<NumOfSegSAC1; ++i ){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -2007,13 +2014,13 @@ TList* HistMaker::createSAC1(bool flag_ps)
 
   // TDC---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSAC1, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegSAC1; ++i){
+    Int_t target_id = getUniqueID(kSAC1, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegSAC1; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2025,7 +2032,7 @@ TList* HistMaker::createSAC1(bool flag_ps)
 
   // Hit parttern -----------------------------------------------
   {
-    int target_id = getUniqueID(kSAC1, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kSAC1, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "SAC1_hit_pattern",
 			   NumOfSegSAC1, 0, NumOfSegSAC1,
 			   "Segment", ""));
@@ -2033,7 +2040,7 @@ TList* HistMaker::createSAC1(bool flag_ps)
 
   // Multiplicity -----------------------------------------------
   {
-    int target_id = getUniqueID(kSAC1, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kSAC1, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, "SAC1_multiplicity",
 			   NumOfSegSAC1+1-4, 0, NumOfSegSAC1+1-4,
 			   "Multiplicity", ""));
@@ -2045,10 +2052,10 @@ TList* HistMaker::createSAC1(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSCH
 // -------------------------------------------------------------------------
-TList* HistMaker::createSCH(bool flag_ps)
+TList* HistMaker::createSCH( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kSCH);
+  TString strDet = CONV_STRING(kSCH);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -2056,19 +2063,19 @@ TList* HistMaker::createSCH(bool flag_ps)
     name_ps_files_.push_back(strDet);
   }
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // TDC---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSCH, 0, kTDC, 0);
-    for(int i=0; i<NumOfSegSCH; ++i){
+    Int_t target_id = getUniqueID(kSCH, 0, kTDC, 0);
+    for(Int_t i=0; i<NumOfSegSCH; ++i){
       sub_dir->Add(createTH1(++target_id, Form("%s_%s_%d", // 1 origin
 					       nameDetector, nameSubDir, i+1),
 			     1024, 0, 1024,
@@ -2081,8 +2088,8 @@ TList* HistMaker::createSCH(bool flag_ps)
     const char* nameSubDir = "TOT";
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int target_id = getUniqueID(kSCH, 0, kADC, 0);
-    for(int i=0; i<NumOfSegSCH; ++i){
+    Int_t target_id = getUniqueID(kSCH, 0, kADC, 0);
+    for(Int_t i=0; i<NumOfSegSCH; ++i){
       sub_dir->Add(createTH1(++target_id, Form("%s_%s_%d", // 1 origin
 					       nameDetector, nameSubDir, i+1),
 			     200, -50, 150,
@@ -2105,7 +2112,7 @@ TList* HistMaker::createSCH(bool flag_ps)
   }
   // TDC-2D --------------------------------------------
   {
-    int target_id = getUniqueID(kSCH, 0, kTDC2D, 0);
+    Int_t target_id = getUniqueID(kSCH, 0, kTDC2D, 0);
     top_dir->Add(createTH2(++target_id, "SCH_TDC_2D", // 1 origin
 			   NumOfSegSCH, 0, NumOfSegSCH,
 			   1024, 0, 1024,
@@ -2113,7 +2120,7 @@ TList* HistMaker::createSCH(bool flag_ps)
   }
   // TOT-2D --------------------------------------------
   {
-    int target_id = getUniqueID(kSCH, 0, kADC2D, 0);
+    Int_t target_id = getUniqueID(kSCH, 0, kADC2D, 0);
     top_dir->Add(createTH2(++target_id, "SCH_TOT_2D", // 1 origin
 			   NumOfSegSCH, 0, NumOfSegSCH,
 			   200, -50, 150,
@@ -2121,7 +2128,7 @@ TList* HistMaker::createSCH(bool flag_ps)
   }
   // Hit parttern -----------------------------------------------
   {
-    int target_id = getUniqueID(kSCH, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kSCH, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "SCH_HitPat", // 1 origin
 			   NumOfSegSCH, 0, NumOfSegSCH,
 			   "Segment", ""));
@@ -2129,7 +2136,7 @@ TList* HistMaker::createSCH(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     const char* title = "SCH_multiplicity";
-    int target_id = getUniqueID(kSCH, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kSCH, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   20, 0, 20,
 			   "Multiplicity", ""));
@@ -2140,10 +2147,10 @@ TList* HistMaker::createSCH(bool flag_ps)
 // -------------------------------------------------------------------------
 // createKFAC
 // -------------------------------------------------------------------------
-TList* HistMaker::createKFAC(bool flag_ps)
+TList* HistMaker::createKFAC( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kKFAC);
+  TString strDet = CONV_STRING(kKFAC);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -2152,24 +2159,24 @@ TList* HistMaker::createKFAC(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kKFAC, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegKFAC; ++i){
+    Int_t target_id = getUniqueID(kKFAC, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegKFAC; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
@@ -2192,34 +2199,34 @@ TList* HistMaker::createKFAC(bool flag_ps)
 // -------------------------------------------------------------------------
 // createEMC
 // -------------------------------------------------------------------------
-TList* HistMaker::createEMC(bool flag_ps)
+TList* HistMaker::createEMC( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kEMC);
+  TString strDet = CONV_STRING(kEMC);
   name_created_detectors_.push_back(strDet);
   if(flag_ps) name_ps_files_.push_back(strDet);
 
-  const char* nameDetector = strDet.c_str();
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   { // XY ---------------------------------------------------------
-    //int serial_id = getUniqueID(kEMC, 0, kSerial, 0);
-    int xpos_id   = getUniqueID(kEMC, 0, kXpos,   0);
-    int ypos_id   = getUniqueID(kEMC, 0, kYpos,   0);
-    int xypos_id  = getUniqueID(kEMC, 0, kXYpos,  0);
-    //int time_id   = getUniqueID(kEMC, 0, kTime,   0);
+    //Int_t serial_id = getUniqueID(kEMC, 0, kSerial, 0);
+    Int_t xpos_id   = getUniqueID(kEMC, 0, kXpos,   0);
+    Int_t ypos_id   = getUniqueID(kEMC, 0, kYpos,   0);
+    Int_t xypos_id  = getUniqueID(kEMC, 0, kXYpos,  0);
+    //Int_t time_id   = getUniqueID(kEMC, 0, kTime,   0);
 
-    for(int i = 0; i<NumOfSegEMC; ++i){
+    for(Int_t i = 0; i<NumOfSegEMC; ++i){
       top_dir->Add(createTH1( ++xpos_id,
-			      Form("%s_Xpos", strDet.c_str()),
+			      Form("%s_Xpos", strDet.Data()),
 			      0x20, -0x100, 0x100,
 			      "Xpos [mm]", ""));
       top_dir->Add(createTH1( ++ypos_id,
-			      Form("%s_Ypos", strDet.c_str()),
+			      Form("%s_Ypos", strDet.Data()),
 			      0x20, -0x100, 0x100,
 			      "Ypos [mm]", ""));
       top_dir->Add(createTH2( ++xypos_id,
-			      Form("%s_XYpos", strDet.c_str()),
+			      Form("%s_XYpos", strDet.Data()),
 			      0x80, -0x100, 0x100, 0x80, -0x100, 0x100,
 			      "Xpos [mm]", "Ypos [mm]"));
     }
@@ -2231,10 +2238,10 @@ TList* HistMaker::createEMC(bool flag_ps)
 // -------------------------------------------------------------------------
 // createKIC
 // -------------------------------------------------------------------------
-TList* HistMaker::createKIC(bool flag_ps)
+TList* HistMaker::createKIC( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kKIC);
+  TString strDet = CONV_STRING(kKIC);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -2243,8 +2250,8 @@ TList* HistMaker::createKIC(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -2253,14 +2260,14 @@ TList* HistMaker::createKIC(bool flag_ps)
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kKIC, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegKIC; ++i){
+    Int_t target_id = getUniqueID(kKIC, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegKIC; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_kics[i]);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -2275,14 +2282,14 @@ TList* HistMaker::createKIC(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kKIC, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegKIC; ++i){
+    Int_t target_id = getUniqueID(kKIC, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegKIC; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_kics[i]);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -2297,7 +2304,7 @@ TList* HistMaker::createKIC(bool flag_ps)
   // Hit parttern -----------------------------------------------
   {
     const char* title = "KIC_hit_pattern";
-    int target_id = getUniqueID(kKIC, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kKIC, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegKIC, 0, NumOfSegKIC,
@@ -2307,7 +2314,7 @@ TList* HistMaker::createKIC(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     const char* title = "KIC_multiplicity";
-    int target_id = getUniqueID(kKIC, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kKIC, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegKIC+1, 0, NumOfSegKIC+1,
@@ -2321,10 +2328,10 @@ TList* HistMaker::createKIC(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSDC1
 // -------------------------------------------------------------------------
-TList* HistMaker::createSDC1(bool flag_ps)
+TList* HistMaker::createSDC1( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kSDC1);
+  TString strDet = CONV_STRING(kSDC1);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -2333,8 +2340,8 @@ TList* HistMaker::createSDC1(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -2344,14 +2351,14 @@ TList* HistMaker::createSDC1(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kSDC1, 0, kTDC, 0);
-    for(int i = 0; i<NumOfLayersSDC1; ++i){
+    Int_t target_id = getUniqueID(kSDC1, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC1; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2359,7 +2366,7 @@ TList* HistMaker::createSDC1(bool flag_ps)
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC1, 0, kTDC2D, 0);
-    for(int i = 0; i<NumOfLayersSDC1; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC1; ++i){
       const char* title = NULL;
       title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2374,14 +2381,14 @@ TList* HistMaker::createSDC1(bool flag_ps)
   // HitPat------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kSDC1, 0, kHitPat, 0);
-    for(int i = 0; i<NumOfLayersSDC1; ++i){
+    Int_t target_id = getUniqueID(kSDC1, 0, kHitPat, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC1; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2396,15 +2403,15 @@ TList* HistMaker::createSDC1(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // without TDC gate
-    int target_id = getUniqueID(kSDC1, 0, kMulti, 0);
-    for(int i = 0; i<NumOfLayersSDC1; ++i){
+    Int_t target_id = getUniqueID(kSDC1, 0, kMulti, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC1; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2414,7 +2421,7 @@ TList* HistMaker::createSDC1(bool flag_ps)
 
     // with TDC gate
     target_id = getUniqueID(kSDC1, 0, kMulti, NumOfLayersSDC1);
-    for(int i = 0; i<NumOfLayersSDC1; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC1; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2433,10 +2440,10 @@ TList* HistMaker::createSDC1(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSDC2
 // -------------------------------------------------------------------------
-TList* HistMaker::createSDC2(bool flag_ps)
+TList* HistMaker::createSDC2( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kSDC2);
+  TString strDet = CONV_STRING(kSDC2);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -2445,26 +2452,26 @@ TList* HistMaker::createSDC2(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // layer configuration
   const char* name_layer[NumOfLayersSDC2] = { "x0", "x1", "y0", "y1" };
-//  const char* name_layer[NumOfLayersSDC3] = { "y0", "y1", "x0", "x1" };
+  //  const char* name_layer[NumOfLayersSDC3] = { "y0", "y1", "x0", "x1" };
 
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kSDC2, 0, kTDC, 0);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    Int_t target_id = getUniqueID(kSDC2, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2472,7 +2479,7 @@ TList* HistMaker::createSDC2(bool flag_ps)
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC2, 0, kTDC2D, 0);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2480,10 +2487,10 @@ TList* HistMaker::createSDC2(bool flag_ps)
 			     "TDC [ch]", ""));
     }
 
-  // TDCwTOTCUT -------------------------------------------------
+    // TDCwTOTCUT -------------------------------------------------
     // Make histogram and add it
     target_id = getUniqueID(kSDC2, 0, kTDC, 10);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2491,7 +2498,7 @@ TList* HistMaker::createSDC2(bool flag_ps)
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC2, 0, kTDC2D, 10);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_C%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2506,27 +2513,27 @@ TList* HistMaker::createSDC2(bool flag_ps)
   // TOT---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTOT);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTOT);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSDC2, 0, kADC, 0);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    Int_t target_id = getUniqueID(kSDC2, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			   500, 0, 500,
+			     500, 0, 500,
 			     "TOT [ch]", ""));
     }
 
-  // CTOT---------------------------------------------------------
+    // CTOT---------------------------------------------------------
     target_id = getUniqueID(kSDC2, 0, kADC, 10);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			   500, 0, 500,
+			     500, 0, 500,
 			     "TOT [ch]", ""));
     }
     // insert sub directory
@@ -2536,14 +2543,14 @@ TList* HistMaker::createSDC2(bool flag_ps)
   // HitPat------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kSDC2, 0, kHitPat, 0);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    Int_t target_id = getUniqueID(kSDC2, 0, kHitPat, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2551,10 +2558,10 @@ TList* HistMaker::createSDC2(bool flag_ps)
 			     "wire", ""));
     }
 
-  // HitPatwTOTCUT -----------------------------------------------
+    // HitPatwTOTCUT -----------------------------------------------
     // Make histogram and add it
     target_id = getUniqueID(kSDC2, 0, kHitPat, 10);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2569,54 +2576,54 @@ TList* HistMaker::createSDC2(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // without TDC gate
-    int target_id = getUniqueID(kSDC2, 0, kMulti, 0);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    Int_t target_id = getUniqueID(kSDC2, 0, kMulti, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     20, 0, 20,
+			     //			     20, 0, 20,
 			     128, 0, 128,
 			     "Multiplicity", ""));
     }
 
     // with TDC gate
     target_id = getUniqueID(kSDC2, 0, kMulti, NumOfLayersSDC2);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     20, 0, 20,
+			     //			     20, 0, 20,
 			     128, 0, 128,
 			     "Multiplicity", ""));
     }
 
-  // MultiplicitywTOTCUT ----------------------------------------
+    // MultiplicitywTOTCUT ----------------------------------------
     // Make histogram and add it
     // without TDC gate
     target_id = getUniqueID(kSDC2, 0, kMulti, 10);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     20, 0, 20,
+			     //			     20, 0, 20,
 			     128, 0, 128,
 			     "Multiplicity", ""));
     }
 
     // with TDC gate
     target_id = getUniqueID(kSDC2, 0, kMulti, NumOfLayersSDC2+10);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
       const char* title = NULL;
       title = Form("%s_C%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     20, 0, 20,
+			     //			     20, 0, 20,
 			     128, 0, 128,
 			     "Multiplicity", ""));
     }
@@ -2633,10 +2640,10 @@ TList* HistMaker::createSDC2(bool flag_ps)
 // -------------------------------------------------------------------------
 // createHDC
 // -------------------------------------------------------------------------
-TList* HistMaker::createHDC(bool flag_ps)
+TList* HistMaker::createHDC( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kHDC);
+  TString strDet = CONV_STRING(kHDC);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -2645,8 +2652,8 @@ TList* HistMaker::createHDC(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -2656,14 +2663,14 @@ TList* HistMaker::createHDC(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kHDC, 0, kTDC, 0);
-    for(int i = 0; i<NumOfLayersHDC; ++i){
+    Int_t target_id = getUniqueID(kHDC, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfLayersHDC; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2671,7 +2678,7 @@ TList* HistMaker::createHDC(bool flag_ps)
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kHDC, 0, kTDC2D, 0);
-    for(int i = 0; i<NumOfLayersHDC; ++i){
+    for(Int_t i = 0; i<NumOfLayersHDC; ++i){
       const char* title = NULL;
       title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2686,14 +2693,14 @@ TList* HistMaker::createHDC(bool flag_ps)
   // HitPat------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kHDC, 0, kHitPat, 0);
-    for(int i = 0; i<NumOfLayersHDC; ++i){
+    Int_t target_id = getUniqueID(kHDC, 0, kHitPat, 0);
+    for(Int_t i = 0; i<NumOfLayersHDC; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2708,15 +2715,15 @@ TList* HistMaker::createHDC(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // without TDC gate
-    int target_id = getUniqueID(kHDC, 0, kMulti, 0);
-    for(int i = 0; i<NumOfLayersHDC; ++i){
+    Int_t target_id = getUniqueID(kHDC, 0, kMulti, 0);
+    for(Int_t i = 0; i<NumOfLayersHDC; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2726,7 +2733,7 @@ TList* HistMaker::createHDC(bool flag_ps)
 
     // with TDC gate
     target_id = getUniqueID(kHDC, 0, kMulti, NumOfLayersHDC);
-    for(int i = 0; i<NumOfLayersHDC; ++i){
+    for(Int_t i = 0; i<NumOfLayersHDC; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2745,10 +2752,10 @@ TList* HistMaker::createHDC(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSP0
 // -------------------------------------------------------------------------
-TList* HistMaker::createSP0(bool flag_ps)
+TList* HistMaker::createSP0( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kSP0);
+  TString strDet = CONV_STRING(kSP0);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -2757,13 +2764,13 @@ TList* HistMaker::createSP0(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // Declaration of sub-detector directory
-  for(int sd = 0; sd<NumOfLayersSP0; ++sd){
+  for(Int_t sd = 0; sd<NumOfLayersSP0; ++sd){
     const char* nameSubDetector = Form("SP0_L%d", sd+1);
     TList *subdet_dir = new TList;
     subdet_dir->SetName(nameSubDetector);
@@ -2771,20 +2778,20 @@ TList* HistMaker::createSP0(bool flag_ps)
     // ADC---------------------------------------------------------
     {
       // Declaration of the sub-directory
-      std::string strSubDir  = CONV_STRING(kADC);
-      const char* nameSubDir = strSubDir.c_str();
+      TString strSubDir  = CONV_STRING(kADC);
+      const char* nameSubDir = strSubDir.Data();
       TList *sub_dir = new TList;
       sub_dir->SetName(nameSubDir);
 
       // Make histogram and add it
-      int target_id = getUniqueID(kSP0, kSP0_L1+sd, kADC, 0);
-      for(int i = 0; i<NumOfSegSP0*2; ++i){
+      Int_t target_id = getUniqueID(kSP0, kSP0_L1+sd, kADC, 0);
+      for(Int_t i = 0; i<NumOfSegSP0*2; ++i){
 	const char* title = NULL;
 	if(i < NumOfSegSP0){
-	  int seg = i+1; // 1 origin
+	  Int_t seg = i+1; // 1 origin
 	  title = Form("%s_%s_%dU", nameSubDetector, nameSubDir, seg);
 	}else{
-	  int seg = i+1-NumOfSegSP0; // 1 origin
+	  Int_t seg = i+1-NumOfSegSP0; // 1 origin
 	  title = Form("%s_%s_%dD", nameSubDetector, nameSubDir, seg);
 	}
 
@@ -2800,20 +2807,20 @@ TList* HistMaker::createSP0(bool flag_ps)
     // TDC---------------------------------------------------------
     {
       // Declaration of the sub-directory
-      std::string strSubDir  = CONV_STRING(kTDC);
-      const char* nameSubDir = strSubDir.c_str();
+      TString strSubDir  = CONV_STRING(kTDC);
+      const char* nameSubDir = strSubDir.Data();
       TList *sub_dir = new TList;
       sub_dir->SetName(nameSubDir);
 
       // Make histogram and add it
-      int target_id = getUniqueID(kSP0, kSP0_L1+sd, kTDC, 0);
-      for(int i = 0; i<NumOfSegSP0*2; ++i){
+      Int_t target_id = getUniqueID(kSP0, kSP0_L1+sd, kTDC, 0);
+      for(Int_t i = 0; i<NumOfSegSP0*2; ++i){
 	const char* title = NULL;
 	if(i < NumOfSegSP0){
-	  int seg = i+1; // 1 origin
+	  Int_t seg = i+1; // 1 origin
 	  title = Form("%s_%s_%dU", nameSubDetector, nameSubDir, seg);
 	}else{
-	  int seg = i+1-NumOfSegSP0; // 1 origin
+	  Int_t seg = i+1-NumOfSegSP0; // 1 origin
 	  title = Form("%s_%s_%dD", nameSubDetector, nameSubDir, seg);
 	}
 
@@ -2829,8 +2836,8 @@ TList* HistMaker::createSP0(bool flag_ps)
     // HitPat-------------------------------------------------------
     {
       // Make histogram and add it
-      int target_id = getUniqueID(kSP0, kSP0_L1+sd, kHitPat, 0);
-      for(int i = 0; i<2; ++i){
+      Int_t target_id = getUniqueID(kSP0, kSP0_L1+sd, kHitPat, 0);
+      for(Int_t i = 0; i<2; ++i){
 	const char* title = NULL;
 	if(i == 0){
 	  title = Form("%s_HitPat_U", nameSubDetector);
@@ -2854,10 +2861,10 @@ TList* HistMaker::createSP0(bool flag_ps)
 //// -------------------------------------------------------------------------
 //// createSDC3
 //// -------------------------------------------------------------------------
-//TList* HistMaker::createSDC3(bool flag_ps)
+//TList* HistMaker::createSDC3( Bool_t flag_ps )
 //{
 //  // Determine the detector name
-//  std::string strDet = CONV_STRING(kSDC3);
+//  TString strDet = CONV_STRING(kSDC3);
 //  // name list of crearted detector
 //  name_created_detectors_.push_back(strDet);
 //  if(flag_ps){
@@ -2866,8 +2873,8 @@ TList* HistMaker::createSP0(bool flag_ps)
 //  }
 //
 //  // Declaration of the directory
-//  // Just type conversion from std::string to char*
-//  const char* nameDetector = strDet.c_str();
+//  // Just type conversion from TString to char*
+//  const char* nameDetector = strDet.Data();
 //  TList *top_dir = new TList;
 //  top_dir->SetName(nameDetector);
 //
@@ -2877,14 +2884,14 @@ TList* HistMaker::createSP0(bool flag_ps)
 //  // TDC---------------------------------------------------------
 //  {
 //    // Declaration of the sub-directory
-//    std::string strSubDir  = CONV_STRING(kTDC);
-//    const char* nameSubDir = strSubDir.c_str();
+//    TString strSubDir  = CONV_STRING(kTDC);
+//    const char* nameSubDir = strSubDir.Data();
 //    TList *sub_dir = new TList;
 //    sub_dir->SetName(nameSubDir);
 //
 //    // Make histogram and add it
-//    int target_id = getUniqueID(kSDC3, 0, kTDC, 0);
-//    for(int i = 0; i<NumOfLayersSDC3; ++i){
+//    Int_t target_id = getUniqueID(kSDC3, 0, kTDC, 0);
+//    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
 //      const char* title = NULL;
 //      title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
 //      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2892,7 +2899,7 @@ TList* HistMaker::createSP0(bool flag_ps)
 //			     "TDC [ch]", ""));
 //    }
 //    target_id = getUniqueID(kSDC3, 0, kTDC2D, 0);
-//    for(int i = 0; i<NumOfLayersSDC3; ++i){
+//    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
 //      const char* title = NULL;
 //      title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
 //      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2907,15 +2914,15 @@ TList* HistMaker::createSP0(bool flag_ps)
 //  // HitPat------------------------------------------------------
 //  {
 //    // Declaration of the sub-directory
-//    std::string strSubDir  = CONV_STRING(kHitPat);
-//    const char* nameSubDir = strSubDir.c_str();
+//    TString strSubDir  = CONV_STRING(kHitPat);
+//    const char* nameSubDir = strSubDir.Data();
 //    TList *sub_dir = new TList;
 //    sub_dir->SetName(nameSubDir);
 //
 //    // Make histogram and add it
-//    int target_id = getUniqueID(kSDC3, 0, kHitPat, 0);
-//    for(int i = 0; i<NumOfLayersSDC3; ++i){
-//      int nwire;
+//    Int_t target_id = getUniqueID(kSDC3, 0, kHitPat, 0);
+//    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
+//      Int_t nwire;
 //      if( i==0 || i==1 ) nwire = NumOfWireSDC3Y;
 //      if( i==2 || i==3 ) nwire = NumOfWireSDC3X;
 //      const char* title = NULL;
@@ -2932,16 +2939,16 @@ TList* HistMaker::createSP0(bool flag_ps)
 //  // Multiplicity -----------------------------------------------
 //  {
 //    // Declaration of the sub-directory
-//    std::string strSubDir  = CONV_STRING(kMulti);
-//    const char* nameSubDir = strSubDir.c_str();
+//    TString strSubDir  = CONV_STRING(kMulti);
+//    const char* nameSubDir = strSubDir.Data();
 //    TList *sub_dir = new TList;
 //    sub_dir->SetName(nameSubDir);
 //
 //    // Make histogram and add it
 //    // without TDC gate
-//    int target_id = getUniqueID(kSDC3, 0, kMulti, 0);
-//    for(int i = 0; i<NumOfLayersSDC3; ++i){
-//      // int nwire;
+//    Int_t target_id = getUniqueID(kSDC3, 0, kMulti, 0);
+//    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
+//      // Int_t nwire;
 //      // if( i==0 || i==1 ) nwire = NumOfWireSDC3Y;
 //      // if( i==2 || i==3 ) nwire = NumOfWireSDC3X;
 //      const char* title = NULL;
@@ -2954,7 +2961,7 @@ TList* HistMaker::createSP0(bool flag_ps)
 //
 //    // with TDC gate
 //    target_id = getUniqueID(kSDC3, 0, kMulti, NumOfLayersSDC3);
-//    for(int i = 0; i<NumOfLayersSDC3; ++i){
+//    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
 //      const char* title = NULL;
 //      title = Form("%s_%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
 //      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -2974,10 +2981,10 @@ TList* HistMaker::createSP0(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSDC3
 // -------------------------------------------------------------------------
-TList* HistMaker::createSDC3(bool flag_ps)
+TList* HistMaker::createSDC3( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kSDC3);
+  TString strDet = CONV_STRING(kSDC3);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -2986,8 +2993,8 @@ TList* HistMaker::createSDC3(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -2997,14 +3004,14 @@ TList* HistMaker::createSDC3(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kSDC3, 0, kTDC, 0);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    Int_t target_id = getUniqueID(kSDC3, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -3012,7 +3019,7 @@ TList* HistMaker::createSDC3(bool flag_ps)
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC3, 0, kTDC2D, 0);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       const char* title = NULL;
       title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -3020,10 +3027,10 @@ TList* HistMaker::createSDC3(bool flag_ps)
 			     "TDC [ch]", ""));
     }
 
-  // TDCwTOTCUT -------------------------------------------------
+    // TDCwTOTCUT -------------------------------------------------
     // Make histogram and add it
     target_id = getUniqueID(kSDC3, 0, kTDC, 10);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -3031,7 +3038,7 @@ TList* HistMaker::createSDC3(bool flag_ps)
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC3, 0, kTDC2D, 10);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       const char* title = NULL;
       title = Form("%s_C%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -3046,26 +3053,26 @@ TList* HistMaker::createSDC3(bool flag_ps)
   // TOT---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTOT);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTOT);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSDC3, 0, kADC, 0);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    Int_t target_id = getUniqueID(kSDC3, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			   800, 0, 800,
+			     800, 0, 800,
 			     "TOT [ch]", ""));
     }
-  // CTOT---------------------------------------------------------
+    // CTOT---------------------------------------------------------
     target_id = getUniqueID(kSDC3, 0, kADC, 10);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			   800, 0, 800,
+			     800, 0, 800,
 			     "TOT [ch]", ""));
     }
     // insert sub directory
@@ -3076,15 +3083,15 @@ TList* HistMaker::createSDC3(bool flag_ps)
   // HitPat------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-    int nwire;
+    Int_t nwire;
 
     // Make histogram and add it
-    int target_id = getUniqueID(kSDC3, 0, kHitPat, 0);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    Int_t target_id = getUniqueID(kSDC3, 0, kHitPat, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       if( i==0 || i==1 ) nwire = NumOfWireSDC3Y;
       if( i==2 || i==3 ) nwire = NumOfWireSDC3X;
       const char* title = NULL;
@@ -3094,10 +3101,10 @@ TList* HistMaker::createSDC3(bool flag_ps)
 			     "wire", ""));
     }
 
-  // HitPatwTOTCUT -----------------------------------------------
+    // HitPatwTOTCUT -----------------------------------------------
     // Make histogram and add it
     target_id = getUniqueID(kSDC3, 0, kHitPat, 10);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       if( i==0 || i==1 ) nwire = NumOfWireSDC3Y;
       if( i==2 || i==3 ) nwire = NumOfWireSDC3X;
       const char* title = NULL;
@@ -3114,54 +3121,54 @@ TList* HistMaker::createSDC3(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // without TDC gate
-    int target_id = getUniqueID(kSDC3, 0, kMulti, 0);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    Int_t target_id = getUniqueID(kSDC3, 0, kMulti, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     20, 0, 20,
+			     //			     20, 0, 20,
 			     128, 0, 128,
 			     "Multiplicity", ""));
     }
 
     // with TDC gate
     target_id = getUniqueID(kSDC3, 0, kMulti, NumOfLayersSDC3);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     20, 0, 20,
+			     //			     20, 0, 20,
 			     128, 0, 128,
 			     "Multiplicity", ""));
     }
 
-  // MultiplicitywTOTCUT ----------------------------------------
+    // MultiplicitywTOTCUT ----------------------------------------
     // Make histogram and add it
     // without TDC gate
     target_id = getUniqueID(kSDC3, 0, kMulti, 10);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     20, 0, 20,
+			     //			     20, 0, 20,
 			     128, 0, 128,
 			     "Multiplicity", ""));
     }
 
     // with TDC gate
     target_id = getUniqueID(kSDC3, 0, kMulti, NumOfLayersSDC3+10);
-    for(int i = 0; i<NumOfLayersSDC3; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
       const char* title = NULL;
       title = Form("%s_C%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     20, 0, 20,
+			     //			     20, 0, 20,
 			     128, 0, 128,
 			     "Multiplicity", ""));
     }
@@ -3178,10 +3185,10 @@ TList* HistMaker::createSDC3(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSDC4
 // -------------------------------------------------------------------------
-TList* HistMaker::createSDC4(bool flag_ps)
+TList* HistMaker::createSDC4( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kSDC4);
+  TString strDet = CONV_STRING(kSDC4);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -3190,8 +3197,8 @@ TList* HistMaker::createSDC4(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -3201,14 +3208,14 @@ TList* HistMaker::createSDC4(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kSDC4, 0, kTDC, 0);
-    for(int i = 0; i<NumOfLayersSDC4; ++i){
+    Int_t target_id = getUniqueID(kSDC4, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC4; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -3223,14 +3230,14 @@ TList* HistMaker::createSDC4(bool flag_ps)
   // HitPat------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kSDC4, 0, kHitPat, 0);
-    for(int i = 0; i<NumOfLayersSDC4; ++i){
+    Int_t target_id = getUniqueID(kSDC4, 0, kHitPat, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC4; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -3245,15 +3252,15 @@ TList* HistMaker::createSDC4(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // without TDC gate
-    int target_id = getUniqueID(kSDC4, 0, kMulti, 0);
-    for(int i = 0; i<NumOfLayersSDC4; ++i){
+    Int_t target_id = getUniqueID(kSDC4, 0, kMulti, 0);
+    for(Int_t i = 0; i<NumOfLayersSDC4; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -3263,7 +3270,7 @@ TList* HistMaker::createSDC4(bool flag_ps)
 
     // with TDC gate
     target_id = getUniqueID(kSDC4, 0, kMulti, NumOfLayersSDC4);
-    for(int i = 0; i<NumOfLayersSDC4; ++i){
+    for(Int_t i = 0; i<NumOfLayersSDC4; ++i){
       const char* title = NULL;
       title = Form("%s_%s_%s_wTDC", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -3282,10 +3289,10 @@ TList* HistMaker::createSDC4(bool flag_ps)
 // -------------------------------------------------------------------------
 // createTOF
 // -------------------------------------------------------------------------
-TList* HistMaker::createTOF(bool flag_ps)
+TList* HistMaker::createTOF( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kTOF);
+  TString strDet = CONV_STRING(kTOF);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -3294,28 +3301,28 @@ TList* HistMaker::createTOF(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kTOF, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegTOF*2; ++i){
+    Int_t target_id = getUniqueID(kTOF, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegTOF*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegTOF){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegTOF; // 1 origin
+	Int_t seg = i+1-NumOfSegTOF; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
@@ -3331,20 +3338,20 @@ TList* HistMaker::createTOF(bool flag_ps)
   // ADCwTDC ---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADCwTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADCwTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kTOF, 0, kADCwTDC, 0);
-    for( int i=0; i<NumOfSegTOF*2; ++i ){
+    Int_t target_id = getUniqueID(kTOF, 0, kADCwTDC, 0);
+    for( Int_t i=0; i<NumOfSegTOF*2; ++i ){
       const char* title = NULL;
       if( i<NumOfSegTOF ){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegTOF; // 1 origin
+	Int_t seg = i+1-NumOfSegTOF; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
@@ -3360,20 +3367,20 @@ TList* HistMaker::createTOF(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kTOF, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegTOF*2; ++i){
+    Int_t target_id = getUniqueID(kTOF, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegTOF*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegTOF){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	int seg = i+1-NumOfSegTOF; // 1 origin
+	Int_t seg = i+1-NumOfSegTOF; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
@@ -3389,7 +3396,7 @@ TList* HistMaker::createTOF(bool flag_ps)
   // Hit parttern -----------------------------------------------
   {
     const char* title = "TOF_hit_pattern";
-    int target_id = getUniqueID(kTOF, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kTOF, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegTOF, 0, NumOfSegTOF,
@@ -3399,7 +3406,7 @@ TList* HistMaker::createTOF(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     const char* title = "TOF_multiplicity";
-    int target_id = getUniqueID(kTOF, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kTOF, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegTOF, 0, NumOfSegTOF,
@@ -3414,10 +3421,10 @@ TList* HistMaker::createTOF(bool flag_ps)
 // -------------------------------------------------------------------------
 // createTOF_HT
 // -------------------------------------------------------------------------
-TList* HistMaker::createTOF_HT(bool flag_ps)
+TList* HistMaker::createTOF_HT( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kTOF_HT);
+  TString strDet = CONV_STRING(kTOF_HT);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -3426,94 +3433,94 @@ TList* HistMaker::createTOF_HT(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   const char* name_ch[] = { "(1,11)", "(2,20)", "(3,18)", "(4,21)", "(5,9)",
                             "(6,22)", "(7,23)", "(8,24)", "(10,19)",
-                            "12", "13", "14", "15", "16", "17"}; 
-                            
+                            "12", "13", "14", "15", "16", "17"};
+
 
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-//  // ADC---------------------------------------------------------
-//  {
-//    // Declaration of the sub-directory
-//    std::string strSubDir  = CONV_STRING(kADC);
-//    const char* nameSubDir = strSubDir.c_str();
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//
-//    // Make histogram and add it
-//    int target_id = getUniqueID(kTOF_HT, 0, kADC, 0);
-//    for(int i = 0; i<NumOfSegTOF_HT*2; ++i){
-//      const char* title = NULL;
-//      if(i < NumOfSegTOF_HT){
-//	int seg = i+1; // 1 origin
-//	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-//      }else{
-//	int seg = i+1-NumOfSegTOF_HT; // 1 origin
-//	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
-//      }
-//
-//      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     0x1000, 0, 0x1000,
-//			     "ADC [ch]", ""));
-//    }
-//
-//    // insert sub directory
-//    top_dir->Add(sub_dir);
-//  }
-//
-//  // ADCwTDC ---------------------------------------------------------
-//  {
-//    // Declaration of the sub-directory
-//    std::string strSubDir  = CONV_STRING(kADCwTDC);
-//    const char* nameSubDir = strSubDir.c_str();
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//
-//    // Make histogram and add it
-//    int target_id = getUniqueID(kTOF_HT, 0, kADCwTDC, 0);
-//    for( int i=0; i<NumOfSegTOF_HT*2; ++i ){
-//      const char* title = NULL;
-//      if( i<NumOfSegTOF_HT ){
-//	int seg = i+1; // 1 origin
-//	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-//      }else{
-//	int seg = i+1-NumOfSegTOF_HT; // 1 origin
-//	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
-//      }
-//
-//      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     0x1000, 0, 0x1000,
-//			     "ADC [ch]", ""));
-//    }
-//
-//    // insert sub directory
-//    top_dir->Add(sub_dir);
-//  }
+  //  // ADC---------------------------------------------------------
+  //  {
+  //    // Declaration of the sub-directory
+  //    TString strSubDir  = CONV_STRING(kADC);
+  //    const char* nameSubDir = strSubDir.Data();
+  //    TList *sub_dir = new TList;
+  //    sub_dir->SetName(nameSubDir);
+  //
+  //    // Make histogram and add it
+  //    Int_t target_id = getUniqueID(kTOF_HT, 0, kADC, 0);
+  //    for(Int_t i = 0; i<NumOfSegTOF_HT*2; ++i){
+  //      const char* title = NULL;
+  //      if(i < NumOfSegTOF_HT){
+  //	Int_t seg = i+1; // 1 origin
+  //	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+  //      }else{
+  //	Int_t seg = i+1-NumOfSegTOF_HT; // 1 origin
+  //	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+  //      }
+  //
+  //      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+  //			     0x1000, 0, 0x1000,
+  //			     "ADC [ch]", ""));
+  //    }
+  //
+  //    // insert sub directory
+  //    top_dir->Add(sub_dir);
+  //  }
+  //
+  //  // ADCwTDC ---------------------------------------------------------
+  //  {
+  //    // Declaration of the sub-directory
+  //    TString strSubDir  = CONV_STRING(kADCwTDC);
+  //    const char* nameSubDir = strSubDir.Data();
+  //    TList *sub_dir = new TList;
+  //    sub_dir->SetName(nameSubDir);
+  //
+  //    // Make histogram and add it
+  //    Int_t target_id = getUniqueID(kTOF_HT, 0, kADCwTDC, 0);
+  //    for( Int_t i=0; i<NumOfSegTOF_HT*2; ++i ){
+  //      const char* title = NULL;
+  //      if( i<NumOfSegTOF_HT ){
+  //	Int_t seg = i+1; // 1 origin
+  //	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+  //      }else{
+  //	Int_t seg = i+1-NumOfSegTOF_HT; // 1 origin
+  //	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+  //      }
+  //
+  //      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+  //			     0x1000, 0, 0x1000,
+  //			     "ADC [ch]", ""));
+  //    }
+  //
+  //    // insert sub directory
+  //    top_dir->Add(sub_dir);
+  //  }
 
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
     // Make histogram and add it
-    int target_id = getUniqueID(kTOF_HT, 0, kTDC, 0);
-//    for(int i = 0; i<NumOfSegTOF_HT*2; ++i){
-    for(int i = 0; i<NumOfSegTOF_HT; ++i){
+    Int_t target_id = getUniqueID(kTOF_HT, 0, kTDC, 0);
+    //    for(Int_t i = 0; i<NumOfSegTOF_HT*2; ++i){
+    for(Int_t i = 0; i<NumOfSegTOF_HT; ++i){
       const char* title = NULL;
       if(i < NumOfSegTOF_HT){
-//	int seg = i+1; // 1 origin
-//	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-//	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg;
+	//	Int_t seg = i+1; // 1 origin
+	//	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+	//	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg;
 	title = Form("%s_%s_%s", nameDetector, nameSubDir, name_ch[i]);
-//      }else{
-//	int seg = i+1-NumOfSegTOF_HT; // 1 origin
-//	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+	//      }else{
+	//	Int_t seg = i+1-NumOfSegTOF_HT; // 1 origin
+	//	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -3528,7 +3535,7 @@ TList* HistMaker::createTOF_HT(bool flag_ps)
   // Hit parttern -----------------------------------------------
   {
     const char* title = "TOF_HT_hit_pattern";
-    int target_id = getUniqueID(kTOF_HT, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kTOF_HT, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegTOF_HT, 0, NumOfSegTOF_HT,
@@ -3538,7 +3545,7 @@ TList* HistMaker::createTOF_HT(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     const char* title = "TOF_HT_multiplicity";
-    int target_id = getUniqueID(kTOF_HT, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kTOF_HT, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegTOF_HT, 0, NumOfSegTOF_HT,
@@ -3552,10 +3559,10 @@ TList* HistMaker::createTOF_HT(bool flag_ps)
 // -------------------------------------------------------------------------
 // createTOFMT
 // -------------------------------------------------------------------------
-TList* HistMaker::createTOFMT(bool flag_ps)
+TList* HistMaker::createTOFMT( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kTOFMT);
+  TString strDet = CONV_STRING(kTOFMT);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -3564,24 +3571,24 @@ TList* HistMaker::createTOFMT(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kTOFMT, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegTOF; ++i){
+    Int_t target_id = getUniqueID(kTOFMT, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegTOF; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
@@ -3595,7 +3602,7 @@ TList* HistMaker::createTOFMT(bool flag_ps)
   // Hit parttern -----------------------------------------------
   {
     const char* title = "TOFMT_hit_pattern";
-    int target_id = getUniqueID(kTOFMT, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kTOFMT, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegTOF, 0, NumOfSegTOF,
@@ -3605,7 +3612,7 @@ TList* HistMaker::createTOFMT(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     const char* title = "TOFMT_multiplicity";
-    int target_id = getUniqueID(kTOFMT, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kTOFMT, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegTOF, 0, NumOfSegTOF,
@@ -3619,10 +3626,10 @@ TList* HistMaker::createTOFMT(bool flag_ps)
 // -------------------------------------------------------------------------
 // createLAC
 // -------------------------------------------------------------------------
-TList* HistMaker::createLAC(bool flag_ps)
+TList* HistMaker::createLAC( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kLAC);
+  TString strDet = CONV_STRING(kLAC);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -3631,24 +3638,24 @@ TList* HistMaker::createLAC(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kLAC, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegLAC; ++i){
+    Int_t target_id = getUniqueID(kLAC, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegLAC; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
@@ -3661,17 +3668,17 @@ TList* HistMaker::createLAC(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kLAC, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegLAC; ++i){
+    Int_t target_id = getUniqueID(kLAC, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegLAC; ++i){
       const char* title = NULL;
       if(i < NumOfSegLAC){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       }
 
@@ -3687,7 +3694,7 @@ TList* HistMaker::createLAC(bool flag_ps)
   // Hit parttern -----------------------------------------------
   {
     const char* title = "LAC_hit_pattern";
-    int target_id = getUniqueID(kLAC, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kLAC, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegLAC, 0, NumOfSegLAC,
@@ -3697,7 +3704,7 @@ TList* HistMaker::createLAC(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     const char* title = "LAC_multiplicity";
-    int target_id = getUniqueID(kLAC, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kLAC, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegLAC, 0, NumOfSegLAC,
@@ -3711,10 +3718,10 @@ TList* HistMaker::createLAC(bool flag_ps)
 // -------------------------------------------------------------------------
 // createLC
 // -------------------------------------------------------------------------
-TList* HistMaker::createLC(bool flag_ps)
+TList* HistMaker::createLC( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kLC);
+  TString strDet = CONV_STRING(kLC);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -3723,89 +3730,89 @@ TList* HistMaker::createLC(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-//  // ADC---------------------------------------------------------
-//  {
-//    // Declaration of the sub-directory
-//    std::string strSubDir  = CONV_STRING(kADC);
-//    const char* nameSubDir = strSubDir.c_str();
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//
-//    // Make histogram and add it
-//    int target_id = getUniqueID(kLC, 0, kADC, 0);
-//    for(int i = 0; i<NumOfSegLC*2; ++i){
-//      const char* title = NULL;
-//      if(i < NumOfSegLC){
-//	int seg = i+1; // 1 origin
-//	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-//      }else{
-//	int seg = i+1-NumOfSegLC; // 1 origin
-//	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
-//      }
-//
-//      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     0x1000, 0, 0x1000,
-//			     "ADC [ch]", ""));
-//    }
-//
-//    // insert sub directory
-//    top_dir->Add(sub_dir);
-//  }
-//
-//  // ADCwTDC ---------------------------------------------------------
-//  {
-//    // Declaration of the sub-directory
-//    std::string strSubDir  = CONV_STRING(kADCwTDC);
-//    const char* nameSubDir = strSubDir.c_str();
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//
-//    // Make histogram and add it
-//    int target_id = getUniqueID(kLC, 0, kADCwTDC, 0);
-//    for( int i=0; i<NumOfSegLC*2; ++i ){
-//      const char* title = NULL;
-//      if( i<NumOfSegLC ){
-//	int seg = i+1; // 1 origin
-//	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-//      }else{
-//	int seg = i+1-NumOfSegLC; // 1 origin
-//	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
-//      }
-//
-//      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     0x1000, 0, 0x1000,
-//			     "ADC [ch]", ""));
-//    }
-//
-//    // insert sub directory
-//    top_dir->Add(sub_dir);
-//  }
+  //  // ADC---------------------------------------------------------
+  //  {
+  //    // Declaration of the sub-directory
+  //    TString strSubDir  = CONV_STRING(kADC);
+  //    const char* nameSubDir = strSubDir.Data();
+  //    TList *sub_dir = new TList;
+  //    sub_dir->SetName(nameSubDir);
+  //
+  //    // Make histogram and add it
+  //    Int_t target_id = getUniqueID(kLC, 0, kADC, 0);
+  //    for(Int_t i = 0; i<NumOfSegLC*2; ++i){
+  //      const char* title = NULL;
+  //      if(i < NumOfSegLC){
+  //	Int_t seg = i+1; // 1 origin
+  //	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+  //      }else{
+  //	Int_t seg = i+1-NumOfSegLC; // 1 origin
+  //	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+  //      }
+  //
+  //      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+  //			     0x1000, 0, 0x1000,
+  //			     "ADC [ch]", ""));
+  //    }
+  //
+  //    // insert sub directory
+  //    top_dir->Add(sub_dir);
+  //  }
+  //
+  //  // ADCwTDC ---------------------------------------------------------
+  //  {
+  //    // Declaration of the sub-directory
+  //    TString strSubDir  = CONV_STRING(kADCwTDC);
+  //    const char* nameSubDir = strSubDir.Data();
+  //    TList *sub_dir = new TList;
+  //    sub_dir->SetName(nameSubDir);
+  //
+  //    // Make histogram and add it
+  //    Int_t target_id = getUniqueID(kLC, 0, kADCwTDC, 0);
+  //    for( Int_t i=0; i<NumOfSegLC*2; ++i ){
+  //      const char* title = NULL;
+  //      if( i<NumOfSegLC ){
+  //	Int_t seg = i+1; // 1 origin
+  //	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+  //      }else{
+  //	Int_t seg = i+1-NumOfSegLC; // 1 origin
+  //	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+  //      }
+  //
+  //      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+  //			     0x1000, 0, 0x1000,
+  //			     "ADC [ch]", ""));
+  //    }
+  //
+  //    // insert sub directory
+  //    top_dir->Add(sub_dir);
+  //  }
 
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kLC, 0, kTDC, 0);
-//    for(int i = 0; i<NumOfSegLC*2; ++i){
-    for(int i = 0; i<NumOfSegLC; ++i){
+    Int_t target_id = getUniqueID(kLC, 0, kTDC, 0);
+    //    for(Int_t i = 0; i<NumOfSegLC*2; ++i){
+    for(Int_t i = 0; i<NumOfSegLC; ++i){
       const char* title = NULL;
       if(i < NumOfSegLC){
-//	int seg = i+1; // 1 origin
-	int seg = i+1; // 1 origin
+	//	Int_t seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-//      }else{
-//	int seg = i+1-NumOfSegLC; // 1 origin
-//	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+	//      }else{
+	//	Int_t seg = i+1-NumOfSegLC; // 1 origin
+	//	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -3820,7 +3827,7 @@ TList* HistMaker::createLC(bool flag_ps)
   // Hit parttern -----------------------------------------------
   {
     const char* title = "LC_hit_pattern";
-    int target_id = getUniqueID(kLC, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kLC, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegLC, 0, NumOfSegLC,
@@ -3830,7 +3837,7 @@ TList* HistMaker::createLC(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     const char* title = "LC_multiplicity";
-    int target_id = getUniqueID(kLC, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kLC, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegLC, 0, NumOfSegLC,
@@ -3844,10 +3851,10 @@ TList* HistMaker::createLC(bool flag_ps)
 // -------------------------------------------------------------------------
 // createMsT
 // -------------------------------------------------------------------------
-TList* HistMaker::createMsT(bool flag_ps)
+TList* HistMaker::createMsT( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kMsT);
+  TString strDet = CONV_STRING(kMsT);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -3856,8 +3863,8 @@ TList* HistMaker::createMsT(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -3865,8 +3872,8 @@ TList* HistMaker::createMsT(bool flag_ps)
   {
     TList *sub_dir = new TList;
     sub_dir->SetName("MsT_TOF_TDC");
-    int target_id = getUniqueID(kMsT, 0, kTDC, 0);
-    for(int seg=0; seg<NumOfSegTOF; ++seg){
+    Int_t target_id = getUniqueID(kMsT, 0, kTDC, 0);
+    for(Int_t seg=0; seg<NumOfSegTOF; ++seg){
       sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d", nameDetector, seg+1),
 			     50000, 0, 2000000,
 			     "TDC", ""));
@@ -3878,8 +3885,8 @@ TList* HistMaker::createMsT(bool flag_ps)
   {
     TList *sub_dir = new TList;
     sub_dir->SetName("MsT_TOF_TDC_Acc");
-    int target_id = getUniqueID(kMsT, 0, kTDC, NumOfSegTOF);
-    for(int seg=0; seg<NumOfSegTOF; ++seg){
+    Int_t target_id = getUniqueID(kMsT, 0, kTDC, NumOfSegTOF);
+    for(Int_t seg=0; seg<NumOfSegTOF; ++seg){
       sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d_Acc", nameDetector, seg+1),
 			     10000, 0, 400000,
 			     "TDC", ""));
@@ -3891,8 +3898,8 @@ TList* HistMaker::createMsT(bool flag_ps)
   {
     TList *sub_dir = new TList;
     sub_dir->SetName("MsT_SCH_TDC");
-    int target_id = getUniqueID(kMsT, 0, kTDC, NumOfSegTOF*2);
-    for(int seg=0; seg<NumOfSegSCH; ++seg){
+    Int_t target_id = getUniqueID(kMsT, 0, kTDC, NumOfSegTOF*2);
+    for(Int_t seg=0; seg<NumOfSegSCH; ++seg){
       sub_dir->Add(createTH1(++target_id, Form("%s_SCH_TDC_%d", nameDetector, seg+1),
 			     50, 0, 50,
 			     "TDC", ""));
@@ -3902,7 +3909,7 @@ TList* HistMaker::createMsT(bool flag_ps)
 
   // Timing Counter TDC 2D -------------------------------------------------------
   {
-    int target_id = getUniqueID(kMsT, 0, kTDC2D, 0);
+    Int_t target_id = getUniqueID(kMsT, 0, kTDC2D, 0);
     top_dir->Add(createTH2(++target_id, Form("%s_TOF_TDC_2D", nameDetector),
 			   NumOfSegTOF, 0, NumOfSegTOF, 50000, 0, 2000000,
 			   "Segment", ""));
@@ -3910,7 +3917,7 @@ TList* HistMaker::createMsT(bool flag_ps)
 
   // HitPattern  ----------------------------------------------------
   {
-    int target_id = getUniqueID(kMsT, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kMsT, 0, kHitPat, 0);
     top_dir->Add(createTH1(target_id, Form("%s_TOF_HitPat", nameDetector),
 			   NumOfSegTOF, 0, NumOfSegTOF,
 			   "Segment", ""));
@@ -3923,7 +3930,7 @@ TList* HistMaker::createMsT(bool flag_ps)
 
   // Hit parttern 2D Flag --------------------------------------------
   {
-    int target_id = getUniqueID(kMsT, 0, kHitPat2D, 0);
+    Int_t target_id = getUniqueID(kMsT, 0, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id, "MsT_Flag_2D", // 1 origin
 			   4, 0., 4., 4, 0., 4.,
 			   "MsT Flag", "Soft Flag  "));
@@ -3936,10 +3943,10 @@ TList* HistMaker::createMsT(bool flag_ps)
 // -------------------------------------------------------------------------
 // createMtx3D
 // -------------------------------------------------------------------------
-TList* HistMaker::createMtx3D(bool flag_ps)
+TList* HistMaker::createMtx3D( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kMtx3D);
+  TString strDet = CONV_STRING(kMtx3D);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -3948,8 +3955,8 @@ TList* HistMaker::createMtx3D(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -3957,8 +3964,8 @@ TList* HistMaker::createMtx3D(bool flag_ps)
   {
     TList *sub_dir = new TList;
     sub_dir->SetName("Mtx_TOF_TDC");
-    int target_id = getUniqueID(kMtx3D, kHulTOF, kTDC, 0);
-    for(int seg=0; seg<NumOfSegTOF; ++seg){
+    Int_t target_id = getUniqueID(kMtx3D, kHulTOF, kTDC, 0);
+    for(Int_t seg=0; seg<NumOfSegTOF; ++seg){
       sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d", nameDetector, seg+1),
 			     0xff, 0, 0xff,
 			     "TDC [5ns/bin]", ""));
@@ -3970,8 +3977,8 @@ TList* HistMaker::createMtx3D(bool flag_ps)
   {
     TList *sub_dir = new TList;
     sub_dir->SetName("Mtx_FBH_TDC");
-    int target_id = getUniqueID(kMtx3D, kHulFBH, kTDC, 0);
-    for(int seg=0; seg<NumOfSegClusteredFBH; ++seg){
+    Int_t target_id = getUniqueID(kMtx3D, kHulFBH, kTDC, 0);
+    for(Int_t seg=0; seg<NumOfSegClusteredFBH; ++seg){
       sub_dir->Add(createTH1(++target_id, Form("%s_FBH_TDC_%d", nameDetector, seg+1),
 			     0xff, 0, 0xff,
 			     "TDC [5ns/bin]", ""));
@@ -3983,8 +3990,8 @@ TList* HistMaker::createMtx3D(bool flag_ps)
   {
     TList *sub_dir = new TList;
     sub_dir->SetName("Mtx_SCH_TDC");
-    int target_id = getUniqueID(kMtx3D, kHulSCH, kTDC, 0);
-    for(int seg=0; seg<NumOfSegSCH; ++seg){
+    Int_t target_id = getUniqueID(kMtx3D, kHulSCH, kTDC, 0);
+    for(Int_t seg=0; seg<NumOfSegSCH; ++seg){
       sub_dir->Add(createTH1(++target_id, Form("%s_SCH_TDC_%d", nameDetector, seg+1),
 			     0xff, 0, 0xff,
 			     "TDC [5ns/bin]", ""));
@@ -3994,7 +4001,7 @@ TList* HistMaker::createMtx3D(bool flag_ps)
 
   // Hit parttern 2D (TOFxFBH) --------------------------------------------
   {
-    int target_id = getUniqueID(kMtx3D, kHulTOFxFBH, kHitPat2D, 0);
+    Int_t target_id = getUniqueID(kMtx3D, kHulTOFxFBH, kHitPat2D, 0);
     top_dir->Add(createTH2(++target_id, "Mtx_TOFxFBH", // 1 origin
 			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,
 			   NumOfSegTOF,          0, NumOfSegTOF,
@@ -4004,7 +4011,7 @@ TList* HistMaker::createMtx3D(bool flag_ps)
 
   // Hit parttern 2D (TOFxSCH) --------------------------------------------
   {
-    int target_id = getUniqueID(kMtx3D, kHulTOFxSCH, kHitPat2D, 0);
+    Int_t target_id = getUniqueID(kMtx3D, kHulTOFxSCH, kHitPat2D, 0);
     top_dir->Add(createTH2(++target_id, "Mtx_TOFxSCH", // 1 origin
 			   NumOfSegSCH, 0, NumOfSegSCH,
 			   NumOfSegTOF, 0, NumOfSegTOF,
@@ -4014,7 +4021,7 @@ TList* HistMaker::createMtx3D(bool flag_ps)
 
   // Hit parttern 2D (FBHxSCH) --------------------------------------------
   {
-    int target_id = getUniqueID(kMtx3D, kHulFBHxSCH, kHitPat2D, 0);
+    Int_t target_id = getUniqueID(kMtx3D, kHulFBHxSCH, kHitPat2D, 0);
     top_dir->Add(createTH2(++target_id, "Mtx_FBHxSCH", // 1 origin
 			   NumOfSegSCH,          0, NumOfSegSCH,
 			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,
@@ -4026,7 +4033,7 @@ TList* HistMaker::createMtx3D(bool flag_ps)
   {
     TList *sub_dir = new TList;
     sub_dir->SetName("Mtx2D_TOF_FBH");
-    int target_id = getUniqueID(kMtx3D, kHul2DHitPat, kHitPat2D, 0);
+    Int_t target_id = getUniqueID(kMtx3D, kHul2DHitPat, kHitPat2D, 0);
     sub_dir->Add(createTH2(++target_id, "Mtx2D_TOFxSCH", // 1 origin
 			   NumOfSegSCH, 0, NumOfSegSCH,
 			   NumOfSegTOF, 0, NumOfSegTOF,
@@ -4039,8 +4046,8 @@ TList* HistMaker::createMtx3D(bool flag_ps)
   {
     TList *sub_dir = new TList;
     sub_dir->SetName("Mtx3D_TOF_FBH");
-    int target_id = getUniqueID(kMtx3D, kHul3DHitPat, kHitPat2D, 0);
-    for(int i = 0; i<NumOfSegClusteredFBH; ++i){
+    Int_t target_id = getUniqueID(kMtx3D, kHul3DHitPat, kHitPat2D, 0);
+    for(Int_t i = 0; i<NumOfSegClusteredFBH; ++i){
       sub_dir->Add(createTH2(++target_id, Form("Mtx3D_TOFxSCH_FBH%d",i), // 1 origin
 			     NumOfSegSCH, 0, NumOfSegSCH,
 			     NumOfSegTOF, 0, NumOfSegTOF,
@@ -4052,7 +4059,7 @@ TList* HistMaker::createMtx3D(bool flag_ps)
 
   // Hit parttern 2D (Flag) --------------------------------------------
   {
-    int target_id = getUniqueID(kMtx3D, kHul2D, kHitPat2D, 0);
+    Int_t target_id = getUniqueID(kMtx3D, kHul2D, kHitPat2D, 0);
     top_dir->Add(createTH2(++target_id, "Mtx_2D_FLAG", // 1 origin
 			   3, 0., 3., 3, 0., 3.,
 			   "Trigger Flag", "HUL Accept"));
@@ -4061,7 +4068,7 @@ TList* HistMaker::createMtx3D(bool flag_ps)
 
   // Hit parttern 3D (Flag) --------------------------------------------
   {
-    int target_id = getUniqueID(kMtx3D, kHul3D, kHitPat2D, 0);
+    Int_t target_id = getUniqueID(kMtx3D, kHul3D, kHitPat2D, 0);
     top_dir->Add(createTH2(++target_id, "Mtx_3D_FLAG", // 1 origin
 			   3, 0., 3., 3, 0., 3.,
 			   "Trigger Flag", "HUL Accept"));
@@ -4074,10 +4081,10 @@ TList* HistMaker::createMtx3D(bool flag_ps)
 // -------------------------------------------------------------------------
 // createTriggerFlag
 // -------------------------------------------------------------------------
-TList* HistMaker::createTriggerFlag(bool flag_ps)
+TList* HistMaker::createTriggerFlag( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kTriggerFlag);
+  TString strDet = CONV_STRING(kTriggerFlag);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -4086,16 +4093,16 @@ TList* HistMaker::createTriggerFlag(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // TDC---------------------------------------------------------
   {
     // Make histogram and add it
-    int target_id = getUniqueID(kTriggerFlag, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegTFlag; ++i){
+    Int_t target_id = getUniqueID(kTriggerFlag, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegTFlag; ++i){
       const char* title = NULL;
       title = Form("%s_%d", nameDetector, i+1);
       top_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -4107,7 +4114,7 @@ TList* HistMaker::createTriggerFlag(bool flag_ps)
   // Hit parttern -----------------------------------------------
   {
     const char* title = "Trigger_Entry";
-    int target_id = getUniqueID(kTriggerFlag, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kTriggerFlag, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   NumOfSegTFlag+1, 0., NumOfSegTFlag+1,
@@ -4121,11 +4128,11 @@ TList* HistMaker::createTriggerFlag(bool flag_ps)
 // -------------------------------------------------------------------------
 // createTriggerFlag_E07
 // -------------------------------------------------------------------------
-TList* HistMaker::createTriggerFlag_E07(bool flag_ps)
+TList* HistMaker::createTriggerFlag_E07( Bool_t flag_ps )
 {
   // Determine the detector name
-  //std::string strDet = CONV_STRING(kTriggerFlag);
-  std::string strDet = "TriggerFlag_E07";
+  //TString strDet = CONV_STRING(kTriggerFlag);
+  TString strDet = "TriggerFlag_E07";
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -4134,16 +4141,16 @@ TList* HistMaker::createTriggerFlag_E07(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // TDC---------------------------------------------------------
   {
     // Make histogram and add it
-    int target_id = getUniqueID(kTriggerFlag, 1, kTDC, 0);
-    for(int i = 0; i<NumOfSegTFlag; ++i){
+    Int_t target_id = getUniqueID(kTriggerFlag, 1, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegTFlag; ++i){
       const char* title = NULL;
       title = Form("%s_%d", nameDetector, i+1);
       top_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -4155,7 +4162,7 @@ TList* HistMaker::createTriggerFlag_E07(bool flag_ps)
   // Hit parttern -----------------------------------------------
   {
     const char* title = "Trigger_Entry_E07";
-    int target_id = getUniqueID(kTriggerFlag, 1, kHitPat, 0);
+    Int_t target_id = getUniqueID(kTriggerFlag, 1, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   20, 0, 20,
@@ -4169,10 +4176,10 @@ TList* HistMaker::createTriggerFlag_E07(bool flag_ps)
 // -------------------------------------------------------------------------
 // createCorrelation
 // -------------------------------------------------------------------------
-TList* HistMaker::createCorrelation(bool flag_ps)
+TList* HistMaker::createCorrelation( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kCorrelation);
+  TString strDet = CONV_STRING(kCorrelation);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -4181,13 +4188,19 @@ TList* HistMaker::createCorrelation(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   {
-    int target_id = getUniqueID(kCorrelation, 0, 0, 0);
+    Int_t target_id = getUniqueID(kCorrelation, 0, 0, 0);
+    // BH1 vs BFT -----------------------------------------------
+    top_dir->Add(createTH2( ++target_id, "BH1_BFT", // 1 origin
+			    NumOfSegBH1, 0, NumOfSegBH1,
+			    NumOfSegBFT, 0, NumOfSegBFT,
+			    "BFT seg", "BH1 seg" ) );
+
     // BH2 vs BH1 -----------------------------------------------
     top_dir->Add(createTH2(++target_id, "BH2_BH1", // 1 origin
 			   NumOfSegBH1, 0, NumOfSegBH1,
@@ -4211,6 +4224,52 @@ TList* HistMaker::createCorrelation(bool flag_ps)
 			   NumOfWireSDC1, 0, NumOfWireSDC1,
 			   NumOfWireSDC2, 0, NumOfWireSDC2,
 			   "SDC1 wire", "SDC2 wire"));
+
+    // TOF vs SDC3 --------------------------------------------
+    top_dir->Add(createTH2(++target_id, "TOF_SDC3x0", // 1 origin
+			   NumOfWireSDC3X, 0, NumOfWireSDC3X,
+			   NumOfSegTOF, 0, NumOfSegTOF,
+			   "SDC3 wire", "TOF seg"));
+  }
+
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
+// createCorrelatio_CATCH
+// -------------------------------------------------------------------------
+TList* HistMaker::createCorrelation_catch( Bool_t flag_ps )
+{
+  // Determine the detector name
+  TString strDet = CONV_STRING(kCorrelation_catch);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
+
+  // BGO vs CFT -----------------------------------------------
+  // Declaration of the directory
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  const char* name_Layer[] = { "UV1" ,"PHI1", "UV2", "PHI2",
+                               "UV3" ,"PHI3", "UV4", "PHI4",
+                               "UV_ALL" ,"PHI_ALL"};
+
+  {
+    Int_t target_id = getUniqueID(kCorrelation_catch, 0, 0, 0);
+    for(Int_t l=0; l<NumOfLayersCFT - 4; ++l){
+      const char* title = NULL;
+      title = Form("BGO_CFT_%s", name_Layer[l*2+1] );
+      top_dir->Add(createTH2(++target_id, title, // 1 origin
+			   NumOfSegCFT[l*2+1], 0, NumOfSegCFT[l*2+1],
+			   NumOfSegBGO, 0, NumOfSegBGO,
+			   "CFT seg", "BGO seg"));
+    }
   }
 
   return top_dir;
@@ -4219,10 +4278,10 @@ TList* HistMaker::createCorrelation(bool flag_ps)
 // -------------------------------------------------------------------------
 // createDAQ
 // -------------------------------------------------------------------------
-TList* HistMaker::createDAQ(bool flag_ps)
+TList* HistMaker::createDAQ( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kDAQ);
+  TString strDet = CONV_STRING(kDAQ);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -4231,8 +4290,8 @@ TList* HistMaker::createDAQ(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -4240,7 +4299,7 @@ TList* HistMaker::createDAQ(bool flag_ps)
   // DAQ infomation --------------------------------------------------
   {
     // Event builder infomation
-    int target_id = getUniqueID(kDAQ, kEB, kHitPat, 0);
+    Int_t target_id = getUniqueID(kDAQ, kEB, kHitPat, 0);
     top_dir->Add(createTH1(target_id + 1, "Data size EB", // 1 origin
 			   5000, 0, 5000,
 			   "Data size [words]", ""));
@@ -4280,13 +4339,13 @@ TList* HistMaker::createDAQ(bool flag_ps)
   // {
   //   // TKO box information
   //   // Declaration of the sub-directory
-  //   std::string strSubDir  = CONV_STRING(kTKO);
-  //   const char* nameSubDir = strSubDir.c_str();
+  //   TString strSubDir  = CONV_STRING(kTKO);
+  //   const char* nameSubDir = strSubDir.Data();
   //   TList *sub_dir = new TList;
   //   sub_dir->SetName(nameSubDir);
 
-  //   int target_id = getUniqueID(kDAQ, kTKO, kHitPat2D, 0);
-  //   for(int box = 0; box<6; ++box){
+  //   Int_t target_id = getUniqueID(kDAQ, kTKO, kHitPat2D, 0);
+  //   for(Int_t box = 0; box<6; ++box){
   //     const char* title = NULL;
   //     title = Form("TKO box%d", box);
   //     sub_dir->Add(createTH2(target_id + box+1, title, // 1 origin
@@ -4303,10 +4362,10 @@ TList* HistMaker::createDAQ(bool flag_ps)
 
 //_____________________________________________________________________
 TList*
-HistMaker::createDCEff( bool flag_ps )
+HistMaker::createDCEff( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING( kDCEff );
+  TString strDet = CONV_STRING( kDCEff );
   // name list of crearted detector
   name_created_detectors_.push_back( strDet );
   if( flag_ps ){
@@ -4320,10 +4379,10 @@ HistMaker::createDCEff( bool flag_ps )
 // -------------------------------------------------------------------------
 // Old functions
 // -------------------------------------------------------------------------
-TList* HistMaker::createBAC_SAC(bool flag_ps)
+TList* HistMaker::createBAC_SAC( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kBAC_SAC);
+  TString strDet = CONV_STRING(kBAC_SAC);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -4332,8 +4391,8 @@ TList* HistMaker::createBAC_SAC(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
@@ -4343,14 +4402,14 @@ TList* HistMaker::createBAC_SAC(bool flag_ps)
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBAC_SAC, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegBAC_SAC; ++i){
+    Int_t target_id = getUniqueID(kBAC_SAC, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegBAC_SAC; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -4365,18 +4424,18 @@ TList* HistMaker::createBAC_SAC(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kBAC_SAC, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegBAC_SAC; ++i){
+    Int_t target_id = getUniqueID(kBAC_SAC, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegBAC_SAC; ++i){
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     0x1000, 0, 0x1000,
+			     //			     0x1000, 0, 0x1000,
 			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
@@ -4389,10 +4448,10 @@ TList* HistMaker::createBAC_SAC(bool flag_ps)
   return top_dir;
 }
 
-TList* HistMaker::createSFV_SAC3(bool flag_ps)
+TList* HistMaker::createSFV_SAC3( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kSFV_SAC3);
+  TString strDet = CONV_STRING(kSFV_SAC3);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -4401,26 +4460,26 @@ TList* HistMaker::createSFV_SAC3(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  const int NofLoop = 7;
+  const Int_t NofLoop = 7;
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kSFV_SAC3, 0, kADC, 0);
-    for(int i = 0; i<NofLoop; ++i){
+    Int_t target_id = getUniqueID(kSFV_SAC3, 0, kADC, 0);
+    for(Int_t i = 0; i<NofLoop; ++i){
       const char* title = NULL;
       if(i<NofLoop-1){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%d", "SFV", nameSubDir, seg);
       }else{
 	title = Form("%s_%s", "SAC3", nameSubDir);
@@ -4438,17 +4497,17 @@ TList* HistMaker::createSFV_SAC3(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kSFV_SAC3, 0, kTDC, 0);
-    for(int i = 0; i<NofLoop; ++i){
+    Int_t target_id = getUniqueID(kSFV_SAC3, 0, kTDC, 0);
+    for(Int_t i = 0; i<NofLoop; ++i){
       const char* title = NULL;
       if(i<NofLoop-1){
-	int seg = i+1; // 1 origin
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%d", "SFV", nameSubDir, seg);
       }else{
 	title = Form("%s_%s", "SAC3", nameSubDir);
@@ -4466,7 +4525,7 @@ TList* HistMaker::createSFV_SAC3(bool flag_ps)
   // Hit parttern -----------------------------------------------
   {
     const char* title = "SFV_SAC3_hit_pattern";
-    int target_id = getUniqueID(kSFV_SAC3, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kSFV_SAC3, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NofLoop, 0, NofLoop,
@@ -4477,10 +4536,10 @@ TList* HistMaker::createSFV_SAC3(bool flag_ps)
   return top_dir;
 }
 
-TList* HistMaker::createGe(bool flag_ps)
+TList* HistMaker::createGe( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kGe);
+  TString strDet = CONV_STRING(kGe);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -4489,24 +4548,24 @@ TList* HistMaker::createGe(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kGe, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegGe; ++i){
+    Int_t target_id = getUniqueID(kGe, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x2000, 0, 0x2000,
@@ -4543,16 +4602,16 @@ TList* HistMaker::createGe(bool flag_ps)
   // CRM---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kCRM);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kCRM);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kGe, 0, kCRM, 0);
-    for(int i = 0; i<NumOfSegGe; ++i){
+    Int_t target_id = getUniqueID(kGe, 0, kCRM, 0);
+    for(Int_t i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     2000, 0, 10000,
@@ -4573,16 +4632,16 @@ TList* HistMaker::createGe(bool flag_ps)
   // TFA---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTFA);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTFA);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kGe, 0, kTFA, 0);
-    for(int i = 0; i<NumOfSegGe; ++i){
+    Int_t target_id = getUniqueID(kGe, 0, kTFA, 0);
+    for(Int_t i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     2000, 0, 10000,
@@ -4603,16 +4662,16 @@ TList* HistMaker::createGe(bool flag_ps)
   // PUR---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kPUR);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kPUR);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kGe, 0, kPUR, 0);
-    for(int i = 0; i<NumOfSegGe; ++i){
+    Int_t target_id = getUniqueID(kGe, 0, kPUR, 0);
+    for(Int_t i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     2000, 0, 130000,
@@ -4633,16 +4692,16 @@ TList* HistMaker::createGe(bool flag_ps)
   // RST---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kRST);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kRST);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kGe, 0, kRST, 0);
-    for(int i = 0; i<NumOfSegGe; ++i){
+    Int_t target_id = getUniqueID(kGe, 0, kRST, 0);
+    for(Int_t i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     100, 0, 130000,
@@ -4663,16 +4722,16 @@ TList* HistMaker::createGe(bool flag_ps)
   // Multi -------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kGe, 0, kMulti, 0);
-    for(int i = 0; i<NumOfSegGe; ++i){
+    Int_t target_id = getUniqueID(kGe, 0, kMulti, 0);
+    for(Int_t i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_MultiCRM_%d", nameDetector, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     16, 0, 16,
@@ -4680,9 +4739,9 @@ TList* HistMaker::createGe(bool flag_ps)
     }
 
     target_id = getUniqueID(kGe, 0, kMulti, 0) + NumOfSegGe;
-    for(int i = 0; i<NumOfSegGe; ++i){
+    for(Int_t i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_MultiTFA_%d", nameDetector, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     16, 0, 16,
@@ -4697,10 +4756,10 @@ TList* HistMaker::createGe(bool flag_ps)
   return top_dir;
 }
 
-TList* HistMaker::createPWO(bool flag_ps)
+TList* HistMaker::createPWO( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kPWO);
+  TString strDet = CONV_STRING(kPWO);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -4709,23 +4768,23 @@ TList* HistMaker::createPWO(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kPWO, 0, kADC2D, 0);
-    for(int i = 0; i<NumOfBoxPWO; ++i){
+    Int_t target_id = getUniqueID(kPWO, 0, kADC2D, 0);
+    for(Int_t i = 0; i<NumOfBoxPWO; ++i){
       const char* title = NULL;
-      int box = i+1; // 1 origin
+      Int_t box = i+1; // 1 origin
       title = Form("%s_%s2d_Box%d", nameDetector, nameSubDir, box);
       sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
 			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
@@ -4740,16 +4799,16 @@ TList* HistMaker::createPWO(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // sum hist
-    int target_id = getUniqueID(kPWO, 0, kTDC, 0);
-    for(int i = 0; i<NumOfBoxPWO; ++i){
+    Int_t target_id = getUniqueID(kPWO, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfBoxPWO; ++i){
       const char* title = NULL;
-      int box = i+1; // 1 origin
+      Int_t box = i+1; // 1 origin
       title = Form("%s_%ssum_Box%d", nameDetector, nameSubDir, box);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
   			     0x1000, 0, 0x1000,
@@ -4757,9 +4816,9 @@ TList* HistMaker::createPWO(bool flag_ps)
     }
 
     target_id = getUniqueID(kPWO, 0, kTDC2D, 0);
-    for(int i = 0; i<NumOfBoxPWO; ++i){
+    for(Int_t i = 0; i<NumOfBoxPWO; ++i){
       const char* title = NULL;
-      int box = i+1; // 1 origin
+      Int_t box = i+1; // 1 origin
       title = Form("%s_%s2d_Box%d", nameDetector, nameSubDir, box);
       sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
   			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
@@ -4774,15 +4833,15 @@ TList* HistMaker::createPWO(bool flag_ps)
   // HitPat---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kPWO, 0, kHitPat, 0);
-    for(int i = 0; i<NumOfBoxPWO; ++i){
+    Int_t target_id = getUniqueID(kPWO, 0, kHitPat, 0);
+    for(Int_t i = 0; i<NumOfBoxPWO; ++i){
       const char* title = NULL;
-      int box = i+1; // 1 origin
+      Int_t box = i+1; // 1 origin
       title = Form("%s_%s_Box%d", nameDetector, nameSubDir, box);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
   			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
@@ -4796,15 +4855,15 @@ TList* HistMaker::createPWO(bool flag_ps)
   // Multiplicity---------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kPWO, 0, kMulti, 0);
-    for(int i = 0; i<NumOfBoxPWO; ++i){
+    Int_t target_id = getUniqueID(kPWO, 0, kMulti, 0);
+    for(Int_t i = 0; i<NumOfBoxPWO; ++i){
       const char* title = NULL;
-      int box = i+1; // 1 origin
+      Int_t box = i+1; // 1 origin
       title = Form("%s_%s_Box%d", nameDetector, nameSubDir, box);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
   			     NumOfUnitPWO[i], 0, NumOfUnitPWO[i],
@@ -4819,10 +4878,10 @@ TList* HistMaker::createPWO(bool flag_ps)
   return top_dir;
 }
 
-TList* HistMaker::createPWO_E05(bool flag_ps)
+TList* HistMaker::createPWO_E05( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kPWO);
+  TString strDet = CONV_STRING(kPWO);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -4831,23 +4890,23 @@ TList* HistMaker::createPWO_E05(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  const int box_id = 7; // PBox 8 (E-6)
+  const Int_t box_id = 7; // PBox 8 (E-6)
 
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kPWO, 0, kADC, 0);
-    for(int i=0; i<NumOfUnitPWO[box_id]; ++i){
+    Int_t target_id = getUniqueID(kPWO, 0, kADC, 0);
+    for(Int_t i=0; i<NumOfUnitPWO[box_id]; ++i){
       sub_dir->Add(createTH1(++target_id, Form("%s_%s_%d",
 					       nameDetector, nameSubDir, i+1),
 			     0x1000, 0, 0x1000,
@@ -4860,13 +4919,13 @@ TList* HistMaker::createPWO_E05(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kPWO, 0, kTDC, 0);
-    for(int i=0; i<NumOfUnitPWO[box_id]; ++i){
+    Int_t target_id = getUniqueID(kPWO, 0, kTDC, 0);
+    for(Int_t i=0; i<NumOfUnitPWO[box_id]; ++i){
       sub_dir->Add(createTH1(++target_id, Form("%s_%s_%d",
 					       nameDetector, nameSubDir, i+1),
 			     0x800, 0, 0x800,
@@ -4879,10 +4938,10 @@ TList* HistMaker::createPWO_E05(bool flag_ps)
   // HitPat---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
 
-    int target_id = getUniqueID(kPWO, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kPWO, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, Form("%s_%s", nameDetector, nameSubDir),
 			   NumOfUnitPWO[box_id], 0, NumOfUnitPWO[box_id],
 			   "Segment", ""));
@@ -4891,10 +4950,10 @@ TList* HistMaker::createPWO_E05(bool flag_ps)
   // Multiplicity---------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
 
-    int target_id = getUniqueID(kPWO, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kPWO, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, Form("%s_%s", nameDetector, nameSubDir),
 			   NumOfUnitPWO[box_id]+1, 0, NumOfUnitPWO[box_id]+1,
 			   "Multiplicity", ""));
@@ -4908,10 +4967,10 @@ TList* HistMaker::createPWO_E05(bool flag_ps)
 // -------------------------------------------------------------------------
 // createVMEEASIROC
 // -------------------------------------------------------------------------
-TList* HistMaker::createVMEEASIROC(bool flag_ps)
+TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kVMEEASIROC);
+  TString strDet = CONV_STRING(kVMEEASIROC);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -4920,29 +4979,29 @@ TList* HistMaker::createVMEEASIROC(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // TDC-2D -------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kVMEEASIROC, 0, kTDC2D  , 0);
+    Int_t target_id = getUniqueID(kVMEEASIROC, 0, kTDC2D  , 0);
     const char* sub_name = "TDC";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersVMEEASIROC; ++i){
-        const char* title = NULL;
-        title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
-        sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
-                                1024, 0, 1024,
-                                "ch", "TDC [ch]"));
+    for(Int_t i=0; i<NumOfLayersVMEEASIROC; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
+			     1024, 0, 1024,
+			     "ch", "TDC [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -4950,21 +5009,21 @@ TList* HistMaker::createVMEEASIROC(bool flag_ps)
 
   // ADC-2D HighGain ----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kHighGain_2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHighGain_2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kVMEEASIROC, 0, kHighGain, 10);
+    Int_t target_id = getUniqueID(kVMEEASIROC, 0, kHighGain, 10);
     const char* sub_name = "HighGain";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersVMEEASIROC; ++i){
-        const char* title = NULL;
-        title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
-        sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
-                                4096, 0, 4096,
-                                "ch", "ADC [ch]"));
+    for(Int_t i=0; i<NumOfLayersVMEEASIROC; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
+			     4096, 0, 4096,
+			     "ch", "ADC [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -4972,21 +5031,21 @@ TList* HistMaker::createVMEEASIROC(bool flag_ps)
 
   // ADC-2D LowGain -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kLowGain_2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kLowGain_2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kVMEEASIROC, 0, kLowGain, 10);
+    Int_t target_id = getUniqueID(kVMEEASIROC, 0, kLowGain, 10);
     const char* sub_name = "LowGain";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersVMEEASIROC; ++i){
-        const char* title = NULL;
-        title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
-        sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
-                                4096, 0, 4096,
-                                "ch", "ADC [ch]"));
+    for(Int_t i=0; i<NumOfLayersVMEEASIROC; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
+			     4096, 0, 4096,
+			     "ch", "ADC [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -4996,13 +5055,517 @@ TList* HistMaker::createVMEEASIROC(bool flag_ps)
   return top_dir;
 }
 
+//// -------------------------------------------------------------------------
+//// createCFT
+//// -------------------------------------------------------------------------
+//TList* HistMaker::createCFT( Bool_t flag_ps )
+//{
+//  // Determine the detector name
+//  TString strDet = CONV_STRING(kCFT);
+//  // name list of crearted detector
+//  name_created_detectors_.push_back(strDet);
+//  if(flag_ps){
+//    // name list which are displayed in Ps tab
+//    name_ps_files_.push_back(strDet);
+//  }
+//
+//  // Declaration of the directory
+//  // Just type conversion from TString to char*
+//  const char* nameDetector = strDet.Data();
+//  TList *top_dir = new TList;
+//  top_dir->SetName(nameDetector);
+//  const char* name_Layer[] = { "UV1" ,"PHI1", "UV2", "PHI2",
+//                               "UV3" ,"PHI3", "UV4", "PHI4",
+//                               "UV_ALL" ,"PHI_ALL"};
+//
+//  // TDC---------------------------------------------------------
+//  {
+//    // Declaration of the sub-directory
+//    TString strSubDir  = CONV_STRING(kTDC);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kTDC, 0);
+//    const char* sub_name = "TDC";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+//			      1024, 0, 1024,
+//			      "TDC [ch]", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // TDC-2D -------------------------------------------------------
+//  {
+//    // Declaration of the sub-directory
+//    TString strSubDir  = CONV_STRING(kTDC2D);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kTDC2D  , 0);
+//    const char* sub_name = "TDC";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+//			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+//			     1024, 0, 1024,
+//			     "Fiber", "TDC [ch]"));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // TOT---------------------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kTOT);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kADC, 0);
+//    const char* sub_name = "TOT";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+//			      200, -50, 150,
+//			      "TOT [ch]", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // TOT-2D --------------------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kTOT2D);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kADC2D, 0);
+//    const char* sub_name = "TOT";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+//			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+//			     200, -50, 150,
+//			     "Fiber", "TOT [ch]"));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // CTOT---------------------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kCTOT);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kADC, 10);
+//    const char* sub_name = "CTOT";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+//			      200, -50, 150,
+//			      "TOT [ch]", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // CTOT-2D (after cut) --------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kCTOT2D);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kADC2D, 10);
+//    const char* sub_name = "CTOT";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+//			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+//			     200, -50, 150,
+//			     "Fiber", "TOT [ch]"));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC HighGain------------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kHighGain);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kHighGain, 0);
+//    const char* sub_name = "HighGain";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+//			      4096, 0, 4096,
+//			      "ADC [ch]", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC Pedestal -----------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kPedestal);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kPede, 0);
+//    const char* sub_name = "Pedestal";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+//			      1024, -200, 824,
+//			      "ADC [ch]", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC LowGain ------------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kLowGain);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kLowGain , 0);
+//    const char* sub_name = "LowGain";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+//			      4096, 0, 4096,
+//			      "ADC [ch]", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC HighGain Cut -------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kCHighGain);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kHighGain, 20);
+//    const char* sub_name = "CHighGain";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+//			      4096, 0, 4096,
+//			      "ADC [ch]", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC LowGain Cut --------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kCLowGain);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kLowGain , 20);
+//    const char* sub_name = "CLowGain";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+//			      4096, 0, 4096,
+//			      "ADC [ch]", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC-2D HighGain ----------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kHighGain_2D);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kHighGain, 10);
+//    const char* sub_name = "HighGain";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+//			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+//			     4096, 0, 4096,
+//			     "Fiber", "ADC [ch]"));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC-2D Pedestal ----------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kPedestal_2D);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kPede    , 10);
+//    const char* sub_name = "Pedestal";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+//			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+//			     1024,-200, 824,
+//			     "Fiber", "ADC [ch]"));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC-2D LowGain -----------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kLowGain_2D);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kLowGain, 10);
+//    const char* sub_name = "LowGain";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+//			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+//			     4096, 0, 4096,
+//			     "Fiber", "ADC [ch]"));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC-2D HighGain Cut ------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kCHighGain_2D);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kHighGain, 30);
+//    const char* sub_name = "CHighGain";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+//			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+//			     4096, 0, 4096,
+//			     "Fiber", "ADC [ch]"));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC-2D LowGain Cut -------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kCLowGain_2D);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kLowGain, 30);
+//    const char* sub_name = "CLowGain";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+//			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+//			     4096, 0, 4096,
+//			     "Fiber", "ADC [ch]"));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC HighGain * TOT -----------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kHighGainXTOT);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kHighGain, 40);
+//    const char* sub_name = "HighGainXTOT";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH2( ++target_id, title , // 1 origin
+//			      4096, 0, 4096,
+//			      200, -50, 150,
+//			      "HighGain [ch]", "TOT [ch]"));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // ADC LowGain * TOT -----------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kLowGainXTOT);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kLowGain, 40);
+//    const char* sub_name = "LowGainXTOT";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH2( ++target_id, title , // 1 origin
+//			      4096, 0, 4096,
+//			      200, -50, 150,
+//			      "LowGain [ch]", "TOT [ch]"));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//
+//  // Hit parttern -----------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kHitPattern);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kHitPat, 0);
+//    const char* sub_name = "HitPat";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+//			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+//			     "Fiber", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // Hit parttern (after cut) -----------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kCHitPattern);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    Int_t target_id = getUniqueID(kCFT, 0, kHitPat, 10);
+//    const char* sub_name = "CHitPat";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+//			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+//			     "Fiber", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // Multiplicity -----------------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kMultiplicity);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    //    const char* title = "CFT_multiplicity";
+//    Int_t target_id = getUniqueID(kCFT, 0, kMulti, 0);
+//    const char* sub_name = "multiplicity";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT + 2; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+//			     30, 0, 30,
+//			     "Multiplicity", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // Multiplicity (after cut)------------------------------------
+//  {
+//    TString strSubDir  = CONV_STRING(kCMultiplicity);
+//    const char* nameSubDir = strSubDir.Data();
+//    TList *sub_dir = new TList;
+//    sub_dir->SetName(nameSubDir);
+//
+//    //    const char* title = "CFT_CMulti";
+//    Int_t target_id = getUniqueID(kCFT, 0, kMulti, 10);
+//    const char* sub_name = "CMulti";
+//    // Add to the top directory
+//    for(Int_t i=0; i<NumOfLayersCFT + 2; ++i){
+//      const char* title = NULL;
+//      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+//      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+//			     30, 0, 30,
+//			     "Multiplicity", ""));
+//    }
+//    // insert sub directory
+//    top_dir->Add(sub_dir);
+//  }
+//
+//  // Return the TList pointer which is added into TGFileBrowser
+//  return top_dir;
+//}
+//
 // -------------------------------------------------------------------------
 // createCFT
 // -------------------------------------------------------------------------
-TList* HistMaker::createCFT(bool flag_ps)
+TList* HistMaker::createCFT( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kCFT);
+  TString strDet = CONV_STRING(kCFT);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -5011,8 +5574,8 @@ TList* HistMaker::createCFT(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
   const char* name_Layer[] = { "UV1" ,"PHI1", "UV2", "PHI2",
@@ -5022,20 +5585,20 @@ TList* HistMaker::createCFT(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kTDC, 0);
+    Int_t target_id = getUniqueID(kCFT, 0, kTDC, 0);
     const char* sub_name = "TDC";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-                                    1024, 0, 1024,
-                                    "TDC [ch]", ""));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      1024, 0, 1024,
+			      "TDC [ch]", ""));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5044,21 +5607,21 @@ TList* HistMaker::createCFT(bool flag_ps)
   // TDC-2D -------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kTDC2D  , 0);
+    Int_t target_id = getUniqueID(kCFT, 0, kTDC2D  , 0);
     const char* sub_name = "TDC";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-        const char* title = NULL;
-        title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-        sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                NumOfSegCFT[i], 0, NumOfSegCFT[i],
-                                1024, 0, 1024,
-                                "Fiber", "TDC [ch]"));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     1024, 0, 1024,
+			     "Fiber", "TDC [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5066,20 +5629,33 @@ TList* HistMaker::createCFT(bool flag_ps)
 
   // TOT---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTOT);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTOT);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kADC, 0);
+    Int_t target_id = getUniqueID(kCFT, 0, kADC, 0);
     const char* sub_name = "TOT";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-			   200, -50, 150,
-			   "TOT [ch]", ""));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      200, -50, 150,
+			      "TOT [ch]", ""));
+    }
+
+  // CTOT---------------------------------------------------------
+    target_id = getUniqueID(kCFT, 0, kADC, 10);
+    sub_name = "CTOT";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      200, -50, 150,
+			      "TOT [ch]", ""));
+
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5087,85 +5663,68 @@ TList* HistMaker::createCFT(bool flag_ps)
 
   // TOT-2D --------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTOT2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTOT2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kADC2D, 0);
+    Int_t target_id = getUniqueID(kCFT, 0, kADC2D, 0);
     const char* sub_name = "TOT";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                    NumOfSegCFT[i], 0, NumOfSegCFT[i],
-                                    200, -50, 150,
-                                    "Fiber", "TOT [ch]"));
-   }
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
-
-  // CTOT---------------------------------------------------------
-  {
-    std::string strSubDir  = CONV_STRING(kCTOT);
-    const char* nameSubDir = strSubDir.c_str();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    int target_id = getUniqueID(kCFT, 0, kADC, 10);
-    const char* sub_name = "CTOT";
-    // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-			   200, -50, 150,
-			   "TOT [ch]", ""));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     200, -50, 150,
+			     "Fiber", "TOT [ch]"));
     }
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
 
   // CTOT-2D (after cut) --------------------------------------------
-  {
-    std::string strSubDir  = CONV_STRING(kCTOT2D);
-    const char* nameSubDir = strSubDir.c_str();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    int target_id = getUniqueID(kCFT, 0, kADC2D, 10);
-    const char* sub_name = "CTOT";
+    target_id = getUniqueID(kCFT, 0, kADC2D, 10);
+    sub_name = "CTOT";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                    NumOfSegCFT[i], 0, NumOfSegCFT[i],
-                                    200, -50, 150,
-                                    "Fiber", "TOT [ch]"));
-   }
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     200, -50, 150,
+			     "Fiber", "TOT [ch]"));
+
+    }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
 
   // ADC HighGain------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kHighGain);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHighGain);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kHighGain, 0);
+    Int_t target_id = getUniqueID(kCFT, 0, kHighGain, 0);
     const char* sub_name = "HighGain";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-                                    4096, 0, 4096,
-                                    "ADC [ch]", ""));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      4096, 0, 4096,
+			      "ADC [ch]", ""));
+    }
+
+  // ADC HighGain Cut -------------------------------------------
+      target_id = getUniqueID(kCFT, 0, kHighGain, 20);
+      sub_name = "CHighGain";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      4096, 0, 4096,
+			      "ADC [ch]", ""));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5173,20 +5732,21 @@ TList* HistMaker::createCFT(bool flag_ps)
 
   // ADC Pedestal -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kPedestal);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kPedestal);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kPede, 0);
+    Int_t target_id = getUniqueID(kCFT, 0, kPede, 0);
     const char* sub_name = "Pedestal";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-                                    1024, -200, 824,
-                                    "ADC [ch]", ""));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      1024, -200, 824,
+			      "ADC [ch]", ""));
+
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5194,62 +5754,32 @@ TList* HistMaker::createCFT(bool flag_ps)
 
   // ADC LowGain ------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kLowGain);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kLowGain);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kLowGain , 0);
+    Int_t target_id = getUniqueID(kCFT, 0, kLowGain , 0);
     const char* sub_name = "LowGain";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-                                    4096, 0, 4096,
-                                    "ADC [ch]", ""));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      4096, 0, 4096,
+			      "ADC [ch]", ""));
     }
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
-
-  // ADC HighGain Cut -------------------------------------------
-  {
-    std::string strSubDir  = CONV_STRING(kCHighGain);
-    const char* nameSubDir = strSubDir.c_str();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    int target_id = getUniqueID(kCFT, 0, kHighGain, 20);
-    const char* sub_name = "CHighGain";
-    // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-                                    4096, 0, 4096,
-                                    "ADC [ch]", ""));
-    }
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
 
   // ADC LowGain Cut --------------------------------------------
-  {
-    std::string strSubDir  = CONV_STRING(kCLowGain);
-    const char* nameSubDir = strSubDir.c_str();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    int target_id = getUniqueID(kCFT, 0, kLowGain , 20);
-    const char* sub_name = "CLowGain";
+    target_id = getUniqueID(kCFT, 0, kLowGain , 20);
+    sub_name = "CLowGain";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-                                    4096, 0, 4096,
-                                    "ADC [ch]", ""));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      4096, 0, 4096,
+			      "ADC [ch]", ""));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5257,21 +5787,33 @@ TList* HistMaker::createCFT(bool flag_ps)
 
   // ADC-2D HighGain ----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kHighGain_2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHighGain_2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kHighGain, 10);
+    Int_t target_id = getUniqueID(kCFT, 0, kHighGain, 10);
     const char* sub_name = "HighGain";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-        const char* title = NULL;
-        title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-        sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                NumOfSegCFT[i], 0, NumOfSegCFT[i],
-                                4096, 0, 4096,
-                                "Fiber", "ADC [ch]"));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     4096, 0, 4096,
+			     "Fiber", "ADC [ch]"));
+    }
+  // ADC-2D HighGain Cut ------------------------------------------
+    target_id = getUniqueID(kCFT, 0, kHighGain, 30);
+    sub_name = "CHighGain";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     4096, 0, 4096,
+			     "Fiber", "ADC [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5279,21 +5821,21 @@ TList* HistMaker::createCFT(bool flag_ps)
 
   // ADC-2D Pedestal ----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kPedestal_2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kPedestal_2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kPede    , 10);
+    Int_t target_id = getUniqueID(kCFT, 0, kPede    , 10);
     const char* sub_name = "Pedestal";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-        const char* title = NULL;
-        title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-        sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                NumOfSegCFT[i], 0, NumOfSegCFT[i],
-                                1024,-200, 824,
-                                "Fiber", "ADC [ch]"));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     1024,-200, 824,
+			     "Fiber", "ADC [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5301,65 +5843,33 @@ TList* HistMaker::createCFT(bool flag_ps)
 
   // ADC-2D LowGain -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kLowGain_2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kLowGain_2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kLowGain, 10);
+    Int_t target_id = getUniqueID(kCFT, 0, kLowGain, 10);
     const char* sub_name = "LowGain";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-        const char* title = NULL;
-        title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-        sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                NumOfSegCFT[i], 0, NumOfSegCFT[i],
-                                4096, 0, 4096,
-                                "Fiber", "ADC [ch]"));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     4096, 0, 4096,
+			     "Fiber", "ADC [ch]"));
     }
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
-
-  // ADC-2D HighGain Cut ------------------------------------------
-  {
-    std::string strSubDir  = CONV_STRING(kCHighGain_2D);
-    const char* nameSubDir = strSubDir.c_str();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    int target_id = getUniqueID(kCFT, 0, kHighGain, 30);
-    const char* sub_name = "CHighGain";
-    // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-        const char* title = NULL;
-        title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-        sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                NumOfSegCFT[i], 0, NumOfSegCFT[i],
-                                4096, 0, 4096,
-                                "Fiber", "ADC [ch]"));
-    }
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
-
   // ADC-2D LowGain Cut -------------------------------------------
-  {
-    std::string strSubDir  = CONV_STRING(kCLowGain_2D);
-    const char* nameSubDir = strSubDir.c_str();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    int target_id = getUniqueID(kCFT, 0, kLowGain, 30);
-    const char* sub_name = "CLowGain";
+    target_id = getUniqueID(kCFT, 0, kLowGain, 30);
+    sub_name = "CLowGain";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-        const char* title = NULL;
-        title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-        sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                NumOfSegCFT[i], 0, NumOfSegCFT[i],
-                                4096, 0, 4096,
-                                "Fiber", "ADC [ch]"));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     4096, 0, 4096,
+			     "Fiber", "ADC [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5367,21 +5877,21 @@ TList* HistMaker::createCFT(bool flag_ps)
 
   // ADC HighGain * TOT -----------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kHighGainXTOT);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHighGainXTOT);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kHighGain, 40);
+    Int_t target_id = getUniqueID(kCFT, 0, kHighGain, 40);
     const char* sub_name = "HighGainXTOT";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH2( ++target_id, title , // 1 origin
-                                    4096, 0, 4096,
-                                    200, -50, 150,
-                                    "HighGain [ch]", "TOT [ch]"));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2( ++target_id, title , // 1 origin
+			      4096, 0, 4096,
+			      200, -50, 150,
+			      "HighGain [ch]", "TOT [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5389,21 +5899,21 @@ TList* HistMaker::createCFT(bool flag_ps)
 
   // ADC LowGain * TOT -----------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kLowGainXTOT);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kLowGainXTOT);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kLowGain, 40);
+    Int_t target_id = getUniqueID(kCFT, 0, kLowGain, 40);
     const char* sub_name = "LowGainXTOT";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH2( ++target_id, title , // 1 origin
-                                    4096, 0, 4096,
-                                    200, -50, 150,
-                                    "LowGain [ch]", "TOT [ch]"));
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2( ++target_id, title , // 1 origin
+			      4096, 0, 4096,
+			      200, -50, 150,
+			      "LowGain [ch]", "TOT [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5412,86 +5922,67 @@ TList* HistMaker::createCFT(bool flag_ps)
 
   // Hit parttern -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kHitPattern);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPattern);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kCFT, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kCFT, 0, kHitPat, 0);
     const char* sub_name = "HitPat";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   NumOfSegCFT[i], 0, NumOfSegCFT[i],
-			   "Fiber", ""));
-   }
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     "Fiber", ""));
 
+    }
   // Hit parttern (after cut) -----------------------------------
-  {
-    std::string strSubDir  = CONV_STRING(kCHitPattern);
-    const char* nameSubDir = strSubDir.c_str();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    int target_id = getUniqueID(kCFT, 0, kHitPat, 10);
-    const char* sub_name = "CHitPat";
+    target_id = getUniqueID(kCFT, 0, kHitPat, 10);
+    sub_name = "CHitPat";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   NumOfSegCFT[i], 0, NumOfSegCFT[i],
-			   "Fiber", ""));
-   }
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     "Fiber", ""));
+    }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
 
   // Multiplicity -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kMultiplicity);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMultiplicity);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-//    const char* title = "CFT_multiplicity";
-    int target_id = getUniqueID(kCFT, 0, kMulti, 0);
+    //    const char* title = "CFT_multiplicity";
+    Int_t target_id = getUniqueID(kCFT, 0, kMulti, 0);
     const char* sub_name = "multiplicity";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT + 2; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   30, 0, 30,
-			   "Multiplicity", ""));
-   }
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
-
+    for(Int_t i=0; i<NumOfLayersCFT + 2; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     30, 0, 30,
+			     "Multiplicity", ""));
+    }
   // Multiplicity (after cut)------------------------------------
-  {
-    std::string strSubDir  = CONV_STRING(kCMultiplicity);
-    const char* nameSubDir = strSubDir.c_str();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-//    const char* title = "CFT_CMulti";
-    int target_id = getUniqueID(kCFT, 0, kMulti, 10);
-    const char* sub_name = "CMulti";
+    //    const char* title = "CFT_CMulti";
+    target_id = getUniqueID(kCFT, 0, kMulti, 10);
+    sub_name = "CMulti";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersCFT + 2; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   30, 0, 30,
-			   "Multiplicity", ""));
-   }
+    for(Int_t i=0; i<NumOfLayersCFT + 2; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     30, 0, 30,
+			     "Multiplicity", ""));
+    }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -5503,10 +5994,10 @@ TList* HistMaker::createCFT(bool flag_ps)
 // -------------------------------------------------------------------------
 // createBGO
 // -------------------------------------------------------------------------
-TList* HistMaker::createBGO(bool flag_ps)
+TList* HistMaker::createBGO( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kBGO);
+  TString strDet = CONV_STRING(kBGO);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -5515,133 +6006,133 @@ TList* HistMaker::createBGO(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-//  // ADC---------------------------------------------------------
-//  {
-//    // Declaration of the sub-directory
-//    std::string strSubDir  = CONV_STRING(kADC);
-//    const char* nameSubDir = strSubDir.c_str();
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//
-//    // Make histogram and add it
-//    // Make unique ID
-//    int target_id = getUniqueID(kBGO, 0, kADC, 0);
-//    for(int i = 0; i<NumOfSegBGO; ++i){
-//      const char* title = NULL;
-//      int seg = i+1; // 1 origin
-//      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-//
-//      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     0x1000, 0, 0x1000,
-//			     "ADC [ch]", ""));
-//    }
-//
-//    // insert sub directory
-//    top_dir->Add(sub_dir);
-//  }
-//
   // FlashADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kFADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kFADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // Make unique ID
-    int target_id = getUniqueID(kBGO, 0, kFADC, 0);
-    for(int i = 0; i<NumOfSegBGO; ++i){
+    Int_t target_id = getUniqueID(kBGO, 0, kFADC, 0);
+    for(Int_t i = 0; i<NumOfSegBGO; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
 
       sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
-			     612, 0, 612,
-			     24500, 0, 24500,
-			     "ADC [ch]", ""));
+			     200, 0, 200,
+			     19000, -1000, 18000,
+			     "Sampling", "ADC [ch]"));
     }
 
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-//
-//  // ADC w/TDC ---------------------------------------------------------
-//  {
-//    // Declaration of the sub-directory
-//    std::string strSubDir  = CONV_STRING(kADCwTDC);
-//    const char* nameSubDir = strSubDir.c_str();
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//
-//    // Make histogram and add it
-//    // Make unique ID
-//    int target_id = getUniqueID(kBGO, 0, kADCwTDC, 0);
-//    for( int i=0; i<NumOfSegBGO; ++i ){
-//      const char* title = NULL;
-//      int seg = i+1; // 1 origin
-//      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-//      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     0x1000, 0, 0x1000,
-//			     "ADC [ch]", ""));
-//    }
-//    // insert sub directory
-//    top_dir->Add(sub_dir);
-//  }
-//
-//  // TDC---------------------------------------------------------
-//  {
-//    // Declaration of the sub-directory
-//    std::string strSubDir  = CONV_STRING(kTDC);
-//    const char* nameSubDir = strSubDir.c_str();
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//
-//    // Make histogram and add it
-//    int target_id = getUniqueID(kBGO, 0, kTDC, 0);
-//    for(int i = 0; i<NumOfSegBGO; ++i){
-//      const char* title = NULL;
-//      int seg = i+1; // 1 origin
-//      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-//      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     0x1000, 0, 0x1000,
-//			     "TDC [ch]", ""));
-//    }
-//    // insert sub directory
-//    top_dir->Add(sub_dir);
-//  }
-//
-//  // Hit parttern -----------------------------------------------
-//  {
-//    int target_id = getUniqueID(kBGO, 0, kHitPat, 0);
-//    // Add to the top directory
-//    top_dir->Add(createTH1(++target_id, "BGO_hit_pattern", // 1 origin
-//			   NumOfSegBGO, 0, NumOfSegBGO,
-//			   "Segment", ""));
-//
-//    top_dir->Add(createTH1(++target_id, "BGO_chit_pattern", // 1 origin
-//			   NumOfSegBGO, 0, NumOfSegBGO,
-//			   "Segment", ""));
-//  }
-//
-//  // Multiplicity -----------------------------------------------
-//  {
-//    int target_id = getUniqueID(kBGO, 0, kMulti, 0);
-//    // Add to the top directory
-//    top_dir->Add(createTH1(++target_id, "BGO_multiplicity", // 1 origin
-//			   NumOfSegBGO, 0, NumOfSegBGO,
-//			   "Multiplicity", ""));
-//
-//    top_dir->Add(createTH1(++target_id, "BGO_cmultiplicity", // 1 origin
-//			   NumOfSegBGO, 0, NumOfSegBGO,
-//			   "Multiplicity", ""));
-//  }
-//
+  
+  // FlashADCwTDC ----------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kFADCwTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    // Make unique ID
+    Int_t target_id = getUniqueID(kBGO, 0, kADCwTDC, 0);
+    for(Int_t i = 0; i<NumOfSegBGO; ++i){
+      const char* title = NULL;
+      Int_t seg = i+1; // 1 origin
+      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+
+      sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
+			     200, 0, 200,
+			     19000, -1000, 18000,
+			     "Sampling", "ADC [ch]"));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+  
+  // TDC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kBGO, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegBGO; ++i){
+      const char* title = NULL;
+      Int_t seg = i+1; // 1 origin
+      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "TDC [ch]", ""));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // FADC TRGTiming & Clk ---------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = "Trigger_Timing";
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    const char* name_Layer[] = { "TrgTiming1", "TrgTiming2", "TrgTiming3", "clk" };
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kBGO, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegBGO_T; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s", nameDetector, name_Layer[i]);
+      sub_dir->Add(createTH1(target_id + NumOfSegBGO + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "TDC [ch]", ""));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // Hit parttern -----------------------------------------------
+  {
+    Int_t target_id = getUniqueID(kBGO, 0, kHitPat, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(++target_id, "BGO_hit_pattern", // 1 origin
+			   NumOfSegBGO, 0, NumOfSegBGO,
+			   "Segment", ""));
+
+    top_dir->Add(createTH1(++target_id, "BGO_chit_pattern", // 1 origin
+			   NumOfSegBGO, 0, NumOfSegBGO,
+			   "Segment", ""));
+  }
+
+  // Multiplicity -----------------------------------------------
+  {
+    Int_t target_id = getUniqueID(kBGO, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(++target_id, "BGO_multiplicity", // 1 origin
+			   NumOfSegBGO, 0, NumOfSegBGO,
+			   "Multiplicity", ""));
+
+    top_dir->Add(createTH1(++target_id, "BGO_cmultiplicity", // 1 origin
+			   NumOfSegBGO, 0, NumOfSegBGO,
+			   "Multiplicity", ""));
+  }
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -5649,10 +6140,10 @@ TList* HistMaker::createBGO(bool flag_ps)
 // -------------------------------------------------------------------------
 // createPiID
 // -------------------------------------------------------------------------
-TList* HistMaker::createPiID(bool flag_ps)
+TList* HistMaker::createPiID( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kPiID);
+  TString strDet = CONV_STRING(kPiID);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -5661,25 +6152,25 @@ TList* HistMaker::createPiID(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // Make unique ID
-    int target_id = getUniqueID(kPiID, 0, kADC, 0);
-    for(int i = 0; i<NumOfSegPiID; ++i){
+    Int_t target_id = getUniqueID(kPiID, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegPiID; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -5694,17 +6185,17 @@ TList* HistMaker::createPiID(bool flag_ps)
   // ADC w/TDC ---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kADCwTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADCwTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
     // Make unique ID
-    int target_id = getUniqueID(kPiID, 0, kADCwTDC, 0);
-    for( int i=0; i<NumOfSegPiID; ++i ){
+    Int_t target_id = getUniqueID(kPiID, 0, kADCwTDC, 0);
+    for( Int_t i=0; i<NumOfSegPiID; ++i ){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
@@ -5717,16 +6208,16 @@ TList* HistMaker::createPiID(bool flag_ps)
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    int target_id = getUniqueID(kPiID, 0, kTDC, 0);
-    for(int i = 0; i<NumOfSegPiID; ++i){
+    Int_t target_id = getUniqueID(kPiID, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegPiID; ++i){
       const char* title = NULL;
-      int seg = i+1; // 1 origin
+      Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
@@ -5738,7 +6229,7 @@ TList* HistMaker::createPiID(bool flag_ps)
 
   // Hit parttern -----------------------------------------------
   {
-    int target_id = getUniqueID(kPiID, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kPiID, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "PiID_hit_pattern", // 1 origin
 			   NumOfSegPiID, 0, NumOfSegPiID,
@@ -5751,7 +6242,7 @@ TList* HistMaker::createPiID(bool flag_ps)
 
   // Multiplicity -----------------------------------------------
   {
-    int target_id = getUniqueID(kPiID, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kPiID, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(++target_id, "PiID_multiplicity", // 1 origin
 			   NumOfSegPiID, 0, NumOfSegPiID,
@@ -5769,10 +6260,10 @@ TList* HistMaker::createPiID(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSFT
 // -------------------------------------------------------------------------
-TList* HistMaker::createSFT(bool flag_ps)
+TList* HistMaker::createSFT( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kSFT);
+  TString strDet = CONV_STRING(kSFT);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -5781,31 +6272,31 @@ TList* HistMaker::createSFT(bool flag_ps)
   }
 
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
-  const char* name_Layer[] = { "X", "XP", "V", "U" };
-  const char* name_Layer_1[] = { "X", "V", "U" };
-//  const int NumOfSegSFT;
+  const char* name_Layer[] = { "U", "V", "X", "XP" };
+  const char* name_Layer_1[] = { "V", "U", "X" };
+  //  const Int_t NumOfSegSFT;
 
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSFT, 0, kTDC, 0);
+    Int_t target_id = getUniqueID(kSFT, 0, kTDC, 0);
     const char* sub_name = "TDC";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-            sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-                                    1024, 0, 1024,
-                                    "TDC [ch]", ""));
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      1024, 0, 1024,
+			      "TDC [ch]", ""));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -5814,21 +6305,21 @@ TList* HistMaker::createSFT(bool flag_ps)
   // TDC (after cut) --------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kCTDC);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kCTDC);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSFT, 0, kTDC, 10);
+    Int_t target_id = getUniqueID(kSFT, 0, kTDC, 10);
     const char* sub_name = "CTDC";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   1024, 0, 1024,
-			   "TDC [ch]", ""));
-   }
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     1024, 0, 1024,
+			     "TDC [ch]", ""));
+    }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -5836,21 +6327,21 @@ TList* HistMaker::createSFT(bool flag_ps)
   // TOT---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTOT);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTOT);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSFT, 0, kADC, 0);
+    Int_t target_id = getUniqueID(kSFT, 0, kADC, 0);
     const char* sub_name = "TOT";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   200, -50, 150,
-			   "TOT [ch]", ""));
-   }
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     200, -50, 150,
+			     "TOT [ch]", ""));
+    }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -5858,21 +6349,21 @@ TList* HistMaker::createSFT(bool flag_ps)
   // TOT (after cut) --------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kCTOT);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kCTOT);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSFT, 0, kADC, 10);
+    Int_t target_id = getUniqueID(kSFT, 0, kADC, 10);
     const char* sub_name = "CTOT";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   200, -50, 150,
-			   "TOT [ch]", ""));
-   }
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     200, -50, 150,
+			     "TOT [ch]", ""));
+    }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -5880,27 +6371,21 @@ TList* HistMaker::createSFT(bool flag_ps)
   // Hit parttern -----------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kHitPattern);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitPattern);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSFT, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kSFT, 0, kHitPat, 0);
     const char* sub_name = "HitPat";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-    if( i==0 || i==1 ){
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   NumOfSegSFT_X, 0, NumOfSegSFT_X,
-			   "Segment", ""));
-    }else{
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
-			   "Segment", ""));
-            }
-   }
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     NumOfSegSFT[i], 0, NumOfSegSFT[i],
+			     "Segment", ""));
+    }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -5908,27 +6393,21 @@ TList* HistMaker::createSFT(bool flag_ps)
   // Hit parttern (after cut) -----------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kCHitPattern);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kCHitPattern);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSFT, 0, kHitPat, 10);
+    Int_t target_id = getUniqueID(kSFT, 0, kHitPat, 10);
     const char* sub_name = "CHitPat";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
-    if( i==0 || i==1 ){
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   NumOfSegSFT_X, 0, NumOfSegSFT_X,
-			   "Segment", ""));
-    }else{
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
-			   "Segment", ""));
-            }
-   }
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     NumOfSegSFT[i], 0, NumOfSegSFT[i],
+			     "Segment", ""));
+    }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -5936,22 +6415,22 @@ TList* HistMaker::createSFT(bool flag_ps)
   // Multiplicity -----------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kMultiplicity);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMultiplicity);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-//    const char* title = "SFT_multiplicity";
-    int target_id = getUniqueID(kSFT, 0, kMulti, 0);
+    //    const char* title = "SFT_multiplicity";
+    Int_t target_id = getUniqueID(kSFT, 0, kMulti, 0);
     const char* sub_name = "multiplicity";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT-1; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer_1[i] );
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   30, 0, 30,
-			   "Multiplicity", ""));
-   }
+    for(Int_t i=0; i<NumOfPlaneSFT-1; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer_1[i] );
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     30, 0, 30,
+			     "Multiplicity", ""));
+    }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -5959,22 +6438,22 @@ TList* HistMaker::createSFT(bool flag_ps)
   // Multiplicity (after cut)------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kCMultiplicity);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kCMultiplicity);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-//    const char* title = "SFT_CMulti";
-    int target_id = getUniqueID(kSFT, 0, kMulti, 10);
+    //    const char* title = "SFT_CMulti";
+    Int_t target_id = getUniqueID(kSFT, 0, kMulti, 10);
     const char* sub_name = "CMulti";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT-1; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer_1[i] );
-    sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			   30, 0, 30,
-			   "Multiplicity", ""));
-   }
+    for(Int_t i=0; i<NumOfPlaneSFT-1; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer_1[i] );
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     30, 0, 30,
+			     "Multiplicity", ""));
+    }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -5982,29 +6461,22 @@ TList* HistMaker::createSFT(bool flag_ps)
   // TDC-2D (after cut) --------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTDC_2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC_2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSFT, 0, kTDC2D, 0);
+    Int_t target_id = getUniqueID(kSFT, 0, kTDC2D, 0);
     const char* sub_name = "CTDC";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-    if( i==0 || i==1 ){
-            sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                    NumOfSegSFT_X, 0, NumOfSegSFT_X,
-                                    1024, 0, 1024,
-                                    "Segment", "TDC [ch]"));
-    }else{
-            sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                    NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
-                                    1024, 0, 1024,
-                                    "Segment", "TDC [ch]"));
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegSFT[i], 0, NumOfSegSFT[i],
+			     1024, 0, 1024,
+			     "Segment", "TDC [ch]"));
     }
-   }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -6012,29 +6484,22 @@ TList* HistMaker::createSFT(bool flag_ps)
   // TOT-2D (after cut) --------------------------------------------
   {
     // Declaration of the sub-directory
-    std::string strSubDir  = CONV_STRING(kTOT_2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTOT_2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSFT, 0, kADC2D, 0);
+    Int_t target_id = getUniqueID(kSFT, 0, kADC2D, 0);
     const char* sub_name = "CTOT";
     // Add to the top directory
-    for(int i=0; i<NumOfLayersSFT; ++i){
-    const char* title = NULL;
-    title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
-    if( i==0 || i==1 ){
-            sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                    NumOfSegSFT_X, 0, NumOfSegSFT_X,
-                                    200, -50, 150,
-                                    "Segment", "TOT [ch]"));
-    }else{
-            sub_dir->Add(createTH2(++target_id, title, // 1 origin
-                                    NumOfSegSFT_UV, 0, NumOfSegSFT_UV,
-                                    200, -50, 150,
-                                    "Segment", "TOT [ch]"));
+    for(Int_t i=0; i<NumOfPlaneSFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s_2D", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegSFT[i], 0, NumOfSegSFT[i],
+			     200, -50, 150,
+			     "Segment", "TOT [ch]"));
     }
-   }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -6045,13 +6510,13 @@ TList* HistMaker::createSFT(bool flag_ps)
 // -------------------------------------------------------------------------
 // createSAC_for_E40
 // -------------------------------------------------------------------------
-TList* HistMaker::createSAC(bool flag_ps)
+TList* HistMaker::createSAC( Bool_t flag_ps )
 {
-  std::string strDet = CONV_STRING(kSAC);       // Determine the detector name
+  TString strDet = CONV_STRING(kSAC);       // Determine the detector name
   name_created_detectors_.push_back(strDet);    // name list of crearted detector
   if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
 
-  const char* nameDetector = strDet.c_str(); // Declaration of the directory
+  const char* nameDetector = strDet.Data(); // Declaration of the directory
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
   const char* Room[]={"Room1","Room2","Room3","Room4"};
@@ -6059,13 +6524,13 @@ TList* HistMaker::createSAC(bool flag_ps)
 
   // ADC ---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName( nameSubDir );
 
-    int target_id = getUniqueID(kSAC, 0, kADC, 0);
-    for(int i = 0; i<NumOfRoomsSAC; ++i){
+    Int_t target_id = getUniqueID(kSAC, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfRoomsSAC; ++i){
       const char* title = NULL;
       title = Form("SAC_%s_%s", Room[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -6077,13 +6542,13 @@ TList* HistMaker::createSAC(bool flag_ps)
 
   // ADC w/TDC ---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kADCwTDC); // Declaration of the sub-directory
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kADCwTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName( nameSubDir );
 
-    int target_id = getUniqueID(kSAC, 0, kADCwTDC, 0);
-    for( int i=0; i<NumOfRoomsSAC; ++i ){
+    Int_t target_id = getUniqueID(kSAC, 0, kADCwTDC, 0);
+    for( Int_t i=0; i<NumOfRoomsSAC; ++i ){
       const char* title = NULL;
       title = Form("SAC_%s_%s", Room[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
@@ -6095,15 +6560,15 @@ TList* HistMaker::createSAC(bool flag_ps)
 
   // TDC---------------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    int target_id = getUniqueID(kSAC, 0, kTDC, 0);
-    for(int i = 0; i<NumOfRoomsSAC; ++i){
+    Int_t target_id = getUniqueID(kSAC, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfRoomsSAC; ++i){
       const char* title = NULL;
-        title = Form("SAC_%s_%s", Room[i], nameSubDir);
+      title = Form("SAC_%s_%s", Room[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));
@@ -6112,14 +6577,14 @@ TList* HistMaker::createSAC(bool flag_ps)
   }
 
   { // Hit parttern -----------------------------------------------
-    int target_id = getUniqueID(kSAC, 0, kHitPat, 0);
+    Int_t target_id = getUniqueID(kSAC, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "SAC_hit_pattern",
 			   NumOfRoomsSAC, 0, NumOfRoomsSAC,
 			   "Room", ""));
   }
 
   { // Multiplicity -----------------------------------------------
-    int target_id = getUniqueID(kSAC, 0, kMulti, 0);
+    Int_t target_id = getUniqueID(kSAC, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, "SAC_multiplicity",
 			   NumOfRoomsSAC+1, 0, NumOfRoomsSAC+1,
 			   "Multiplicity", ""));
@@ -6134,10 +6599,10 @@ TList* HistMaker::createSAC(bool flag_ps)
 // -------------------------------------------------------------------------
 // createFBT1
 // -------------------------------------------------------------------------
-TList* HistMaker::createFBT1(bool flag_ps)
+TList* HistMaker::createFBT1( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kFBT1);
+  TString strDet = CONV_STRING(kFBT1);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -6145,142 +6610,142 @@ TList* HistMaker::createFBT1(bool flag_ps)
     name_ps_files_.push_back(strDet);
   }
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
   const char* UD[] ={"U","D"};
 
-//  // TDC---------------------------------------------------------
-//  {
-//    std::string strSubDir  = CONV_STRING(kTDC);
-//    const char* nameSubDir = strSubDir.c_str();
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//    for(int l=0; l<NumOfLayersFBT; ++l){
-//       for(int v=0; v<NumOfUDStructureFBT; ++v){
-//       int target_id = getUniqueID(kFBT1, l, kTDC, v*FBTOffset);
-//          for(int i=0; i<NumOfSegFBT1; ++i){
-//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
-//			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
-//			       1024, 0, 1024,
-//			       "TDC [ch]", ""));
-//          }
-//       }
-//    }
-//    top_dir->Add(sub_dir);
-//  }
-//  // TOT---------------------------------------------------------
-//  {
-//    const char* nameSubDir = "TOT";
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//    for(int l=0; l<NumOfLayersFBT; ++l){
-//    for(int v=0; v<NumOfUDStructureFBT; ++v){
-//       int target_id = getUniqueID(kFBT1, l, kADC, v*FBTOffset);
-//    for(int i=0; i<NumOfSegFBT1; ++i){
-//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
-//			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
-//			       200, -50, 150,
-//			       "TOT [ch]", ""));
-//    }
-//    }
-//    }
-//    top_dir->Add(sub_dir);
-//  }
+  //  // TDC---------------------------------------------------------
+  //  {
+  //    TString strSubDir  = CONV_STRING(kTDC);
+  //    const char* nameSubDir = strSubDir.Data();
+  //    TList *sub_dir = new TList;
+  //    sub_dir->SetName(nameSubDir);
+  //    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+  //       for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+  //       Int_t target_id = getUniqueID(kFBT1, l, kTDC, v*FBTOffset);
+  //          for(Int_t i=0; i<NumOfSegFBT1; ++i){
+  //	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
+  //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
+  //			       1024, 0, 1024,
+  //			       "TDC [ch]", ""));
+  //          }
+  //       }
+  //    }
+  //    top_dir->Add(sub_dir);
+  //  }
+  //  // TOT---------------------------------------------------------
+  //  {
+  //    const char* nameSubDir = "TOT";
+  //    TList *sub_dir = new TList;
+  //    sub_dir->SetName(nameSubDir);
+  //    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+  //    for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+  //       Int_t target_id = getUniqueID(kFBT1, l, kADC, v*FBTOffset);
+  //    for(Int_t i=0; i<NumOfSegFBT1; ++i){
+  //	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
+  //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
+  //			       200, -50, 150,
+  //			       "TOT [ch]", ""));
+  //    }
+  //    }
+  //    }
+  //    top_dir->Add(sub_dir);
+  //  }
   // TDC/TOT SUM -----------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC_TOT);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC_TOT);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    for(int l=0; l<NumOfLayersFBT; ++l){
-    for(int v=0; v<NumOfUDStructureFBT; ++v){
-    // TDC
-    sub_dir->Add(createTH1(getUniqueID(kFBT1, l, kTDC, NumOfSegFBT1+1+ v*FBTOffset) ,
-        		   Form("%s_Layer%d_TDC_%s", nameDetector, l+1, UD[v]),
-        		   1024, 0, 1024,
-        		   "TDC [ch]", ""));
-    // TOT
-    sub_dir->Add(createTH1(getUniqueID(kFBT1, l, kADC, NumOfSegFBT1+1+ v*FBTOffset) ,
-        		   Form("%s_Layer%d_TOT_%s", nameDetector, l+1, UD[v]),
-        		   200, -50, 150,
-        		   "TOT [ch]", ""));
-   }
-   }
-   top_dir->Add(sub_dir);
+    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+      for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+	// TDC
+	sub_dir->Add(createTH1(getUniqueID(kFBT1, l, kTDC, NumOfSegFBT1+1+ v*FBTOffset) ,
+			       Form("%s_Layer%d_TDC_%s", nameDetector, l+1, UD[v]),
+			       1024, 0, 1024,
+			       "TDC [ch]", ""));
+	// TOT
+	sub_dir->Add(createTH1(getUniqueID(kFBT1, l, kADC, NumOfSegFBT1+1+ v*FBTOffset) ,
+			       Form("%s_Layer%d_TOT_%s", nameDetector, l+1, UD[v]),
+			       200, -50, 150,
+			       "TOT [ch]", ""));
+      }
+    }
+    top_dir->Add(sub_dir);
   }
   // TDC-2D --------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC_2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC_2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    for(int l=0; l<NumOfLayersFBT; ++l){
-      for(int v=0; v<NumOfUDStructureFBT; ++v){
-        int target_id = getUniqueID(kFBT1, l, kTDC2D, v*FBTOffset);
+    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+      for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+        Int_t target_id = getUniqueID(kFBT1, l, kTDC2D, v*FBTOffset);
         sub_dir->Add(createTH2(++target_id,
                                Form("FBT1_Layer%d_TDC2D_%s",l+1, UD[v]), // 1 origin
-            		   NumOfSegFBT1, 0, NumOfSegFBT1,
-            		   1024, 0, 1024,
-            		   "Segment", "TDC [ch]"));
+			       NumOfSegFBT1, 0, NumOfSegFBT1,
+			       1024, 0, 1024,
+			       "Segment", "TDC [ch]"));
       }
     }
-   top_dir->Add(sub_dir);
+    top_dir->Add(sub_dir);
   }
   // TOT-2D --------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTOT_2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTOT_2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    for(int l=0; l<NumOfLayersFBT; ++l){
-      for(int v=0; v<NumOfUDStructureFBT; ++v){
-        int target_id = getUniqueID(kFBT1, l, kADC2D, v*FBTOffset);
+    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+      for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+        Int_t target_id = getUniqueID(kFBT1, l, kADC2D, v*FBTOffset);
         sub_dir->Add(createTH2(++target_id,
-              		   Form("FBT1_Layer%d_TOT2D_%s",l+1, UD[v]), // 1 origin
-            		   NumOfSegFBT1, 0, NumOfSegFBT1,
-            		   200, -50, 150,
-            		   "Segment", "TOT [ch]"));
+			       Form("FBT1_Layer%d_TOT2D_%s",l+1, UD[v]), // 1 origin
+			       NumOfSegFBT1, 0, NumOfSegFBT1,
+			       200, -50, 150,
+			       "Segment", "TOT [ch]"));
       }
     }
-   top_dir->Add(sub_dir);
+    top_dir->Add(sub_dir);
   }
   // Hit parttern --------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kHitParttern);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitParttern);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    for(int l=0; l<NumOfLayersFBT; ++l){
-      for(int v=0; v<NumOfUDStructureFBT; ++v){
-        int target_id = getUniqueID(kFBT1, l, kHitPat, v*FBTOffset);
+    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+      for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+        Int_t target_id = getUniqueID(kFBT1, l, kHitPat, v*FBTOffset);
         sub_dir->Add(createTH1(++target_id,
                                Form("FBT1_Layer%d_HitPat_%s",l+1, UD[v]), // 1 origin
-            		   NumOfSegFBT1, 0, NumOfSegFBT1,
-            		   "Segment", ""));
+			       NumOfSegFBT1, 0, NumOfSegFBT1,
+			       "Segment", ""));
       }
     }
     top_dir->Add(sub_dir);
   }
   // Multiplicity -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kMultiplicity);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMultiplicity);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    for(int l=0; l<NumOfLayersFBT; ++l){
-      for(int v=0; v<NumOfUDStructureFBT; ++v){
-        int target_id = getUniqueID(kFBT1, l, kMulti, v*FBTOffset);
+    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+      for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+        Int_t target_id = getUniqueID(kFBT1, l, kMulti, v*FBTOffset);
         sub_dir->Add(createTH1(++target_id,
                                Form("FBT1_Layer%d_multiplicity_%s",l+1, UD[v]), // 1 origin
-            		   NumOfSegFBT1, 0, NumOfSegFBT1,
-            		   "Multiplicity", ""));
+			       NumOfSegFBT1, 0, NumOfSegFBT1,
+			       "Multiplicity", ""));
       }
     }
     top_dir->Add(sub_dir);
@@ -6292,10 +6757,10 @@ TList* HistMaker::createFBT1(bool flag_ps)
 // -------------------------------------------------------------------------
 // createFBT2
 // -------------------------------------------------------------------------
-TList* HistMaker::createFBT2(bool flag_ps)
+TList* HistMaker::createFBT2( Bool_t flag_ps )
 {
   // Determine the detector name
-  std::string strDet = CONV_STRING(kFBT2);
+  TString strDet = CONV_STRING(kFBT2);
   // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
@@ -6303,142 +6768,142 @@ TList* HistMaker::createFBT2(bool flag_ps)
     name_ps_files_.push_back(strDet);
   }
   // Declaration of the directory
-  // Just type conversion from std::string to char*
-  const char* nameDetector = strDet.c_str();
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
   const char* UD[] ={"U","D"};
 
-//  // TDC---------------------------------------------------------
-//  {
-//    std::string strSubDir  = CONV_STRING(kTDC);
-//    const char* nameSubDir = strSubDir.c_str();
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//    for(int l=0; l<NumOfLayersFBT; ++l){
-//       for(int v=0; v<NumOfUDStructureFBT; ++v){
-//       int target_id = getUniqueID(kFBT2, l, kTDC, v*FBTOffset);
-//          for(int i=0; i<NumOfSegFBT2; ++i){
-//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
-//			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
-//			       1024, 0, 1024,
-//			       "TDC [ch]", ""));
-//          }
-//       }
-//    }
-//    top_dir->Add(sub_dir);
-//  }
-//  // TOT---------------------------------------------------------
-//  {
-//    const char* nameSubDir = "TOT";
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//    for(int l=0; l<NumOfLayersFBT; ++l){
-//    for(int v=0; v<NumOfUDStructureFBT; ++v){
-//       int target_id = getUniqueID(kFBT2, l, kADC, v*FBTOffset);
-//    for(int i=0; i<NumOfSegFBT2; ++i){
-//	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
-//			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
-//			       200, -50, 150,
-//			       "TOT [ch]", ""));
-//    }
-//    }
-//    }
-//    top_dir->Add(sub_dir);
-//  }
+  //  // TDC---------------------------------------------------------
+  //  {
+  //    TString strSubDir  = CONV_STRING(kTDC);
+  //    const char* nameSubDir = strSubDir.Data();
+  //    TList *sub_dir = new TList;
+  //    sub_dir->SetName(nameSubDir);
+  //    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+  //       for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+  //       Int_t target_id = getUniqueID(kFBT2, l, kTDC, v*FBTOffset);
+  //          for(Int_t i=0; i<NumOfSegFBT2; ++i){
+  //	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
+  //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
+  //			       1024, 0, 1024,
+  //			       "TDC [ch]", ""));
+  //          }
+  //       }
+  //    }
+  //    top_dir->Add(sub_dir);
+  //  }
+  //  // TOT---------------------------------------------------------
+  //  {
+  //    const char* nameSubDir = "TOT";
+  //    TList *sub_dir = new TList;
+  //    sub_dir->SetName(nameSubDir);
+  //    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+  //    for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+  //       Int_t target_id = getUniqueID(kFBT2, l, kADC, v*FBTOffset);
+  //    for(Int_t i=0; i<NumOfSegFBT2; ++i){
+  //	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
+  //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
+  //			       200, -50, 150,
+  //			       "TOT [ch]", ""));
+  //    }
+  //    }
+  //    }
+  //    top_dir->Add(sub_dir);
+  //  }
   // TDC/TOT SUM -----------------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC_TOT);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC_TOT);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-      for(int l=0; l<NumOfLayersFBT; ++l){
-        for(int v=0; v<NumOfUDStructureFBT; ++v){
+    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+      for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
         // TDC
         sub_dir->Add(createTH1(getUniqueID(kFBT2, l, kTDC, NumOfSegFBT2+1+ v*FBTOffset) ,
-            		   Form("%s_Layer%d_TDC_%s", nameDetector, l+1, UD[v]),
-            		   1024, 0, 1024,
-            		   "TDC [ch]", ""));
+			       Form("%s_Layer%d_TDC_%s", nameDetector, l+1, UD[v]),
+			       1024, 0, 1024,
+			       "TDC [ch]", ""));
         // TOT
         sub_dir->Add(createTH1(getUniqueID(kFBT2, l, kADC, NumOfSegFBT2+1+ v*FBTOffset) ,
-            		   Form("%s_Layer%d_TOT_%s", nameDetector, l+1, UD[v]),
-            		   200, -50, 150,
-            		   "TOT [ch]", ""));
-        }
+			       Form("%s_Layer%d_TOT_%s", nameDetector, l+1, UD[v]),
+			       200, -50, 150,
+			       "TOT [ch]", ""));
       }
+    }
     top_dir->Add(sub_dir);
   }
   // TDC-2D --------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTDC_2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTDC_2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    for(int l=0; l<NumOfLayersFBT; ++l){
-      for(int v=0; v<NumOfUDStructureFBT; ++v){
-        int target_id = getUniqueID(kFBT2, l, kTDC2D, v*FBTOffset);
+    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+      for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+        Int_t target_id = getUniqueID(kFBT2, l, kTDC2D, v*FBTOffset);
         sub_dir->Add(createTH2(++target_id,
                                Form("FBT2_Layer%d_TDC2D_%s",l+1, UD[v]), // 1 origin
-            		   NumOfSegFBT2, 0, NumOfSegFBT2,
-            		   1024, 0, 1024,
-            		   "Segment", "TDC [ch]"));
+			       NumOfSegFBT2, 0, NumOfSegFBT2,
+			       1024, 0, 1024,
+			       "Segment", "TDC [ch]"));
       }
     }
     top_dir->Add(sub_dir);
   }
   // TOT-2D --------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kTOT_2D);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kTOT_2D);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    for(int l=0; l<NumOfLayersFBT; ++l){
-      for(int v=0; v<NumOfUDStructureFBT; ++v){
-        int target_id = getUniqueID(kFBT2, l, kADC2D, v*FBTOffset);
+    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+      for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+        Int_t target_id = getUniqueID(kFBT2, l, kADC2D, v*FBTOffset);
         sub_dir->Add(createTH2(++target_id,
-              		   Form("FBT2_Layer%d_TOT2D_%s",l+1, UD[v]), // 1 origin
-            		   NumOfSegFBT2, 0, NumOfSegFBT2,
-            		   200, -50, 150,
-            		   "Segment", "TOT [ch]"));
+			       Form("FBT2_Layer%d_TOT2D_%s",l+1, UD[v]), // 1 origin
+			       NumOfSegFBT2, 0, NumOfSegFBT2,
+			       200, -50, 150,
+			       "Segment", "TOT [ch]"));
       }
     }
     top_dir->Add(sub_dir);
   }
   // Hit parttern --------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kHitParttern);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kHitParttern);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    for(int l=0; l<NumOfLayersFBT; ++l){
-      for(int v=0; v<NumOfUDStructureFBT; ++v){
-        int target_id = getUniqueID(kFBT2, l, kHitPat, v*FBTOffset);
+    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+      for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+        Int_t target_id = getUniqueID(kFBT2, l, kHitPat, v*FBTOffset);
         sub_dir->Add(createTH1(++target_id,
                                Form("FBT2_Layer%d_HitPat_%s",l+1, UD[v]), // 1 origin
-            		   NumOfSegFBT2, 0, NumOfSegFBT2,
-            		   "Segment", ""));
+			       NumOfSegFBT2, 0, NumOfSegFBT2,
+			       "Segment", ""));
       }
     }
     top_dir->Add(sub_dir);
   }
   // Multiplicity -----------------------------------------------
   {
-    std::string strSubDir  = CONV_STRING(kMultiplicity);
-    const char* nameSubDir = strSubDir.c_str();
+    TString strSubDir  = CONV_STRING(kMultiplicity);
+    const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    for(int l=0; l<NumOfLayersFBT; ++l){
-      for(int v=0; v<NumOfUDStructureFBT; ++v){
-        int target_id = getUniqueID(kFBT2, l, kMulti, v*FBTOffset);
+    for(Int_t l=0; l<NumOfLayersFBT; ++l){
+      for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
+        Int_t target_id = getUniqueID(kFBT2, l, kMulti, v*FBTOffset);
         sub_dir->Add(createTH1(++target_id,
                                Form("FBT2_Layer%d_multiplicity_%s",l+1, UD[v]), // 1 origin
-            		   NumOfSegFBT2, 0, NumOfSegFBT2,
-            		   "Multiplicity", ""));
+			       NumOfSegFBT2, 0, NumOfSegFBT2,
+			       "Multiplicity", ""));
       }
     }
     top_dir->Add(sub_dir);

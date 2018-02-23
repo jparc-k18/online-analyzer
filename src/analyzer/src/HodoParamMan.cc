@@ -1,11 +1,4 @@
-/*
-  HodoParamMan.cc
-
-  2012/1/24
-*/
-
-#include "HodoParamMan.hh"
-#include "ConfMan.hh"
+// -*- C++ -*-
 
 #include <iostream>
 #include <iomanip>
@@ -13,140 +6,134 @@
 #include <fstream>
 #include <cstdlib>
 
-// initialize HodoParamMan --------------------------------------------------
-void
-ConfMan::initializeHodoParamMan()
+#include "ConfMan.hh"
+#include "HodoParamMan.hh"
+#include "FuncName.hh"
+
+ClassImp(HodoParamMan);
+
+namespace
 {
-  if(name_file_["HDPRM:"] != ""){
-    HodoParamMan& gHodoParam = HodoParamMan::GetInstance();
-    gHodoParam.SetFileName(name_file_["HDPRM:"]);
-    flag_[kIsGood] = gHodoParam.Initialize();
-  }else{
-    std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["HDPRM:"] 
-	      << std::endl;
-    flag_.reset(kIsGood);
+  const Int_t SegMask  = 0x03FF;
+  const Int_t CidMask  = 0x00FF;
+  const Int_t PlidMask = 0x00FF;
+  const Int_t UdMask   = 0x0003;
+
+  const Int_t SegShift  =  0;
+  const Int_t CidShift  = 11;
+  const Int_t PlidShift = 19;
+  const Int_t UdShift   = 27;
+
+  inline Int_t MakeKey( Int_t cid, Int_t pl, Int_t seg, Int_t ud )
+  {
+    return (((cid&CidMask)<<CidShift) | ((pl&PlidMask)<<PlidShift)
+	    | ((seg&SegMask)<<SegShift) | ((ud&UdMask)<<UdShift) );
   }
 }
-// initialize HodoParamMan --------------------------------------------------
 
-HodoParamMan::HodoParamMan()
+//______________________________________________________________________________
+HodoParamMan::HodoParamMan( void )
+  : TObject(),
+    m_is_ready(false),
+    m_file_name(),
+    m_TPContainer(),
+    m_APContainer()
 {
-
 }
 
-HodoParamMan::~HodoParamMan()
+//______________________________________________________________________________
+HodoParamMan::~HodoParamMan( void )
+{
+  clearACont();
+  clearTCont();
+}
+
+//______________________________________________________________________________
+void
+HodoParamMan::clearACont( void )
+{
+  for( AIterator i=m_APContainer.begin(); i!=m_APContainer.end(); ++i )
+    delete i->second;
+  m_APContainer.clear();
+}
+
+//______________________________________________________________________________
+void
+HodoParamMan::clearTCont( void )
+{
+  for( TIterator i=m_TPContainer.begin(); i!=m_TPContainer.end(); ++i )
+    delete i->second;
+  m_TPContainer.clear();
+}
+
+//______________________________________________________________________________
+Bool_t
+HodoParamMan::Initialize( void )
 {
   clearACont(); clearTCont();
-}
 
-void HodoParamMan::clearACont( void )
-{
-  for( AIterator i=APContainer.begin(); i!=APContainer.end(); ++i )
-    delete i->second;
-  APContainer.clear();
-}
+  std::ifstream ifs( m_file_name );
+  if( !ifs.is_open() ){
+    std::cerr << FUNC_NAME << ": file open fail" << std::endl;
+    return false;
+  }
 
-void HodoParamMan::clearTCont( void )
-{
-  for( TIterator i=TPContainer.begin(); i!=TPContainer.end(); ++i )
-    delete i->second;
-  TPContainer.clear();
-}
+  Int_t cid, plid, seg, at, ud;
+  Double_t p0, p1;
+  Int_t invalid=0;
+  TString line;
+  while( ifs.good() && line.ReadLine(ifs) ){
+    ++invalid;
+    if( line[0]=='#' ) continue;
 
-const int SegMask  = 0x03FF;
-const int CidMask  = 0x00FF;
-const int PlidMask = 0x00FF;
-const int UdMask   = 0x0003;
-
-const int SegShift  =  0;
-const int CidShift  = 11;
-const int PlidShift = 19;
-const int UdShift   = 27;
-
-inline int KEY( int cid, int pl, int seg, int ud )
-{
-  return (((cid&CidMask)<<CidShift) | ((pl&PlidMask)<<PlidShift)
-          | ((seg&SegMask)<<SegShift) | ((ud&UdMask)<<UdShift) );
-}
-
-//const int BufSize = 144;
-
-bool HodoParamMan::Initialize( void )
-{
-  static const std::string funcname = "[HodoParamMan::Initialize()]";
-
-  clearACont(); clearTCont();
-
-  std::ifstream f(ParamFileName.c_str());
-  //  char buf[BufSize];
-  //  std::string buf;
-  if(f.fail())
-    {
-       std::cerr << funcname << ": file open fail" << std::endl;
-       exit(-1);
-    }
-
-  int cid, plid, seg, at, ud;
-  double p0, p1;
-  int invalid=0;
-  while( f.good() )
-    {
-      std::string buf;
-      std::getline(f,buf);
-      ++invalid;
-      if(buf.empty())
-	continue;
-      if(buf[0]!='#'){
-	if( sscanf(buf.c_str(),"%d %d %d %d %d %lf %lf",&cid,&plid,
-		   &seg,&at,&ud,&p0,&p1)==7 ){
-        int key=KEY(cid,plid,seg,ud);
-        if(at==0){ /* ADC */
-          HodoAParam *pa=new HodoAParam(p0,p1);
-          if(pa) APContainer[key]=pa;
-          else{
-            std::cerr << funcname << ": new fail (A)"
-                      << " CId=" << std::setw(3) << cid
-                      << " PlId=" << std::setw(2) << plid
-                      << " Seg=" << std::setw(3) << seg
-                      << " Ud=" << std::setw(1) << ud << std::endl;
-          }
-        }
-        else if(at==1){ /* TDC */
-          HodoTParam *ta=new HodoTParam(p0,p1);
-	  if(ta){
-	    TPContainer[key]=ta;
-	  }
-          else{ 
-            std::cerr << funcname << ": new fail (T)"
-                      << " CId=" << std::setw(3) << cid
-                      << " PlId=" << std::setw(2) << plid
-                      << " Seg=" << std::setw(3) << seg
-                      << " Ud=" << std::setw(1) << ud << std::endl;
-          }
-        }
-        else{
-          std::cerr << funcname << ": Invalid Input" << std::endl;
-          std::cerr << " ===> " << std::string(buf) <<" "
-		    << invalid <<"a"<< std::endl;
-        } /* if(at...) */
+    if( std::sscanf( line.Data(), "%d %d %d %d %d %lf %lf",
+		     &cid, &plid, &seg, &at, &ud, &p0, &p1 ) == 7 ){
+      Int_t key = MakeKey( cid, plid, seg, ud );
+      if( at==0 ){ /* ADC */
+	HodoAParam *pa = new HodoAParam(p0,p1);
+	if(pa) m_APContainer[key]=pa;
+	else{
+	  std::cerr << FUNC_NAME << ": new fail (A)"
+	  	    << " CId=" << std::setw(3) << cid
+	  	    << " PlId=" << std::setw(2) << plid
+	  	    << " Seg=" << std::setw(3) << seg
+	  	    << " Ud=" << std::setw(1) << ud << std::endl;
+	}
       }
-      else {
-        std::cerr << funcname << ": Invalid Input" << std::endl;
-        std::cerr << " ===> " << std::string(buf) <<" "
-		  << invalid <<"b"<< std::endl;
-      } /* if( sscanf... ) */ 
-    } /* if(str[0]...) */   
-  } /* while( fgets...) */
+      else if(at==1){ /* TDC */
+	HodoTParam *ta=new HodoTParam(p0,p1);
+	if(ta){
+	  m_TPContainer[key]=ta;
+	}
+	else{
+	  std::cerr << FUNC_NAME << ": new fail (T)"
+	  	    << " CId=" << std::setw(3) << cid
+	  	    << " PlId=" << std::setw(2) << plid
+	  	    << " Seg=" << std::setw(3) << seg
+	  	    << " Ud=" << std::setw(1) << ud << std::endl;
+	}
+      }
+      else{
+	std::cerr << FUNC_NAME << ": Invalid Input" << std::endl;
+	std::cerr << " ===> " << line <<" "
+		  << invalid <<"a"<< std::endl;
+      } /* if(at...) */
+    }
+    else {
+      std::cerr << FUNC_NAME << ": Invalid Input" << std::endl;
+      std::cerr << " ===> " << line <<" "
+      		<< invalid <<"b"<< std::endl;
+    } /* if( sscanf... ) */
+  } /* while( ifs... ) */
 
-  f.close();
-  std::cout << funcname << ": Initialization finished" << std::endl;
-
+  m_is_ready = true;
   return true;
 }
 
-bool HodoParamMan::GetTime( int cid, int plid, int seg, int ud,
-                            int tdc, double &time )
+//______________________________________________________________________________
+Bool_t
+HodoParamMan::GetTime( Int_t cid, Int_t plid, Int_t seg, Int_t ud,
+		       Int_t tdc, Double_t &time ) const
 {
   HodoTParam *map=GetTmap(cid,plid,seg,ud);
   if(!map) return false;
@@ -154,29 +141,35 @@ bool HodoParamMan::GetTime( int cid, int plid, int seg, int ud,
   return true;
 }
 
-bool HodoParamMan::GetDe( int cid, int plid, int seg, int ud, 
-                          int adc, double &de )
+//______________________________________________________________________________
+Bool_t
+HodoParamMan::GetDe( Int_t cid, Int_t plid, Int_t seg, Int_t ud,
+		     Int_t adc, Double_t &de ) const
 {
-  HodoAParam *map=GetAmap(cid,plid,seg,ud);
+  HodoAParam *map = GetAmap(cid,plid,seg,ud);
   if(!map) return false;
   de=map->de(adc);
   return true;
 }
 
-HodoTParam * HodoParamMan::GetTmap( int cid, int plid, int seg, int ud )
+//______________________________________________________________________________
+HodoTParam*
+HodoParamMan::GetTmap( Int_t cid, Int_t plid, Int_t seg, Int_t ud ) const
 {
-  int key=KEY(cid,plid,seg,ud);
+  Int_t key = MakeKey(cid,plid,seg,ud);
   HodoTParam *map=0;
-  TIterator i=TPContainer.find(key);
-  if( i!=TPContainer.end() ) map=i->second;
+  TIterator i=m_TPContainer.find(key);
+  if( i!=m_TPContainer.end() ) map=i->second;
   return map;
 }
 
-HodoAParam * HodoParamMan::GetAmap( int cid, int plid, int seg, int ud )
+//______________________________________________________________________________
+HodoAParam*
+HodoParamMan::GetAmap( Int_t cid, Int_t plid, Int_t seg, Int_t ud ) const
 {
-  int key=KEY(cid,plid,seg,ud);
+  Int_t key=MakeKey(cid,plid,seg,ud);
   HodoAParam *map=0;
-  AIterator i=APContainer.find(key);
-  if( i!=APContainer.end() ) map=i->second;
+  AIterator i=m_APContainer.find(key);
+  if( i!=m_APContainer.end() ) map=i->second;
   return map;
 }

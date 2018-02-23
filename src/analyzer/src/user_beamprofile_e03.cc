@@ -10,15 +10,21 @@
 #include <TStyle.h>
 #include <TString.h>
 
+#include <Unpacker.hh>
+#include <UnpackerManager.hh>
+
 #include "Controller.hh"
 #include "user_analyzer.hh"
-#include "UnpackerManager.hh"
+
 #include "ConfMan.hh"
-#include "DCAnalyzer.hh"
+#include "DCAnalyzerOld.hh"
+#include "DCDriftParamMan.hh"
 #include "DCGeomMan.hh"
+#include "DCTdcCalibMan.hh"
 #include "DetectorID.hh"
 #include "HistMaker.hh"
 #include "MacroBuilder.hh"
+#include "UserParamMan.hh"
 
 namespace analyzer
 {
@@ -41,13 +47,13 @@ namespace analyzer
 int
 process_begin(const std::vector<std::string>& argv)
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
-  gConfMan.initializeDCGeomMan();
-  gConfMan.initializeDCTdcCalibMan();
-  gConfMan.initializeDCDriftParamMan();
-  gConfMan.initializeUserParamMan();
-  if(!gConfMan.isGood()){return -1;}
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
+  gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
+  gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
+  gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
+  gConfMan.InitializeParameter<UserParamMan>("USER");
+  if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
   // Make tabs
@@ -218,7 +224,7 @@ process_event()
 	  slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
 	  //&& ( peak_height > 350 );
 	if( peak_height>=0 && peak_position>=1 && chit_flag[l][seg] ){
-	  double wpos = gGeom.calcWirePosition( l+7, seg+1 );
+	  double wpos = gGeom.CalcWirePosition( l+7, seg+1 );
 	  hptr_array[hit_id +l]->Fill( wpos );
 	}
       }//for(seg)

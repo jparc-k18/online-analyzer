@@ -1,5 +1,4 @@
-/*
- */
+// -*- C++ -*-
 
 #include <sstream>
 #include <fstream>
@@ -11,71 +10,54 @@
 #include "MsTParamMan.hh"
 #include "ConfMan.hh"
 #include "DetectorID.hh"
+#include "FuncName.hh"
 
-static const std::string class_name("MsTParamMan");
+ClassImp(MsTParamMan);
 
-ClassImp(MsTParamMan)
-
-// initialize MsTParamMan --------------------------------------------------
-void
-ConfMan::initializeMsTParamMan( void )
-{
-  if( ( name_file_["MASS:"] != "" ) ){
-    MsTParamMan& gMsTParam = MsTParamMan::GetInstance();
-    flag_[kIsGood] = gMsTParam.Initialize( name_file_["MASS:"] );
-  }else{
-    std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["MASS:"]
-	      << std::endl;
-    flag_.reset(kIsGood);
-  }
-}
-// initialize MsTParamMan --------------------------------------------------
-
-//_____________________________________________________________________
+//______________________________________________________________________________
 MsTParamMan::MsTParamMan( void )
+  : TObject(),
+    m_nseg_a( NumOfSegTOF+2 ),
+    m_nseg_b( NumOfSegSCH ),
+    m_low_threshold(),
+    m_high_threshold()
 {
 }
 
-//_____________________________________________________________________
+//______________________________________________________________________________
 MsTParamMan::~MsTParamMan( void )
 {
 }
 
-//_____________________________________________________________________
-bool
-MsTParamMan::Initialize( const std::string& filename )
+//______________________________________________________________________________
+Bool_t
+MsTParamMan::Initialize( const TString& filename )
 {
-  static const std::string func_name("["+class_name+"::"+__func__+"()]");
-
   {
-    std::ifstream ifs( filename.c_str() );
+    std::ifstream ifs( filename );
     if( !ifs.is_open() ){
-      std::cerr << "#E " << func_name << " "
-		<< "No such parameter file : " << filename << std::endl;
+      hddaq::cerr << "#E " << FUNC_NAME << " "
+		  << "No such parameter file : " << filename << std::endl;
       std::exit( EXIT_FAILURE );
     }
 
-    const int NumOfSegDetA = NumOfSegTOF+2;
-    const int NumOfSegDetB = NumOfSegSCH;
-
-    m_low_threshold.resize( NumOfSegDetA );
-    m_high_threshold.resize( NumOfSegDetA );
-    for( int i=0; i<NumOfSegDetA; ++i ){
-      m_low_threshold[i].resize( NumOfSegDetB );
-      m_high_threshold[i].resize( NumOfSegDetB );
+    m_low_threshold.resize( m_nseg_a );
+    m_high_threshold.resize( m_nseg_a );
+    for( Int_t i=0; i<m_nseg_a; ++i ){
+      m_low_threshold[i].resize( m_nseg_b );
+      m_high_threshold[i].resize( m_nseg_b );
     }
 
     std::string line;
-    int tofseg = 0;
-    int LorH   = 0;
+    Int_t tofseg = 0;
+    Int_t LorH   = 0;
     while( !ifs.eof() && std::getline( ifs, line ) ){
       if( line.empty() ) continue;
 
-      std::string param[NumOfSegDetB];
+      std::string param[m_nseg_b];
       std::istringstream iss( line );
 
-      for( int i=0; i<NumOfSegDetB; ++i ){
+      for( Int_t i=0; i<m_nseg_b; ++i ){
 	iss >> param[i];
       }
       if( param[0].at(0) == '#' ) continue;
@@ -90,8 +72,8 @@ MsTParamMan::Initialize( const std::string& filename )
 	continue;
       }
 
-      if( param[NumOfSegDetB-1].empty() ) continue;
-      for( int i=0; i<NumOfSegDetB; ++i ){
+      if( param[m_nseg_b-1].empty() ) continue;
+      for( Int_t i=0; i<m_nseg_b; ++i ){
 	std::replace( param[i].begin(), param[i].end(), '(', ' ');
 	std::replace( param[i].begin(), param[i].end(), ')', ' ');
 	std::replace( param[i].begin(), param[i].end(), ',', ' ');
@@ -102,44 +84,44 @@ MsTParamMan::Initialize( const std::string& filename )
       }
       ++tofseg;
     }
-
-#if 1
-    // Low
-    std::cout << "Low Threshold" << std::endl;
-    for( int i=0; i<NumOfSegDetA; ++i ){
-      std::cout << std::setw(2) << i << " :";
-      for( int j=0; j<NumOfSegDetB; ++j ){
-	std::cout << " " << m_low_threshold[i][j];
-      }
-      std::cout << std::endl;
-    }
-    // High
-    std::cout << "High Threshold" << std::endl;
-    for( int i=0; i<NumOfSegDetA; ++i ){
-      std::cout << std::setw(2) << i << " :";
-      for( int j=0; j<NumOfSegDetB; ++j ){
-	std::cout << " " << m_high_threshold[i][j];
-      }
-      std::cout << std::endl;
-    }
-#endif
   }
-
-  std::cout << "#D " << func_name << " "
-	    << "Initialized"
-	    << std::endl;
 
   return true;
 }
 
-//_____________________________________________________________________
-bool
-MsTParamMan::IsAccept( int detA, int detB, int tdc )
+//______________________________________________________________________________
+Bool_t
+MsTParamMan::IsAccept( Int_t detA, Int_t detB, Int_t tdc )
 {
   // for FERA
-  int cdetA = detA>=13 ? detA + 2 : detA;
+  Int_t cdetA = detA>=13 ? detA + 2 : detA;
 
-  int low  = m_low_threshold[cdetA][detB];
-  int high = m_high_threshold[cdetA][detB];
+  Int_t low  = m_low_threshold[cdetA][detB];
+  Int_t high = m_high_threshold[cdetA][detB];
   return ( low < tdc && tdc < high );
+}
+
+//______________________________________________________________________________
+void
+MsTParamMan::Print( Option_t* ) const
+{
+  hddaq::cout << FUNC_NAME << std::endl;
+  // Low
+  hddaq::cout << "Low Threshold" << std::endl;
+  for( Int_t i=0; i<m_nseg_a; ++i ){
+    hddaq::cout << std::setw(2) << i << " :";
+    for( Int_t j=0; j<m_nseg_b; ++j ){
+      hddaq::cout << " " << m_low_threshold[i][j];
+    }
+    hddaq::cout << std::endl;
+  }
+  // High
+  hddaq::cout << "High Threshold" << std::endl;
+  for( Int_t i=0; i<m_nseg_a; ++i ){
+    hddaq::cout << std::setw(2) << i << " :";
+    for( Int_t j=0; j<m_nseg_b; ++j ){
+      hddaq::cout << " " << m_high_threshold[i][j];
+    }
+    hddaq::cout << std::endl;
+  }
 }

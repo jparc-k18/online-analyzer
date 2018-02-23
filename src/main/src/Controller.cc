@@ -1,4 +1,5 @@
 // -*- C++ -*-
+
 // Author: Tomonori Takahashi
 
 #include "Controller.hh"
@@ -267,7 +268,6 @@ Controller::initialize()
   h_frame->AddFrame(m_command[k_stat],
 		    new TGLayoutHints(kLHintsLeft));//, 1, 1, 1, 1));
 
-
   m_command[k_reset] = new TGTextButton(h_frame, "Reset");
   m_command[k_reset]
     ->Connect("Clicked()", "hddaq::gui::Controller", this, "reset()");
@@ -325,7 +325,8 @@ void
 Controller::refresh() const
 {
   m_command[k_refresh]->SetState(kButtonDisabled);
-  Updater::getInstance().refresh();
+  // Updater::getInstance().refresh();
+  Updater::getInstance().update();
   m_command[k_reset]->SetState(kButtonUp);
   return;
 }

@@ -1,6 +1,4 @@
-#include "GuiPs.hh"
-#include "Controller.hh"
-#include "PsMaker.hh"
+// -*- C++ -*-
 
 #include <iostream>
 
@@ -9,6 +7,10 @@
 #include <TGButton.h>
 #include <TGTextEntry.h>
 #include <TRootBrowser.h>
+
+#include "Controller.hh"
+#include "GuiPs.hh"
+#include "PsMaker.hh"
 
 ClassImp(hddaq::gui::GuiPs)
 
@@ -36,7 +38,7 @@ GuiPs::~GuiPs()
 }
 
 //______________________________________________________________________________
-std::string
+TString
 GuiPs::getFilename()
 {
   GuiPs& g = GuiPs::getInstance();
@@ -53,8 +55,8 @@ GuiPs::getInstance()
 
 //______________________________________________________________________________
 void
-GuiPs::initialize(const std::vector<std::string>& optList,
-		    const std::vector<std::string>& devList)
+GuiPs::initialize(const std::vector<TString>& optList,
+		    const std::vector<TString>& devList)
 {
   m_optList = optList;
   m_optButton.resize(m_optList.size());
@@ -68,14 +70,14 @@ GuiPs::initialize(const std::vector<std::string>& optList,
   browser->StartEmbedding(0);
   m_frame = new TGMainFrame(gClient->GetRoot());
   browser->StopEmbedding("Ps");
-  
-  
+
+
   // check button of "Option"
   TGGroupFrame* optFrame = new TGGroupFrame(m_frame, "Option");
   optFrame->SetTitlePos(TGGroupFrame::kCenter);
   for (unsigned int i = 0; i<m_optList.size(); ++i)
      {
-       TGCheckButton* c = new TGCheckButton(optFrame, m_optList[i].c_str());
+       TGCheckButton* c = new TGCheckButton( optFrame, m_optList[i] );
 	 optFrame->AddFrame(c, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
        m_optButton[i] = c;
 //        if (i==k_OptAll)
@@ -85,14 +87,14 @@ GuiPs::initialize(const std::vector<std::string>& optList,
     }
   m_frame->AddFrame(optFrame, new TGLayoutHints(kLHintsExpandX));
 
-  
+
   // check button of "Device"
   TGGroupFrame* devFrame = new TGGroupFrame(m_frame, "Device");
   devFrame->SetTitlePos(TGGroupFrame::kCenter);
   for (unsigned int i = 0; i<m_devList.size(); ++i)
      {
        TGCheckButton* c
-	 = new TGCheckButton(devFrame, m_devList[i].c_str());
+	 = new TGCheckButton( devFrame, m_devList[i] );
        devFrame->AddFrame(c, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
        m_devButton[i] = c;
        //       if (i==k_DevAll)
@@ -112,7 +114,7 @@ GuiPs::initialize(const std::vector<std::string>& optList,
   m_textFilename->Resize(100, m_textFilename->GetDefaultHeight());
   m_textFilename->Connect("ReturnPressed()", "hddaq::gui::GuiPs", this,
 			  "setFilename()");
-  m_textFilename->SetText(m_filename.c_str());
+  m_textFilename->SetText( m_filename );
 
   // text button of "Save"
   TGHorizontalFrame* hframe = new TGHorizontalFrame(m_frame);
@@ -134,7 +136,7 @@ GuiPs::initialize(const std::vector<std::string>& optList,
   m_frame->MapSubwindows();
   m_frame->Resize(m_frame->GetDefaultSize());
   m_frame->MapWindow();
-  
+
   return;
 }
 
@@ -158,8 +160,8 @@ GuiPs::isOptOn(int i)
 void
 GuiPs::print()
 {
-  std::cout << "\n#D GuiPs::print()" << std::endl;  
-  std::string command = "lpr " + m_filename;
+  std::cout << "\n#D GuiPs::print()" << std::endl;
+  TString command = "lpr " + m_filename;
   std::cout << "#D " << command << std::endl;
 //   print(command);
   return;
@@ -169,7 +171,7 @@ GuiPs::print()
 void
 GuiPs::save()
 {
-  std::cout << "\n#D GuiPs::save()" << std::endl;  
+  std::cout << "\n#D GuiPs::save()" << std::endl;
   const std::vector<TGCheckButton*>& oB = m_optButton;
   const std::vector<TGCheckButton*>& dB = m_devButton;
 
@@ -187,7 +189,7 @@ GuiPs::save()
 		<< "\n";
     }
   std::cout.flush();
-  
+
   PsMaker::getInstance().makePs();
 
   return;
@@ -221,7 +223,7 @@ GuiPs::toggleAllDevice()
   // else
   //   for (int i=0; i<k_nDevice; ++i)
   //     m_devButton[i]->SetOn(false);
-    
+
   return;
 }
 

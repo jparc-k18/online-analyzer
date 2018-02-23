@@ -39,15 +39,15 @@ namespace analyzer
     int  module_id;
     int  ch;
     bool flag_disp;
-    
+
     scaler_info(){;}
     scaler_info(const char* Name, int Id, int Ch, bool flag):
       name(Name), module_id(Id), ch(Ch), flag_disp(flag)
     {;}
   };
-  
+
   std::vector<scaler_info> cont_info[size_dispColumn];
-  
+
   static long long unsigned int prev[size_dispColumn][NofCh] = {{0}, {0}, {0}};
   static long long unsigned int curr[size_dispColumn][NofCh] = {{0}, {0}, {0}};
   static long long unsigned int val[size_dispColumn][NofCh]  = {{0}, {0}, {0}};
@@ -59,7 +59,7 @@ separate_comma(int number)
   std::vector<int> sep_num;
   int abs_number = abs(number);
   int sign       = number >= 0 ? 1 : -1;
-  
+
   while(abs_number/1000){
     sep_num.push_back(abs_number%1000);
     abs_number /= 1000;
@@ -78,9 +78,9 @@ separate_comma(int number)
 int
 process_begin(const std::vector<std::string>& argv)
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
-  
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
+
   // spill by spill flag
   if( argv.size() == 4 ){
     flag_spill_by_spill = true;
@@ -98,7 +98,7 @@ process_begin(const std::vector<std::string>& argv)
     cont_info[center].push_back( scaler_info("n/a", id_vme03_2, i, false) );
     cont_info[right].push_back(  scaler_info("n/a", id_vme03_0, i, false) );
   }
-   
+
   // left column (counter info)
   int index = 0;
   {scaler_info tmp("K beam ",   id_vme03_1, 28, true); cont_info[left][index++] = tmp;}
@@ -205,10 +205,10 @@ process_end()
 	 "- E05 -", "Integral",
 	 "- E07 -", "Integral",
 	 "", "Integral");
-	     
+
   for(int i = 0; i<NofCh; ++i){
     scaler_info info[size_dispColumn];
-      
+
     // Counter & DAQ info
     info[left]   = cont_info[left][i];
     info[center] = cont_info[center][i];
@@ -256,7 +256,7 @@ process_end()
   printf("%-20s %15s\t",   "L1 req",         separate_comma((int)l1_req).c_str());
   printf("%-20s %15.4f\n", "(K,pi)/K-beam",  kpi/kbeam);
   printf("%-20s %15s\t",   "L1 acc",     separate_comma((int)l1_acc).c_str());
-  printf("%-20s %15.4f\n", "Live time/Real time", live_time/real_time);  
+  printf("%-20s %15.4f\n", "Live time/Real time", live_time/real_time);
   printf("%-20s %15s\t",   "Total Clear",    separate_comma(clear).c_str());
   printf("%-20s %15.4f\n", "L1 acc/L1 req",  l1_acc/l1_req);
   printf("%-20s %15s\t",   "L2 acc",     separate_comma((int)l2_acc).c_str());
@@ -271,7 +271,7 @@ int
 process_event()
 {
   static UnpackerManager& g_unpacker = GUnpacker::get_instance();
-  
+
   static int run_number = g_unpacker.get_root()->get_run_number();
   static int event_count = 0;
   static bool en_disp = false;
@@ -280,7 +280,7 @@ process_event()
   }else{
     if(event_count%20 == 0)  en_disp = true;
   }
-  
+
   // clear console
   if(en_disp) printf("\033[2J");
 
@@ -298,10 +298,10 @@ process_event()
   {
     // scaler
     static int scaler_id    = g_unpacker.get_device_id("scaler");
-    
+
     for(int i = 0; i<NofCh; ++i){
       scaler_info info[size_dispColumn];
-      
+
       // Counter & DAQ info
       info[left]   = cont_info[left][i];
       info[center] = cont_info[center][i];
@@ -328,7 +328,7 @@ process_event()
       if(info[center].flag_disp){
 	prev[center][i] = curr[center][i];
 	curr[center][i] = g_unpacker.get(scaler_id, info[center].module_id, 0, info[center].ch, 0);
-	
+
 	if(curr[center][i] < prev[center][i]){
 	  prev[center][i] = 0;
 	}
@@ -349,7 +349,7 @@ process_event()
 	  prev[right][i] = 0;
 	  inclement_spill = true;
 	}
-	
+
 	if(i!=0){
 	  if(flag_spill_by_spill){
 	    val[right][i]  = curr[right][i];
@@ -360,7 +360,7 @@ process_event()
       }
 
     }
-    
+
     // inclement spill
     if(inclement_spill)	++val[right][0];
 
@@ -385,10 +385,10 @@ process_event()
 	     "- E05 -", "Integral",
 	     "- E07 -", "Integral",
 	     "", "Integral");
-	     
+
       for(int i = 0; i<NofCh; ++i){
 	scaler_info info[size_dispColumn];
-      
+
 	// Counter & DAQ info
 	info[left]   = cont_info[left][i];
 	info[center] = cont_info[center][i];
@@ -401,13 +401,13 @@ process_event()
 	       info[right].name.c_str(),  val[right][i]
 	       );
       }
-      
+
       // additional DAQ information
       printf("\n%-10s %9.4f%% : %-15s %9.4f%% : %-15s %14.4f%%\n",
 	     "Live/Real",      real_live*100,
 	     "DAQ Eff.",       daq_eff*100,
 	     "L2 req ratio",   l2_eff*100);
-      
+
       double duty_factor = 0;
       if(1-daq_eff == 0){
 	duty_factor = 100;
@@ -418,7 +418,7 @@ process_event()
 	     "Duty factor",    duty_factor*100);
     }
   }
-  
+
   ++event_count;
   en_disp = false;
 

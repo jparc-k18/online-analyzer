@@ -13,13 +13,13 @@ namespace analyzer
 {
   using namespace hddaq::unpacker;
   using namespace hddaq;
-  
+
 //____________________________________________________________________________
 int
 process_begin(const std::vector<std::string>& argv)
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
   GUnpacker::get_instance().set_decode_mode(false);
 
   return 0;
@@ -42,7 +42,7 @@ process_event()
   }
 
   ++event_count;
-  
+
   return 0;
 }
 

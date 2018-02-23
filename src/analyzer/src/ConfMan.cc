@@ -1,12 +1,21 @@
-/*
-  ConfMan.cc
-*/
+// -*- C++ -*-
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+
+#include <TApplication.h>
+
+#include <UnpackerManager.hh>
+#include <Unpacker.hh>
+#include <filesystem_util.hh>
+#include <std_ostream.hh>
 
 #include "ConfMan.hh"
-#include "UnpackerManager.hh"
-#include "Unpacker.hh"
-#include "filesystem_util.hh"
-
+#include "FuncName.hh"
 #include "HodoParamMan.hh"
 #include "HodoPHCMan.hh"
 #include "DCGeomMan.hh"
@@ -17,90 +26,86 @@
 #include "MsTParamMan.hh"
 #include "GeAdcCalibMan.hh"
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <algorithm>
-#include <iterator>
+ClassImp(ConfMan);
 
-static const std::string MyName = "ConfMan::";
-
-// Constructor -------------------------------------------------------------
-ConfMan::ConfMan()
+//______________________________________________________________________________
+ConfMan::ConfMan( void )
 {
   flag_.reset();
 }
 
-// Destructor --------------------------------------------------------------
-ConfMan::~ConfMan()
+//______________________________________________________________________________
+ConfMan::~ConfMan( void )
 {
-
 }
 
-// initialize --------------------------------------------------------------
-void ConfMan::initialize(const std::vector<std::string>& argv)
+//______________________________________________________________________________
+void
+ConfMan::Initialize( const std::vector<std::string>& argv )
 {
   using namespace hddaq;
   using namespace hddaq::unpacker;
-  static const std::string MyFunc = "initialize ";
 
-  std::cout << "#D " << MyName << MyFunc
-	    << "argument list" << std::endl;
+  hddaq::cout << "#D " << FUNC_NAME
+	      << " argument list" << std::endl;
   std::copy(argv.begin(), argv.end(),
-	    std::ostream_iterator<std::string>(std::cout, "\n"));
-  std::cout << std::endl;
+	    std::ostream_iterator<std::string>(hddaq::cout, "\n"));
+  hddaq::cout << std::endl;
 
   int nArg = argv.size();
   if (sizeArgumentList > nArg)
     {
-      std::cerr << "#E " << MyName << MyFunc << std::endl
-		<< " Usage: "
+      std::cerr << "# Usage: "
 		<< basename( argv[kProcess] )
 		<< " [config file] [input stream]"
 		<< std::endl;
-      std::exit(1);
+      std::exit(0);
     }
-
 
   const std::string& confFile(argv[kConfPath]);
   const std::string& dataSrc(argv[kStreamPath]);
 
-  std::cout << " config file = " << confFile << std::endl;
-  std::string dir = dirname(confFile);
+  hddaq::cout << " config file = " << confFile << std::endl;
+  TString dir = hddaq::dirname( confFile );
   dir += "/";
-  std::cout << " dir = " << dir << std::endl;
-  std::ifstream conf(confFile.c_str());
-  while (conf.good())
-    {
-      std::string l;
-      std::getline(conf, l);
-      std::istringstream iss(l);
-      std::istream_iterator<std::string> issBegin(iss);
-      std::istream_iterator<std::string> issEnd;
-      std::vector<std::string> param(issBegin, issEnd);
-      if (param.empty())
-	continue;
-      if (param[0].empty())
-	continue;
-      if (param.size()==2)
-	{
-	  const std::string& name = param[0];
-	  std::string value = param[1];
-	  std::cout << " key = " << name
-		    << " value = " << value << std::endl;
-	  if (value.find("/")!=0)
-	    value = realpath(dir + value);
-	  name_file_[name] = value;
-	}
+  hddaq::cout << " dir = " << dir << std::endl;
+  std::ifstream conf( confFile.c_str() );
+  while( conf.good() ){
+    std::string l;
+    std::getline(conf, l);
+    std::istringstream iss(l);
+    std::istream_iterator<std::string> issBegin(iss);
+    std::istream_iterator<std::string> issEnd;
+    std::vector<std::string> param(issBegin, issEnd);
+    if( param.empty() )
+      continue;
+    if( param[0].empty() )
+      continue;
+    if( param.size()==2 ){
+      TString key   = param[0];
+      TString value = param[1];
+      key.ReplaceAll(":","");
+      key.ReplaceAll(";","");
+      key.ReplaceAll(" ","");
+      if( value[0] != '/' && !value.IsFloat() )
+	value = hddaq::realpath( std::string(dir+value) );
+
+      hddaq::cout << " key = "   << std::setw(12) << std::left << key
+		  << " value = " << value << std::endl;
+      m_key_map[key]    = value;
+      m_int_map[key]    = value.Atoi();
+      m_double_map[key] = value.Atof();
     }
+  }
 
   // initialize unpacker system
   UnpackerManager& g_unpacker = GUnpacker::get_instance();
-  g_unpacker.set_config_file(name_file_["UNPACKER:"],
-			     name_file_["DIGIT:"],
-			     name_file_["CMAP:"]);
+  g_unpacker.set_config_file( std::string(m_key_map["UNPACKER"]),
+			      std::string(m_key_map["DIGIT"]),
+			      std::string(m_key_map["CMAP"]) );
   g_unpacker.set_istream(dataSrc);
+
+  hddaq::cout << std::endl;
 
   // Initialize of ConfMan and Unpacker were done
   flag_.set(kIsGood);

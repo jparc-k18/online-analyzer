@@ -1,149 +1,155 @@
-/*
-  DCTdcCalibMan.cc
-
-  2012/1/24
-*/
-
-#include "DCTdcCalibMan.hh"
-#include "ConfMan.hh"
+// -*- C++ -*-
 
 #include <cstdio>
-#include <iostream>
+#include <fstream>
 #include <iomanip>
-#include <cstdlib>
+#include <iostream>
+#include <sstream>
 
-// initialize DCTdcCalibMan ----------------------------------------------
-void
-ConfMan::initializeDCTdcCalibMan()
+#include "ConfMan.hh"
+#include "DCTdcCalibMan.hh"
+#include "Exception.hh"
+#include "FuncName.hh"
+
+ClassImp(DCTdcCalibMan);
+
+//______________________________________________________________________________
+namespace
 {
-  if(name_file_["TDCCALIB:"] != ""){
-    DCTdcCalibMan& gDCTdcCalib = DCTdcCalibMan::GetInstance();
-    gDCTdcCalib.SetFileName(name_file_["TDCCALIB:"]);
-    flag_[kIsGood] = gDCTdcCalib.Initialize();
-  }else{
-    std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["TDCCALIB:"] 
-	      << std::endl;
-    flag_.reset(kIsGood);
+  inline UInt_t MakeKey( Int_t plane, Double_t wire )
+  {
+    return (plane<<10) | Int_t(wire);
   }
 }
-// initialize DCTdcCalibMan ----------------------------------------------
 
-const int BufSize = 200;
-
-struct DCTdcCalMap {
-  DCTdcCalMap( double q0, double q1 )
+//______________________________________________________________________________
+struct DCTdcCalMap
+{
+  DCTdcCalMap( Double_t q0, Double_t q1 )
     : p0(q0), p1(q1)
   {}
-  double p0, p1;
+  Double_t p0, p1;
 };
 
-DCTdcCalibMan::DCTdcCalibMan()
+//______________________________________________________________________________
+DCTdcCalibMan::DCTdcCalibMan( void )
+  : TObject(),
+    m_is_ready(false),
+    m_file_name(),
+    m_map()
 {
 }
 
-
-DCTdcCalibMan::~DCTdcCalibMan()
+//______________________________________________________________________________
+DCTdcCalibMan::~DCTdcCalibMan( void )
 {
-  clearElements();
+  ClearElements();
 }
 
-void DCTdcCalibMan::clearElements( void )
+//______________________________________________________________________________
+void
+DCTdcCalibMan::ClearElements( void )
 {
-  std::map <unsigned int, DCTdcCalMap *>::iterator itr;
-  for( itr=Cont_.begin(); itr!=Cont_.end(); ++itr ){
+  std::map <UInt_t, DCTdcCalMap *>::iterator itr;
+  for( itr=m_map.begin(); itr!=m_map.end(); ++itr ){
     delete itr->second;
     itr->second = 0;
   }
-  Cont_.clear();
+  m_map.clear();
 }
 
-inline unsigned int SortKey( int plane, double wire )
+//______________________________________________________________________________
+Bool_t
+DCTdcCalibMan::Initialize( void )
 {
-  return (plane<<10) | int(wire);
-}
+  Int_t pid, wid;
+  Double_t p0, p1;
 
-
-bool DCTdcCalibMan::Initialize( void )
-{
-  static const std::string funcname = "[DCTdcCalibMan::Initialize]";
-
-  int pid, wid;
-  double p0, p1;
-  FILE *fp;
-  char buf[BufSize];
-
-  if((fp=fopen(MapFileName_.c_str(),"r"))==0){
-    std::cerr << funcname << ": file open fail" << std::endl;
-    exit(-1);
+  std::ifstream ifs( m_file_name );
+  if( !ifs.is_open() ){
+    hddaq::cerr << "#E " << FUNC_NAME << " file open fail : "
+		<< m_file_name << std::endl;
+    return false;
   }
 
-  while(fgets(buf,BufSize,fp)){
-    if(buf[0]!='#'){
-      if(sscanf(buf,"%d %d %lf %lf",&pid,&wid,&p1,&p0)==4){
-	unsigned int key=SortKey(pid,wid);
-	DCTdcCalMap *p=new DCTdcCalMap(p0,p1);
-	if(p){
-	  if(Cont_[key]) delete Cont_[key];
-	  Cont_[key]=p;
-	}
-	else{
-	  std::cerr << funcname << ": new fail. "
-		    << " Plane=" << std::setw(3) << std::dec << pid 
-		    << " Wire=" << std::setw(3) << std::dec << wid 
-		    << std::endl;
-	}
+  TString line;
+  while( ifs.good() && line.ReadLine(ifs) ){
+    if( line[0] == '#' ) continue;
+    if( std::sscanf( line.Data(), "%d %d %lf %lf",
+		     &pid, &wid, &p1, &p0 ) == 4 ){
+      UInt_t key = MakeKey( pid, wid );
+      DCTdcCalMap *p = new DCTdcCalMap( p0, p1 );
+      if(p){
+	if(m_map[key]) delete m_map[key];
+	m_map[key]=p;
       }
       else{
-	std::cerr << funcname << ": Bad format => "
-		  << std::string(buf) << std::endl;
+	std::cerr << FUNC_NAME << ": new fail. "
+		  << " Plane=" << std::setw(3) << std::dec << pid
+		  << " Wire=" << std::setw(3) << std::dec << wid
+		  << std::endl;
       }
     }
+    else{
+      std::cerr << FUNC_NAME << ": Bad format => "
+      		<< line << std::endl;
+    }
   }
-  fclose(fp);
 
-  std::cout << funcname << ": Initialization finished" << std::endl;
+  m_is_ready = true;
   return true;
 }
 
-DCTdcCalMap * DCTdcCalibMan::getMap( int PlaneId, double WireId ) const
+//______________________________________________________________________________
+DCTdcCalMap*
+DCTdcCalibMan::GetMap( Int_t PlaneId, Double_t WireId ) const
 {
-  unsigned int key=SortKey(PlaneId,WireId);
-  return Cont_[key];
-}  
+  UInt_t key = MakeKey( PlaneId, WireId );
+  std::map<UInt_t, DCTdcCalMap*>::const_iterator itr = m_map.find(key);
+  if( itr != m_map.end() )
+    return itr->second;
+  else
+    return nullptr;
+}
 
-bool DCTdcCalibMan::GetTime( int PlaneId, double WireId,
-			     int tdc, double & time ) const
+//______________________________________________________________________________
+Bool_t
+DCTdcCalibMan::GetTime( Int_t PlaneId, Double_t WireId,
+			Int_t tdc, Double_t & time ) const
 {
-  static const std::string funcname = "[DCTdcaCalibMan::GetTime]";
-  DCTdcCalMap *p=getMap(PlaneId,WireId);
-  if(p){ 
+  DCTdcCalMap *p = GetMap(PlaneId,WireId);
+  if(p){
     time=(p->p0)+(p->p1)*tdc;
     return true;
   }
   else{
-    std::cerr << funcname << ": No record. "
-    	      << " PlaneId=" << std::setw(3) << std::dec << PlaneId
-    	      << " WireId=" << std::setw(3) << std::dec << WireId 
-    	      << std::endl;
-    return false;
+    std::stringstream ss;
+    ss << FUNC_NAME << ": No record. "
+       << " PlaneId=" << std::setw(3) << std::dec << PlaneId
+       << " WireId=" << std::setw(3) << std::dec << WireId
+       << std::endl;
+    throw Exception( ss.str() );
+    // return false;
   }
 }
 
-bool DCTdcCalibMan::GetTdc( int PlaneId, double WireId,
-			    double time, int &tdc ) const
+//______________________________________________________________________________
+Bool_t
+DCTdcCalibMan::GetTdc( Int_t PlaneId, Double_t WireId,
+		       Double_t time, Int_t &tdc ) const
 {
-  static const std::string funcname = "[DCTdcaCalibMan::GetTdc]";
-  DCTdcCalMap *p=getMap(PlaneId,WireId);
+  DCTdcCalMap *p = GetMap( PlaneId, WireId );
   if(p){
-    tdc=int((time-(p->p0))/(p->p1));
+    tdc = (Int_t)((time-(p->p0))/(p->p1));
     return true;
   }
   else{
-    std::cerr << funcname << ": No record. "
-    	      << " PlaneId=" << std::setw(3) << std::dec << PlaneId
-    	      << " WireId=" << std::setw(3) << std::dec << WireId 
-    	      << std::endl;
-    return false;
+    std::stringstream ss;
+    ss << FUNC_NAME << ": No record. "
+       << " PlaneId=" << std::setw(3) << std::dec << PlaneId
+       << " WireId=" << std::setw(3) << std::dec << WireId
+       << std::endl;
+    throw Exception( ss.str() );
+    // return false;
   }
 }

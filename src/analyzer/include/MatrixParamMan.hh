@@ -1,5 +1,4 @@
-/*
- */
+// -*- C++ -*-
 
 #ifndef MATRIX_PARAM_MAN_HH
 #define MATRIX_PARAM_MAN_HH
@@ -7,36 +6,39 @@
 #include <vector>
 #include <map>
 
-#include<TROOT.h>
+#include <TObject.h>
 
-class MatrixParamMan
+//______________________________________________________________________________
+class MatrixParamMan : public TObject
 {
-  std::vector< std::vector<double> > m_enable_2d;
-  std::vector< std::vector< std::vector<double> > > m_enable_3d;
-
 public:
-  virtual ~MatrixParamMan( void );
   static MatrixParamMan& GetInstance( void );
-
-  bool Initialize( const std::string& filename_2d,
-		   const std::string& filename_3d );
-  bool IsAccept( int detA, int detB );
-  bool IsAccept( int detA, int detB, int detC );
+  ~MatrixParamMan( void );
 
 private:
   MatrixParamMan( void );
-  MatrixParamMan( const MatrixParamMan& object );
-  MatrixParamMan& operator =( const MatrixParamMan& object );
+  MatrixParamMan( const MatrixParamMan& );
+  MatrixParamMan& operator =( const MatrixParamMan& );
 
-  ClassDef(MatrixParamMan, 0)
+private:
+  std::vector< std::vector<Double_t> >                m_enable_2d;
+  std::vector< std::vector< std::vector<Double_t> > > m_enable_3d;
+
+public:
+  Bool_t Initialize( const TString& filename_2d,
+		     const TString& filename_3d );
+  Bool_t IsAccept( Int_t detA, Int_t detB );
+  Bool_t IsAccept( Int_t detA, Int_t detB, Int_t detC );
+
+  ClassDef(MatrixParamMan,0);
 };
 
-// getInstance
+//______________________________________________________________________________
 inline MatrixParamMan&
 MatrixParamMan::GetInstance( void )
 {
-  static MatrixParamMan object;
-  return object;
+  static MatrixParamMan g_instance;
+  return g_instance;
 }
 
 #endif

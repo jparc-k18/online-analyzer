@@ -1,140 +1,106 @@
-#include<sstream>
-#include<fstream>
-#include<iostream>
-#include<cstdlib>
+// -*- C++ -*-
 
-#include"UserParamMan.hh"
-#include"ConfMan.hh"
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <cstdlib>
 
-static const std::string MyName = "UserParamMan::";
+#include <std_ostream.hh>
 
-// initialize UserParamMan --------------------------------------------------
-void
-ConfMan::initializeUserParamMan()
+#include "ConfMan.hh"
+#include "Exception.hh"
+#include "FuncName.hh"
+#include "UserParamMan.hh"
+
+namespace
 {
-  if(name_file_["USER:"] != ""){
-    UserParamMan& gUserParam = UserParamMan::getInstance();
-    flag_[kIsGood] = gUserParam.initialize(name_file_["USER:"]);
-  }else{
-    std::cout << "#E ConfMan::"
-	      << " File path does not exist in " << name_file_["USER:"] 
-	      << std::endl;
-    flag_.reset(kIsGood);
-  }
-}
-// initialize UserParamMan --------------------------------------------------
-
-// program instance -------------------------------------------------------
-// getSize (const char*)
-int UserParamMan::getSize(const char* name)
-{
-  const std::string nameStr = name;
-  return this->getSize(nameStr);
+  // throw exception when no parameter is found
+  const Bool_t ThrowException = true;
 }
 
-// getSize (const std::string)
-int UserParamMan::getSize(const std::string& name)
+ClassImp(UserParamMan);
+
+//______________________________________________________________________________
+UserParamMan::UserParamMan( void )
+  : TObject()
 {
-  static const std::string MyFunc = "getSize ";
-  int size_return = -1;
-
-  mapType::iterator itr = param_container_.find(name);
-  if(itr == param_container_.end()){
-    std::cerr << "#E " << MyName << MyFunc
-	      << "No such parameter name (" << name << ")"
-	      << std::endl;
-  }else{
-    size_return = itr->second.size();
-  }
-
-  return size_return;
 }
 
-// getParameter (const char*)
-double UserParamMan::getParameter(const char* pName, int index)
+//______________________________________________________________________________
+UserParamMan::~UserParamMan( void )
 {
-  const std::string pNameStr = pName;
-  return this->getParameter(pNameStr, index);
 }
 
-// getParameter (const std::string)
-double UserParamMan::getParameter(const std::string& pName, int index)
+//______________________________________________________________________________
+Int_t
+UserParamMan::GetSize( const TString& name ) const
 {
-  static const std::string MyFunc = "getParameter ";
-  double param_return = 0;
-  
-  mapType::iterator itr = param_container_.find(pName);
-  if(itr == param_container_.end()){
-    std::cerr << "#E " << MyName << MyFunc
-	      << "No such parameter name (" << pName << ")"
-	      << std::endl;
-  }else{
-    if(index +1 > static_cast<int>(itr->second.size())){
-      std::cerr << "#E " << MyName << MyFunc
-		<< "Invalid index (" << index << ")"
-		<< std::endl;
-    }else{
-      // Process normal
-      param_return = itr->second.at(index);
+  mapType::const_iterator itr = param_container_.find(name);
+  if( itr != param_container_.end() ){
+    return itr->second.size();
+  } else {
+    if( ThrowException ){
+      throw Exception( FUNC_NAME+" No such parameter : "+name );
+    } else {
+      std::cerr << "#W " << FUNC_NAME
+		<< " No such parameter : " << name << std::endl;
+      return -1;
     }
   }
-
-  return param_return;
 }
 
-// Constructor
-UserParamMan::UserParamMan()
+//______________________________________________________________________________
+Double_t
+UserParamMan::GetParameter( const TString& name, Int_t index ) const
 {
-  
+  static const Double_t default_value = -9999.;
+
+  mapType::const_iterator itr = param_container_.find(name);
+  if( itr != param_container_.end() ){
+    return itr->second.at(index);
+  } else {
+    if( ThrowException ){
+      throw Exception( FUNC_NAME+" No such parameter : "+name );
+    } else {
+      std::cerr << "#W " << FUNC_NAME
+		<< " No such parameter : " << name << " -> "
+		<< default_value << std::endl;
+      return default_value;
+    }
+  }
 }
 
-// Destructor
-UserParamMan::~UserParamMan()
+//______________________________________________________________________________
+Bool_t
+UserParamMan::Initialize( const TString& filename )
 {
-  
-}
-
-// Initialize
-bool UserParamMan::initialize(const std::string& filename)
-{
-  static const std::string MyFunc = "initialize ";
-  
-  std::ifstream ifs(filename.c_str());
-  if(!ifs.is_open()){
-    std::cerr << "#E " << MyName << MyFunc
-	      << "No such parameter file (" << filename << ")"
-	      << std::endl;
-    std::exit(-1);
+  std::ifstream ifs( filename );
+  if( !ifs.is_open() ){
+    hddaq::cerr << "#E " << FUNC_NAME
+		<< " No such file : " << filename << std::endl;
+    return false;
   }
 
-  std::string bufLine;
-  while(getline(ifs, bufLine)){
-    // Empty line
-    if(bufLine.empty()){ continue; }
+  TString line;
+  while( ifs.good() && line.ReadLine(ifs) ){
+    if( line[0] == '#' ) continue;
 
     // get first word
-    std::istringstream LineTo(bufLine);
-    std::string buf_word;
+    std::istringstream LineTo( line.Data() );
+    TString buf_word;
     LineTo >> buf_word;
 
-    // This is comment line
-    if(buf_word.at(0) == '#'){ continue; }
-
     // This is parameter line
-    std::string& name_param = buf_word;
+    TString   name_param = buf_word;
     arrayType param_array;
-    double    param_val;
-    while(LineTo >> param_val){
-      param_array.push_back(param_val);
+    Double_t  param_val;
+    while( LineTo >> param_val ){
+      param_array.push_back( param_val );
     }
 
     // insert to map
     param_container_[name_param] = param_array;
   }
-
-  std::cout << "#D " << MyName << MyFunc
-	    << "Initialized"
-	    << std::endl;
 
   return true;
 }

@@ -1,5 +1,4 @@
-/*
- */
+// -*- C++ -*-
 
 #ifndef EMC_PARAM_MAN_HH
 #define EMC_PARAM_MAN_HH
@@ -9,18 +8,14 @@
 
 #include <TROOT.h>
 
-class EMCParamMan
+//______________________________________________________________________________
+class EMCParamMan : public TObject
 {
-  int                 m_nspill;
-  std::vector<int>    m_spill;
-  std::vector<double> m_x;
-  std::vector<double> m_y;
-
 public:
-  ~EMCParamMan( void );
   static EMCParamMan& GetInstance( void );
+  ~EMCParamMan( void );
 
-  bool   Initialize( const std::string& filename );
+  bool   Initialize( const TString& filename );
   int    NSpill( void ){ return m_nspill; }
   int    Pos2Spill( double x, double y );
   double Spill2PosX( int spill ){ return m_x[spill]; }
@@ -31,14 +26,21 @@ private:
   EMCParamMan( const EMCParamMan& object );
   EMCParamMan& operator =( const EMCParamMan& object );
 
+private:
+  int                 m_nspill;
+  std::vector<int>    m_spill;
+  std::vector<double> m_x;
+  std::vector<double> m_y;
+
+  ClassDef(EMCParamMan,0);
 };
 
-// getInstance
+//______________________________________________________________________________
 inline EMCParamMan&
 EMCParamMan::GetInstance( void )
 {
-  static EMCParamMan object;
-  return object;
+  static EMCParamMan g_instance;
+  return g_instance;
 }
 
 #endif

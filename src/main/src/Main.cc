@@ -1,16 +1,23 @@
-// Author: Tomonori Takahashi
+// author: Tomonori Takahashi
 
 #include "Main.hh"
 
 #include <iostream>
 #include <algorithm>
+#include <iomanip>
 #include <iterator>
 #include <ctime>
 #include <sys/time.h>
+
+#include <TStyle.h>
+#include <TSystem.h>
 #include <TThread.h>
 
-#include "UnpackerManager.hh"
+#include <std_ostream.hh>
+#include <UnpackerManager.hh>
+
 #include "user_analyzer.hh"
+#include "DebugCounter.hh"
 
 ClassImp(analyzer::Main)
 
@@ -212,6 +219,7 @@ Main::run()
 	      if (isRunning())
 		{
 		  // TThread::Lock();
+		  debug::ObjectCounter::Check();
 		  int ret = process_event();
 		  if( ret!=0 ){
 		    std::cout << "#D1 analyzer::process_event() return " << ret << std::endl;
@@ -249,7 +257,9 @@ Main::run()
   else
     {
       g_unpacker.initialize();
-      for ( ; !g_unpacker.eof(); ++g_unpacker ){
+      for ( ; !g_unpacker.eof() && !gSystem->ProcessEvents();
+	    ++g_unpacker ){
+	debug::ObjectCounter::Check();
 	int ret = process_event();
 	if( ret!=0 ){
 	  std::cout << "#D2 analyzer::process_event() return " << ret << std::endl;
@@ -301,14 +311,26 @@ Main::start()
 void
 Main::stat()
 {
-  std::cout << "#D Main::stat()" << std::endl;
-  UnpackerManager& g_unpacker = GUnpacker::get_instance();
-//   std::cout << "#D " << g_unpacker.get_counter()
-// 	    << " events unpacked" << std::endl;
-//  TThread::Lock();
-  g_unpacker.show_event_number();
-//   g_unpacker.show_summary(true);
-//  TThread::UnLock();
+  // std::cout << "#D Main::stat()" << std::endl;
+
+  static Int_t default_optstat = gStyle->GetOptStat();
+  Int_t current_optstat = gStyle->GetOptStat();
+  Int_t optstat = current_optstat != 0 ? 0 : default_optstat;
+
+  hddaq::cout << "   gStyle::fOptStat "
+	      << std::setw(10) << std::setfill('0') << std::right
+	      << current_optstat << " -> "
+	      << std::setw(10) << std::setfill('0') << std::right
+	      << optstat << std::endl;
+  gStyle->SetOptStat( optstat );
+
+  // UnpackerManager& g_unpacker = GUnpacker::get_instance();
+  // std::cout << "#D " << g_unpacker.get_counter()
+  // 	    << " events unpacked" << std::endl;
+  // TThread::Lock();
+  // g_unpacker.show_event_number();
+  // g_unpacker.show_summary(true);
+  // TThread::UnLock();
   return;
 }
 

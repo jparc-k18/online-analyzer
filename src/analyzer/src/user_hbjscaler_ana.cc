@@ -39,7 +39,7 @@ namespace analyzer
     int  module_id;
     int  ch;
     bool flag_disp;
-    
+
     scaler_info(){;}
     scaler_info(const char* Name, int Id, int Ch, bool flag):
       name(Name), module_id(Id), ch(Ch), flag_disp(flag)
@@ -47,13 +47,13 @@ namespace analyzer
   };
 
   std::vector<scaler_info> cont_info[size_dispColumn];
-  
+
 //____________________________________________________________________________
 int
 process_begin(const std::vector<std::string>& argv)
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
 
   for(int i = 0; i<32; ++i){
     cont_info[left].push_back(  scaler_info("NULL", id_v820, i, false) );
@@ -110,7 +110,7 @@ process_begin(const std::vector<std::string>& argv)
   {scaler_info tmp("Coin Go",      id_v820, 20, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("Coin clear",   id_v830, 6,  true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("Overflow Go",  id_v830, 7,  true); cont_info[right][index++] = tmp;}
-  {scaler_info tmp("Overflow clear",id_v830, 8, true); cont_info[right][index++] = tmp;} 
+  {scaler_info tmp("Overflow clear",id_v830, 8, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("Total clear",  id_v830, 9,  true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("L2 req",       id_v830, 11, true); cont_info[right][index++] = tmp;}
   {scaler_info tmp("L2 acc",       id_v830, 12, true); cont_info[right][index++] = tmp;}
@@ -149,12 +149,12 @@ int
 process_event()
 {
   static UnpackerManager& g_unpacker = GUnpacker::get_instance();
-  
+
   static int run_number = g_unpacker.get_root()->get_run_number();
   static unsigned int prev[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}};
   static unsigned int curr[size_dispColumn][NofCh] = {{0}, {0}, {0}, {0}};
   static unsigned int val[size_dispColumn][NofCh]  = {{0}, {0}, {0}, {0}};
-  
+
   static int event_count = 0;
   static bool en_disp = false;
   if(event_count%100 == 0){
@@ -182,7 +182,7 @@ process_event()
 
     for(int i = 0; i<NofCh; ++i){
       scaler_info info[size_dispColumn];
-      
+
       // Counter & DAQ info
       info[left]  = cont_info[left][i];
       info[right] = cont_info[right][i];
@@ -231,7 +231,7 @@ process_event()
 
     for(int i = 0; i<NofCh; ++i){
       scaler_info info[size_dispColumn];
-      
+
       // Counter & DAQ info
       info[left]  = cont_info[left][i];
       info[right] = cont_info[right][i];
@@ -239,7 +239,7 @@ process_event()
       // Ge info
       info[Ge_left]  = cont_info[Ge_left][i];
       info[Ge_right] = cont_info[Ge_right][i];
-      
+
       // display
       if(en_disp){
 	printf("%-10s %10u : %-15s %10u : %-6s %12f : %-6s %12f\n",
@@ -251,7 +251,7 @@ process_event()
       }
     }
   }
-  
+
   ++event_count;
   en_disp = false;
 

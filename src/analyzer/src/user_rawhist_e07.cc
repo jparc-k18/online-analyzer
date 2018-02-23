@@ -52,17 +52,17 @@ namespace analyzer
 int
 process_begin( const std::vector<std::string>& argv )
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
-  gConfMan.initializeHodoParamMan();
-  gConfMan.initializeHodoPHCMan();
-  gConfMan.initializeDCGeomMan();
-  gConfMan.initializeDCTdcCalibMan();
-  gConfMan.initializeDCDriftParamMan();
-  gConfMan.initializeMatrixParamMan();
-  gConfMan.initializeMsTParamMan();
-  gConfMan.initializeUserParamMan();
-  if(!gConfMan.isGood()) return -1;
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
+  gConfMan.InitializeHodoParamMan();
+  gConfMan.InitializeHodoPHCMan();
+  gConfMan.InitializeDCGeomMan();
+  gConfMan.InitializeDCTdcCalibMan();
+  gConfMan.InitializeDCDriftParamMan();
+  gConfMan.InitializeMatrixParamMan();
+  gConfMan.InitializeMsTParamMan();
+  gConfMan.InitializeUserParamMan();
+  if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
   if( argv.size()==4 ){

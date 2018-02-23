@@ -16,25 +16,30 @@
 #include <TMath.h>
 #include <TStyle.h>
 
-#include "Controller.hh"
+#include <DAQNode.hh>
+#include <filesystem_util.hh>
+#include <Unpacker.hh>
+#include <UnpackerManager.hh>
 
+#include "Controller.hh"
 #include "user_analyzer.hh"
-#include "Unpacker.hh"
-#include "UnpackerManager.hh"
-#include "DAQNode.hh"
-#include "filesystem_util.hh"
+
 #include "ConfMan.hh"
-#include "HistMaker.hh"
 #include "DetectorID.hh"
-#include "PsMaker.hh"
+#include "DCDriftParamMan.hh"
+#include "DCGeomMan.hh"
+#include "DCTdcCalibMan.hh"
 #include "GuiPs.hh"
-#include "MacroBuilder.hh"
-#include "SsdAnalyzer.hh"
-#include "UserParamMan.hh"
+#include "HistMaker.hh"
 #include "HodoParamMan.hh"
+#include "HodoPHCMan.hh"
+#include "MacroBuilder.hh"
 #include "MatrixParamMan.hh"
 #include "MsTParamMan.hh"
 #include "ProcInfo.hh"
+#include "PsMaker.hh"
+#include "SsdAnalyzer.hh"
+#include "UserParamMan.hh"
 
 #define DEBUG    0
 #define FLAG_DAQ 1
@@ -46,6 +51,7 @@ namespace analyzer
 
   namespace
   {
+    const UserParamMan& gUser = UserParamMan::GetInstance();
     std::vector<TH1*> hptr_array;
     bool flag_event_cut = false;
     int event_cut_factor = 1; // for fast semi-online analysis
@@ -55,17 +61,17 @@ namespace analyzer
 int
 process_begin( const std::vector<std::string>& argv )
 {
-  ConfMan& gConfMan = ConfMan::getInstance();
-  gConfMan.initialize(argv);
-  gConfMan.initializeHodoParamMan();
-  gConfMan.initializeHodoPHCMan();
-  gConfMan.initializeDCGeomMan();
-  gConfMan.initializeDCTdcCalibMan();
-  gConfMan.initializeDCDriftParamMan();
-  gConfMan.initializeMatrixParamMan();
-  gConfMan.initializeMsTParamMan();
-  gConfMan.initializeUserParamMan();
-  if(!gConfMan.isGood()) return -1;
+  ConfMan& gConfMan = ConfMan::GetInstance();
+  gConfMan.Initialize(argv);
+  gConfMan.InitializeParameter<HodoParamMan>("HDPRM");
+  gConfMan.InitializeParameter<HodoPHCMan>("HDPHC");
+  gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
+  gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
+  gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
+//  gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D", "MATRIX3D");
+  gConfMan.InitializeParameter<MsTParamMan>("MASS");
+  gConfMan.InitializeParameter<UserParamMan>("USER");
+  if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
   if( argv.size()==4 ){
@@ -108,8 +114,8 @@ process_begin( const std::vector<std::string>& argv )
   // but the file path should be changed.
   // ----------------------------------------------------------
   PsMaker& gPsMaker = PsMaker::getInstance();
-  std::vector<std::string> detList;
-  std::vector<std::string> optList;
+  std::vector<TString> detList;
+  std::vector<TString> optList;
   gHist.getListOfPsFiles(detList);
   gPsMaker.getListOfOption(optList);
 
@@ -264,10 +270,8 @@ process_event( void )
     static const int k_fadc      = gUnpacker.get_data_id("BGO", "fadc");
 
 //    // TDC gate range
-//    static const unsigned int tdc_min
-//      = UserParamMan::getInstance().getParameter("BGO_TDC", 0);
-//    static const unsigned int tdc_max
-//      = UserParamMan::getInstance().getParameter("BGO_TDC", 1);
+//    static const unsigned int tdc_min = gUser.GetParameter("BGO_TDC", 0);
+//    static const unsigned int tdc_max = gUser.GetParameter("BGO_TDC", 1);
 
 //    int bgoa_id   = gHist.getSequentialID(kBGO, 0, kADC);
 //    int bgot_id   = gHist.getSequentialID(kBGO, 0, kTDC);
@@ -344,7 +348,7 @@ process_event( void )
 #endif
 
   //------------------------------------------------------------------
-  // PiID 
+  // PiID
   //------------------------------------------------------------------
   {
     // data type
@@ -353,10 +357,8 @@ process_event( void )
     static const int k_tdc      = gUnpacker.get_data_id("PiID", "leading");
 
     // TDC gate range
-    static const unsigned int tdc_min
-      = UserParamMan::getInstance().getParameter("PiID_TDC", 0);
-    static const unsigned int tdc_max
-      = UserParamMan::getInstance().getParameter("PiID_TDC", 1);
+    static const unsigned int tdc_min = gUser.GetParameter("PiID_TDC", 0);
+    static const unsigned int tdc_max = gUser.GetParameter("PiID_TDC", 1);
 
     int piida_id   = gHist.getSequentialID(kPiID, 0, kADC);
     int piidt_id   = gHist.getSequentialID(kPiID, 0, kTDC);

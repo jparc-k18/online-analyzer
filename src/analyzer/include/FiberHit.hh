@@ -6,6 +6,7 @@
 #include <string>
 
 #include <TObject.h>
+#include <TString.h>
 
 #include <std_ostream.hh>
 

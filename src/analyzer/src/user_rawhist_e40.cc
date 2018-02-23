@@ -397,7 +397,7 @@ process_event( void )
       }
     }// FLAG
 
-#if 1
+#if 0
     // Debug, dump data relating this detector
     gUnpacker.dump_data_device(k_device);
 #endif
@@ -890,6 +890,7 @@ process_event( void )
     static const int k_u        = 0; // up
     static const int k_d        = 1; // down
     static const int k_tdc      = gUnpacker.get_data_id("BH2", "fpga_leading");
+    static const int k_mt       = gUnpacker.get_data_id("BH2", "fpga_meantime");
 
     // Up PMT
     int bh1t_id   = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2*2+1);
@@ -920,9 +921,9 @@ process_event( void )
     // Mean Timer
     bh1t_id   = gHist.getSequentialID(kBH2, 0, kBH2MT, 1);
     for(int seg=0; seg<NumOfSegBH2; ++seg){
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_mt);
       for(int m = 0; m<nhit; ++m){
-	unsigned int mt = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
+	unsigned int mt = gUnpacker.get(k_device, 0, seg, k_u, k_mt, m);
 	if(mt!=0){
 	  hptr_array[bh1t_id + seg]->Fill(mt);
 	}
@@ -1306,7 +1307,7 @@ process_event( void )
       hptr_array[sdc2mulwt_ctot_id + l]->Fill(multiplicity_wt_ctot);
     }
 
-#if 1
+#if 0
     // Debug, dump data relating this detector
     gUnpacker.dump_data_device(k_device);
 #endif

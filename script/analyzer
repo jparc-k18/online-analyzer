@@ -35,25 +35,21 @@ fi
 
 if [ $# = 0 ]; then
     $exe_file $conf_file ${ebhost}:$port
+fi
 
-elif [ $# = 1 ]; then
+data_file=$data_dir/run$1.dat
+if [ ! -f $data_file ]; then
     data_file=$data_dir/run$1.dat.gz
     if [ ! -f $data_file ]; then
 	echo "#E [$(basename $0)] no such file: $data_file"
 	exit
     fi
+fi
 
+if [ $# = 1 ]; then
     $exe_file $conf_file $data_file
-
 elif [ $# = 2 ]; then
-    data_file=$data_dir/run$1.dat.gz
-    if [ ! -f $data_file ]; then
-	echo "#E [$(basename $0)] no such file: $data_file"
-	exit
-    fi
-
     $exe_file $conf_file $data_file $2
-
 else
     echo "#D Usage: $(basename $0) [run number]"
 fi

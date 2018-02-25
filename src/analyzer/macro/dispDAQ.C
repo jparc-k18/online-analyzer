@@ -17,8 +17,9 @@ void dispDAQ( void )
     HistMaker::getUniqueID(kDAQ, kVME,      kHitPat2D, 1),
     HistMaker::getUniqueID(kDAQ, kCLite,    kHitPat2D, 1),
     HistMaker::getUniqueID(kDAQ, kEASIROC,  kHitPat2D, 1),
-    HistMaker::getUniqueID(kDAQ, kCAMAC,    kHitPat2D, 1),
-    HistMaker::getUniqueID(kDAQ, kMiscNode, kHitPat2D, 1)
+    HistMaker::getUniqueID(kDAQ, kHUL,    kHitPat2D, 1),
+//    HistMaker::getUniqueID(kDAQ, kMiscNode, kHitPat2D, 1)
+    HistMaker::getUniqueID(kDAQ, kOpt, kHitPat2D, 1)
   };
 
   {

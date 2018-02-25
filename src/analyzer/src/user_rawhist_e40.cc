@@ -289,14 +289,22 @@ process_event( void )
     // node id
     static const int k_eb      = gUnpacker.get_fe_id("k18eb");
     static const int k_vme     = gUnpacker.get_fe_id("vme01");
+    static const int k_vme2     = gUnpacker.get_fe_id("vme02");
+    static const int k_opt     = gUnpacker.get_fe_id("optlink01");
     static const int k_clite   = gUnpacker.get_fe_id("clite1");
+    static const int k_hul_sdc   = gUnpacker.get_fe_id("hul02sdc-1");
+    static const int k_hul_sft   = gUnpacker.get_fe_id("hul02sft-1");
     static const int k_easiroc = gUnpacker.get_fe_id("easiroc0");
+    static const int k_Veasiroc = gUnpacker.get_fe_id("Veasiroc16");
 
     // sequential id
     static const int eb_id      = gHist.getSequentialID(kDAQ, kEB, kHitPat);
     static const int vme_id     = gHist.getSequentialID(kDAQ, kVME, kHitPat2D);
     static const int clite_id   = gHist.getSequentialID(kDAQ, kCLite, kHitPat2D);
+    static const int opt_id   = gHist.getSequentialID(kDAQ, kOpt, kHitPat2D);
+    static const int hul_id   = gHist.getSequentialID(kDAQ, kHUL, kHitPat2D);
     static const int easiroc_id = gHist.getSequentialID(kDAQ, kEASIROC, kHitPat2D);
+//    static const int Veasiroc_id = gHist.getSequentialID(kDAQ, kVMEEASIROC, kHitPat2D);
     //    static const int misc_id    = gHist.getSequentialID(kDAQ, kMiscNode, kHitPat2D);
 
     { // EB
@@ -306,12 +314,12 @@ process_event( void )
 
     { // VME node
       TH2* h = dynamic_cast<TH2*>(hptr_array[vme_id]);
-      for( int i=0; i<10; ++i ){
-	if( i==1 || i==5 ) continue;
-	int node_id = k_vme+i;
-	int data_size = gUnpacker.get_node_header( node_id, DAQNode::k_data_size);
+	int data_size = gUnpacker.get_node_header( k_vme, DAQNode::k_data_size);
+        int i = 0;
+	h->Fill(i, data_size );
+	data_size = gUnpacker.get_node_header( k_vme2, DAQNode::k_data_size);
+        i = 1;
 	h->Fill( i, data_size );
-      }
     }
 
     { // CLite node
@@ -322,10 +330,34 @@ process_event( void )
       }
     }
 
-    { // EASIROC node
+    { // EASIROC & VMEEASIROC node
       TH2* h = dynamic_cast<TH2*>(hptr_array[easiroc_id]);
-      for(int i = 0; i<20; ++i){
+      for(int i = 0; i<16; ++i){
 	int data_size = gUnpacker.get_node_header(k_easiroc+i, DAQNode::k_data_size);
+	h->Fill( i, data_size );
+      }
+      for(int i = 16; i<100; ++i){
+	int data_size = gUnpacker.get_node_header(k_Veasiroc+i-16, DAQNode::k_data_size);
+	h->Fill( i, data_size );
+      }
+    }
+
+    { // HUL node
+      TH2* h = dynamic_cast<TH2*>(hptr_array[hul_id]);
+      for(int i = 0; i<7; ++i){
+	int data_size = gUnpacker.get_node_header(k_hul_sdc+i, DAQNode::k_data_size);
+	h->Fill( i, data_size );
+      }
+      for(int i = 10; i<9+10; ++i){
+	int data_size = gUnpacker.get_node_header(k_hul_sft+i-10, DAQNode::k_data_size);
+	h->Fill( i, data_size );
+      }
+    }
+
+    { // Opt node
+      TH2* h = dynamic_cast<TH2*>(hptr_array[opt_id]);
+      for(int i = 0; i<2; ++i){
+	int data_size = gUnpacker.get_node_header(k_opt+i, DAQNode::k_data_size);
 	h->Fill( i, data_size );
       }
     }

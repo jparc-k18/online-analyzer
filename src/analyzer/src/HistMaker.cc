@@ -4316,7 +4316,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
     // Node information
     target_id = getUniqueID(kDAQ, kVME, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id + 1, "Data size VME nodes", // 1 origin
-			   15, 0, 15,
+			   5, 0, 5,
 			   100, 0, 1200,
 			   "VME node ID", "Data size [words]"));
 
@@ -4329,14 +4329,26 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
     target_id = getUniqueID(kDAQ, kEASIROC, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id + 1, "Data size EASIROC nodes", // 1 origin
 			   100, 0, 100,
-			   50, 0, 100,
+			   100, 0, 300,
 			   "EASIROC node ID", "Data size [words]"));
+
+    target_id = getUniqueID(kDAQ, kHUL, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id + 1, "Data size HUL nodes", // 1 origin
+			   20, 0, 20,
+			   200, 0, 400,
+			   "HUL node ID", "Data size [words]"));
 
 //    target_id = getUniqueID(kDAQ, kCAMAC, kHitPat2D, 0);
 //    top_dir->Add(createTH2(target_id + 1, "Data size CAMAC nodes", // 1 origin
 //			   3, 0, 3,
 //			   100, 0, 200,
 //			   "CAMAC node ID", "Data size [words]"));
+
+    target_id = getUniqueID(kDAQ, kOpt, kHitPat2D, 0);
+    top_dir->Add(createTH2(target_id + 1, "Data size OptLink nodes", // 1 origin
+			   2, 0, 2,
+			   500, 0, 1000,
+			   "Opt node ID", "Data size [words]"));
 
     target_id = getUniqueID(kDAQ, kMiscNode, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id + 1, "Data size Misc nodes", // 1 origin

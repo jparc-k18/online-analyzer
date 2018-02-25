@@ -490,6 +490,29 @@ void PsMaker::create(TString& name)
     for(int i = 0; i<12; ++i){id_list.push_back(base_id + i + 12);}
     drawOneCanvas(id_list, par_list, false, false);
 
+    // TDC  1-12
+    par_list[kXdiv] = 4; par_list[kYdiv] = 3;
+    base_id = HistMaker::getUniqueID(kBGO, 0, kTDC);
+    for(int i = 0; i<12; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, false, false);
+
+    // TDC  13-24
+    par_list[kXdiv] = 4; par_list[kYdiv] = 3;
+    for(int i = 0; i<12; ++i){id_list.push_back(base_id + i + 12);}
+    drawOneCanvas(id_list, par_list, false, false);
+
+    //Multi & HitPat 
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kBGO, 0, kHitPat,1);
+    id_list.push_back(base_id);
+    base_id = HistMaker::getUniqueID(kBGO, 0, kHitPat, 2);
+    id_list.push_back(base_id);
+    base_id = HistMaker::getUniqueID(kBGO, 0, kMulti,1);
+    id_list.push_back(base_id);
+    base_id = HistMaker::getUniqueID(kBGO, 0, kMulti, 2);
+    id_list.push_back(base_id);
+    drawOneCanvas(id_list, par_list, false, false);
+
   }
   // PiID ----------------------------------------------------------------
   if(name == CONV_STRING(kPiID)){
@@ -1514,6 +1537,16 @@ void PsMaker::create(TString& name)
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 4));
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 5));
     id_list.push_back(HistMaker::getUniqueID(kCorrelation, 0, 0, 6));
+    drawOneCanvas(id_list, par_list, false, false, "box");
+  }
+
+  // Correlation catch-------------------------------------------------------
+  if(name == CONV_STRING(kCorrelation_catch)){
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    id_list.push_back(HistMaker::getUniqueID(kCorrelation_catch, 0, 0, 1));
+    id_list.push_back(HistMaker::getUniqueID(kCorrelation_catch, 0, 0, 2));
+    id_list.push_back(HistMaker::getUniqueID(kCorrelation_catch, 0, 0, 3));
+    id_list.push_back(HistMaker::getUniqueID(kCorrelation_catch, 0, 0, 4));
     drawOneCanvas(id_list, par_list, false, false, "box");
   }
 

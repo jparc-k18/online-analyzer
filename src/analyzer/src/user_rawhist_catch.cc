@@ -468,22 +468,32 @@ process_event( void )
   {
     // data type
     static const int k_device   = gUnpacker.get_device_id("PiID");
-    static const int k_adc      = gUnpacker.get_data_id("PiID", "highgain");
+    static const int k_hg      = gUnpacker.get_data_id("PiID", "highgain");
+    static const int k_lg      = gUnpacker.get_data_id("PiID", "lowgain");
     static const int k_tdc      = gUnpacker.get_data_id("PiID", "leading");
 
     // TDC gate range
     static const unsigned int tdc_min = gUser.GetParameter("PiID_TDC", 0);
     static const unsigned int tdc_max = gUser.GetParameter("PiID_TDC", 1);
 
-    int piida_id   = gHist.getSequentialID(kPiID, 0, kADC);
+    int piidhg_id   = gHist.getSequentialID(kPiID, 0, kHighGain);
+    int piidlg_id   = gHist.getSequentialID(kPiID, 0, kLowGain);
     int piidt_id   = gHist.getSequentialID(kPiID, 0, kTDC);
-    int piidawt_id = gHist.getSequentialID(kPiID, 0, kADCwTDC);
+    int piidhgwt_id = gHist.getSequentialID(kPiID, 0, kADCwTDC);
+    int piidlgwt_id = gHist.getSequentialID(kPiID, 0, kADCwTDC,NumOfSegPiID +1);
     for(int seg=0; seg<NumOfSegPiID; ++seg){
-      // ADC
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      // High ADC
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_hg);
       if(nhit!=0){
-	unsigned int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-	hptr_array[piida_id + seg]->Fill(adc);
+	unsigned int adc = gUnpacker.get(k_device, 0, seg, 0, k_hg);
+	hptr_array[piidhg_id + seg]->Fill(adc);
+      }
+
+      // Low ADC
+      nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_lg);
+      if(nhit!=0){
+	unsigned int adc = gUnpacker.get(k_device, 0, seg, 0, k_lg);
+	hptr_array[piidlg_id + seg]->Fill(adc);
       }
 
       // TDC
@@ -492,10 +502,15 @@ process_event( void )
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
 	if(tdc!=0){
 	  hptr_array[piidt_id + seg]->Fill(tdc);
-	  // ADC wTDC
-	  if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
-	    unsigned int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-	    hptr_array[piidawt_id + seg]->Fill( adc );
+	  // ADCwTDC
+	  if( gUnpacker.get_entries(k_device, 0, seg, 0, k_hg)>0 ){
+	    unsigned int hadc = gUnpacker.get(k_device, 0, seg, 0, k_hg);
+	    hptr_array[piidhgwt_id + seg]->Fill( hadc );
+	  }
+	  if( gUnpacker.get_entries(k_device, 0, seg, 0, k_lg)>0 ){
+	    unsigned int ladc = gUnpacker.get(k_device, 0, seg, 0, k_lg);
+
+	    hptr_array[piidlgwt_id + seg]->Fill( ladc );
 	  }
 	}
       }
@@ -543,9 +558,11 @@ process_event( void )
   {
     static const int k_device_cft   = gUnpacker.get_device_id("CFT");
     static const int k_device_bgo   = gUnpacker.get_device_id("BGO");
+//    static const int k_device_piid   = gUnpacker.get_device_id("PiID");
     static const int k_leading  = gUnpacker.get_data_id("CFT" , "leading");
 //    static const int k_fadc      = gUnpacker.get_data_id("BGO", "fadc");
     static const int k_BGOleading      = gUnpacker.get_data_id("BGO", "leading");
+//    static const int k_PiIDleading      = gUnpacker.get_data_id("PiID", "leading");
 //    int BGO_Vth = 1000;
 //    static const int BGO_Vth = gUser.GetParameter("BGO_Vth", 0);
 
@@ -567,6 +584,21 @@ process_event( void )
             }
         }
     }
+
+//    //  BGO vs PiID
+//    cor_id= gHist.getSequentialID(kCorrelation_catch, 0, 0, 2);
+//    for(int seg1 = 0; seg1<NumOfSegBGO; ++seg1){
+//        for(int seg2 = 0; seg2<NumOfSegPiID; ++seg2){
+//            int hitBGO = gUnpacker.get_entries(k_device_bgo, 0, seg1, 0, k_BGOleading);
+//            int hitPiID = gUnpacker.get_entries(k_device_piid, 0, seg2, 0, k_PiIDleading);
+//            if(hitBGO == 0 || hitPiID == 0)continue;
+//            int tdcBGO = gUnpacker.get(k_device_bgo, 0, seg1, 0, k_BGOleading);
+//            int tdcPiID = gUnpacker.get(k_device_piid, 0, seg2, 0, k_PiIDleading);
+//            if(tdcBGO != 0&&tdcPiID !=0){
+//                        hptr_array[cor_id]->Fill(seg1, seg2);
+//            }
+//        }
+//    }
 
   }// Correlation 
 #if DEBUG

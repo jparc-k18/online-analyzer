@@ -17,7 +17,7 @@ void dispBH1()
     c->Clear();
     c->Divide(4,3);
     int adc_id     = HistMaker::getUniqueID(kBH1, 0, kADC, 1);
-    int adcwtdc_id = HistMaker::getUniqueID(kBH1, 0, kADCwTDC, 1);
+    int adcwtdc_id = HistMaker::getUniqueID(kBH1, 0, kADCwTDC, 1 + n_seg*2);
     for( int i=0; i<n_seg; ++i ){
       c->cd(i+1);
       gPad->SetLogy();
@@ -40,7 +40,7 @@ void dispBH1()
     c->Clear();
     c->Divide(4,3);
     int adc_id     = HistMaker::getUniqueID(kBH1, 0, kADC, 1+n_seg);
-    int adcwtdc_id = HistMaker::getUniqueID(kBH1, 0, kADCwTDC, 1+n_seg);
+    int adcwtdc_id = HistMaker::getUniqueID(kBH1, 0, kADCwTDC, 1+n_seg + n_seg*2);
     for( int i=0; i<n_seg; ++i ){
       c->cd(i+1);
       gPad->SetLogy();
@@ -57,6 +57,7 @@ void dispBH1()
     c->Update();
   }
 
+#if 0
   // draw TDC U
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
@@ -78,6 +79,37 @@ void dispBH1()
     c->Clear();
     c->Divide(4,3);
     int tdc_id = HistMaker::getUniqueID(kBH1, 0, kTDC, 1+n_seg);
+    for( int i=0; i<n_seg; ++i ){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get( tdc_id + i);
+      if( !h ) continue;
+      h->Draw();
+    }
+    c->Update();
+  }
+#endif
+  
+  // draw TDC U (FPGA)
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
+    c->Clear();
+    c->Divide(4,3);
+    int tdc_id = HistMaker::getUniqueID(kBH1, 0, kTDC, 1 + n_seg*2);
+    for( int i=0; i<n_seg; ++i ){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get( tdc_id + i );
+      if( !h ) continue;
+      h->Draw();
+    }
+    c->Update();
+  }
+
+  // draw TDC D (FPGA)
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
+    c->Clear();
+    c->Divide(4,3);
+    int tdc_id = HistMaker::getUniqueID(kBH1, 0, kTDC, 1+n_seg + n_seg*2);
     for( int i=0; i<n_seg; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( tdc_id + i);

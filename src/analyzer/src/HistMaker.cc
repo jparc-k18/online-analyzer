@@ -301,6 +301,36 @@ TList* HistMaker::createBH1( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
+  
+  // ADC w/TDC (FPGA) ---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = "ADCwFPGA_TDC";
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    // Make unique ID
+    Int_t target_id = getUniqueID(kBH1, 0, kADCwTDC, NumOfSegBH1*2);
+    for( Int_t i=0; i<NumOfSegBH1*2; ++i ){
+      const char* title = NULL;
+      if( i<NumOfSegBH1 ){
+	Int_t seg = i+1; // 1 origin
+	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+      }else{
+	Int_t seg = i+1-NumOfSegBH1; // 1 origin
+	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }
+
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
 
   // TDC (FPGA)----------------------------------------------------
   {

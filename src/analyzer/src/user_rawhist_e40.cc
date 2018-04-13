@@ -936,11 +936,17 @@ process_event( void )
     static const int k_device   = gUnpacker.get_device_id("BH2");
     static const int k_u        = 0; // up
     static const int k_d        = 1; // down
+    static const int k_adc      = gUnpacker.get_data_id("BH2", "adc");
     static const int k_tdc      = gUnpacker.get_data_id("BH2", "fpga_leading");
     static const int k_mt       = gUnpacker.get_data_id("BH2", "fpga_meantime");
 
+    // TDC gate range
+    static const unsigned int tdc_min = gUser.GetParameter("BH2_TDC_FPGA", 0);
+    static const unsigned int tdc_max = gUser.GetParameter("BH2_TDC_FPGA", 1);
+
     // Up PMT
     int bh1t_id   = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2*2+1);
+    int bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC, NumOfSegBH2*2+1);
     for(int seg=0; seg<NumOfSegBH2; ++seg){
       // TDC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
@@ -948,12 +954,18 @@ process_event( void )
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
 	if(tdc!=0){
 	  hptr_array[bh1t_id + seg]->Fill(tdc);
+	  // ADC w/TDC_FPGA
+	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
+	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+	    hptr_array[bh2awt_id + seg]->Fill(adc);
+	  }
 	}
       }
     }
 
     // Down PMT
     bh1t_id   = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2*2 + NumOfSegBH2+1);
+    bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC, NumOfSegBH2*2 + NumOfSegBH2+1);
     for(int seg=0; seg<NumOfSegBH2; ++seg){
       // TDC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
@@ -961,6 +973,11 @@ process_event( void )
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
 	if( tdc!=0 ){
 	  hptr_array[bh1t_id + seg]->Fill(tdc);
+	  // ADC w/TDC_FPGA
+	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
+	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+	    hptr_array[bh2awt_id + seg]->Fill( adc );
+	  }
 	}
       }
     }

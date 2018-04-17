@@ -243,6 +243,7 @@ TList* HistMaker::createBH1( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
+#if 0
   // ADC w/TDC ---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -301,11 +302,12 @@ TList* HistMaker::createBH1( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
+#endif
   
   // ADC w/TDC (FPGA) ---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    TString strSubDir  = "ADCwFPGA_TDC";
+    TString strSubDir  = CONV_STRING(kADCwTDC);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
@@ -335,7 +337,7 @@ TList* HistMaker::createBH1( Bool_t flag_ps )
   // TDC (FPGA)----------------------------------------------------
   {
     // Declaration of the sub-directory
-    TString strSubDir  = "FPGA_TDC";
+    TString strSubDir  = CONV_STRING(kTDC);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
@@ -859,6 +861,7 @@ TList* HistMaker::createBH2( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
+#if 0
   // ADC w/TDC ---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -915,11 +918,11 @@ TList* HistMaker::createBH2( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+#endif 
   // ADC w/TDC (FPGA)---------------------------------------------------------
   {
     // Declaration of the sub-directory
-    TString strSubDir  = "ADCwFPGA_TDC";
+    TString strSubDir  = CONV_STRING(kADCwTDC);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
@@ -948,7 +951,7 @@ TList* HistMaker::createBH2( Bool_t flag_ps )
   // TDC (FPGA)----------------------------------------------------
   {
     // Declaration of the sub-directory
-    TString strSubDir  = "FPGA_TDC";
+    TString strSubDir  = CONV_STRING(kTDC);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
@@ -3393,7 +3396,7 @@ TList* HistMaker::createTOF( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-
+#if 0
   // ADCwTDC ---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -3422,7 +3425,37 @@ TList* HistMaker::createTOF( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
+#endif
 
+  // ADCwTDC (FPGA)---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kADCwTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kTOF, 0, kADCwTDC, NumOfSegTOF*2);
+    for( Int_t i=0; i<NumOfSegTOF*2; ++i ){
+      const char* title = NULL;
+      if( i<NumOfSegTOF ){
+	Int_t seg = i+1; // 1 origin
+	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+      }else{
+	Int_t seg = i+1-NumOfSegTOF; // 1 origin
+	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }
+
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+#if 0
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -3433,6 +3466,36 @@ TList* HistMaker::createTOF( Bool_t flag_ps )
 
     // Make histogram and add it
     Int_t target_id = getUniqueID(kTOF, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegTOF*2; ++i){
+      const char* title = NULL;
+      if(i < NumOfSegTOF){
+	Int_t seg = i+1; // 1 origin
+	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+      }else{
+	Int_t seg = i+1-NumOfSegTOF; // 1 origin
+	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }
+
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "TDC [ch]", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+#endif
+  
+  // TDC (FPGA)---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kTOF, 0, kTDC, NumOfSegTOF*2);
     for(Int_t i = 0; i<NumOfSegTOF*2; ++i){
       const char* title = NULL;
       if(i < NumOfSegTOF){

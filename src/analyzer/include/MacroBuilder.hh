@@ -21,6 +21,7 @@ namespace macro
 namespace http
 {
   TCanvas* HitPattern( void );
+  TCanvas* TriggerFlag( void );
   TCanvas* BH1ADC( void );
   TCanvas* BH1TDC( void );
   TCanvas* BFT( void );
@@ -30,12 +31,20 @@ namespace http
   TCanvas* FBHTDC( void );
   TCanvas* FBHTOT( void );
   TCanvas* FBHHitMulti( void );
-  TCanvas* SFT( void );
+  TCanvas* SFTTDCTOT( void );
+  TCanvas* SFTHitMulti( void );
+  TCanvas* SFT2D( void );
+  TCanvas* FBT1Layer1( void );
+  TCanvas* FBT1Layer2( void );
+  TCanvas* FBT2Layer1( void );
+  TCanvas* FBT2Layer2( void );
   TCanvas* SCHTDC( void );
   TCanvas* SCHTOT( void );
   TCanvas* SCHHitMulti( void );
   TCanvas* TOFADC( void );
   TCanvas* TOFTDC( void );
+  TCanvas* TOFHT( void );
+  TCanvas* LC( void );
   TCanvas* MsTTDC( void );
   TCanvas* BC3TDC( void );
   TCanvas* BC3HitMulti( void );
@@ -44,10 +53,11 @@ namespace http
   TCanvas* SDC1TDC( void );
   TCanvas* SDC1HitMulti( void );
   TCanvas* SAC( void );
-  TCanvas* SDC2TDC( void );
+  TCanvas* SDC2TDCTOT( void );
   TCanvas* SDC2HitMulti( void );
-  TCanvas* SDC3TDC( void );
+  TCanvas* SDC3TDCTOT( void );
   TCanvas* SDC3HitMulti( void );
+  TCanvas* DAQ( void );
 
   // E07
   TCanvas* HitPatternE07( void );

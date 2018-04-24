@@ -78,6 +78,9 @@ my_tgt_jsroot_e07	:= $(bin_dir)/jsroot_e07
 my_obj_jsroot_e40	:= $(core_obj) user_jsroot_e40.o
 my_tgt_jsroot_e40	:= $(bin_dir)/jsroot_e40
 
+my_obj_jsroot_beammonitor	:= $(core_obj) user_jsroot_beammonitor.o
+my_tgt_jsroot_beammonitor	:= $(bin_dir)/jsroot_beammonitor
+
 my_obj_emc_position	:= $(core_obj) user_emc_position.o
 my_tgt_emc_position	:= $(bin_dir)/emc_position
 
@@ -135,6 +138,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_beamprofile_e40) \
 	$(my_tgt_scaler_e40) \
 	$(my_tgt_jsroot_e40) \
+	$(my_tgt_jsroot_beammonitor) \
 	$(core_dict_lib)
 #	$(my_old_tgt)
 
@@ -252,6 +256,13 @@ my_obj_jsroot_e40	:= $(my_obj_jsroot_e40)
 my_lib_jsroot_e40	:= libmyjsroot_e40.so
 $(eval $(call make-lib,$(my_lib_jsroot_e40),$(my_obj_jsroot_e40)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_e40),$(my_lib_jsroot_e40)))
+#
+#_______________________________________________________________________________
+my_obj_jsroot_beammonitor	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_beammonitor))
+my_obj_jsroot_beammonitor	:= $(my_obj_jsroot_beammonitor)
+my_lib_jsroot_beammonitor	:= libmyjsroot_beammonitor.so
+$(eval $(call make-lib,$(my_lib_jsroot_beammonitor),$(my_obj_jsroot_beammonitor)))
+$(eval $(call make-nogui-target,$(my_tgt_jsroot_beammonitor),$(my_lib_jsroot_beammonitor)))
 #
 #_______________________________________________________________________________
 my_obj_emc_position := $(addprefix $(my_dir)/src/,$(my_obj_emc_position))

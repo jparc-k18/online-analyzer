@@ -2,7 +2,7 @@
 
 # type screen >/dev/null 2>&1 || echo "screen must be installed" && exit
 
-program=jsroot_e40
+program=jsroot_beammonitor
 
 #_______________________________________________________________________________
 # if [ -z $ROOTSYS ]; then
@@ -39,9 +39,8 @@ if [ ! -z $pid ]; then
     echo "http_server is already running ($pid)"
     exit 1
 fi
-
 #_______________________________________________________________________________
 # screen -AmdS K18OnlineServer \
 #     sh -c ". $thisroot_sh && while true; do $server $conf $data; done"
-screen -AmdS K18OnlineServer \
+screen -AmdS K18OnlineServerBeamMonitor \
     sh -c "while true; do $server $conf $data; done"

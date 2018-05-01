@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ -z "${HDDAQ_EBHOST+x}" ]; then
+    ebhost=eb0
+else
+    ebhost=$HDDAQ_EBHOST
+fi

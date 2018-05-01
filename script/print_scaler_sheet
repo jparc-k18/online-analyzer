@@ -3,7 +3,7 @@
 #  shell script for online/semi online analyzer
 ##
 
-ebhost=eb0
+. $(dirname $(readlink -f $0))/setebhost
 
 dis_port=8901
 rec_port=8902
@@ -39,7 +39,7 @@ if [ $# = 0 ]; then
 elif [ $# = 1 ]; then
     spill=$1
     $exe_file $conf_file ${ebhost}:$port --print --spill=$spill
-    
+
 else
     echo "#D Usage: $(basename $0) [run number]"
 fi

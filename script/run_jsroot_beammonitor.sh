@@ -2,6 +2,7 @@
 
 # type screen >/dev/null 2>&1 || echo "screen must be installed" && exit
 
+. $(dirname $(readlink -f $0))/setebhost
 program=jsroot_beammonitor
 
 #_______________________________________________________________________________
@@ -17,7 +18,7 @@ server=$top_dir/bin/$program
 
 conf=/param/conf/analyzer.conf
 if [ -z "$1" ]; then
-    data=eb0:8901
+    data=${ebhost}:8901
 else
     data=$top_dir/data/run$1.dat.gz
 fi

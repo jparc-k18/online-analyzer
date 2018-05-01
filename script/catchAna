@@ -3,7 +3,7 @@
 #  shell script for CATCH online/semi CATCH  online analyzer
 ##
 
-ebhost=eb0
+. $(dirname $(readlink -f $0))/setebhost
 
 dis_port=8901
 rec_port=8902

@@ -36,6 +36,7 @@ fi
 
 if [ $# = 0 ]; then
     $exe_file $conf_file ${ebhost}:$port
+    exit
 fi
 
 data_file=$data_dir/run$1.dat

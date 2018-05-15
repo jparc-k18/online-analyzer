@@ -24,7 +24,11 @@ namespace analyzer
     ConfMan& gConfMan = ConfMan::GetInstance();
     UnpackerManager& gUnpacker = GUnpacker::get_instance();
     //std::vector<std::string> target = { "hul01", "hul03" };
-    std::vector<std::string> target = { "vme01" };
+    //std::vector<std::string> target = { "vme01" };
+    std::vector<std::string> target = {
+      "Veasiroc96", "Veasiroc97", "Veasiroc98", "Veasiroc99",
+      "Veasiroc100", "Veasiroc101", "Veasiroc102"
+    };
   }
 
 //______________________________________________________________________________
@@ -33,12 +37,12 @@ process_begin(const std::vector<std::string>& argv)
 {
   gConfMan.Initialize(argv);
 
-  // for( int i=0, n=target.size(); i<n; ++i ){
-  //   int node_id = gUnpacker.get_fe_id( target.at(i) );
-  //   Unpacker *node = gUnpacker.get_root()->get_child(node_id);
-  //   if( !node ) continue;
-  //   node->set_dump_mode(defines::k_hex);
-  // }
+  for( int i=0, n=target.size(); i<n; ++i ){
+    int node_id = gUnpacker.get_fe_id( target.at(i) );
+    Unpacker *node = gUnpacker.get_root()->get_child(node_id);
+    if( !node ) continue;
+    node->set_dump_mode(defines::k_hex);
+  }
 
   return 0;
 }

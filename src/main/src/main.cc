@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
   std::vector<std::string> argV(argv, argv+argc);
   Main& g_main = Main::getInstance();
 
-  std::vector<std::string>::iterator batchOpt 
+  std::vector<std::string>::iterator batchOpt
     = std::find(argV.begin(), argV.end(), "-b");
   if (batchOpt!=argV.end())
     {
@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
       argV.erase(std::remove(argV.begin(), argV.end(), *forceOpt));
     }
 
-  std::copy(argV.begin(), argV.end(), 
+  std::copy(argV.begin(), argV.end(),
 	    std::ostream_iterator<std::string>(std::cout, "\n "));
   std::cout << std::endl;
   if (g_main.isBatch())
@@ -81,14 +81,16 @@ int main(int argc, char* argv[])
       argv_cint[0] = argv[0];
       argv_cint[1] = const_cast<char*>(cint_pwd.c_str());
       TRint cint("cint", &argc_cint, argv_cint, 0, 0, kTRUE);
-  
+
       g_main.initialize(argV);
 
       // ______ construct GUI ______
       Controller::getInstance();
-  
+
+      ::usleep(2000);
+
       g_updater.start();
-      
+
       g_main.start();
 
       cint.Run();
@@ -96,6 +98,6 @@ int main(int argc, char* argv[])
       g_updater.join();
       g_main.join();
     }
-  
+
   return 0;
 }

@@ -303,7 +303,7 @@ TList* HistMaker::createBH1( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 #endif
-  
+
   // ADC w/TDC (FPGA) ---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -918,7 +918,7 @@ TList* HistMaker::createBH2( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-#endif 
+#endif
   // ADC w/TDC (FPGA)---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -3485,7 +3485,7 @@ TList* HistMaker::createTOF( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 #endif
-  
+
   // TDC (FPGA)---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -3507,7 +3507,7 @@ TList* HistMaker::createTOF( Bool_t flag_ps )
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     0x1000, 0, 0x1000,
+			     50000, 0, 2000000,
 			     "TDC [ch]", ""));
     }
 
@@ -5675,7 +5675,7 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // FlashADCwTDC ----------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -5701,7 +5701,7 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory

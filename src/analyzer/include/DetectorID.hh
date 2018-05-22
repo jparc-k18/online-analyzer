@@ -19,22 +19,22 @@ const Int_t DetIdBGO     = 114;
 const Int_t DetIdPiID    = 115;
 const Int_t DetIdTOF     =   8;
 const Int_t DetIdTOF_HT  =  11;
-const Int_t DetIdLC      =  10; //add
+const Int_t DetIdLC      =  10;
 const Int_t NumOfSegBH1  =  11;
-const Int_t NumOfSegBH2  =   8; //add
+const Int_t NumOfSegBH2  =   8;
 const Int_t NumOfSegBAC  =   2;
 const Int_t NumOfSegFBH  =  16;
 //const Int_t NumOfSegSAC  = 16; // 12 readout & 4 rooms //add
 const Int_t NumOfSegSCH  =  64;
 const Int_t NumOfSegBGO  =  24;
-const Int_t NumOfSegBGO_T  =  4;
+const Int_t NumOfSegBGO_T=   4;
 const Int_t NumOfSegPiID =  32;
 const Int_t NumOfSegTOF  =  24;
 //const Int_t NumOfSegTOF_HT  = 24;
-const Int_t NumOfSegTOF_HT  = 15;
+const Int_t NumOfSegTOF_HT= 15;
 const Int_t NumOfSegClusteredFBH = 31;
-const Int_t NumOfRoomsSAC  = 4;
-const Int_t NumOfSegLC  = 28;
+const Int_t NumOfRoomsSAC=   4;
+const Int_t NumOfSegLC   =  28;
 
 // Misc
 const Int_t DetIdTFlag     = 21;
@@ -53,8 +53,8 @@ const Int_t DetIdSDC3 = 107;
 const Int_t DetIdBFT  = 110;
 const Int_t DetIdSFT  = 111;
 const Int_t DetIdCFT  = 113;
-const Int_t DetIdFBT1 = 131; //add
-const Int_t DetIdFBT2 = 132; //add
+const Int_t DetIdFBT1 = 131;
+const Int_t DetIdFBT2 = 132;
 const Int_t DetIdBcOut  = 20;
 const Int_t DetIdSdcIn  = 30;
 const Int_t DetIdSdcOut = 40;
@@ -64,21 +64,21 @@ const Int_t NumOfLayersSdcIn  =  9;
 const Int_t NumOfLayersSdcOut =  8;
 const Int_t NumOfLayersSsdIn  =  4;
 const Int_t NumOfLayersSsdOut =  4;
-const Int_t NumOfLayersBC3  = 6;
-const Int_t NumOfLayersBC4  = 6;
-const Int_t NumOfPlaneSFT   = 4; // U, V, X, XP
-const Int_t NumOfLayersSFT  = 3; // U, V, X
-const Int_t NumOfLayersCFT  =8;
-const Int_t NumOfLayersFBT = 2; //add
-const Int_t NumOfLayersSDC1 = 6;
-const Int_t NumOfLayersSDC2 = 4;
-const Int_t NumOfLayersSDC3 = 4;
-const Int_t NumOfWireBC3   =  64;
-const Int_t NumOfWireBC4   =  64;
-const Int_t NumOfWireSDC1  =  64;
-const Int_t NumOfWireSDC2  = 128;
-const Int_t NumOfWireSDC3X =  96;
-const Int_t NumOfWireSDC3Y =  64;
+const Int_t NumOfLayersBC3    =  6;
+const Int_t NumOfLayersBC4    =  6;
+const Int_t NumOfPlaneSFT     =  4; // U, V, X, XP
+const Int_t NumOfLayersSFT    =  3; // U, V, X
+const Int_t NumOfLayersCFT    =  8;
+const Int_t NumOfLayersFBT    =  2;
+const Int_t NumOfLayersSDC1   =  6;
+const Int_t NumOfLayersSDC2   =  4;
+const Int_t NumOfLayersSDC3   =  4;
+const Int_t NumOfWireBC3      = 64;
+const Int_t NumOfWireBC4      = 64;
+const Int_t NumOfWireSDC1     = 64;
+const Int_t NumOfWireSDC2     = 128;
+const Int_t NumOfWireSDC3X    = 96;
+const Int_t NumOfWireSDC3Y    = 64;
 const Double_t MaxDriftLengthBC3  =  1.5;
 const Double_t MaxDriftLengthBC4  =  1.5;
 const Double_t MaxDriftLengthSDC1 =  3.0;
@@ -102,10 +102,10 @@ const Int_t PlOffsSdcIn  =   0;
 const Int_t PlOffsSdcOut =  30;
 const Int_t PlOffsSsd    =   6;
 
-const Int_t NumOfPlaneBFT = 2;
-const Int_t NumOfSegBFT  =  160;
-const Int_t NumOfSegSFT_X =  256; //add
-const Int_t NumOfSegSFT_UV =  320; //add
+const Int_t NumOfPlaneBFT  = 2;
+const Int_t NumOfSegBFT    = 160;
+const Int_t NumOfSegSFT_X  = 256;
+const Int_t NumOfSegSFT_UV = 320;
 const Int_t NumOfSegSFT[NumOfPlaneSFT] = { NumOfSegSFT_UV,
 					   NumOfSegSFT_UV,
 					   NumOfSegSFT_X,
@@ -126,16 +126,16 @@ const Int_t NumOfSegCFT[NumOfLayersCFT] = { NumOfSegCFT_UV1,
 					    NumOfSegCFT_PHI3,
 					    NumOfSegCFT_UV4,
 					    NumOfSegCFT_PHI4 };
-const Int_t NumOfSegFBT1 =  64; //add
-const Int_t NumOfSegFBT2 =  64; //add
+const Int_t NumOfSegFBT1          = 48;
+const Int_t NumOfSegFBT2          = 64;
 // VMEEASIROC Board
-const Int_t DetIdVEASIROC  =116;
-const Int_t NumOfLayersVMEEASIROC  =95;
-const Int_t NumOfSegVMEEASIROC  =64;
+const Int_t DetIdVEASIROC         = 116;
+const Int_t NumOfLayersVMEEASIROC = 95;
+const Int_t NumOfSegVMEEASIROC    = 64;
 
 // Tracker const
-const Int_t FBTOffset = 200;
-const Int_t NumOfUDStructureFBT = 2;
+const Int_t FBTOffset             = 200;
+const Int_t NumOfUDStructureFBT   = 2;
 // Old Detectors
 // E07 Detectors
 const Int_t DetIdFBH  =  4;

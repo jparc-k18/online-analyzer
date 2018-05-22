@@ -6281,43 +6281,6 @@ TList* HistMaker::createFBT1( Bool_t flag_ps )
   top_dir->SetName(nameDetector);
   const char* UD[] ={"U","D"};
 
-  //  // TDC---------------------------------------------------------
-  //  {
-  //    TString strSubDir  = CONV_STRING(kTDC);
-  //    const char* nameSubDir = strSubDir.Data();
-  //    TList *sub_dir = new TList;
-  //    sub_dir->SetName(nameSubDir);
-  //    for(Int_t l=0; l<NumOfLayersFBT; ++l){
-  //       for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
-  //       Int_t target_id = getUniqueID(kFBT1, l, kTDC, v*FBTOffset);
-  //          for(Int_t i=0; i<NumOfSegFBT1; ++i){
-  //	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
-  //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
-  //			       1024, 0, 1024,
-  //			       "TDC [ch]", ""));
-  //          }
-  //       }
-  //    }
-  //    top_dir->Add(sub_dir);
-  //  }
-  //  // TOT---------------------------------------------------------
-  //  {
-  //    const char* nameSubDir = "TOT";
-  //    TList *sub_dir = new TList;
-  //    sub_dir->SetName(nameSubDir);
-  //    for(Int_t l=0; l<NumOfLayersFBT; ++l){
-  //    for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
-  //       Int_t target_id = getUniqueID(kFBT1, l, kADC, v*FBTOffset);
-  //    for(Int_t i=0; i<NumOfSegFBT1; ++i){
-  //	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
-  //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
-  //			       200, -50, 150,
-  //			       "TOT [ch]", ""));
-  //    }
-  //    }
-  //    }
-  //    top_dir->Add(sub_dir);
-  //  }
   // TDC/TOT SUM -----------------------------------------------------
   {
     TString strSubDir  = CONV_STRING(kTDC_TOT);
@@ -6439,43 +6402,6 @@ TList* HistMaker::createFBT2( Bool_t flag_ps )
   top_dir->SetName(nameDetector);
   const char* UD[] ={"U","D"};
 
-  //  // TDC---------------------------------------------------------
-  //  {
-  //    TString strSubDir  = CONV_STRING(kTDC);
-  //    const char* nameSubDir = strSubDir.Data();
-  //    TList *sub_dir = new TList;
-  //    sub_dir->SetName(nameSubDir);
-  //    for(Int_t l=0; l<NumOfLayersFBT; ++l){
-  //       for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
-  //       Int_t target_id = getUniqueID(kFBT2, l, kTDC, v*FBTOffset);
-  //          for(Int_t i=0; i<NumOfSegFBT2; ++i){
-  //	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
-  //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
-  //			       1024, 0, 1024,
-  //			       "TDC [ch]", ""));
-  //          }
-  //       }
-  //    }
-  //    top_dir->Add(sub_dir);
-  //  }
-  //  // TOT---------------------------------------------------------
-  //  {
-  //    const char* nameSubDir = "TOT";
-  //    TList *sub_dir = new TList;
-  //    sub_dir->SetName(nameSubDir);
-  //    for(Int_t l=0; l<NumOfLayersFBT; ++l){
-  //    for(Int_t v=0; v<NumOfUDStructureFBT; ++v){
-  //       Int_t target_id = getUniqueID(kFBT2, l, kADC, v*FBTOffset);
-  //    for(Int_t i=0; i<NumOfSegFBT2; ++i){
-  //	        sub_dir->Add(createTH1(++target_id , Form("%s_Layer%d_%s_%d%s",
-  //			       nameDetector,l+1, nameSubDir, i+1 ,UD[v]),   //1 origine
-  //			       200, -50, 150,
-  //			       "TOT [ch]", ""));
-  //    }
-  //    }
-  //    }
-  //    top_dir->Add(sub_dir);
-  //  }
   // TDC/TOT SUM -----------------------------------------------------
   {
     TString strSubDir  = CONV_STRING(kTDC_TOT);

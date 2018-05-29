@@ -333,7 +333,7 @@ process_event( void )
 	int data_size = gUnpacker.get_node_header(k_easiroc+i, DAQNode::k_data_size);
 	h->Fill( i, data_size );
       }
-      for(int i = 16; i<100; ++i){
+      for(int i = 16; i<102; ++i){
 	int data_size = gUnpacker.get_node_header(k_Veasiroc+i-16, DAQNode::k_data_size);
 	h->Fill( i, data_size );
       }

@@ -4474,7 +4474,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 
     target_id = getUniqueID(kDAQ, kEASIROC, kHitPat2D, 0);
     top_dir->Add(createTH2(target_id + 1, "Data size EASIROC nodes", // 1 origin
-			   100, 0, 100,
+			   110, 0, 110,
 			   100, 0, 300,
 			   "EASIROC node ID", "Data size [words]"));
 

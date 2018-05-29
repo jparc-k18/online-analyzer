@@ -229,7 +229,7 @@ ScalerAnalyzer::DrawOneLine( const TString& title1, const TString& val1,
   line.SetLineColor(kBlack);
   line.DrawLine( 0.34, y-0.5*ystep, 0.34, y+0.5*ystep );
   line.DrawLine( 0.66, y-0.5*ystep, 0.66, y+0.5*ystep );
-  if( i==1 || i==5 || i==15 )
+  if( i==1 || i==5 || i==16 )
     line.DrawLine( 0.05, y-0.5*ystep, 0.95, y-0.5*ystep );
 
   ++i;
@@ -374,7 +374,7 @@ ScalerAnalyzer::SeparateComma( Scaler number ) const
     return TString( ss.str() );
   }
   else {
-    return TString::ULLtoa( number, 10 );
+    return TString::LLtoa( number, 10 );
   }
 }
 
@@ -418,23 +418,21 @@ ScalerAnalyzer::PrintScalerSheet( void )
 	       "(BH2,TOF)", SeparateComma( Get("(BH2,TOF)") ),
 	       "Width", "[s]" );
 
-  DrawOneLine( "BH1",    "BH1-SUM",  "L1-Req"  );
-  DrawOneLine( "BH2",    "BH2-SUM",  "L1-Acc"  );
+  DrawOneLine( "BH1",    "BH1-SUM",  "L1-Req"   );
+  DrawOneLine( "BH2",    "BH2-SUM",  "L1-Acc"   );
   DrawOneLine( "SAC",    "(BH2,pi)",  "Matrix"  );
   DrawOneLine( "SCH",    "(BH2,p)",   "Mst-Acc" );
-  DrawOneLine( "TOF",    "K-Scat",   "Mst-Clr" );
-  DrawOneLine( "TOF-HT", "(BH2,K)",  "Clear"   );
-  DrawOneLine( "TOF-24", "CFT-Phi1", "L2-Req"  );
-  DrawOneLine( "LC",     "CFT-Phi2", "L2-Acc"  );
-  DrawOneLine( "BGO",    "CFT-Phi3", "pi-Scat" );
-  DrawOneLine( "PiID",   "CFT-Phi4", "p-Scat"  );
+  DrawOneLine( "FBT1",   "K-Scat",   "Mst-Clr"  );
+  DrawOneLine( "FBT2",   "(BH2,K)",  "Clear"    );
+  DrawOneLine( "TOF",    "CFT-Phi1", "L2-Req"   );
+  DrawOneLine( "TOF-HT", "CFT-Phi2", "L2-Acc"   );
+  DrawOneLine( "TOF-24", "CFT-Phi3", "PiID"     );
+  DrawOneLine( "LC",     "CFT-Phi4", "pi-Scat"  );
+  DrawOneLine( "BGO",    "CFT-3Coin", "p-Scat"  );
 
-  DrawOneLine( "Beam/TM",   Form("%.6lf", Fraction("Beam","TM")),
-	       "Live/Real", Form("%.6lf", Fraction("Live-Time","Real-Time")),
-	       "DAQ Eff",   Form("%.6lf", Fraction("L1-Acc","L1-Req")) );
-  DrawOneLine( "(BH2,K)/Beam", Form("%.6lf", Fraction("(BH2,K)","Beam")),
-	       "L2 Eff",       Form("%.6lf", Fraction("L2-Acc","L1-Acc")),
-	       "Duty Factor",  Form("%.6lf", Duty()) );
+  DrawOneLine( "L2 Eff",      Form("%.6lf", Fraction("L2-Acc","L1-Acc")),
+	       "Duty Factor", Form("%.6lf", Duty()),
+	       "DAQ Eff",     Form("%.6lf", Fraction("L1-Acc","L1-Req")) );
 
   const TString& scaler_sheet_pdf("/tmp/scaler_sheet.pdf");
   m_canvas->Print( scaler_sheet_pdf );

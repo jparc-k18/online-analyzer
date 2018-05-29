@@ -1561,7 +1561,7 @@ process_event( void )
 
     static const int k_u      = 0; // up
     static const int k_d      = 1; // down
-    static const int k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
+    static const int k_tdc    = gUnpacker.get_data_id("BH1", "fpga_leading");
 
     // HodoParam
     static const int cid_bh1  = 1;
@@ -1623,7 +1623,7 @@ process_event( void )
 
     static const int k_u      = 0; // up
     static const int k_d      = 1; // down
-    static const int k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
+    static const int k_tdc    = gUnpacker.get_data_id("BH1", "fpga_leading");
 
     // Sequential ID
     static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);

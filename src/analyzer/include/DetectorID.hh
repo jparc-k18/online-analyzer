@@ -126,7 +126,7 @@ const Int_t NumOfSegCFT[NumOfLayersCFT] = { NumOfSegCFT_UV1,
 					    NumOfSegCFT_PHI3,
 					    NumOfSegCFT_UV4,
 					    NumOfSegCFT_PHI4 };
-const Int_t NumOfSegFBT1          = 64;
+const Int_t NumOfSegFBT1          = 48;
 const Int_t NumOfSegFBT2          = 64;
 // VMEEASIROC Board
 const Int_t DetIdVEASIROC         = 116;

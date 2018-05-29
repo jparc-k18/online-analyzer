@@ -4352,6 +4352,30 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
 			   NumOfWireSDC3X, 0, NumOfWireSDC3X,
 			   NumOfSegTOF, 0, NumOfSegTOF,
 			   "SDC3 wire", "TOF seg"));
+
+    // FBT1 UX1 vs FBT1 UX2 --------------------------------------------
+    top_dir->Add(createTH2(++target_id, "FBT1_UX1_FBT1_UX2", // 1 origin
+			   NumOfSegFBT1, 0, NumOfSegFBT1,
+			   NumOfSegFBT1, 0, NumOfSegFBT1,
+			   "FBT1 UX1", "FBT1 UX2"));
+
+    // FBT1 DX1 vs FBT1 DX2 --------------------------------------------
+    top_dir->Add(createTH2(++target_id, "FBT1_DX1_FBT1_DX2", // 1 origin
+			   NumOfSegFBT1, 0, NumOfSegFBT1,
+			   NumOfSegFBT1, 0, NumOfSegFBT1,
+			   "FBT1 DX1", "FBT1 DX2"));
+
+    // FBT2 UX1 vs FBT2 UX2 --------------------------------------------
+    top_dir->Add(createTH2(++target_id, "FBT2_UX1_FBT2_UX2", // 1 origin
+			   NumOfSegFBT2, 0, NumOfSegFBT2,
+			   NumOfSegFBT2, 0, NumOfSegFBT2,
+			   "FBT2 UX1", "FBT2 UX2"));
+
+    // FBT2 DX1 vs FBT2 DX2 --------------------------------------------
+    top_dir->Add(createTH2(++target_id, "FBT2_DX1_FBT2_DX2", // 1 origin
+			   NumOfSegFBT2, 0, NumOfSegFBT2,
+			   NumOfSegFBT2, 0, NumOfSegFBT2,
+			   "FBT2 DX1", "FBT2 DX2"));
   }
 
   return top_dir;

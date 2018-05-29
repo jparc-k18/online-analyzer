@@ -1459,6 +1459,8 @@ process_event( void )
     static const int k_device_sdc1 = gUnpacker.get_device_id("SDC1");
     static const int k_device_sdc2 = gUnpacker.get_device_id("SDC2");
     static const int k_device_sdc3 = gUnpacker.get_device_id("SDC3");
+    static const int k_device_fbt1 = gUnpacker.get_device_id("FBT1");
+    static const int k_device_fbt2 = gUnpacker.get_device_id("FBT2");
 
     // sequential id
     int cor_id= gHist.getSequentialID(kCorrelation, 0, 0, 1);
@@ -1543,6 +1545,83 @@ process_event( void )
 	int hitSDC3 = gUnpacker.get_entries(k_device_sdc3, 2, 0, wire, 0);
 	if( hitTOF == 0 || hitSDC3 == 0 ) continue;
 	hcor_tofsdc3->Fill( wire, seg );
+      }
+    }
+
+    // FBT1
+    {
+      std::vector<TH2*> hcor = {
+	dynamic_cast<TH2*>(hptr_array[cor_id++]),
+	dynamic_cast<TH2*>(hptr_array[cor_id++])
+      };
+      static const int k_leading  = gUnpacker.get_data_id("FBT1", "leading");
+
+      // TDC gate range
+      static const int tdc_min = gUser.GetParameter("FBT1_TDC", 0);
+      static const int tdc_max = gUser.GetParameter("FBT1_TDC", 1);
+
+      // sequential id
+      std::vector<Int_t> fbt1_seg[NumOfLayersFBT][NumOfUDStructureFBT];
+      for( Int_t l=0; l<NumOfLayersFBT; ++l ){
+	for( Int_t ud=0; ud<NumOfUDStructureFBT; ++ud ){
+	  for( Int_t seg=0; seg<NumOfSegFBT1; ++seg ){
+	    Int_t nhit_l = gUnpacker.get_entries(k_device_fbt1, l, seg, ud, k_leading);
+	    Bool_t hit =false;
+	    for(Int_t m = 0; m<nhit_l; ++m){
+	      Int_t tdc = gUnpacker.get(k_device_fbt1, l, seg, ud, k_leading,  m);
+	      if( tdc_min<tdc && tdc<tdc_max ){
+		hit = true;
+	      }
+	    }
+	    if( hit )
+	      fbt1_seg[l][ud].push_back(seg);
+	  }
+	}
+      }
+      for( Int_t ud=0; ud<NumOfUDStructureFBT; ++ud ){
+	for( Int_t i1=0, n1=fbt1_seg[0][ud].size(); i1<n1; ++i1 ){
+	  for( Int_t i2=0, n2=fbt1_seg[1][ud].size(); i2<n2; ++i2 ){
+	    hcor.at(ud)->Fill(fbt1_seg[0][ud].at(i1), fbt1_seg[1][ud].at(i2));
+	  }
+	}
+      }
+    }
+    // FBT2
+    {
+      std::vector<TH2*> hcor = {
+	dynamic_cast<TH2*>(hptr_array[cor_id++]),
+	dynamic_cast<TH2*>(hptr_array[cor_id++])
+      };
+      static const int k_leading  = gUnpacker.get_data_id("FBT2", "leading");
+
+      // TDC gate range
+      static const int tdc_min = gUser.GetParameter("FBT2_TDC", 0);
+      static const int tdc_max = gUser.GetParameter("FBT2_TDC", 1);
+
+      // sequential id
+      std::vector<Int_t> fbt2_seg[NumOfLayersFBT][NumOfUDStructureFBT];
+      for( Int_t l=0; l<NumOfLayersFBT; ++l ){
+	for( Int_t ud=0; ud<NumOfUDStructureFBT; ++ud ){
+	  for( Int_t seg=0; seg<NumOfSegFBT2; ++seg ){
+	    Int_t nhit_l = gUnpacker.get_entries(k_device_fbt2, l, seg, ud, k_leading);
+	    Bool_t hit =false;
+	    for(Int_t m = 0; m<nhit_l; ++m){
+	      Int_t tdc = gUnpacker.get(k_device_fbt2, l, seg, ud, k_leading,  m);
+	      if( tdc_min<tdc && tdc<tdc_max ){
+		hit = true;
+	      }
+	    }
+	    if( hit )
+	      fbt2_seg[l][ud].push_back(seg);
+	  }
+	}
+      }
+      for( Int_t ud=0; ud<NumOfUDStructureFBT; ++ud ){
+	for( Int_t i1=0, n1=fbt2_seg[0][ud].size(); i1<n1; ++i1 ){
+	  for( Int_t i2=0, n2=fbt2_seg[1][ud].size(); i2<n2; ++i2 ){
+	    hcor.at(ud)->Fill(fbt2_seg[0][ud].at(i1), fbt2_seg[1][ud].at(i2));
+	  }
+	}
       }
     }
   }

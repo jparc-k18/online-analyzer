@@ -72,7 +72,7 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "pi-Beam",    0,  1 ) );
     gScaler.Set( c, r++, ScalerInfo( "p-Beam",     0,  2 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH1",        0,  3 ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH1-SUM",   -1, -1 ) );
+    //    gScaler.Set( c, r++, ScalerInfo( "BH1-SUM",   -1, -1 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH1-01",     0,  4 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH1-02",     0,  5 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH1-03",     0,  6 ) );
@@ -85,7 +85,7 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "BH1-10",     0, 13 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH1-11",     0, 14 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH2",        0, 15 ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-SUM",   -1, -1 ) );
+    //   gScaler.Set( c, r++, ScalerInfo( "BH2-SUM",   -1, -1 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH2-01",     0, 16 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH2-02",     0, 17 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH2-03",     0, 18 ) );
@@ -96,6 +96,8 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "BH2-08",     0, 23 ) );
     gScaler.Set( c, r++, ScalerInfo( "SAC",        0, 24 ) );
     gScaler.Set( c, r++, ScalerInfo( "SCH",        0, 25 ) );
+    gScaler.Set( c, r++, ScalerInfo( "FBT1",       1, 62 ) );
+    gScaler.Set( c, r++, ScalerInfo( "FBT2",       1, 63 ) );
     gScaler.Set( c, r++, ScalerInfo( "TOF",        0, 26 ) );
     gScaler.Set( c, r++, ScalerInfo( "TOF-HT",     0, 27 ) );
     gScaler.Set( c, r++, ScalerInfo( "TOF-24",     0, 63 ) );
@@ -162,7 +164,7 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "(BH2,p)",       0, 36 ) );
     gScaler.Set( c, r++, ScalerInfo( "(p,BGO)",       0, 37 ) );
     gScaler.Set( c, r++, ScalerInfo( "Extra",         0, 38 ) );
-    gScaler.Set( c, r++, ScalerInfo( "CoinE03",       0, 39 ) );
+    //    gScaler.Set( c, r++, ScalerInfo( "CoinE03",       0, 39 ) );
     gScaler.Set( c, r++, ScalerInfo( "(BH2,K)-PS",    0, 47 ) );
     gScaler.Set( c, r++, ScalerInfo( "(BH2,TOF)-PS",  0, 42 ) );
     gScaler.Set( c, r++, ScalerInfo( "(BH2,pi)-PS",   0, 43 ) );

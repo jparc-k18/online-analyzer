@@ -18,7 +18,13 @@ bin_dir=$ana_dir/bin
 exe_file=$bin_dir/beamprofile_e40
 
 ##### data directory
-data_dir=$ana_dir/data
+#data_dir=$ana_dir/data
+data_dir=(
+    /hdd1
+    /hdd2
+    /hdd3
+    /hdd4
+)
 
 ##### configure file
 conf_file=/param/conf/analyzer.conf
@@ -38,17 +44,21 @@ if [ $# = 0 ]; then
     exit
 fi
 
-data_file=$data_dir/run$1.dat
-if [ ! -f $data_file ]; then
-    data_file=$data_dir/run$1.dat.gz
-    if [ ! -f $data_file ]; then
-	echo "#E [$(basename $0)] no such file: $data_file"
+for d in ${data_dir[@]}
+do
+    data_file=`find $d/ -name "run$1.dat*" 2>/dev/null`
+    if [ -z "$data_file" ]; then
+	continue
+    fi
+    if [ $# = 1 ]; then
+	$exe_file $conf_file $data_file
+	exit
+    elif [ $# = 2 ]; then
+	$exe_file $conf_file $data_file $2
+	exit
+    else
+	echo "#D Usage: $(basename $0) [run number]"
 	exit
     fi
-fi
-
-if [ $# = 1 ]; then
-    $exe_file $conf_file $data_file
-else
-    echo "#D Usage: $(basename $0) [run number]"
-fi
+done
+echo "#E [$(basename $0)] no such run: $1"

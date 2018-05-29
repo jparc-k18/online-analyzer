@@ -501,7 +501,7 @@ void PsMaker::create(TString& name)
     for(int i = 0; i<12; ++i){id_list.push_back(base_id + i + 12);}
     drawOneCanvas(id_list, par_list, false, false);
 
-    //Multi & HitPat 
+    //Multi & HitPat
     par_list[kXdiv] = 2; par_list[kYdiv] = 2;
     base_id = HistMaker::getUniqueID(kBGO, 0, kHitPat,1);
     id_list.push_back(base_id);

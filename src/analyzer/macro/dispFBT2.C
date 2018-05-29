@@ -50,7 +50,7 @@ void dispFBT2( void )
     c->Clear();
     c->Divide(4,2);
     for( Int_t j=0, m=hid.at(i).size(); j<m; ++j ){
-      c->cd(j+1)->SetGrid();
+      c->cd(j+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( hid.at(i).at(j) );
       if( h ) h->Draw("colz");
     }

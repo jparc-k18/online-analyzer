@@ -203,7 +203,7 @@ process_event( void )
   event.DecodeHodoAnalyzer();
   event.DecodeDCAnalyzer();
 
-  const RawData*      const rawData = event.GetRawData();
+  // const RawData*      const rawData = event.GetRawData();
   const HodoAnalyzer* const hodoAna = event.GetHodoAnalyzer();
   // const DCAnalyzer*   const DCAna   = event.GetDCAnalyzer();
 
@@ -1974,7 +1974,7 @@ process_event( void )
 
     static const int k_u      = 0; // up
     static const int k_d      = 1; // down
-    static const int k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
+    static const int k_tdc    = gUnpacker.get_data_id("BH1", "fpga_leading");
 
     // HodoParam
     static const int cid_bh1  = 1;

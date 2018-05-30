@@ -1,3 +1,5 @@
+#include "DetectorID.hh"
+
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
@@ -9,16 +11,14 @@ void dispTOF()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  const int n_seg = 24;
-
   // draw ADC U
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
     c->Divide(6,4);
-    int adc_id     = HistMaker::getUniqueID( kTOF, 0, kADC, 1 );
-    int adcwtdc_id = HistMaker::getUniqueID( kTOF, 0, kADCwTDC, 1 );
-    for( int i=0; i<n_seg; ++i ){
+    int adc_id     = HistMaker::getUniqueID( kTOF, 0, kADC );
+    int adcwtdc_id = HistMaker::getUniqueID( kTOF, 0, kADCwTDC );
+    for( int i=0; i<NumOfSegTOF; ++i ){
       c->cd(i+1);
       gPad->SetLogy();
       TH1 *h = (TH1*)GHist::get( adc_id + i );
@@ -39,9 +39,9 @@ void dispTOF()
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
     c->Clear();
     c->Divide(6,4);
-    int adc_id     = HistMaker::getUniqueID(kTOF, 0, kADC, 1+n_seg);
-    int adcwtdc_id = HistMaker::getUniqueID(kTOF, 0, kADCwTDC, 1+n_seg);
-    for( int i=0; i<n_seg; ++i ){
+    int adc_id     = HistMaker::getUniqueID(kTOF, 0, kADC, 1+NumOfSegTOF);
+    int adcwtdc_id = HistMaker::getUniqueID(kTOF, 0, kADCwTDC, 1+NumOfSegTOF);
+    for( int i=0; i<NumOfSegTOF; ++i ){
       c->cd(i+1);
       gPad->SetLogy();
       TH1 *h = (TH1*)GHist::get( adc_id + i );
@@ -62,8 +62,8 @@ void dispTOF()
     TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
     c->Clear();
     c->Divide(6,4);
-    int tdc_id = HistMaker::getUniqueID( kTOF, 0, kTDC, 1 + n_seg*2);
-    for( int i=0; i<n_seg; ++i ){
+    int tdc_id = HistMaker::getUniqueID( kTOF, 0, kTDC );
+    for( int i=0; i<NumOfSegTOF; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( tdc_id + i );
       if( h ) h->Draw();
@@ -76,8 +76,8 @@ void dispTOF()
     TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
     c->Clear();
     c->Divide(6,4);
-    int tdc_id = HistMaker::getUniqueID( kTOF, 0, kTDC, 1+n_seg + n_seg*2);
-    for( int i=0; i<n_seg; ++i ){
+    int tdc_id = HistMaker::getUniqueID( kTOF, 0, kTDC, 1+NumOfSegTOF );
+    for( int i=0; i<NumOfSegTOF; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( tdc_id + i );
       if( h ) h->Draw();

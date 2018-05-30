@@ -20,6 +20,8 @@ namespace macro
 // for HttpServer
 namespace http
 {
+  TCanvas* Correlation( void );
+  TCanvas* CorrelationFBT( void );
   TCanvas* HitPattern( void );
   TCanvas* TriggerFlag( void );
   TCanvas* BH1ADC( void );

@@ -51,6 +51,36 @@ namespace http
 
 //____________________________________________________________________________
 TCanvas*
+Correlation( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(3, 2);
+  for( Int_t i=0; i<6; ++i ){
+    c1->cd(i+1);
+    TH1 *h = GHist::get( HistMaker::getUniqueID(kCorrelation, 0, 0, i+1) );
+    if( !h ) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CorrelationFBT( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(2, 2);
+  for( Int_t i=0; i<4; ++i ){
+    c1->cd(i+1);
+    TH1 *h = GHist::get( HistMaker::getUniqueID(kCorrelation, 0, 0, i+7) );
+    if( !h ) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
 HitPattern( void )
 {
   return HitPatternE40();

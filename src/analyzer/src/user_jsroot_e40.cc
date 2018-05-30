@@ -166,6 +166,8 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::HitPattern());
   gHttp.Register(http::BcOutEfficiency());
   gHttp.Register(http::SdcInOutEfficiency());
+  gHttp.Register(http::Correlation());
+  gHttp.Register(http::CorrelationFBT());
   gHttp.Register(http::DAQ());
 
   for( Int_t i=0, n=hptr_array.size(); i<n; ++i ){

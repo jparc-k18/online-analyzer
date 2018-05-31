@@ -415,51 +415,6 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
-#if 0
-  // BH1
-  {
-    static const Int_t bh1a_id   = gHist.getSequentialID(kBH1, 0, kADC);
-    static const Int_t bh1t_id   = gHist.getSequentialID(kBH1, 0, kTDC);
-    static const Int_t bh1awt_id = gHist.getSequentialID(kBH1, 0, kADCwTDC);
-    static const Int_t bh1hit_id = gHist.getSequentialID(kBH1, 0, kHitPat);
-    static const Int_t bh1mul_id = gHist.getSequentialID(kBH1, 0, kMulti);
-
-    // TDC gate range
-    static const unsigned int tdc_min = gUser.GetParameter("BH1_TDC", 0);
-    static const unsigned int tdc_max = gUser.GetParameter("BH1_TDC", 1);
-
-    const HodoRHitContainer& cont = rawData->GetBH1RawHC();
-    Int_t multiplicity  = 0;
-    Int_t cmultiplicity = 0;
-    for( Int_t i=0, n=cont.size(); i<n; ++i ){
-      HodoRawHit *hit = cont[i];
-      if( !hit ) continue;
-      Int_t seg = hit->SegmentId();
-      Int_t Au=hit->GetAdcUp(), Ad=hit->GetAdcDown();
-      Int_t Tu=hit->GetTdcUp(), Td=hit->GetTdcDown();
-      hptr_array[bh1a_id +seg]->Fill(Au);
-      hptr_array[bh1a_id +seg +NumOfSegBH1]->Fill(Ad);
-      if( Tu > 0 ){
-	hptr_array[bh1t_id +seg]->Fill(Tu);
-	hptr_array[bh1awt_id + seg]->Fill(Au);
-      }
-      if( Td > 0 ){
-	hptr_array[bh1t_id +seg +NumOfSegBH1]->Fill(Td);
-	hptr_array[bh1awt_id +seg +NumOfSegBH1]->Fill(Ad);
-      }
-      if( Tu > 0 && Td > 0 ){
-	hptr_array[bh1hit_id]->Fill(seg);
-	++multiplicity;
-	if( tdc_min<Tu && Tu<tdc_max && tdc_min<Td && Td<tdc_max){
-	  hptr_array[bh1hit_id+1]->Fill(seg); // CHitPat
-	  ++cmultiplicity;
-	}
-      }
-    }
-    hptr_array[bh1mul_id]->Fill(multiplicity);
-    hptr_array[bh1mul_id+1]->Fill(cmultiplicity); // CMulti
-  }
-#endif
   // BH1 -----------------------------------------------------------
   {
     // data type
@@ -475,8 +430,8 @@ process_event( void )
 
     // Up PMT
     int bh1a_id   = gHist.getSequentialID(kBH1, 0, kADC);
-    int bh1t_id   = gHist.getSequentialID(kBH1, 0, kTDC, NumOfSegBH1*2+1);
-    int bh1awt_id = gHist.getSequentialID(kBH1, 0, kADCwTDC, NumOfSegBH1*2+1);
+    int bh1t_id   = gHist.getSequentialID(kBH1, 0, kTDC);
+    int bh1awt_id = gHist.getSequentialID(kBH1, 0, kADCwTDC);
     for(int seg=0; seg<NumOfSegBH1; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
@@ -502,8 +457,8 @@ process_event( void )
 
     // Down PMT
     bh1a_id   = gHist.getSequentialID(kBH1, 0, kADC, NumOfSegBH1+1);
-    bh1t_id   = gHist.getSequentialID(kBH1, 0, kTDC, NumOfSegBH1*2 + NumOfSegBH1+1);
-    bh1awt_id = gHist.getSequentialID(kBH1, 0, kADCwTDC, NumOfSegBH1*2 + NumOfSegBH1+1);
+    bh1t_id   = gHist.getSequentialID(kBH1, 0, kTDC, NumOfSegBH1+1);
+    bh1awt_id = gHist.getSequentialID(kBH1, 0, kADCwTDC, NumOfSegBH1+1);
     for(int seg=0; seg<NumOfSegBH1; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
@@ -581,8 +536,8 @@ process_event( void )
     static const int bft_ctot_id = gHist.getSequentialID(kBFT, 0, kADC,     11);
     static const int bft_hit_id  = gHist.getSequentialID(kBFT, 0, kHitPat,   1);
     static const int bft_chit_id = gHist.getSequentialID(kBFT, 0, kHitPat,  11);
-    static const int bft_mul_id   = gHist.getSequentialID(kBFT, 0, kMulti,    1);
-    static const int bft_cmul_id  = gHist.getSequentialID(kBFT, 0, kMulti,   11);
+    static const int bft_mul_id   = gHist.getSequentialID(kBFT, 0, kMulti,   1);
+    static const int bft_cmul_id  = gHist.getSequentialID(kBFT, 0, kMulti,  11);
 
     static const int bft_ct_2d_id = gHist.getSequentialID(kBFT, 0, kTDC2D,   1);
     static const int bft_ctot_2d_id = gHist.getSequentialID(kBFT, 0, kADC2D, 1);
@@ -761,8 +716,8 @@ process_event( void )
 
     // UP
     int bh2a_id   = gHist.getSequentialID(kBH2, 0, kADC);
-    int bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2*2+1);
-    int bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC, NumOfSegBH2*2+1);
+    int bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC);
+    int bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC);
     for(int seg=0; seg<NumOfSegBH2; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
@@ -787,8 +742,8 @@ process_event( void )
 
     // DOWN
     bh2a_id   = gHist.getSequentialID(kBH2, 0, kADC, NumOfSegBH2+1);
-    bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2*2 + NumOfSegBH2+1);
-    bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC, NumOfSegBH2*2 + NumOfSegBH2+1);
+    bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2+1);
+    bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC, NumOfSegBH2+1);
     for(int seg=0; seg<NumOfSegBH2; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
@@ -874,8 +829,8 @@ process_event( void )
     int sft_ctot_id = gHist.getSequentialID(kSFT, 0, kADC,    11);
     int sft_hit_id  = gHist.getSequentialID(kSFT, 0, kHitPat,  1);
     int sft_chit_id = gHist.getSequentialID(kSFT, 0, kHitPat, 11);
-    int sft_mul_id   = gHist.getSequentialID(kSFT, 0, kMulti,   1);
-    int sft_cmul_id  = gHist.getSequentialID(kSFT, 0, kMulti,  11);
+    int sft_mul_id  = gHist.getSequentialID(kSFT, 0, kMulti,   1);
+    int sft_cmul_id = gHist.getSequentialID(kSFT, 0, kMulti,  11);
 
     int sft_ct_2d_id = gHist.getSequentialID(kSFT, 0, kTDC2D,   1);
     int sft_ctot_2d_id = gHist.getSequentialID(kSFT, 0, kADC2D, 1);
@@ -1515,8 +1470,8 @@ process_event( void )
 
     // sequential id
     int tofa_id   = gHist.getSequentialID(kTOF, 0, kADC);
-    int toft_id   = gHist.getSequentialID(kTOF, 0, kTDC, NumOfSegTOF*2+1);
-    int tofawt_id = gHist.getSequentialID(kTOF, 0, kADCwTDC, NumOfSegTOF*2+1);
+    int toft_id   = gHist.getSequentialID(kTOF, 0, kTDC);
+    int tofawt_id = gHist.getSequentialID(kTOF, 0, kADCwTDC);
     for(int seg = 0; seg<NumOfSegTOF; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
@@ -1541,8 +1496,8 @@ process_event( void )
 
     // Down PMT
     tofa_id   = gHist.getSequentialID(kTOF, 0, kADC, NumOfSegTOF+1);
-    toft_id   = gHist.getSequentialID(kTOF, 0, kTDC, NumOfSegTOF*2 + NumOfSegTOF+1);
-    tofawt_id = gHist.getSequentialID(kTOF, 0, kADCwTDC, NumOfSegTOF*2 + NumOfSegTOF+1);
+    toft_id   = gHist.getSequentialID(kTOF, 0, kTDC, NumOfSegTOF+1);
+    tofawt_id = gHist.getSequentialID(kTOF, 0, kADCwTDC, NumOfSegTOF+1);
 
     for(int seg = 0; seg<NumOfSegTOF; ++seg){
       // ADC

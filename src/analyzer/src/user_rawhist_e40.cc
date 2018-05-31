@@ -113,6 +113,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispLC"));
   tab_macro->Add(macro::Get("dispTriggerFlag"));
   tab_macro->Add(macro::Get("dispHitPat"));
+  tab_macro->Add(macro::Get("dispCorrelation"));
   tab_macro->Add(macro::Get("effBcOut"));
   tab_macro->Add(macro::Get("effSdcInOut"));
   tab_macro->Add(macro::Get("dispDAQ"));
@@ -138,7 +139,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createMsT());
-  tab_hist->Add(gHist.createDAQ(false));
+  tab_hist->Add(gHist.createDAQ());
   tab_hist->Add(gHist.createTimeStamp(false));
   tab_hist->Add(gHist.createDCEff());
 
@@ -333,7 +334,7 @@ process_event( void )
 	int data_size = gUnpacker.get_node_header(k_easiroc+i, DAQNode::k_data_size);
 	h->Fill( i, data_size );
       }
-      for(int i = 16; i<100; ++i){
+      for(int i = 16; i<102; ++i){
 	int data_size = gUnpacker.get_node_header(k_Veasiroc+i-16, DAQNode::k_data_size);
 	h->Fill( i, data_size );
       }
@@ -451,8 +452,8 @@ process_event( void )
 
     // Up PMT
     int bh1a_id   = gHist.getSequentialID(kBH1, 0, kADC);
-    int bh1t_id   = gHist.getSequentialID(kBH1, 0, kTDC, NumOfSegBH1*2+1);
-    int bh1awt_id = gHist.getSequentialID(kBH1, 0, kADCwTDC, NumOfSegBH1*2+1);
+    int bh1t_id   = gHist.getSequentialID(kBH1, 0, kTDC);
+    int bh1awt_id = gHist.getSequentialID(kBH1, 0, kADCwTDC);
     for(int seg=0; seg<NumOfSegBH1; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
@@ -788,8 +789,8 @@ process_event( void )
 
     // UP
     int bh2a_id   = gHist.getSequentialID(kBH2, 0, kADC);
-    int bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2*2+1);
-    int bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC, NumOfSegBH2*2+1);
+    int bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC);
+    int bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC);
     for(int seg=0; seg<NumOfSegBH2; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
@@ -813,9 +814,9 @@ process_event( void )
     }
 
     // DOWN
-    bh2a_id   = gHist.getSequentialID(kBH2, 0, kADC, NumOfSegBH2+1);
-    bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2*2 + NumOfSegBH2+1);
-    bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC, NumOfSegBH2*2 + NumOfSegBH2+1);
+    bh2a_id   = gHist.getSequentialID(kBH2, 0, kADC,     NumOfSegBH2+1);
+    bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC,     NumOfSegBH2+1);
+    bh2awt_id = gHist.getSequentialID(kBH2, 0, kADCwTDC, NumOfSegBH2+1);
     for(int seg=0; seg<NumOfSegBH2; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
@@ -1265,8 +1266,8 @@ process_event( void )
 
     // sequential id
     int tofa_id   = gHist.getSequentialID(kTOF, 0, kADC);
-    int toft_id   = gHist.getSequentialID(kTOF, 0, kTDC, NumOfSegTOF*2+1);
-    int tofawt_id = gHist.getSequentialID(kTOF, 0, kADCwTDC, NumOfSegTOF*2+1);
+    int toft_id   = gHist.getSequentialID(kTOF, 0, kTDC);
+    int tofawt_id = gHist.getSequentialID(kTOF, 0, kADCwTDC);
     for(int seg = 0; seg<NumOfSegTOF; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
@@ -1291,8 +1292,8 @@ process_event( void )
 
     // Down PMT
     tofa_id   = gHist.getSequentialID(kTOF, 0, kADC, NumOfSegTOF+1);
-    toft_id   = gHist.getSequentialID(kTOF, 0, kTDC, NumOfSegTOF*2 + NumOfSegTOF+1);
-    tofawt_id = gHist.getSequentialID(kTOF, 0, kADCwTDC, NumOfSegTOF*2 + NumOfSegTOF+1);
+    toft_id   = gHist.getSequentialID(kTOF, 0, kTDC, NumOfSegTOF+1);
+    tofawt_id = gHist.getSequentialID(kTOF, 0, kADCwTDC, NumOfSegTOF+1);
 
     for(int seg = 0; seg<NumOfSegTOF; ++seg){
       // ADC
@@ -1459,6 +1460,8 @@ process_event( void )
     static const int k_device_sdc1 = gUnpacker.get_device_id("SDC1");
     static const int k_device_sdc2 = gUnpacker.get_device_id("SDC2");
     static const int k_device_sdc3 = gUnpacker.get_device_id("SDC3");
+    static const int k_device_fbt1 = gUnpacker.get_device_id("FBT1");
+    static const int k_device_fbt2 = gUnpacker.get_device_id("FBT2");
 
     // sequential id
     int cor_id= gHist.getSequentialID(kCorrelation, 0, 0, 1);
@@ -1543,6 +1546,83 @@ process_event( void )
 	int hitSDC3 = gUnpacker.get_entries(k_device_sdc3, 2, 0, wire, 0);
 	if( hitTOF == 0 || hitSDC3 == 0 ) continue;
 	hcor_tofsdc3->Fill( wire, seg );
+      }
+    }
+
+    // FBT1
+    {
+      std::vector<TH2*> hcor = {
+	dynamic_cast<TH2*>(hptr_array[cor_id++]),
+	dynamic_cast<TH2*>(hptr_array[cor_id++])
+      };
+      static const int k_leading  = gUnpacker.get_data_id("FBT1", "leading");
+
+      // TDC gate range
+      static const int tdc_min = gUser.GetParameter("FBT1_TDC", 0);
+      static const int tdc_max = gUser.GetParameter("FBT1_TDC", 1);
+
+      // sequential id
+      std::vector<Int_t> fbt1_seg[NumOfLayersFBT][NumOfUDStructureFBT];
+      for( Int_t l=0; l<NumOfLayersFBT; ++l ){
+	for( Int_t ud=0; ud<NumOfUDStructureFBT; ++ud ){
+	  for( Int_t seg=0; seg<NumOfSegFBT1; ++seg ){
+	    Int_t nhit_l = gUnpacker.get_entries(k_device_fbt1, l, seg, ud, k_leading);
+	    Bool_t hit =false;
+	    for(Int_t m = 0; m<nhit_l; ++m){
+	      Int_t tdc = gUnpacker.get(k_device_fbt1, l, seg, ud, k_leading,  m);
+	      if( tdc_min<tdc && tdc<tdc_max ){
+		hit = true;
+	      }
+	    }
+	    if( hit )
+	      fbt1_seg[l][ud].push_back(seg);
+	  }
+	}
+      }
+      for( Int_t ud=0; ud<NumOfUDStructureFBT; ++ud ){
+	for( Int_t i1=0, n1=fbt1_seg[0][ud].size(); i1<n1; ++i1 ){
+	  for( Int_t i2=0, n2=fbt1_seg[1][ud].size(); i2<n2; ++i2 ){
+	    hcor.at(ud)->Fill(fbt1_seg[0][ud].at(i1), fbt1_seg[1][ud].at(i2));
+	  }
+	}
+      }
+    }
+    // FBT2
+    {
+      std::vector<TH2*> hcor = {
+	dynamic_cast<TH2*>(hptr_array[cor_id++]),
+	dynamic_cast<TH2*>(hptr_array[cor_id++])
+      };
+      static const int k_leading  = gUnpacker.get_data_id("FBT2", "leading");
+
+      // TDC gate range
+      static const int tdc_min = gUser.GetParameter("FBT2_TDC", 0);
+      static const int tdc_max = gUser.GetParameter("FBT2_TDC", 1);
+
+      // sequential id
+      std::vector<Int_t> fbt2_seg[NumOfLayersFBT][NumOfUDStructureFBT];
+      for( Int_t l=0; l<NumOfLayersFBT; ++l ){
+	for( Int_t ud=0; ud<NumOfUDStructureFBT; ++ud ){
+	  for( Int_t seg=0; seg<NumOfSegFBT2; ++seg ){
+	    Int_t nhit_l = gUnpacker.get_entries(k_device_fbt2, l, seg, ud, k_leading);
+	    Bool_t hit =false;
+	    for(Int_t m = 0; m<nhit_l; ++m){
+	      Int_t tdc = gUnpacker.get(k_device_fbt2, l, seg, ud, k_leading,  m);
+	      if( tdc_min<tdc && tdc<tdc_max ){
+		hit = true;
+	      }
+	    }
+	    if( hit )
+	      fbt2_seg[l][ud].push_back(seg);
+	  }
+	}
+      }
+      for( Int_t ud=0; ud<NumOfUDStructureFBT; ++ud ){
+	for( Int_t i1=0, n1=fbt2_seg[0][ud].size(); i1<n1; ++i1 ){
+	  for( Int_t i2=0, n2=fbt2_seg[1][ud].size(); i2<n2; ++i2 ){
+	    hcor.at(ud)->Fill(fbt2_seg[0][ud].at(i1), fbt2_seg[1][ud].at(i2));
+	  }
+	}
       }
     }
   }

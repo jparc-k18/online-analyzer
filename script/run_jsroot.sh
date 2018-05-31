@@ -45,4 +45,4 @@ fi
 # screen -AmdS K18OnlineServer \
 #     sh -c ". $thisroot_sh && while true; do $server $conf $data; done"
 screen -AmdS K18OnlineServer \
-    sh -c "while true; do $server $conf $data; done"
+    sh -c "while true; do $server $conf $data 2>/dev/null; done"

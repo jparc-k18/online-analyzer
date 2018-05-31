@@ -157,22 +157,11 @@ Controller::Controller()
   fb->BrowseObj(gROOT);
   fb->Show();
 
-  m_browser->StartEmbedding(TRootBrowser::kRight);
-  new TCanvas("c1");
-  m_browser->StopEmbedding("c1");
-  m_browser->StartEmbedding(TRootBrowser::kRight);
-  new TCanvas("c2");
-  m_browser->StopEmbedding("c2");
-  m_browser->StartEmbedding(TRootBrowser::kRight);
-  new TCanvas("c3");
-  m_browser->StopEmbedding("c3");
-  m_browser->StartEmbedding(TRootBrowser::kRight);
-  new TCanvas("c4");
-  m_browser->StopEmbedding("c4");
-  m_browser->StartEmbedding(TRootBrowser::kRight);
-  new TCanvas("c5");
-  m_browser->StopEmbedding("c5");
-
+  for(Int_t i=0; i<10; ++i){
+    m_browser->StartEmbedding(TRootBrowser::kRight);
+    new TCanvas(Form("c%d", i+1));
+    m_browser->StopEmbedding(Form("c%d", i+1));
+  }
 
   initialize();
 }

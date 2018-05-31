@@ -1,7 +1,7 @@
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
-void effBcOut( void )
+void effCFT( void )
 {
   // You must write these lines for the thread safe
   // ----------------------------------

@@ -19,7 +19,7 @@
 
 class TCanvas;
 
-typedef ULong64_t Scaler;
+typedef Long64_t Scaler;
 
 //______________________________________________________________________________
 struct ScalerInfo

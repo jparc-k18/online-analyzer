@@ -1,4 +1,4 @@
-// Author: Tomonori Takahashi
+// -*- C++ -*-
 
 #include <iostream>
 #include <string>

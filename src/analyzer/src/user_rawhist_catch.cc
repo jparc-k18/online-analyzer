@@ -282,12 +282,12 @@ process_event( void )
         for(unsigned int m = 0; m<nhit_l; ++m){
 	  unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, k_leading, m);
       	  if(tdc!=0){
-	    bgo_is_hit = true;
       	    hptr_array[bgo_t_id + seg]->Fill(tdc);
       	    hptr_array[bgo_t2d_id]->Fill( seg, tdc );
 	    hptr_array[bgo_hit_id]->Fill( seg );
 	    ++multiplicity;
 	    if(true && tdc_min < tdc && tdc < tdc_max){
+	      bgo_is_hit = true;
 	      is_hit = true;
               hptr_array[bgo_chit_id]->Fill(seg);
 	      ++cmultiplicity;
@@ -602,11 +602,11 @@ process_event( void )
   {
     static const int k_device_cft   = gUnpacker.get_device_id("CFT");
     static const int k_device_bgo   = gUnpacker.get_device_id("BGO");
-//    static const int k_device_piid   = gUnpacker.get_device_id("PiID");
+    static const int k_device_piid   = gUnpacker.get_device_id("PiID");
     static const int k_leading  = gUnpacker.get_data_id("CFT" , "leading");
 //    static const int k_fadc      = gUnpacker.get_data_id("BGO", "fadc");
     static const int k_BGOleading      = gUnpacker.get_data_id("BGO", "leading");
-//    static const int k_PiIDleading      = gUnpacker.get_data_id("PiID", "leading");
+    static const int k_PiIDleading      = gUnpacker.get_data_id("PiID", "leading");
 //    int BGO_Vth = 1000;
 //    static const int BGO_Vth = gUser.GetParameter("BGO_Vth", 0);
 
@@ -629,20 +629,21 @@ process_event( void )
         }
     }
 
-//    //  BGO vs PiID
-//    cor_id= gHist.getSequentialID(kCorrelation_catch, 0, 0, 2);
-//    for(int seg1 = 0; seg1<NumOfSegBGO; ++seg1){
-//        for(int seg2 = 0; seg2<NumOfSegPiID; ++seg2){
-//            int hitBGO = gUnpacker.get_entries(k_device_bgo, 0, seg1, 0, k_BGOleading);
-//            int hitPiID = gUnpacker.get_entries(k_device_piid, 0, seg2, 0, k_PiIDleading);
-//            if(hitBGO == 0 || hitPiID == 0)continue;
-//            int tdcBGO = gUnpacker.get(k_device_bgo, 0, seg1, 0, k_BGOleading);
-//            int tdcPiID = gUnpacker.get(k_device_piid, 0, seg2, 0, k_PiIDleading);
-//            if(tdcBGO != 0&&tdcPiID !=0){
-//                        hptr_array[cor_id]->Fill(seg1, seg2);
-//            }
-//        }
-//    }
+   //  BGO vs PiID
+   cor_id= gHist.getSequentialID(kCorrelation_catch, 1, 0);
+   for(int seg1 = 0; seg1<NumOfSegBGO; ++seg1){
+       for(int seg2 = 0; seg2<NumOfSegPiID; ++seg2){
+           int hitBGO = gUnpacker.get_entries(k_device_bgo, 0, seg1, 0, k_BGOleading);
+           int hitPiID = gUnpacker.get_entries(k_device_piid, 0, seg2, 0, k_PiIDleading);
+           if(hitBGO == 0 || hitPiID == 0)
+	     continue;
+           int tdcBGO = gUnpacker.get(k_device_bgo, 0, seg1, 0, k_BGOleading);
+           int tdcPiID = gUnpacker.get(k_device_piid, 0, seg2, 0, k_PiIDleading);
+           if(tdcBGO != 0 && tdcPiID !=0){
+	     hptr_array[cor_id]->Fill(seg1, seg2);
+           }
+       }
+   }
 
   }// Correlation
 #if DEBUG

@@ -10,14 +10,14 @@ void effCFT( void )
   // ----------------------------------
 
   // draw Multi with plane efficiency BC3
-  {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
+  for( Int_t i=0; i<3; ++i ){
+    TCanvas *c = (TCanvas*)gROOT->FindObject( Form("c%d", i+1));
     c->Clear();
     c->Divide(3,2);
-    Int_t base_id = HistMaker::getUniqueID(kCFT, 0, kMulti, 10);
-    for( Int_t i=0; i<NumOfLayersCFT; ++i ){
-      c->cd(i+1);
-      TH1 *h_wt = GHist::get(base_id+i+1);
+    Int_t base_id = HistMaker::getUniqueID(kCFT, 0, kMulti, 10*i);
+    for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+      c->cd(l+1);
+      TH1 *h_wt = GHist::get(base_id+l+1);
       h_wt->Draw();
       Double_t Nof0     = h_wt->GetBinContent(1);
       Double_t NofTotal = h_wt->GetEntries();

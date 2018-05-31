@@ -4239,14 +4239,14 @@ TList* HistMaker::createCorrelation_catch( Bool_t flag_ps )
     }
   }
 
-//  {
-//    Int_t target_id = getUniqueID(kCorrelation_catch, 0, 0, 4);
-//      const char* title = "BGO_PiID";
-//      top_dir->Add(createTH2(++target_id, title, // 1 origin
-//			   NumOfSegBGO, 0, NumOfSegBGO,
-//			   NumOfSegPiID, 0, NumOfSegPiID,
-//			   "BGO seg", "PiID seg"));
-//  }
+ {
+   Int_t target_id = getUniqueID(kCorrelation_catch, 1, 0, 0);
+     const char* title = "BGO_PiID";
+     top_dir->Add(createTH2(++target_id, title, // 1 origin
+			   NumOfSegBGO, 0, NumOfSegBGO,
+			   NumOfSegPiID, 0, NumOfSegPiID,
+			   "BGO seg", "PiID seg"));
+ }
 
   return top_dir;
 }

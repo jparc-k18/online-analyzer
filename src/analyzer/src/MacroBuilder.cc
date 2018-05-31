@@ -2,6 +2,7 @@
 
 #include "MacroBuilder.hh"
 
+#include <iostream>
 #include <string>
 
 #include <TCanvas.h>
@@ -1239,6 +1240,196 @@ FBT2HitMulti( void )
 
 //____________________________________________________________________________
 TCanvas*
+CFTTDC( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kTDC, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTTDC2D( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kTDC2D, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTTOT( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kADC, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTTOT2D( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kADC2D, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTHighGain( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kHighGain, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTHighGain2D( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kHighGain, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTLowGain( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kLowGain, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTLowGain2D( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kLowGain, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTPedestal( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kPede, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTPedestal2D( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kPede, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTHitPat( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  TH1 *h;
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kHitPat, l+1));
+    if(!h) continue;
+    h->Draw();
+    h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kHitPat, l+11));
+    if(!h) continue;
+    h->SetLineColor(kRed);
+    h->Draw("same");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTMulti( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  TH1 *h;
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kMulti, l+1));
+    if(!h) continue;
+    h->Draw();
+    h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kMulti, l+11));
+    if(!h) continue;
+    h->SetLineColor(kRed);
+    h->Draw("same");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
 HitPatternE07( void )
 {
   std::vector<Int_t> id = {
@@ -1546,6 +1737,26 @@ SdcInOutEfficiency( void )
 
 //____________________________________________________________________________
 TCanvas*
+CFTEfficiency( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4,4);
+  TH1 *h;
+  for( Int_t i=0; i<NumOfLayersCFT; ++i ){
+    c1->cd(i+1);
+    h = GHist::get( HistMaker::getUniqueID(kCFT, 0, kMulti, i+11) );
+    if( !h ) continue;
+    h->Draw();
+    c1->cd(i+1+NumOfLayersCFT);
+    h = GHist::get( HistMaker::getUniqueID(kCFT, 0, kMulti, i+21) );
+    if( !h ) continue;
+    h->Draw();
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
 SSDEfficiency( void )
 {
   std::vector<Int_t> id = {
@@ -1612,6 +1823,38 @@ UpdateSdcInOutEfficiency( void )
       c1->cd(2)->cd(i+1-NumOfLayersSDC1);
     TH1 *h = (TH1*)gPad->FindObject(name[i]+"_wTDC");
     if( !h ) continue;
+    Double_t zero = h->GetBinContent(1);
+    Double_t all  = h->GetEntries();
+    Double_t eff  = 1. - zero/all;
+    if( tex[i] ) delete tex[i];
+    tex[i] = new TText;
+    tex[i]->SetNDC();
+    tex[i]->SetTextSize(0.130);
+    tex[i]->SetText(0.300,0.600,Form("eff. %.3f",
+				     eff));
+    tex[i]->Draw();
+  }
+}
+
+//____________________________________________________________________________
+void
+UpdateCFTEfficiency( void )
+{
+  static TCanvas *c1 = (TCanvas*)gROOT->FindObject("CFTEfficiency");
+  static std::vector<TString> name = {
+    "CFT_CMulti_UV1", "CFT_CMulti_PHI1", "CFT_CMulti_UV2", "CFT_CMulti_PHI2",
+    "CFT_CMulti_UV3", "CFT_CMulti_PHI3", "CFT_CMulti_UV4", "CFT_CMulti_PHI4",
+    "CFT_CMulti_UV1_wBGO", "CFT_CMulti_PHI1_wBGO",
+    "CFT_CMulti_UV2_wBGO", "CFT_CMulti_PHI2_wBGO",
+    "CFT_CMulti_UV3_wBGO", "CFT_CMulti_PHI3_wBGO",
+    "CFT_CMulti_UV4_wBGO", "CFT_CMulti_PHI4_wBGO"
+  };
+  static std::vector<TText*> tex(name.size());
+
+  for( Int_t i=0, n=name.size(); i<n; ++i ){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)gPad->FindObject(name[i]);
+    if( !h ){ std::cout << "!?!?!?" << std::endl; continue; }
     Double_t zero = h->GetBinContent(1);
     Double_t all  = h->GetEntries();
     Double_t eff  = 1. - zero/all;

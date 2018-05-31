@@ -20,7 +20,7 @@ dispCFTTDC( void )
     c->Divide( 4, 2 );
     for( Int_t l=0; l<NumOfLayersCFT; ++l ){
       c->cd(l+1);
-      TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kCFT, 0, id[i], l+1));
+      TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, id[i], l+1));
       if(!h) continue;
       h->Draw("colz");
     }

@@ -25,6 +25,7 @@ private:
 private:
   THttpServer           *m_server;
   Int_t                  m_port;
+  std::vector<TH1*>      m_th1_list;
 
 public:
   void Open( void );
@@ -32,6 +33,7 @@ public:
   void Register( TList *list, TList *parent=0 );
   void Register( TMacro *macro );
   void Register( TString dir, TString command );
+  void ResetAll( void );
   void SetPort( Int_t port ){ m_port = port; }
 
   ClassDef(HttpServer,0);

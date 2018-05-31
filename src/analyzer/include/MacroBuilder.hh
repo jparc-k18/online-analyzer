@@ -88,9 +88,23 @@ namespace http
   TCanvas* FBT2TDC( void );
   TCanvas* FBT2TOT( void );
   TCanvas* FBT2HitMulti( void );
+  TCanvas* CFTTDC( void );
+  TCanvas* CFTTDC2D( void );
+  TCanvas* CFTTOT( void );
+  TCanvas* CFTTOT2D( void );
+  TCanvas* CFTHighGain( void );
+  TCanvas* CFTHighGain2D( void );
+  TCanvas* CFTLowGain( void );
+  TCanvas* CFTLowGain2D( void );
+  TCanvas* CFTPedestal( void );
+  TCanvas* CFTPedestal2D( void );
+  TCanvas* CFTHitPat( void );
+  TCanvas* CFTMulti( void );
+  TCanvas* CFTEfficiency( void );
 
   void     UpdateBcOutEfficiency( void );
   void     UpdateSdcInOutEfficiency( void );
+  void     UpdateCFTEfficiency( void );
   void     UpdateSSDEfficiency( void );
 }
 

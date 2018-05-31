@@ -6,6 +6,7 @@
 #include <TObject.h>
 
 class TCanvas;
+class TH1;
 class THttpServer;
 class TMacro;
 class TObject;

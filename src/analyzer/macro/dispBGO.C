@@ -9,45 +9,75 @@ void dispBGO()
   Updater::setUpdating(true);
   // ----------------------------------
 
-//  int n_seg = 12;
-
-  // draw ADC  1-12
+  // draw FADC  1-12
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
     c->Divide(4,3);
-    int fadc_id     = HistMaker::getUniqueID(kBGO, 0, kFADC);
-    for( int i=0; i<NumOfSegBGO/2; ++i ){
+    Int_t id = HistMaker::getUniqueID(kBGO, 0, kFADC);
+    for( Int_t i=0; i<NumOfSegBGO/2; ++i ){
       c->cd(i+1);
-      TH1 *h = (TH1*)GHist::get( fadc_id + i );
+      TH1 *h = (TH1*)GHist::get( id + i );
       if( !h ) continue;
-      h->Draw();
+      h->GetXaxis()->SetRangeUser( 80, 200 );
+      h->Draw("colz");
+    }
+    c->Update();
+  }
+
+  // draw FADC 13-24
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
+    c->Clear();
+    c->Divide(4,3);
+    Int_t id = HistMaker::getUniqueID(kBGO, 0, kFADC, 13);
+    for( Int_t i=0; i<NumOfSegBGO/2; ++i ){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get( id + i );
+      if( !h ) continue;
+      h->GetXaxis()->SetRangeUser( 80, 200 );
+      h->Draw("colz");
+    }
+    c->Update();
+  }
+
+  // draw ADC  1-12
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
+    c->Clear();
+    c->Divide(4,3);
+    Int_t id = HistMaker::getUniqueID(kBGO, 0, kADC);
+    for( Int_t i=0; i<NumOfSegBGO/2; ++i ){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get( id + i );
+      if( !h ) continue;
+      h->Draw("colz");
     }
     c->Update();
   }
 
   // draw ADC 13-24
   {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
     c->Clear();
     c->Divide(4,3);
-    int fadc_id     = HistMaker::getUniqueID(kBGO, 0, kFADC, 13);
-    for( int i=0; i<NumOfSegBGO/2; ++i ){
+    Int_t id = HistMaker::getUniqueID(kBGO, 0, kADC, 13);
+    for( Int_t i=0; i<NumOfSegBGO/2; ++i ){
       c->cd(i+1);
-      TH1 *h = (TH1*)GHist::get( fadc_id + i );
+      TH1 *h = (TH1*)GHist::get( id + i );
       if( !h ) continue;
-      h->Draw();
+      h->Draw("colz");
     }
     c->Update();
   }
 
   // draw TDC  1-12
   {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
     c->Clear();
     c->Divide(4,3);
-    int tdc_id     = HistMaker::getUniqueID(kBGO, 0, kTDC);
-    for( int i=0; i<NumOfSegBGO/2; ++i ){
+    Int_t tdc_id     = HistMaker::getUniqueID(kBGO, 0, kTDC);
+    for( Int_t i=0; i<NumOfSegBGO/2; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( tdc_id + i );
       if( !h ) continue;
@@ -58,11 +88,11 @@ void dispBGO()
 
   // draw TDC 13-24
   {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c6");
     c->Clear();
     c->Divide(4,3);
-    int tdc_id     = HistMaker::getUniqueID(kBGO, 0, kTDC, 13);
-    for( int i=0; i<NumOfSegBGO/2; ++i ){
+    Int_t tdc_id     = HistMaker::getUniqueID(kBGO, 0, kTDC, 13);
+    for( Int_t i=0; i<NumOfSegBGO/2; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( tdc_id + i );
       if( !h ) continue;
@@ -71,19 +101,39 @@ void dispBGO()
     c->Update();
   }
 
+  // draw 2D
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c7");
+    c->Clear();
+    c->Divide( 2, 2 );
+    Int_t id = HistMaker::getUniqueID(kBGO, 0, kADC2D);
+    for( Int_t i=0; i<3; ++i ){
+      c->cd( i + 1 );
+      TH1 *h = (TH1*)GHist::get( id + i );
+      if( !h ) continue;
+      h->Draw("colz");
+    }
+    id = HistMaker::getUniqueID(kBGO, 0, kTDC2D);
+    TH1 *h = (TH1*)GHist::get( id );
+    c->cd(4);
+    if( h )
+      h->Draw("colz");
+    c->Update();
+  }
+
   // draw clk
   {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c8");
     c->Clear();
     c->Divide(4,2);
-    int clk_id     = HistMaker::getUniqueID(kBGO, 0, kTDC, 25);
-    for( int i=0; i<NumOfSegBGO_T; ++i ){
+    Int_t clk_id = HistMaker::getUniqueID(kBGO, 0, kTDC, 25);
+    for( Int_t i=0; i<NumOfSegBGO_T; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( clk_id + i );
       if( !h ) continue;
       h->Draw();
     }
-    int h_id     = HistMaker::getUniqueID(kBGO, 0, kHitPat, 1);
+    Int_t h_id     = HistMaker::getUniqueID(kBGO, 0, kHitPat, 1);
     TH1 *h1 = (TH1*)GHist::get( h_id );
     c->cd(5);
     h1->Draw();

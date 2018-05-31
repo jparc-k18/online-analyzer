@@ -62,7 +62,7 @@ enum DataType{
   // Usual data type
   kADC,   kTDC,   kHitPat,   kMulti,
   kADC2D, kTDC2D, kHitPat2D, kMulti2D,
-  kADCwTDC, kFADC,
+  kADCwTDC, kFADC, kFADCwTDC,
   kDeltaE, kCTime, kDeltaE2D, kCTime2D,
   kChisqr,
   // Extra data type for CFT

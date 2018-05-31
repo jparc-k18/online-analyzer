@@ -99,7 +99,7 @@ BH1ADC( void )
       if( !h ) continue;
       h->GetXaxis()->SetRangeUser(0,2000);
       h->Draw();
-      TH1 *hh = GHist::get( HistMaker::getUniqueID(kBH1, 0, kADCwTDC, i+j*NumOfSegBH1+1 + NumOfSegBH1*2) );
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kBH1, 0, kADCwTDC, i+j*NumOfSegBH1+1) );
       if( !hh ) continue;
       hh->GetXaxis()->SetRangeUser(0,2000);
       hh->SetLineColor(kRed);
@@ -113,14 +113,12 @@ BH1ADC( void )
 TCanvas*
 BH1TDC( void )
 {
-  Int_t id = HistMaker::getUniqueID(kBH1, 0, kTDC);
-
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(6,4);
   for( Int_t i=0; i<NumOfSegBH1; ++i ){
     for( Int_t j=0; j<kUorD; ++j ){
       c1->cd(i+1+j*(NumOfSegBH1+1))->SetLogy();
-      TH1 *h = GHist::get(id+i+j*NumOfSegBH1 + NumOfSegBH1*2);
+      TH1 *h = GHist::get( HistMaker::getUniqueID(kBH1, 0, kTDC, i+j*NumOfSegBH1+1) );
       if( !h ) continue;
       h->Draw();
     }
@@ -187,7 +185,7 @@ BH2ADC( void )
       if( !h ) continue;
       h->GetXaxis()->SetRangeUser(0,2000);
       h->Draw();
-      TH1 *hh = GHist::get( HistMaker::getUniqueID(kBH2, 0, kADCwTDC, i+j*NumOfSegBH2+1 + NumOfSegBH2*2) );
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kBH2, 0, kADCwTDC, i+j*NumOfSegBH2+1) );
       if( !hh ) continue;
       hh->GetXaxis()->SetRangeUser(0,2000);
       hh->SetLineColor(kRed);
@@ -201,14 +199,12 @@ BH2ADC( void )
 TCanvas*
 BH2TDC( void )
 {
-  Int_t id = HistMaker::getUniqueID(kBH2, 0, kTDC);
-
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4,4);
   for( Int_t i=0; i<NumOfSegBH2; ++i ){
     for( Int_t j=0; j<kUorD; ++j ){
       c1->cd(i+1+j*(NumOfSegBH2))->SetLogy();
-      TH1 *h = GHist::get(id+i+j*NumOfSegBH2 + NumOfSegBH2*2);
+      TH1 *h = GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, i+j*NumOfSegBH2+1) );
       if( !h ) continue;
       h->Draw();
     }
@@ -370,6 +366,7 @@ SFTTDCTOT( void )
   return c1;
 }
 
+//____________________________________________________________________________
 TCanvas*
 SFTHitMulti( void )
 {
@@ -418,6 +415,7 @@ SFTHitMulti( void )
   return c1;
 }
 
+//____________________________________________________________________________
 TCanvas*
 SFT2D( void )
 {
@@ -518,7 +516,7 @@ TOFADC( void )
       if( !h ) continue;
       h->GetXaxis()->SetRangeUser(0,2000);
       h->Draw();
-      TH1 *hh = GHist::get( HistMaker::getUniqueID(kTOF, 0, kADCwTDC, i+j*NumOfSegTOF+1 + NumOfSegTOF*2) );
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kTOF, 0, kADCwTDC, i+j*NumOfSegTOF+1) );
       if( !hh ) continue;
       hh->GetXaxis()->SetRangeUser(0,2000);
       hh->SetLineColor(kRed);
@@ -532,14 +530,12 @@ TOFADC( void )
 TCanvas*
 TOFTDC( void )
 {
-  Int_t id = HistMaker::getUniqueID(kTOF, 0, kTDC);
-
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(8,6);
   for( Int_t i=0; i<NumOfSegTOF; ++i ){
     for( Int_t j=0; j<kUorD; ++j ){
       c1->cd(i+1+j*NumOfSegTOF)->SetLogy();
-      TH1 *h = GHist::get(id+i+j*NumOfSegTOF + NumOfSegTOF*2);
+      TH1 *h = GHist::get( HistMaker::getUniqueID(kTOF, 0, kTDC, i+j*NumOfSegTOF+1) );
       if( !h ) continue;
       h->Draw();
     }

@@ -1321,7 +1321,7 @@ CFTHighGain2D( void )
   c1->Divide(4, 2);
   for( Int_t l=0; l<NumOfLayersCFT; ++l ){
     c1->cd(l+1);
-    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kHighGain, l+1));
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kHighGain, l+11));
     if(!h) continue;
     h->Draw("colz");
   }
@@ -1351,7 +1351,7 @@ CFTLowGain2D( void )
   c1->Divide(4, 2);
   for( Int_t l=0; l<NumOfLayersCFT; ++l ){
     c1->cd(l+1);
-    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kLowGain, l+1));
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kLowGain, l+11));
     if(!h) continue;
     h->Draw("colz");
   }
@@ -1381,7 +1381,7 @@ CFTPedestal2D( void )
   c1->Divide(4, 2);
   for( Int_t l=0; l<NumOfLayersCFT; ++l ){
     c1->cd(l+1);
-    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kPede, l+1));
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kPede, l+11));
     if(!h) continue;
     h->Draw("colz");
   }

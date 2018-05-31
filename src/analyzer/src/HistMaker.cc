@@ -4233,9 +4233,9 @@ TList* HistMaker::createCorrelation_catch( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("BGO_CFT_%s", name_Layer[l*2+1] );
       top_dir->Add(createTH2(++target_id, title, // 1 origin
-			   NumOfSegCFT[l*2+1], 0, NumOfSegCFT[l*2+1],
-			   NumOfSegBGO, 0, NumOfSegBGO,
-			   "CFT seg", "BGO seg"));
+			     NumOfSegCFT[l*2+1], 0, NumOfSegCFT[l*2+1],
+			     NumOfSegBGO, 0, NumOfSegBGO,
+			     "CFT seg", "BGO seg"));
     }
   }
 
@@ -5284,7 +5284,7 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
       title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
-			     4096, 0, 4096,
+			     4096/8, 0, 4096,
 			     "Fiber", "ADC [ch]"));
     }
   // ADC-2D HighGain Cut ------------------------------------------
@@ -5296,7 +5296,7 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
       title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
-			     4096, 0, 4096,
+			     4096/8, 0, 4096,
 			     "Fiber", "ADC [ch]"));
     }
     // insert sub directory
@@ -5318,7 +5318,7 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
       title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
-			     1024,-200, 824,
+			     4096/8,-200, 824,
 			     "Fiber", "ADC [ch]"));
     }
     // insert sub directory
@@ -5340,7 +5340,7 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
       title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
-			     4096, 0, 4096,
+			     4096/8, 0, 4096,
 			     "Fiber", "ADC [ch]"));
     }
   // ADC-2D LowGain Cut -------------------------------------------
@@ -5352,7 +5352,7 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
       title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
-			     4096, 0, 4096,
+			     4096/8, 0, 4096,
 			     "Fiber", "ADC [ch]"));
     }
     // insert sub directory
@@ -5373,7 +5373,7 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
       sub_dir->Add(createTH2( ++target_id, title , // 1 origin
-			      4096, 0, 4096,
+			      4096/8, 0, 4096,
 			      200, -50, 150,
 			      "HighGain [ch]", "TOT [ch]"));
     }
@@ -5395,7 +5395,7 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
       sub_dir->Add(createTH2( ++target_id, title , // 1 origin
-			      4096, 0, 4096,
+			      4096/8, 0, 4096,
 			      200, -50, 150,
 			      "LowGain [ch]", "TOT [ch]"));
     }
@@ -5513,7 +5513,7 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
 
       sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
 			     200, 0, 200,
-			     19000, -1000, 18000,
+			     19000/20, -1000, 18000,
 			     "Sampling", "ADC [ch]"));
     }
 
@@ -5539,7 +5539,7 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
 
       sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
 			     200, 0, 200,
-			     19000, -1000, 18000,
+			     19000/20, -1000, 18000,
 			     "Sampling", "ADC [ch]"));
     }
 

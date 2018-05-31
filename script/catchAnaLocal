@@ -1,0 +1,60 @@
+#!/bin/sh
+##
+#  shell script for CATCH online/semi CATCH  online analyzer
+##
+
+ebhost=eb_e40
+
+dis_port=8901
+rec_port=8902
+
+#port=$rec_port
+port=$dis_port
+
+ana_dir=$(dirname $(readlink -f $0))/..
+bin_dir=$ana_dir/bin
+
+##### execute file
+exe_file=$bin_dir/raw_hist_catch
+
+##### data directory
+data_dir=$ana_dir/data
+#data_dir=/home/sks/work/suharu/data/catch_data
+
+##### configure file
+conf_file=/param/conf/analyzer.conf
+
+#######################################################################
+if [ ! -f $exe_file ]; then
+    echo "#E [$(basename $0)] no such file: $exe_file"
+    exit
+fi
+if [ ! -f $conf_file ]; then
+    echo "#E [$(basename $0)] no such file: $conf_file"
+    exit
+fi
+
+if [ $# = 0 ]; then
+    $exe_file $conf_file ${ebhost}:$port
+
+elif [ $# = 1 ]; then
+    data_file=$data_dir/run$1.dat.gz
+    if [ ! -f $data_file ]; then
+	echo "#E [$(basename $0)] no such file: $data_file"
+	exit
+    fi
+
+    $exe_file $conf_file $data_file
+
+elif [ $# = 2 ]; then
+    data_file=$data_dir/run$1.dat.gz
+    if [ ! -f $data_file ]; then
+	echo "#E [$(basename $0)] no such file: $data_file"
+	exit
+    fi
+
+    $exe_file $conf_file $data_file $2
+
+else
+    echo "#D Usage: $(basename $0) [run number]"
+fi

@@ -9,15 +9,15 @@ void dispTriggerFlag()
   Updater::setUpdating(true);
   // ----------------------------------
 
-//  int n_seg = 35;
+  int n_seg = 16;
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(6,5);
+    c->Divide(4,4);
     int  base_id = HistMaker::getUniqueID(kTriggerFlag, 0, kTDC, 1);
-    for(int i = 0; i<NumOfSegTFlag; ++i){
-      c->cd(i+1);
+    for(int i = 0; i<n_seg; ++i){
       gPad->SetLogy();
+      c->cd(i+1);
       GHist::get(base_id + i)->Draw();
     }
     c->Update();
@@ -25,6 +25,19 @@ void dispTriggerFlag()
 
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
+    c->Clear();
+    c->Divide(4,4);
+    int  base_id = HistMaker::getUniqueID(kTriggerFlag, 0, kTDC, 17);
+    for(int i = 0; i<n_seg; ++i){
+      gPad->SetLogy();
+      c->cd(i+1);
+      GHist::get(base_id + i)->Draw();
+    }
+    c->Update();
+  }
+
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
     c->Clear();
     int  base_id = HistMaker::getUniqueID(kTriggerFlag, 0, kHitPat, 1);
     GHist::get(base_id)->Draw();

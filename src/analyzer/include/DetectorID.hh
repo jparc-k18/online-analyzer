@@ -39,7 +39,7 @@ const Int_t NumOfSegLC   =  28;
 // Misc
 const Int_t DetIdTFlag     = 21;
 const Int_t DetIdScaler    = 22;
-const Int_t NumOfSegTFlag  = 30;
+const Int_t NumOfSegTFlag  = 32;
 const Int_t NumOfSegScaler = 32;
 const Int_t SpillEndFlag   = 27; // 0-based
 const Int_t NumOfVmeRm     = 10;
@@ -270,7 +270,9 @@ namespace trigger
       kReserve2,
       kSpillEnd,
       kMatrix,
-      k10MHzClock,
+      kMsTaccept,
+      kMsTclear,
+      kTOFtiming,
       NTriggerFlag
     };
 
@@ -305,7 +307,9 @@ namespace trigger
       "Reserve2",
       "SpillEnd",
       "Matrix",
-      "10MHzClock"
+      "MsTaccept",
+      "MsTclear",
+      "TOFtiming",
     };
 }
 

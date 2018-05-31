@@ -4047,7 +4047,8 @@ TList* HistMaker::createTriggerFlag( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kTriggerFlag, 0, kTDC, 0);
     for(Int_t i = 0; i<NumOfSegTFlag; ++i){
       const char* title = NULL;
-      title = Form("%s_%d", nameDetector, i+1);
+//      title = Form("%s_%d", nameDetector, i+1);
+      title = trigger::STriggerFlag[i];
       top_dir->Add(createTH1(++target_id, title, // 1 origin
 			     400, 0, 4000,
 			     "TDC [ch]", ""));

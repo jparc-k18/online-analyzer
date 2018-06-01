@@ -585,20 +585,20 @@ TriggerFlag( void )
   Int_t id = HistMaker::getUniqueID(kTriggerFlag, 0, kTDC, 1);
 
   TCanvas *c1 = new TCanvas(__func__, __func__);
-  c1->Divide(1,6);
+  c1->Divide(1,5);
 
-  for(int j=0; j<5; j++) {
-    c1->cd(j+1)->Divide(6,1);
-    for( Int_t i=0; i<6; ++i ){
+  for(int j=0; j<4; j++) {
+    c1->cd(j+1)->Divide(8,1);
+    for( Int_t i=0; i<8; ++i ){
       c1->cd(j+1)->cd(i+1)->SetLogy();
-      TH1 *h = GHist::get(id+i+j*6);
+      TH1 *h = GHist::get(id+i+j*8);
       if( !h ) continue;
       h->Draw();
     }
   }
 
   Int_t id_hit = HistMaker::getUniqueID(kTriggerFlag, 0, kHitPat, 1);
-  c1->cd(6);
+  c1->cd(5);
   TH1 *hh = GHist::get(id_hit);
   hh->Draw();
 

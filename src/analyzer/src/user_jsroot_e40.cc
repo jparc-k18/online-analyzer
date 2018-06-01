@@ -180,6 +180,15 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::CFTPedestal2D());
   gHttp.Register(http::CFTHitPat());
   gHttp.Register(http::CFTMulti());
+  gHttp.Register(http::BGOFADC());
+  gHttp.Register(http::BGOADC());
+  gHttp.Register(http::BGOTDC());
+  gHttp.Register(http::BGOADCTDC2D());
+  gHttp.Register(http::BGOHitMulti());
+  gHttp.Register(http::PiIDTDC());
+  gHttp.Register(http::PiIDHighGain());
+  gHttp.Register(http::PiIDLowGain());
+  gHttp.Register(http::PiIDHitMulti());
   gHttp.Register(http::BcOutEfficiency());
   gHttp.Register(http::SdcInOutEfficiency());
   gHttp.Register(http::CFTEfficiency());

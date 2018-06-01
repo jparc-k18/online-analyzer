@@ -51,7 +51,15 @@ void dispBGO()
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( id + i );
       if( !h ) continue;
-      h->Draw("colz");
+      h->Draw();
+    }
+    id = HistMaker::getUniqueID(kBGO, 0, kADCwTDC);
+    for( Int_t i=0; i<NumOfSegBGO/2; ++i ){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get( id + i );
+      if( !h ) continue;
+      h->SetLineColor(kRed);
+      h->Draw("same");
     }
     c->Update();
   }
@@ -67,6 +75,14 @@ void dispBGO()
       TH1 *h = (TH1*)GHist::get( id + i );
       if( !h ) continue;
       h->Draw("colz");
+    }
+    id = HistMaker::getUniqueID(kBGO, 0, kADCwTDC, 13);
+    for( Int_t i=0; i<NumOfSegBGO/2; ++i ){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get( id + i );
+      if( !h ) continue;
+      h->SetLineColor(kRed);
+      h->Draw("same");
     }
     c->Update();
   }

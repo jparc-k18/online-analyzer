@@ -101,7 +101,15 @@ namespace http
   TCanvas* CFTHitPat( void );
   TCanvas* CFTMulti( void );
   TCanvas* CFTEfficiency( void );
-
+  TCanvas* BGOFADC( void );
+  TCanvas* BGOADC( void );
+  TCanvas* BGOTDC( void );
+  TCanvas* BGOADCTDC2D( void );
+  TCanvas* BGOHitMulti( void );
+  TCanvas* PiIDTDC( void );
+  TCanvas* PiIDHighGain( void );
+  TCanvas* PiIDLowGain( void );
+  TCanvas* PiIDHitMulti( void );
   void     UpdateBcOutEfficiency( void );
   void     UpdateSdcInOutEfficiency( void );
   void     UpdateCFTEfficiency( void );

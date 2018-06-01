@@ -72,7 +72,6 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "pi-Beam",    0,  1 ) );
     gScaler.Set( c, r++, ScalerInfo( "p-Beam",     0,  2 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH1",        0,  3 ) );
-    //    gScaler.Set( c, r++, ScalerInfo( "BH1-SUM",   -1, -1 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH1-01",     0,  4 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH1-02",     0,  5 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH1-03",     0,  6 ) );
@@ -85,7 +84,6 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "BH1-10",     0, 13 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH1-11",     0, 14 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH2",        0, 15 ) );
-    //   gScaler.Set( c, r++, ScalerInfo( "BH2-SUM",   -1, -1 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH2-01",     0, 16 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH2-02",     0, 17 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH2-03",     0, 18 ) );
@@ -140,6 +138,8 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "PiID",           1, 59 ) );
     gScaler.Set( c, r++, ScalerInfo( "pi-Scat",        1, 60 ) );
     gScaler.Set( c, r++, ScalerInfo( "p-Scat",         1, 61 ) );
+    gScaler.Set( c, r++, ScalerInfo( "BH1-SUM",        -1, -1 ) );
+    gScaler.Set( c, r++, ScalerInfo( "BH2-SUM",        -1, -1 ) );
   }
 
   {

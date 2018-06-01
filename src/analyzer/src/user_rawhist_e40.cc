@@ -116,6 +116,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispCorrelation"));
   tab_macro->Add(macro::Get("effBcOut"));
   tab_macro->Add(macro::Get("effSdcInOut"));
+  tab_macro->Add(macro::Get("effFBT"));
   tab_macro->Add(macro::Get("dispDAQ"));
 
   // Add histograms to the Hist tab
@@ -479,8 +480,8 @@ process_event( void )
 
     // Down PMT
     bh1a_id   = gHist.getSequentialID(kBH1, 0, kADC, NumOfSegBH1+1);
-    bh1t_id   = gHist.getSequentialID(kBH1, 0, kTDC, NumOfSegBH1*2 + NumOfSegBH1+1);
-    bh1awt_id = gHist.getSequentialID(kBH1, 0, kADCwTDC, NumOfSegBH1*2 + NumOfSegBH1+1);
+    bh1t_id   = gHist.getSequentialID(kBH1, 0, kTDC, NumOfSegBH1+1);
+    bh1awt_id = gHist.getSequentialID(kBH1, 0, kADCwTDC, NumOfSegBH1+1);
     for(int seg=0; seg<NumOfSegBH1; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);

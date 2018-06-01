@@ -3379,9 +3379,8 @@ TList* HistMaker::createTOF_HT( Bool_t flag_ps )
   // Just type conversion from TString to char*
   const char* nameDetector = strDet.Data();
   const char* name_ch[] = { "(1,11)", "(2,20)", "(3,18)", "(4,21)", "(5,9)",
-                            "(6,22)", "(7,23)", "(8,24)", "(10,19)",
-                            "12", "13", "14", "15", "16", "17"};
-
+                            "(6,22)", "(7,23)", "(8,24)",
+			    "10", "12", "13", "14", "15", "16", "17", "19" };
 
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);

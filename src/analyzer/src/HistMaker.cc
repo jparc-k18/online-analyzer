@@ -3377,10 +3377,8 @@ TList* HistMaker::createTOF_HT( Bool_t flag_ps )
 
   // Declaration of the directory
   // Just type conversion from TString to char*
+
   const char* nameDetector = strDet.Data();
-  const char* name_ch[] = { "(1,11)", "(2,20)", "(3,18)", "(4,21)", "(5,9)",
-                            "(6,22)", "(7,23)", "(8,24)",
-			    "10", "12", "13", "14", "15", "16", "17", "19" };
 
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
@@ -3459,7 +3457,7 @@ TList* HistMaker::createTOF_HT( Bool_t flag_ps )
 	//	Int_t seg = i+1; // 1 origin
 	//	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
 	//	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg;
-	title = Form("%s_%s_%s", nameDetector, nameSubDir, name_ch[i]);
+		title = DetTOF_HT::STOF_HT[i];
 	//      }else{
 	//	Int_t seg = i+1-NumOfSegTOF_HT; // 1 origin
 	//	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);

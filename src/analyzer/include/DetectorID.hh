@@ -315,15 +315,15 @@ namespace trigger
 
 namespace DetTOF_HT
 {
-  enum ETOF_HT     
+  enum ETOF_HT
     {
-      TOF11_20,
-      TOF5_9,
+      TOF1_20,
+      TOF5_22,
       TOF18,
-      TOF4_21,
-      TOF2_24,
-      TOF1_8,
-      TOF6_22,
+      TOF4_10,
+      TOF2_11,
+      TOF8_24,
+      TOF6_9,
       TOF7_23,
       TOF12,
       TOF19,
@@ -331,20 +331,20 @@ namespace DetTOF_HT
       TOF14,
       TOF15,
       TOF16,
-      TOF3_10,
+      TOF3_21,
       TOF17,
-      NTOF_HT     
+      NTOF_HT
     };
 
   const std::vector<TString> STOF_HT     =
     {
-      "TOF(11,20)",
-      "TOF(5,9)",
+      "TOF(1,20)",
+      "TOF(5,22)",
       "TOF18",
-      "TOF(4,21)",
-      "TOF(2,24)",
-      "TOF(1,8)",
-      "TOF(6,22)",
+      "TOF(4,10)",
+      "TOF(2,11)",
+      "TOF(8,24)",
+      "TOF(6,9)",
       "TOF(7,23)",
       "TOF12",
       "TOF19",
@@ -352,7 +352,7 @@ namespace DetTOF_HT
       "TOF14",
       "TOF15",
       "TOF16",
-      "TOF(3,10)",
+      "TOF(3,21)",
       "TOF17",
     };
  };

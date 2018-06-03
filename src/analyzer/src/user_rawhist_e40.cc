@@ -1506,18 +1506,35 @@ process_event( void )
       }
     }
 
+    //TOF TDC gate range
+    static const unsigned int tof_tdc_min = gUser.GetParameter("TOF_TDC_FPGA", 0);
+    static const unsigned int tof_tdc_max = gUser.GetParameter("TOF_TDC_FPGA", 1);
+
+    //SCH TDC gate range
+    static const unsigned int sch_tdc_min = gUser.GetParameter("SCH_TDC", 0);
+    static const unsigned int sch_tdc_max = gUser.GetParameter("SCH_TDC", 1);
+
     // TOF vs SCH
     TH2* hcor_tofsch = dynamic_cast<TH2*>(hptr_array[cor_id++]);
     for(int seg1 = 0; seg1<NumOfSegSCH; ++seg1){
       for(int seg2 = 0; seg2<NumOfSegTOF; ++seg2){
-	int hitSCH = gUnpacker.get_entries(k_device_sch, 0, seg1, 0, 1);
+	int hitSCH = gUnpacker.get_entries(k_device_sch, 0, seg1, 0, 0);
 	int hitTOF = gUnpacker.get_entries(k_device_tof, 0, seg2, 0, 1);
 	if(hitTOF == 0 || hitSCH == 0) continue;
-	int tdcSCH = gUnpacker.get(k_device_sch, 0, seg1, 0, 1);
-	int tdcTOF = gUnpacker.get(k_device_tof, 0, seg2, 0, 1);
-	if(tdcTOF != 0 && tdcSCH != 0){
-	  hcor_tofsch->Fill(seg1, seg2);
-	}
+          for(int m1 = 0; m1<hitSCH; ++m1){
+	    unsigned int tdcSCH = gUnpacker.get(k_device_sch, 0, seg1, 0, 0, m1);
+	      if(tdcSCH != 0){
+                for(int m2 = 0; m2<hitTOF; ++m2){
+	          unsigned int tdcTOF = gUnpacker.get(k_device_tof, 0, seg2, 0, 1, m2);
+	            if( tof_tdc_min<tdcTOF && 
+                        tdcTOF<tof_tdc_max &&
+                        sch_tdc_min<tdcSCH &&
+                        tdcSCH<sch_tdc_max  ){
+	              hcor_tofsch->Fill(seg1, seg2);
+	            }
+	        }
+	      }
+	  }
       }
     }
 

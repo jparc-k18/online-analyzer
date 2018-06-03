@@ -145,7 +145,8 @@ void PsMaker::create(TString& name)
 
     // TDC
     par_list[kXdiv] = 3; par_list[kYdiv] = 4;
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000000;
+//    par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000000;
+    par_list[kXrange_min] = 2000000; par_list[kXrange_max] = 4000000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
 
@@ -300,7 +301,7 @@ void PsMaker::create(TString& name)
 
     par_list[kXdiv] = 4; par_list[kYdiv] = 4;
     // TDC
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 4000;
+    par_list[kXrange_min] = 2000000; par_list[kXrange_max] = 4000000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
 
@@ -1318,7 +1319,7 @@ void PsMaker::create(TString& name)
 
     // TDC
     par_list[kXdiv] = 4; par_list[kYdiv] = 3;
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 4000;
+    par_list[kXrange_min] = 2000000; par_list[kXrange_max] = 4000000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
 

@@ -15,10 +15,10 @@ void dispBH2Filter( void )
   {
     TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c1"));
     c->Clear();
-    c->Divide(4,2);
+    c->Divide(3,2);
     const Int_t raw_id = HistMaker::getUniqueID(kMisc, 0, kHitPat2D);
     const Int_t cut_id = HistMaker::getUniqueID(kMisc, 1, kHitPat2D);
-    for( Int_t i=0; i<NumOfSegBH2; ++i ){
+    for( Int_t i=0; i<NumOfLayersBcOut/2; ++i ){
       c->cd(i+1);
       TH1 *h;
       h = dynamic_cast<TH1*>(GHist::get(raw_id+i));
@@ -39,6 +39,31 @@ void dispBH2Filter( void )
 
   {
     TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c2"));
+    c->Clear();
+    c->Divide(3,2);
+    const Int_t raw_id = HistMaker::getUniqueID(kMisc, 0, kHitPat2D);
+    const Int_t cut_id = HistMaker::getUniqueID(kMisc, 1, kHitPat2D);
+    for( Int_t i=0; i<NumOfLayersBcOut/2; ++i ){
+      c->cd(i+1);
+      TH1 *h;
+      h = dynamic_cast<TH1*>(GHist::get(raw_id+i+NumOfLayersBcOut/2));
+      if( !h ) continue;
+      h->SetFillColor(kBlack);
+      h->SetLineColor(kBlack);
+      h->SetMarkerColor(kBlack);
+      h->Draw("box");
+      h = dynamic_cast<TH1*>(GHist::get(cut_id+i+NumOfLayersBcOut/2));
+      if( !h ) continue;
+      h->SetFillColor(kRed);
+      h->SetLineColor(kRed);
+      h->SetMarkerColor(kRed);
+      h->Draw("box same");
+    }// for(i)
+    c->Update();
+  }
+
+  {
+    TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c3"));
     c->Clear();
     c->Divide(2,2);
     TH1 *h;

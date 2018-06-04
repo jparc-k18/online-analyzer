@@ -1004,6 +1004,7 @@ process_event( void )
   //------------------------------------------------------------------
   // SDC2
   //------------------------------------------------------------------
+  std::vector< std::vector<int> > SDC2HitCont(4);
   {
     // data type
     static const int k_device   = gUnpacker.get_device_id("SDC2");
@@ -1033,6 +1034,8 @@ process_event( void )
     static const int sdc2mul_ctot_id  = gHist.getSequentialID(kSDC2, 0, kMulti,  11);
     static const int sdc2mulwt_ctot_id
       = gHist.getSequentialID(kSDC2, 0, kMulti, 1+NumOfLayersSDC2 + 10);
+    static const int sdc2self_corr_id  = gHist.getSequentialID(kSDC2, kSelfCorr, 0, 1);
+
 
     // TDC & HitPat & Multi
     for(int l=0; l<NumOfLayersSDC2; ++l){
@@ -1104,7 +1107,7 @@ process_event( void )
 	if( flag_hit_wt_ctot ){
 	  ++multiplicity_wt_ctot;
 	  hptr_array[sdc2hit_ctot_id + l]->Fill( w );
-
+          SDC2HitCont[l].push_back(w);
         }
       }
 
@@ -1112,6 +1115,16 @@ process_event( void )
       hptr_array[sdc2mulwt_id + l]->Fill(multiplicity_wt);
       hptr_array[sdc2mul_ctot_id   + l]->Fill(multiplicity_ctot);
       hptr_array[sdc2mulwt_ctot_id + l]->Fill(multiplicity_wt_ctot);
+    }
+   
+
+    for(int s=0; s<NumOfDimSDC2 ;s++){
+      int corr=2*s;  
+      for(unsigned int i=0; i<SDC2HitCont[corr].size() ;i++){
+        for(unsigned int j=0; j<SDC2HitCont[corr+1].size() ;j++){
+          hptr_array[sdc2self_corr_id + s]->Fill(SDC2HitCont[corr][i],SDC2HitCont[corr+1][j]);  
+        }
+      }
     }
 
 #if 0
@@ -1127,6 +1140,7 @@ process_event( void )
   //------------------------------------------------------------------
   // SDC3
   //------------------------------------------------------------------
+  std::vector< std::vector<int> > SDC3HitCont(4);
   {
     // data type
     static const int k_device   = gUnpacker.get_device_id("SDC3");
@@ -1157,6 +1171,7 @@ process_event( void )
     static const int sdc3mul_ctot_id  = gHist.getSequentialID(kSDC3, 0, kMulti,  11);
     static const int sdc3mulwt_ctot_id
       = gHist.getSequentialID(kSDC3, 0, kMulti, 1+NumOfLayersSDC3 + 10);
+    static const int sdc3self_corr_id  = gHist.getSequentialID(kSDC3, kSelfCorr, 0, 1);
 
     // TDC & HitPat & Multi
     for(int l=0; l<NumOfLayersSDC3; ++l){
@@ -1234,7 +1249,7 @@ process_event( void )
 	if( flag_hit_wt_ctot ){
 	  ++multiplicity_wt_ctot;
 	  hptr_array[sdc3hit_ctot_id + l]->Fill( w );
-
+          SDC3HitCont[l].push_back(w);
         }
       }
 
@@ -1243,6 +1258,16 @@ process_event( void )
       hptr_array[sdc3mul_ctot_id   + l]->Fill(multiplicity_ctot);
       hptr_array[sdc3mulwt_ctot_id + l]->Fill(multiplicity_wt_ctot);
     }
+
+    for(int s=0; s<NumOfDimSDC3 ;s++){
+      int corr=2*s;  
+      for(unsigned int i=0; i<SDC3HitCont[corr].size() ;i++){
+        for(unsigned int j=0; j<SDC3HitCont[corr+1].size() ;j++){
+          hptr_array[sdc3self_corr_id + s]->Fill(SDC3HitCont[corr][i],SDC3HitCont[corr+1][j]);  
+        }
+      }
+    }
+
 
 #if 0
     // Debug, dump data relating this detector

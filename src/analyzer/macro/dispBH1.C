@@ -1,8 +1,11 @@
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
+#include "UserParamMan.hh"
+
 void dispBH1()
 {
+  const UserParamMan& gUser = UserParamMan::GetInstance();
   // You must write these lines for the thread safe
   // ----------------------------------
   if(Updater::isUpdating()){return;}
@@ -55,6 +58,10 @@ void dispBH1()
     c->Update();
   }
 
+  // TDC gate range
+  static const unsigned int tdc_min = gUser.GetParameter("BH1_TDC_FPGA", 0);
+  static const unsigned int tdc_max = gUser.GetParameter("BH1_TDC_FPGA", 1);
+
   // draw TDC U
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
@@ -65,6 +72,7 @@ void dispBH1()
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( tdc_id + i );
       if( !h ) continue;
+      h->GetXaxis()->SetRangeUser(tdc_min,tdc_max);
       h->Draw();
     }
     c->Update();
@@ -80,6 +88,7 @@ void dispBH1()
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( tdc_id + i);
       if( !h ) continue;
+      h->GetXaxis()->SetRangeUser(tdc_min,tdc_max);
       h->Draw();
     }
     c->Update();

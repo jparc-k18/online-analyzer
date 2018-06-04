@@ -525,12 +525,16 @@ process_event( void )
     int piidt_id   = gHist.getSequentialID(kPiID, 0, kTDC);
     int piidhgwt_id = gHist.getSequentialID(kPiID, 0, kADCwTDC);
     int piidlgwt_id = gHist.getSequentialID(kPiID, 0, kADCwTDC,NumOfSegPiID +1);
+    int piidhg2d_id = gHist.getSequentialID(kPiID, 0, kADC2D, 1);
+    int piidlg2d_id = gHist.getSequentialID(kPiID, 0, kADC2D, 11);
+
     for(int seg=0; seg<NumOfSegPiID; ++seg){
       // High ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_hg);
       if(nhit!=0){
 	unsigned int adc = gUnpacker.get(k_device, 0, seg, 0, k_hg);
 	hptr_array[piidhg_id + seg]->Fill(adc);
+	hptr_array[piidhg2d_id]->Fill( seg, adc );
       }
 
       // Low ADC
@@ -538,6 +542,7 @@ process_event( void )
       if(nhit!=0){
 	unsigned int adc = gUnpacker.get(k_device, 0, seg, 0, k_lg);
 	hptr_array[piidlg_id + seg]->Fill(adc);
+	hptr_array[piidlg2d_id]->Fill( seg, adc );
       }
 
       // TDC
@@ -553,7 +558,6 @@ process_event( void )
 	  }
 	  if( gUnpacker.get_entries(k_device, 0, seg, 0, k_lg)>0 ){
 	    unsigned int ladc = gUnpacker.get(k_device, 0, seg, 0, k_lg);
-
 	    hptr_array[piidlgwt_id + seg]->Fill( ladc );
 	  }
 	}

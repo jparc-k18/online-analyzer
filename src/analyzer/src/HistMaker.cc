@@ -4197,7 +4197,7 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
     top_dir->Add(createTH2( ++target_id, "BH1_BFT", // 1 origin
 			    NumOfSegBH1, 0, NumOfSegBH1,
 			    NumOfSegBFT, 0, NumOfSegBFT,
-			    "BFT seg", "BH1 seg" ) );
+			    "BH1 seg", "BFT seg" ) );
 
     // BH2 vs BH1 -----------------------------------------------
     top_dir->Add(createTH2(++target_id, "BH2_BH1", // 1 origin
@@ -5756,7 +5756,7 @@ TList* HistMaker::createPiID( Bool_t flag_ps )
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 //			     0x1000, 0, 0x1000,
-			     1000, 0, 2000,
+			     1000, 0, 4000,
 			     "ADC [ch]", ""));
     }
 
@@ -5768,7 +5768,7 @@ TList* HistMaker::createPiID( Bool_t flag_ps )
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 //			     0x1000, 0, 0x1000,
-			     1000, 0, 2000,
+			     1000, 0, 4000,
 			     "ADC [ch]", ""));
     }
 
@@ -5793,7 +5793,7 @@ TList* HistMaker::createPiID( Bool_t flag_ps )
       title = Form("%s_HighGainwTDC_%d", nameDetector, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 //			     0x1000, 0, 0x1000,
-			     1000, 0, 2000,
+			     1000, 0, 4000,
 			     "ADC [ch]", ""));
     }
 
@@ -5804,12 +5804,43 @@ TList* HistMaker::createPiID( Bool_t flag_ps )
       title = Form("%s_LowGainwTDC_%d", nameDetector, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 //			     0x1000, 0, 0x1000,
-			     1000, 0, 2000,
+			     1000, 0, 4000,
 			     "ADC [ch]", ""));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
   }
+  // ADC-2D HighGain ----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kADC_2D);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kPiID, 0, kADC2D, 0);
+    const char* sub_name = "HighGain";
+    // Add to the top directory
+    const char* title = NULL;
+    title = Form("%s_%s", nameDetector, sub_name );
+    sub_dir->Add(createTH2(++target_id, title, // 1 origin
+      		     NumOfSegPiID, 0, NumOfSegPiID,
+      		     4096/8, 0, 4096,
+      		     "Segment", "ADC [ch]"));
+    
+  // ADC-2D HighGain Cut ------------------------------------------
+    target_id = getUniqueID(kPiID, 0, kADC2D, 10);
+    sub_name = "LowGain";
+    // Add to the top directory
+    title = Form("%s_%s", nameDetector, sub_name );
+    sub_dir->Add(createTH2(++target_id, title, // 1 origin
+      		     NumOfSegPiID, 0, NumOfSegPiID,
+      		     4096/8, 0, 4096,
+      		     "Segment", "ADC [ch]"));
+    
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
 
   // TDC---------------------------------------------------------
   {

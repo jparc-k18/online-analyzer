@@ -2402,6 +2402,7 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
 
   // layer configuration
   const char* name_layer[NumOfLayersSDC2] = { "x0", "x1", "y0", "y1" };
+  const char* name_Selflayer[NumOfLayersSDC2] = { "x0_x1", "y0_y1" };
   //  const char* name_layer[NumOfLayersSDC3] = { "y0", "y1", "x0", "x1" };
 
   // TDC---------------------------------------------------------
@@ -2511,6 +2512,30 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
 			     NumOfWireSDC2, 0, NumOfWireSDC2,
 			     "wire", ""));
     }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // Self Correlation ----------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kSelfCorr);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+      for(int i=0; i<NumOfDimSDC2; i++){
+        Int_t target_id = getUniqueID(kSDC2, kSelfCorr, 0, i);
+        const char* title = NULL;
+        title = Form("%s_%s_%s", nameDetector, nameSubDir, name_Selflayer[i]);
+        sub_dir->Add(createTH2(target_id + 1, title, // 1 origin
+          		     NumOfWireSDC2, 0, NumOfWireSDC2,
+          		     NumOfWireSDC2, 0, NumOfWireSDC2,
+          		     Form("%s",name_layer[2*i]),Form("%s",name_layer[2*i+1])));
+      }
+
 
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -2944,6 +2969,9 @@ TList* HistMaker::createSDC3( Bool_t flag_ps )
   // layer configuration
   const char* name_layer[NumOfLayersSDC3] = { "y0", "y1", "x0", "x1" };
 
+  // Dimennsion configuration
+  const char* name_Selflayer[NumOfDimSDC3] = { "y0_y1", "x0_x1" };
+
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -3056,6 +3084,35 @@ TList* HistMaker::createSDC3( Bool_t flag_ps )
 			     nwire, 0, nwire,
 			     "wire", ""));
     }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // Self Correlation ----------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kSelfCorr);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+      for(int i=0; i<NumOfDimSDC3; i++){
+        int NumOfWireSDC3;
+        if( i==0 )
+  	  NumOfWireSDC3 = NumOfWireSDC3Y;
+        if( i==1 )
+  	  NumOfWireSDC3 = NumOfWireSDC3X;
+        Int_t target_id = getUniqueID(kSDC3, kSelfCorr, 0, i);
+        const char* title = NULL;
+        title = Form("%s_%s_%s", nameDetector, nameSubDir, name_Selflayer[i]);
+        sub_dir->Add(createTH2(target_id + 1, title, // 1 origin
+          		     NumOfWireSDC3, 0, NumOfWireSDC3,
+          		     NumOfWireSDC3, 0, NumOfWireSDC3,
+          		     Form("%s",name_layer[2*i]),Form("%s",name_layer[2*i+1])));
+      }
+
 
     // insert sub directory
     top_dir->Add(sub_dir);

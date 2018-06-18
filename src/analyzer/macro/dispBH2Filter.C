@@ -61,19 +61,24 @@ void dispBH2Filter( void )
     }// for(i)
     c->Update();
   }
-
   {
     TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c3"));
     c->Clear();
     c->Divide(2,2);
     TH1 *h;
-    Bool_t bh2filter = false;
     h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kMulti, 1) ) );
-    bh2filter = ( h == 0 );
+    Bool_t bh2filter = ( h == 0 );
     if( bh2filter ){
       c->cd(1);
       h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kMulti, 2) ) );
       if( h ) h->Draw();
+      double Nof0     = h->GetBinContent(1);
+      double NofTotal = h->GetEntries();
+      double eff      = 1. - (double)Nof0/NofTotal;
+      static TLatex *text = new TLatex;
+      text->SetNDC();
+      text->SetTextSize(0.08);
+      text->DrawLatex(0.42, 0.35, Form("plane eff. %.2f", eff));
       c->cd(2);
       h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 2, kHitPat2D, 2) ) );
       if( h ) h->Draw("colz");
@@ -84,6 +89,13 @@ void dispBH2Filter( void )
       c->cd(1);
       h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 0, kMulti, 1) ) );
       if( h ) h->Draw();
+      double Nof0     = h->GetBinContent(1);
+      double NofTotal = h->GetEntries();
+      double eff      = 1. - (double)Nof0/NofTotal;
+      static TLatex *text = new TLatex;
+      text->SetNDC();
+      text->SetTextSize(0.08);
+      text->DrawLatex(0.42, 0.35, Form("plane eff. %.2f", eff));
       c->cd(2);
       h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 2, kHitPat2D, 1) ) );
       if( h ) h->Draw("colz");

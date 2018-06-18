@@ -293,13 +293,15 @@ process_event( void )
   event.TrackSearchBcOut();
   {
     Int_t ntBcOut = dcAna->GetNtracksBcOut();
-    hptr_array[gHist.getSequentialID(kMisc, 0, kMulti, 2)]->Fill( ntBcOut );
+    Int_t cntBcOut = 0;
+    // hptr_array[gHist.getSequentialID(kMisc, 0, kMulti, 2)]->Fill( ntBcOut );
     for( Int_t i=0; i<ntBcOut; ++i ){
       const DCLocalTrack* const track = dcAna->GetTrackBcOut(i);
       static const Int_t chisqr_id = gHist.getSequentialID(kMisc, 0, kChisqr, 2);
       Double_t chisqr = track->GetChiSquare();
       hptr_array[chisqr_id]->Fill( chisqr );
       if( !track || chisqr>10. ) continue;
+      cntBcOut++;
       // Double_t x0 = track->GetX0(); Double_t y0 = track->GetY0();
       // Double_t u0 = track->GetU0(); Double_t v0 = track->GetV0();
       for( Int_t j=0; j<NHist; ++j ){
@@ -316,6 +318,7 @@ process_event( void )
       static const Double_t zBH2 = gGeom.GetLocalZ("BH2");
       hptr_array[bh2cut_id]->Fill( track->GetX(zBH2), segBh2 );
     }
+    hptr_array[gHist.getSequentialID(kMisc, 0, kMulti, 2)]->Fill( cntBcOut );
   }
 
 #if DEBUG

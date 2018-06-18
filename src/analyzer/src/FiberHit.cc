@@ -104,9 +104,9 @@ FiberHit::Calculate( void )
   Int_t size_tdc1 = m_raw->SizeTdc1();
   Int_t size_tdc2 = m_raw->SizeTdc2();
   if( size_tdc1 != size_tdc2 ){
-    hddaq::cerr << "#W " << FUNC_NAME
-		<< " SizeTdc1/2 mismatch ["
-		<< size_tdc1 << "/" << size_tdc2 << "]" << std::endl;
+    // hddaq::cerr << "#W " << FUNC_NAME
+    // 		<< " SizeTdc1/2 mismatch ["
+    // 		<< size_tdc1 << "/" << size_tdc2 << "]" << std::endl;
   }
   m_multi_hit = TMath::Min( m_raw->SizeTdc1(),
 			    m_raw->SizeTdc2() );

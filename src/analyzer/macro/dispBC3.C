@@ -67,9 +67,21 @@ void dispBC3( void )
       TH1 *h_wot = (TH1*)GHist::get(base_id + i);
       TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer);
 //      h_wot->SetMaximum(h_wt->GetMaximum()*1.1);
-      h_wot->Draw();
       h_wt->SetLineColor(2);
+      double h_wo_max = h_wot->GetMaximum();
+      double h_w_max  = h_wt->GetMaximum();
+      double hight = 0.;
+      
+      if( h_wo_max >= h_w_max ){
+        hight = h_wo_max*1.1; 
+      }else{
+        hight = h_w_max*1.1; 
+      }
+
+      h_wot->Draw();
       h_wt->Draw("same");
+//      h_wt->SetMaximum(hight+10);
+      h_wt->SetAxisRange(0,hight,"Y");
     }
     c->Update();
   }

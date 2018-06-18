@@ -236,16 +236,22 @@ process_event( void )
 
   Int_t nhBh2 = hodoAna->GetNHitsBH2();
   Int_t segBh2 = -1.;
+  Double_t bh2mt = -9999.;
   for( Int_t i=0; i<nhBh2; ++i ){
     const BH2Hit* const hit = hodoAna->GetHitBH2(i);
-    Int_t seg = hit->SegmentId();
-    if( nhBh2 == 1 ) segBh2 = seg;
+    Int_t seg   = hit->SegmentId();
+    Double_t mt = hit->MeanTime();
+    if( TMath::Abs( mt ) < TMath::Abs( bh2mt ) ){
+      bh2mt = mt;
+      segBh2 = seg;
+    }
+    // if( nhBh2 == 1 ) segBh2 = seg;
     static const Int_t hit_id = gHist.getSequentialID(kBH2, 0, kHitPat);
     hptr_array[hit_id]->Fill( seg );
   }
 
   // BH2 % BcOut Hit
-  if( segBh2 >= 0 ){
+  if( segBh2 >= 0 && TMath::Abs( bh2mt ) < 0.1 ){
     const std::vector<Double_t>& xmin = gBH2Filter.GetXmin( segBh2 );
     const std::vector<Double_t>& xmax = gBH2Filter.GetXmax( segBh2 );
     for( Int_t l=0; l<NumOfLayersBcOut; ++l ){

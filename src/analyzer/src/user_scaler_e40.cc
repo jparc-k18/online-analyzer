@@ -147,6 +147,7 @@ process_begin( const std::vector<std::string>& argv )
     Int_t r = 0;
     gScaler.Set( c, r++, ScalerInfo( "Spill",         0, 49 ) );
     gScaler.Set( c, r++, ScalerInfo( "BH1-1/100-PS",  0, 51 ) );
+    gScaler.Set( c, r++, ScalerInfo( "BH1-1/1e5-PS",  0, 39 ) );
     gScaler.Set( c, r++, ScalerInfo( "TM",            0, 52 ) );
     gScaler.Set( c, r++, ScalerInfo( "Real-Time",     0, 53 ) );
     gScaler.Set( c, r++, ScalerInfo( "Live-Time",     0, 54 ) );
@@ -164,7 +165,6 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "(BH2,p)",       0, 36 ) );
     gScaler.Set( c, r++, ScalerInfo( "(p,BGO)",       0, 37 ) );
     gScaler.Set( c, r++, ScalerInfo( "Extra",         0, 38 ) );
-    //    gScaler.Set( c, r++, ScalerInfo( "CoinE03",       0, 39 ) );
     gScaler.Set( c, r++, ScalerInfo( "(BH2,K)-PS",    0, 47 ) );
     gScaler.Set( c, r++, ScalerInfo( "(BH2,TOF)-PS",  0, 42 ) );
     gScaler.Set( c, r++, ScalerInfo( "(BH2,pi)-PS",   0, 43 ) );

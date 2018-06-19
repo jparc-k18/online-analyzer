@@ -48,16 +48,16 @@ namespace analyzer
     HttpServer& gHttp = HttpServer::GetInstance();
   }
 
-  enum eBeam { kBeam, kPibeam, kPbeam, nBeam };
+  enum eBeam { kBeam, kPibeam, kPbeam, kBH1PS,nBeam };
   enum eDAQ  { kDAQEff, kL2Eff, kDuty, nDAQ };
-  TString sBeam[nBeam] = { "Beam", "pi-Beam", "p-Beam" };
+  TString sBeam[nBeam] = { "Beam", "pi-Beam", "p-Beam", "BH1PS" };
   TString sDAQ[nDAQ] = { "DAQ-Eff", "L2-Eff", "Duty" };
 
   TGraph  *g_beam[nBeam];
   TGraph  *g_daq[nDAQ];
   TLegend *leg_beam;
   TLegend *leg_daq;
-  Color_t  col_beam[nBeam] = { kGreen, kBlue, kRed };
+  Color_t  col_beam[nBeam] = { kGreen, kBlue, kRed, kOrange+1 };
   Color_t  col_daq[nDAQ]   = { kRed, kOrange+1, kBlue };
 
 //____________________________________________________________________________
@@ -74,10 +74,10 @@ process_begin( const std::vector<std::string>& argv )
 
   TCanvas *c = new TCanvas("beam_monitor","beam_monitor");
   c->Divide( 1, 2 );
-  
+
   gHttp.SetPort(9091);
   gHttp.Open();
-  gHttp.Register(c);  
+  gHttp.Register(c);
 
   Double_t legX = 0.13;
   Double_t legY = 0.13;
@@ -173,8 +173,8 @@ process_event( void )
 
   // Beam Monitor
   {
-    static const Int_t module_id[nBeam]  = {  0, 0, 0 };
-    static const Int_t channel_id[nBeam] = {  0, 1, 2 };
+    static const Int_t module_id[nBeam]  = {  0, 0, 0,  0 };
+    static const Int_t channel_id[nBeam] = {  0, 1, 2, 39 };
 
     static Double_t beam[nBeam]     = {};
     static Double_t beam_pre[nBeam] = {};
@@ -183,6 +183,7 @@ process_event( void )
       Int_t hit = g_unpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
       if(hit==0) continue;
       beam[i] = g_unpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
+      if( i==kBH1PS ) beam[i] *= 1e5;
     }
     if( spill_inc ){
       for(Int_t i=0; i<nBeam; ++i){

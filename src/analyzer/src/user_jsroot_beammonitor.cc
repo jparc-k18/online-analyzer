@@ -48,16 +48,16 @@ namespace analyzer
     HttpServer& gHttp = HttpServer::GetInstance();
   }
 
-  enum eBeam { kBeam, kPibeam, kPbeam, kBH1PS,nBeam };
+  enum eBeam { kBeam, kPibeam, kPbeam, nBeam };
   enum eDAQ  { kDAQEff, kL2Eff, kDuty, nDAQ };
-  TString sBeam[nBeam] = { "Beam", "pi-Beam", "p-Beam", "BH1PS" };
+  TString sBeam[nBeam] = { "Beam", "pi-Beam", "p-Beam" };
   TString sDAQ[nDAQ] = { "DAQ-Eff", "L2-Eff", "Duty" };
 
   TGraph  *g_beam[nBeam];
   TGraph  *g_daq[nDAQ];
   TLegend *leg_beam;
   TLegend *leg_daq;
-  Color_t  col_beam[nBeam] = { kGreen, kBlue, kRed, kOrange+1 };
+  Color_t  col_beam[nBeam] = { kGreen, kBlue, kRed };
   Color_t  col_daq[nDAQ]   = { kRed, kOrange+1, kBlue };
 
 //____________________________________________________________________________
@@ -173,8 +173,8 @@ process_event( void )
 
   // Beam Monitor
   {
-    static const Int_t module_id[nBeam]  = {  0, 0, 0,  0 };
-    static const Int_t channel_id[nBeam] = {  0, 1, 2, 39 };
+    static const Int_t module_id[nBeam]  = {  0, 0, 0 };
+    static const Int_t channel_id[nBeam] = {  0, 1, 2 };
 
     static Double_t beam[nBeam]     = {};
     static Double_t beam_pre[nBeam] = {};
@@ -183,12 +183,11 @@ process_event( void )
       Int_t hit = g_unpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
       if(hit==0) continue;
       beam[i] = g_unpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
-      if( i==kBH1PS ) beam[i] *= 1e5;
     }
     if( spill_inc ){
       for(Int_t i=0; i<nBeam; ++i){
 	g_beam[i]->SetPoint(spill, spill, beam_pre[i]);
-	g_beam[i]->GetYaxis()->SetRangeUser(0, 3.e7);
+	g_beam[i]->GetYaxis()->SetRangeUser(0, 2.e7);
 	g_beam[i]->GetXaxis()->SetLimits(spill-90, spill+10);
       }
       // Double_t kpi_ratio = beam_pre[kKbeam]/beam_pre[kPibeam];

@@ -78,7 +78,7 @@ void dispBH2Filter( void )
       static TLatex *text = new TLatex;
       text->SetNDC();
       text->SetTextSize(0.08);
-      text->DrawLatex(0.42, 0.35, Form("plane eff. %.2f", eff));
+      text->DrawLatex(0.42, 0.35, Form("plane eff. %.3f", eff));
       c->cd(2);
       h = dynamic_cast<TH1*>( GHist::get( HistMaker::getUniqueID(kMisc, 2, kHitPat2D, 2) ) );
       if( h ) h->Draw("colz");

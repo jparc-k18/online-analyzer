@@ -66,9 +66,21 @@ void dispSDC1( void )
       TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer);//->Clone();
       if( !h_wot || !h_wt ) continue;
       // h_wot->SetMaximum(h_wt->GetMaximum()*1.1);
-      h_wot->Draw();
+//      h_wot->Draw();
       h_wt->SetLineColor(2);
-      h_wt->Draw("same");
+//      h_wt->Draw("same");
+//
+      double h_wo_max = h_wot->GetMaximum();
+      double h_w_max  = h_wt->GetMaximum();
+      double hight = 0.;
+      
+      if( h_wo_max >= h_w_max ){
+        h_wot->Draw();
+        h_wt->Draw("same");
+      }else{
+        h_wt->Draw();
+        h_wot->Draw("same");
+      }
     }
     c->Update();
   }

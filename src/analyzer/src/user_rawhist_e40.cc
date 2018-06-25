@@ -117,6 +117,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("effBcOut"));
   tab_macro->Add(macro::Get("effSdcInOut"));
   tab_macro->Add(macro::Get("effFBT"));
+  tab_macro->Add(macro::Get("dispBH2Fit"));
   tab_macro->Add(macro::Get("dispDAQ"));
 
   // Add histograms to the Hist tab

@@ -25,24 +25,30 @@ void dispBH2Fit()
     int icanvas1 = 0;
     for( int ud=NumOfSegBH2; ud<NumOfSegBH2*2; ++ud ){
       TH1 *h  = NULL;
+      TH1 *h1  = NULL;
       TF1 fit = TF1("fit","gaus");
+      fit.SetLineColor(kRed);
       // draw TDC_FPGA
       c1->cd( ++icanvas1 );
-//      gPad->SetLogy();
+      gPad->SetLogy();
       h = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, ud+1) );
-      if( h ){
-	//h->GetXaxis()->SetRangeUser(0,2000);
-        double max  = h->GetMaximumBin();
+      h1 = h;
+      if( h1 ){
+	//h1->GetXaxis()->SetRangeUser(0,2000);
+	h1->GetXaxis()->SetRangeUser(tdc_min,tdc_max);
+//        double max  = h1->GetMaximumBin();
+        double max  =  h1->GetXaxis()->GetBinCenter(h1->GetMaximumBin());
 	double range = 100.;
-	h->GetXaxis()->SetRangeUser(tdc_min,tdc_max);
-	h->Fit("fit","IQ","",tdc_min,tdc_max);
-	h->Draw();
+//	h1->Fit("fit","IQ","",tdc_min,tdc_max);
+	h1->Fit("fit","IQ","",max-range,max+range);
+	h1->Draw();
         double mean = fit.GetParameter(1);
-        double xpos  = h->GetXaxis()->GetBinCenter(h->GetNbinsX())*0.3;
-        double ypos  = h->GetMaximum()*0.8;
+//        double xpos  = h1->GetXaxis()->GetBinCenter(h1->GetMaximumBin());
+        double xpos  = tdc_min+1000;
+        double ypos  = h1->GetMaximum()*1.1;
         TLatex *text = new TLatex(xpos, ypos, Form("Mean. %.2f", mean));
         text->SetTextSize(0.08);
-        text->Draw();
+        text->Draw("same");
       }
     }
     c1->Update();

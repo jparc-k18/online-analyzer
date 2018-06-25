@@ -73,15 +73,15 @@ void dispBC3( void )
       double hight = 0.;
       
       if( h_wo_max >= h_w_max ){
-        hight = h_wo_max*1.1; 
+        h_wot->Draw();
+        h_wt->Draw("same");
       }else{
-        hight = h_w_max*1.1; 
+        h_wt->Draw();
+        h_wot->Draw("same");
       }
 
-      h_wot->Draw();
-      h_wt->Draw("same");
 //      h_wt->SetMaximum(hight+10);
-      h_wt->SetAxisRange(0,hight,"Y");
+//      h_wt->SetAxisRange(0,hight,"Y");
     }
     c->Update();
   }

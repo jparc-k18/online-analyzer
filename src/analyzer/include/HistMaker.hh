@@ -76,6 +76,13 @@ enum DataType{
   factorDataType = 1000
 };
 
+enum HistOffsetType{
+  kHistOffsetTypeZero,
+  //
+  kTOTcutOffset = 20,
+  sizeHistOffsetType,
+};
+
 TString getStr_FromEnum(const char* c);
 
 class TH1;

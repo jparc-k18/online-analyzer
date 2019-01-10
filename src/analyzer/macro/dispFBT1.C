@@ -42,6 +42,16 @@ void dispFBT1( void )
       HistMaker::getUniqueID(kFBT1, 1, kMulti,  1),
       HistMaker::getUniqueID(kFBT1, 1, kMulti,  FBTOffset+1),
     },
+    {
+      HistMaker::getUniqueID(kFBT1, 0, kHitPat, 1),
+      HistMaker::getUniqueID(kFBT1, 0, kHitPat, FBTOffset+1),
+      HistMaker::getUniqueID(kFBT1, 1, kHitPat, 1),
+      HistMaker::getUniqueID(kFBT1, 1, kHitPat, FBTOffset+1),
+      HistMaker::getUniqueID(kFBT1, 0, kMulti,  1),
+      HistMaker::getUniqueID(kFBT1, 0, kMulti,  FBTOffset+1),
+      HistMaker::getUniqueID(kFBT1, 1, kMulti,  1),
+      HistMaker::getUniqueID(kFBT1, 1, kMulti,  FBTOffset+1),
+    },
   };
 
   //

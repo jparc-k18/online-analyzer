@@ -1399,6 +1399,7 @@ process_event( void )
     gUnpacker.dump_data_device(k_device);
 #endif
   }
+
 #endif
 
 

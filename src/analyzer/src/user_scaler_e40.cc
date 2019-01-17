@@ -94,8 +94,8 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "BH2-08",     0, 23 ) );
     gScaler.Set( c, r++, ScalerInfo( "SAC",        0, 24 ) );
     gScaler.Set( c, r++, ScalerInfo( "SCH",        0, 25 ) );
-    gScaler.Set( c, r++, ScalerInfo( "FBT1",       1, 62 ) );
-    gScaler.Set( c, r++, ScalerInfo( "FBT2",       1, 63 ) );
+    gScaler.Set( c, r++, ScalerInfo( "FHT1",       1, 62 ) );
+    gScaler.Set( c, r++, ScalerInfo( "FHT2",       1, 63 ) );
     gScaler.Set( c, r++, ScalerInfo( "TOF",        0, 26 ) );
     gScaler.Set( c, r++, ScalerInfo( "TOF-HT",     0, 27 ) );
     gScaler.Set( c, r++, ScalerInfo( "TOF-24",     0, 63 ) );

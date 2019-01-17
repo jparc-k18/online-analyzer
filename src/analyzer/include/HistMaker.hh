@@ -18,8 +18,8 @@ enum DetectorType {
   kBH1, kBFT, kBC3, kBC4, kBH2,kBH2MT,
   kMsT, kMtx3D,
   // Detector unique ID in the KURAMA system
-  kCFT,kBGO,kPiID,kSFT, kSDC1, kSAC, kSCH, kFBT1,
-  kSDC2, kSDC3, kFBT2, kTOF,kTOF_HT,kLC,
+  kCFT,kBGO,kPiID,kSFT, kSDC1, kSAC, kSCH, kFHT1,
+  kSDC2, kSDC3, kFHT2, kTOF,kTOF_HT,kLC,
   // VMEEASIROC unique ID
   kVMEEASIROC,
   // Old detectors E07
@@ -40,8 +40,8 @@ enum DetectorType {
 
 enum SubDetectorType {
   kSubDetectorZero,
-  // FBT Layers
-  kFBT_L1, kFBT_L2,
+  // FHT Layers
+  kFHT_L1, kFHT_L2,
   // Detector unique sub ID in Counters
   kSP0_L1, kSP0_L2, kSP0_L3, kSP0_L4,
   kSP0_L5, kSP0_L6, kSP0_L7, kSP0_L8,
@@ -139,10 +139,10 @@ public:
   TList* createSDC1( Bool_t flag_ps=true );
   TList* createSAC( Bool_t flag_ps=true );
   TList* createSCH( Bool_t flag_ps=true );
-  TList* createFBT1( Bool_t flag_ps=true );
+  TList* createFHT1( Bool_t flag_ps=true );
   TList* createSDC2( Bool_t flag_ps=true );
   TList* createSDC3( Bool_t flag_ps=true );
-  TList* createFBT2( Bool_t flag_ps=true );
+  TList* createFHT2( Bool_t flag_ps=true );
   TList* createTOF( Bool_t flag_ps=true );
   TList* createTOF_HT( Bool_t flag_ps=true );
   TList* createLC( Bool_t flag_ps=true );

@@ -67,7 +67,7 @@ Correlation( void )
 
 //____________________________________________________________________________
 TCanvas*
-CorrelationFBT( void )
+CorrelationFHT( void )
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(2, 2);
@@ -546,7 +546,7 @@ TOFTDC( void )
 
 //____________________________________________________________________________
 TCanvas*
-TOFHT( void )
+TOF_HT( void )
 {
   Int_t id = HistMaker::getUniqueID(kTOF_HT, 0, kTDC, 1);
 
@@ -1005,21 +1005,21 @@ HitPatternE40( void )
     HistMaker::getUniqueID(kSDC1, 0, kHitPat, 1),
     HistMaker::getUniqueID(kSFT,  0, kHitPat, 1),
     HistMaker::getUniqueID(kSCH,  0, kHitPat),
-    HistMaker::getUniqueID(kFBT1, 0, kHitPat, 1),
+    HistMaker::getUniqueID(kFHT1, 0, kHitPat, 1),
 
     HistMaker::getUniqueID(kSDC2, 0, kHitPat, 1),
     HistMaker::getUniqueID(kSDC3, 0, kHitPat, 3),
     HistMaker::getUniqueID(kTOF,  0, kHitPat),
     HistMaker::getUniqueID(kLC,  0, kHitPat)
   };
-    // HistMaker::getUniqueID(kFBT1, 0, kHitPat),
-    // HistMaker::getUniqueID(kFBT1, 0, kHitPat,FBTOffset),
-    // HistMaker::getUniqueID(kFBT1, 1, kHitPat),
-    // HistMaker::getUniqueID(kFBT1, 1, kHitPat,FBTOffset),
-    // HistMaker::getUniqueID(kFBT2, 0, kHitPat),
-    // HistMaker::getUniqueID(kFBT2, 0, kHitPat,FBTOffset),
-    // HistMaker::getUniqueID(kFBT2, 1, kHitPat),
-    // HistMaker::getUniqueID(kFBT2, 1, kHitPat,FBTOffset),
+    // HistMaker::getUniqueID(kFHT1, 0, kHitPat),
+    // HistMaker::getUniqueID(kFHT1, 0, kHitPat,FHTOffset),
+    // HistMaker::getUniqueID(kFHT1, 1, kHitPat),
+    // HistMaker::getUniqueID(kFHT1, 1, kHitPat,FHTOffset),
+    // HistMaker::getUniqueID(kFHT2, 0, kHitPat),
+    // HistMaker::getUniqueID(kFHT2, 0, kHitPat,FHTOffset),
+    // HistMaker::getUniqueID(kFHT2, 1, kHitPat),
+    // HistMaker::getUniqueID(kFHT2, 1, kHitPat,FHTOffset),
 
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(1,2);
@@ -1072,19 +1072,19 @@ DAQ( void )
 
 //____________________________________________________________________________
 TCanvas*
-FBT1TDC( void )
+FHT1TDC( void )
 {
-  const int FBTOffset = 200;
+  const int FHTOffset = 200;
 
   std::vector<Int_t> hid = {
-    HistMaker::getUniqueID(kFBT1, 0, kTDC,    NumOfSegFBT1+1),
-    HistMaker::getUniqueID(kFBT1, 0, kTDC,    FBTOffset+NumOfSegFBT1+1),
-    HistMaker::getUniqueID(kFBT1, 1, kTDC,    NumOfSegFBT1+1),
-    HistMaker::getUniqueID(kFBT1, 1, kTDC,    FBTOffset+NumOfSegFBT1+1),
-    HistMaker::getUniqueID(kFBT1, 0, kTDC2D,  1),
-    HistMaker::getUniqueID(kFBT1, 0, kTDC2D,  FBTOffset+1),
-    HistMaker::getUniqueID(kFBT1, 1, kTDC2D,  1),
-    HistMaker::getUniqueID(kFBT1, 1, kTDC2D,  FBTOffset+1)
+    HistMaker::getUniqueID(kFHT1, 0, kTDC,    NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT1, 0, kTDC,    FHTOffset+NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT1, 1, kTDC,    NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT1, 1, kTDC,    FHTOffset+NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT1, 0, kTDC2D,  1),
+    HistMaker::getUniqueID(kFHT1, 0, kTDC2D,  FHTOffset+1),
+    HistMaker::getUniqueID(kFHT1, 1, kTDC2D,  1),
+    HistMaker::getUniqueID(kFHT1, 1, kTDC2D,  FHTOffset+1)
   };
 
   TCanvas *c1 = new TCanvas(__func__, __func__);
@@ -1100,19 +1100,19 @@ FBT1TDC( void )
 
 //____________________________________________________________________________
 TCanvas*
-FBT1TOT( void )
+FHT1TOT( void )
 {
-  const int FBTOffset = 200;
+  const int FHTOffset = 200;
 
   std::vector<Int_t> hid = {
-    HistMaker::getUniqueID(kFBT1, 0, kADC,    NumOfSegFBT1+1),
-    HistMaker::getUniqueID(kFBT1, 0, kADC,    FBTOffset+NumOfSegFBT1+1),
-    HistMaker::getUniqueID(kFBT1, 1, kADC,    NumOfSegFBT1+1),
-    HistMaker::getUniqueID(kFBT1, 1, kADC,    FBTOffset+NumOfSegFBT1+1),
-    HistMaker::getUniqueID(kFBT1, 0, kADC2D,  1),
-    HistMaker::getUniqueID(kFBT1, 0, kADC2D,  FBTOffset+1),
-    HistMaker::getUniqueID(kFBT1, 1, kADC2D,  1),
-    HistMaker::getUniqueID(kFBT1, 1, kADC2D,  FBTOffset+1)
+    HistMaker::getUniqueID(kFHT1, 0, kADC,    NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT1, 0, kADC,    FHTOffset+NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT1, 1, kADC,    NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT1, 1, kADC,    FHTOffset+NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT1, 0, kADC2D,  1),
+    HistMaker::getUniqueID(kFHT1, 0, kADC2D,  FHTOffset+1),
+    HistMaker::getUniqueID(kFHT1, 1, kADC2D,  1),
+    HistMaker::getUniqueID(kFHT1, 1, kADC2D,  FHTOffset+1)
   };
 
   TCanvas *c1 = new TCanvas(__func__, __func__);
@@ -1128,19 +1128,19 @@ FBT1TOT( void )
 
 //____________________________________________________________________________
 TCanvas*
-FBT1HitMulti( void )
+FHT1HitMulti( void )
 {
-  const int FBTOffset = 200;
+  const int FHTOffset = 200;
 
   std::vector<Int_t> hid = {
-      HistMaker::getUniqueID(kFBT1, 0, kHitPat, 1),
-      HistMaker::getUniqueID(kFBT1, 0, kHitPat, FBTOffset+1),
-      HistMaker::getUniqueID(kFBT1, 1, kHitPat, 1),
-      HistMaker::getUniqueID(kFBT1, 1, kHitPat, FBTOffset+1),
-      HistMaker::getUniqueID(kFBT1, 0, kMulti,  1),
-      HistMaker::getUniqueID(kFBT1, 0, kMulti,  FBTOffset+1),
-      HistMaker::getUniqueID(kFBT1, 1, kMulti,  1),
-      HistMaker::getUniqueID(kFBT1, 1, kMulti,  FBTOffset+1),
+      HistMaker::getUniqueID(kFHT1, 0, kHitPat, 1),
+      HistMaker::getUniqueID(kFHT1, 0, kHitPat, FHTOffset+1),
+      HistMaker::getUniqueID(kFHT1, 1, kHitPat, 1),
+      HistMaker::getUniqueID(kFHT1, 1, kHitPat, FHTOffset+1),
+      HistMaker::getUniqueID(kFHT1, 0, kMulti,  1),
+      HistMaker::getUniqueID(kFHT1, 0, kMulti,  FHTOffset+1),
+      HistMaker::getUniqueID(kFHT1, 1, kMulti,  1),
+      HistMaker::getUniqueID(kFHT1, 1, kMulti,  FHTOffset+1),
   };
 
   TCanvas *c1 = new TCanvas(__func__, __func__);
@@ -1156,19 +1156,19 @@ FBT1HitMulti( void )
 
 //____________________________________________________________________________
 TCanvas*
-FBT2TDC( void )
+FHT2TDC( void )
 {
-  const int FBTOffset = 200;
+  const int FHTOffset = 200;
 
   std::vector<Int_t> hid = {
-    HistMaker::getUniqueID(kFBT2, 0, kTDC,    NumOfSegFBT2+1),
-    HistMaker::getUniqueID(kFBT2, 0, kTDC,    FBTOffset+NumOfSegFBT2+1),
-    HistMaker::getUniqueID(kFBT2, 1, kTDC,    NumOfSegFBT2+1),
-    HistMaker::getUniqueID(kFBT2, 1, kTDC,    FBTOffset+NumOfSegFBT2+1),
-    HistMaker::getUniqueID(kFBT2, 0, kTDC2D,  1),
-    HistMaker::getUniqueID(kFBT2, 0, kTDC2D,  FBTOffset+1),
-    HistMaker::getUniqueID(kFBT2, 1, kTDC2D,  1),
-    HistMaker::getUniqueID(kFBT2, 1, kTDC2D,  FBTOffset+1)
+    HistMaker::getUniqueID(kFHT2, 0, kTDC,    NumOfSegFHT2+1),
+    HistMaker::getUniqueID(kFHT2, 0, kTDC,    FHTOffset+NumOfSegFHT2+1),
+    HistMaker::getUniqueID(kFHT2, 1, kTDC,    NumOfSegFHT2+1),
+    HistMaker::getUniqueID(kFHT2, 1, kTDC,    FHTOffset+NumOfSegFHT2+1),
+    HistMaker::getUniqueID(kFHT2, 0, kTDC2D,  1),
+    HistMaker::getUniqueID(kFHT2, 0, kTDC2D,  FHTOffset+1),
+    HistMaker::getUniqueID(kFHT2, 1, kTDC2D,  1),
+    HistMaker::getUniqueID(kFHT2, 1, kTDC2D,  FHTOffset+1)
   };
 
   TCanvas *c1 = new TCanvas(__func__, __func__);
@@ -1184,19 +1184,19 @@ FBT2TDC( void )
 
 //____________________________________________________________________________
 TCanvas*
-FBT2TOT( void )
+FHT2TOT( void )
 {
-  const int FBTOffset = 200;
+  const int FHTOffset = 200;
 
   std::vector<Int_t> hid = {
-    HistMaker::getUniqueID(kFBT2, 0, kADC,    NumOfSegFBT2+1),
-    HistMaker::getUniqueID(kFBT2, 0, kADC,    FBTOffset+NumOfSegFBT2+1),
-    HistMaker::getUniqueID(kFBT2, 1, kADC,    NumOfSegFBT2+1),
-    HistMaker::getUniqueID(kFBT2, 1, kADC,    FBTOffset+NumOfSegFBT2+1),
-    HistMaker::getUniqueID(kFBT2, 0, kADC2D,  1),
-    HistMaker::getUniqueID(kFBT2, 0, kADC2D,  FBTOffset+1),
-    HistMaker::getUniqueID(kFBT2, 1, kADC2D,  1),
-    HistMaker::getUniqueID(kFBT2, 1, kADC2D,  FBTOffset+1)
+    HistMaker::getUniqueID(kFHT2, 0, kADC,    NumOfSegFHT2+1),
+    HistMaker::getUniqueID(kFHT2, 0, kADC,    FHTOffset+NumOfSegFHT2+1),
+    HistMaker::getUniqueID(kFHT2, 1, kADC,    NumOfSegFHT2+1),
+    HistMaker::getUniqueID(kFHT2, 1, kADC,    FHTOffset+NumOfSegFHT2+1),
+    HistMaker::getUniqueID(kFHT2, 0, kADC2D,  1),
+    HistMaker::getUniqueID(kFHT2, 0, kADC2D,  FHTOffset+1),
+    HistMaker::getUniqueID(kFHT2, 1, kADC2D,  1),
+    HistMaker::getUniqueID(kFHT2, 1, kADC2D,  FHTOffset+1)
   };
 
   TCanvas *c1 = new TCanvas(__func__, __func__);
@@ -1212,19 +1212,19 @@ FBT2TOT( void )
 
 //____________________________________________________________________________
 TCanvas*
-FBT2HitMulti( void )
+FHT2HitMulti( void )
 {
-  const int FBTOffset = 200;
+  const int FHTOffset = 200;
 
   std::vector<Int_t> hid = {
-      HistMaker::getUniqueID(kFBT2, 0, kHitPat, 1),
-      HistMaker::getUniqueID(kFBT2, 0, kHitPat, FBTOffset+1),
-      HistMaker::getUniqueID(kFBT2, 1, kHitPat, 1),
-      HistMaker::getUniqueID(kFBT2, 1, kHitPat, FBTOffset+1),
-      HistMaker::getUniqueID(kFBT2, 0, kMulti,  1),
-      HistMaker::getUniqueID(kFBT2, 0, kMulti,  FBTOffset+1),
-      HistMaker::getUniqueID(kFBT2, 1, kMulti,  1),
-      HistMaker::getUniqueID(kFBT2, 1, kMulti,  FBTOffset+1),
+      HistMaker::getUniqueID(kFHT2, 0, kHitPat, 1),
+      HistMaker::getUniqueID(kFHT2, 0, kHitPat, FHTOffset+1),
+      HistMaker::getUniqueID(kFHT2, 1, kHitPat, 1),
+      HistMaker::getUniqueID(kFHT2, 1, kHitPat, FHTOffset+1),
+      HistMaker::getUniqueID(kFHT2, 0, kMulti,  1),
+      HistMaker::getUniqueID(kFHT2, 0, kMulti,  FHTOffset+1),
+      HistMaker::getUniqueID(kFHT2, 1, kMulti,  1),
+      HistMaker::getUniqueID(kFHT2, 1, kMulti,  FHTOffset+1),
   };
 
   TCanvas *c1 = new TCanvas(__func__, __func__);

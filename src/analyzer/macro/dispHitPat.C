@@ -120,7 +120,7 @@ void dispHitPat()
   h->Draw();
 
   c2->cd(4);
-  base_id = HistMaker::getUniqueID(kFBT1, 0, kHitPat,1);
+  base_id = HistMaker::getUniqueID(kFHT1, 0, kHitPat,1);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
@@ -138,7 +138,7 @@ void dispHitPat()
   h->Draw();
 
   // c2->cd(7);
-  // base_id = HistMaker::getUniqueID(kFBT2, 0, kHitPat,1);
+  // base_id = HistMaker::getUniqueID(kFHT2, 0, kHitPat,1);
   // h = (TH1*)GHist::get(base_id);
   // h->SetMinimum(0);
   // h->Draw();

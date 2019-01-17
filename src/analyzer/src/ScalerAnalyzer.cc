@@ -422,8 +422,8 @@ ScalerAnalyzer::PrintScalerSheet( void )
   DrawOneLine( "BH2",    "BH2-SUM",  "L1-Acc"   );
   DrawOneLine( "SAC",    "(BH2,pi)",  "Matrix"  );
   DrawOneLine( "SCH",    "(BH2,p)",   "Mst-Acc" );
-  DrawOneLine( "FBT1",   "K-Scat",   "Mst-Clr"  );
-  DrawOneLine( "FBT2",   "(BH2,K)",  "Clear"    );
+  DrawOneLine( "FHT1",   "K-Scat",   "Mst-Clr"  );
+  DrawOneLine( "FHT2",   "(BH2,K)",  "Clear"    );
   DrawOneLine( "TOF",    "CFT-Phi1", "L2-Req"   );
   DrawOneLine( "TOF-HT", "CFT-Phi2", "L2-Acc"   );
   DrawOneLine( "TOF-24", "CFT-Phi3", "PiID"     );

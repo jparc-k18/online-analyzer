@@ -53,8 +53,8 @@ const Int_t DetIdSDC3 = 107;
 const Int_t DetIdBFT  = 110;
 const Int_t DetIdSFT  = 111;
 const Int_t DetIdCFT  = 113;
-const Int_t DetIdFBT1 = 131;
-const Int_t DetIdFBT2 = 132;
+const Int_t DetIdFHT1 = 131;
+const Int_t DetIdFHT2 = 132;
 const Int_t DetIdBcOut  = 20;
 const Int_t DetIdSdcIn  = 30;
 const Int_t DetIdSdcOut = 40;
@@ -69,7 +69,7 @@ const Int_t NumOfLayersBC4    =  6;
 const Int_t NumOfPlaneSFT     =  4; // U, V, X, XP
 const Int_t NumOfLayersSFT    =  3; // U, V, X
 const Int_t NumOfLayersCFT    =  8;
-const Int_t NumOfLayersFBT    =  2;
+const Int_t NumOfLayersFHT    =  2;
 const Int_t NumOfLayersSDC1   =  6;
 const Int_t NumOfDimSDC2      =  2;
 const Int_t NumOfLayersSDC2   =  4;
@@ -128,16 +128,16 @@ const Int_t NumOfSegCFT[NumOfLayersCFT] = { NumOfSegCFT_UV1,
 					    NumOfSegCFT_PHI3,
 					    NumOfSegCFT_UV4,
 					    NumOfSegCFT_PHI4 };
-const Int_t NumOfSegFBT1          = 48;
-const Int_t NumOfSegFBT2          = 64;
+const Int_t NumOfSegFHT1          = 48;
+const Int_t NumOfSegFHT2          = 64;
 // VMEEASIROC Board
 const Int_t DetIdVEASIROC         = 116;
 const Int_t NumOfLayersVMEEASIROC = 95;
 const Int_t NumOfSegVMEEASIROC    = 64;
 
 // Tracker const
-const Int_t FBTOffset             = 200;
-const Int_t NumOfUDStructureFBT   = 2;
+const Int_t FHTOffset             = 200;
+const Int_t NumOfUDStructureFHT   = 2;
 // Old Detectors
 // E07 Detectors
 const Int_t DetIdFBH  =  4;

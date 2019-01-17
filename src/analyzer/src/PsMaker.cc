@@ -1261,73 +1261,73 @@ void PsMaker::create(TString& name)
     drawOneCanvas(id_list, par_list, false, false);
   }
 
-  // FBT1 ----------------------------------------------------------------
-  if(name == "FBT1"){
+  // FHT1 ----------------------------------------------------------------
+  if(name == "FHT1"){
     // TDC
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 1000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kTDC, NumOfSegFBT1+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kTDC, FBTOffset+NumOfSegFBT1+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kTDC, NumOfSegFBT1+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kTDC, FBTOffset+NumOfSegFBT1+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kTDC2D, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kTDC2D, FBTOffset+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kTDC2D, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kTDC2D, FBTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kTDC, NumOfSegFHT1+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kTDC, FHTOffset+NumOfSegFHT1+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kTDC, NumOfSegFHT1+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kTDC, FHTOffset+NumOfSegFHT1+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kTDC2D, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kTDC2D, FHTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kTDC2D, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kTDC2D, FHTOffset+1) );
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kADC, NumOfSegFBT1+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kADC, FBTOffset+NumOfSegFBT1+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kADC, NumOfSegFBT1+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kADC, FBTOffset+NumOfSegFBT1+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kADC2D, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kADC2D, FBTOffset+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kADC2D, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kADC2D, FBTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kADC, NumOfSegFHT1+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kADC, FHTOffset+NumOfSegFHT1+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kADC, NumOfSegFHT1+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kADC, FHTOffset+NumOfSegFHT1+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kADC2D, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kADC2D, FHTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kADC2D, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kADC2D, FHTOffset+1) );
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kHitPat, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kHitPat, FBTOffset+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kHitPat, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kHitPat, FBTOffset+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kMulti, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 0, kMulti, FBTOffset+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kMulti, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT1, 1, kMulti, FBTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kHitPat, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kHitPat, FHTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kHitPat, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kHitPat, FHTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kMulti, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 0, kMulti, FHTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kMulti, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT1, 1, kMulti, FHTOffset+1) );
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
   }
 
-  // FBT2 ----------------------------------------------------------------
-  if(name == "FBT2"){
+  // FHT2 ----------------------------------------------------------------
+  if(name == "FHT2"){
     // TDC
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 1000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kTDC, NumOfSegFBT2+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kTDC, FBTOffset+NumOfSegFBT2+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kTDC, NumOfSegFBT2+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kTDC, FBTOffset+NumOfSegFBT2+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kTDC2D, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kTDC2D, FBTOffset+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kTDC2D, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kTDC2D, FBTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kTDC, NumOfSegFHT2+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kTDC, FHTOffset+NumOfSegFHT2+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kTDC, NumOfSegFHT2+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kTDC, FHTOffset+NumOfSegFHT2+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kTDC2D, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kTDC2D, FHTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kTDC2D, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kTDC2D, FHTOffset+1) );
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kADC, NumOfSegFBT2+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kADC, FBTOffset+NumOfSegFBT2+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kADC, NumOfSegFBT2+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kADC, FBTOffset+NumOfSegFBT2+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kADC2D, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kADC2D, FBTOffset+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kADC2D, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kADC2D, FBTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kADC, NumOfSegFHT2+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kADC, FHTOffset+NumOfSegFHT2+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kADC, NumOfSegFHT2+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kADC, FHTOffset+NumOfSegFHT2+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kADC2D, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kADC2D, FHTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kADC2D, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kADC2D, FHTOffset+1) );
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kHitPat, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kHitPat, FBTOffset+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kHitPat, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kHitPat, FBTOffset+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kMulti, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 0, kMulti, FBTOffset+1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kMulti, 1) );
-    id_list.push_back( HistMaker::getUniqueID(kFBT2, 1, kMulti, FBTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kHitPat, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kHitPat, FHTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kHitPat, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kHitPat, FHTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kMulti, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 0, kMulti, FHTOffset+1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kMulti, 1) );
+    id_list.push_back( HistMaker::getUniqueID(kFHT2, 1, kMulti, FHTOffset+1) );
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log, "colz");
   }
   // TOF ----------------------------------------------------------------

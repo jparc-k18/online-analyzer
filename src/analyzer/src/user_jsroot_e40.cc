@@ -106,10 +106,10 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(gHist.createSDC1());
   gHttp.Register(gHist.createSAC());
   gHttp.Register(gHist.createSCH());
-  gHttp.Register(gHist.createFBT1());
+  gHttp.Register(gHist.createFHT1());
   gHttp.Register(gHist.createSDC2());
   gHttp.Register(gHist.createSDC3());
-  gHttp.Register(gHist.createFBT2());
+  gHttp.Register(gHist.createFHT2());
   gHttp.Register(gHist.createTOF());
   gHttp.Register(gHist.createTOF_HT());
   gHttp.Register(gHist.createLC());
@@ -151,20 +151,20 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::SCHTDC());
   gHttp.Register(http::SCHTOT());
   gHttp.Register(http::SCHHitMulti());
-  gHttp.Register(http::FBT1TDC());
-  gHttp.Register(http::FBT1TOT());
-  gHttp.Register(http::FBT1HitMulti());
+  gHttp.Register(http::FHT1TDC());
+  gHttp.Register(http::FHT1TOT());
+  gHttp.Register(http::FHT1HitMulti());
   // gHttp.Register(http::MsTTDC());
   gHttp.Register(http::SDC2TDCTOT());
   gHttp.Register(http::SDC2HitMulti());
   gHttp.Register(http::SDC3TDCTOT());
   gHttp.Register(http::SDC3HitMulti());
-  gHttp.Register(http::FBT2TDC());
-  gHttp.Register(http::FBT2TOT());
-  gHttp.Register(http::FBT2HitMulti());
+  gHttp.Register(http::FHT2TDC());
+  gHttp.Register(http::FHT2TOT());
+  gHttp.Register(http::FHT2HitMulti());
   gHttp.Register(http::TOFADC());
   gHttp.Register(http::TOFTDC());
-  gHttp.Register(http::TOFHT());
+  gHttp.Register(http::TOF_HT());
   gHttp.Register(http::LC());
   gHttp.Register(http::TriggerFlag());
   gHttp.Register(http::HitPattern());
@@ -193,7 +193,7 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::SdcInOutEfficiency());
   gHttp.Register(http::CFTEfficiency());
   gHttp.Register(http::Correlation());
-  gHttp.Register(http::CorrelationFBT());
+  gHttp.Register(http::CorrelationFHT());
   gHttp.Register(http::DAQ());
 
   for( Int_t i=0, n=hptr_array.size(); i<n; ++i ){
@@ -1353,44 +1353,44 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
-  // FBT1 -----------------------------------------------------------
+  // FHT1 -----------------------------------------------------------
   {
     // data type
-    static const int k_device   = gUnpacker.get_device_id("FBT1");
-    static const int k_leading  = gUnpacker.get_data_id("FBT1", "leading");
-    static const int k_trailing = gUnpacker.get_data_id("FBT1", "trailing");
+    static const int k_device   = gUnpacker.get_device_id("FHT1");
+    static const int k_leading  = gUnpacker.get_data_id("FHT1", "leading");
+    static const int k_trailing = gUnpacker.get_data_id("FHT1", "trailing");
 
     // TDC gate range
-    static const int tdc_min = gUser.GetParameter("FBT1_TDC", 0);
-    static const int tdc_max = gUser.GetParameter("FBT1_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("FHT1_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("FHT1_TDC", 1);
 
     // sequential id
-    for( int l=0; l<NumOfLayersFBT; ++l ){
-      for( int ud=0; ud<NumOfUDStructureFBT; ++ud ){
-	//          int fbt1_tdc_id     = gHist.getSequentialID(kFBT1, l, kTDC,    1+ ud*FBTOffset);
-	//          int fbt1_tot_id     = gHist.getSequentialID(kFBT1, l, kADC,    1+ ud*FBTOffset);
-	int fbt1_t_all_id   = gHist.getSequentialID(kFBT1, l, kTDC,
-						    NumOfSegFBT1+1+ ud*FBTOffset);
-	int fbt1_tot_all_id = gHist.getSequentialID(kFBT1, l, kADC,
-						    NumOfSegFBT1+1+ ud*FBTOffset);
-	int fbt1_hit_id     = gHist.getSequentialID(kFBT1, l, kHitPat, 1+ ud*FBTOffset);
-	int fbt1_mul_id     = gHist.getSequentialID(kFBT1, l, kMulti,  1+ ud*FBTOffset);
+    for( int l=0; l<NumOfLayersFHT; ++l ){
+      for( int ud=0; ud<NumOfUDStructureFHT; ++ud ){
+	//          int fht1_tdc_id     = gHist.getSequentialID(kFHT1, l, kTDC,    1+ ud*FHTOffset);
+	//          int fht1_tot_id     = gHist.getSequentialID(kFHT1, l, kADC,    1+ ud*FHTOffset);
+	int fht1_t_all_id   = gHist.getSequentialID(kFHT1, l, kTDC,
+						    NumOfSegFHT1+1+ ud*FHTOffset);
+	int fht1_tot_all_id = gHist.getSequentialID(kFHT1, l, kADC,
+						    NumOfSegFHT1+1+ ud*FHTOffset);
+	int fht1_hit_id     = gHist.getSequentialID(kFHT1, l, kHitPat, 1+ ud*FHTOffset);
+	int fht1_mul_id     = gHist.getSequentialID(kFHT1, l, kMulti,  1+ ud*FHTOffset);
 
-	int fbt1_t_2d_id   = gHist.getSequentialID(kFBT1, l, kTDC2D, 1+ ud*FBTOffset);
-	int fbt1_tot_2d_id = gHist.getSequentialID(kFBT1, l, kADC2D, 1+ ud*FBTOffset);
+	int fht1_t_2d_id   = gHist.getSequentialID(kFHT1, l, kTDC2D, 1+ ud*FHTOffset);
+	int fht1_tot_2d_id = gHist.getSequentialID(kFHT1, l, kADC2D, 1+ ud*FHTOffset);
 
 	int multiplicity  = 0;
 
-	for( int seg=0; seg<NumOfSegFBT1; ++seg ){
+	for( int seg=0; seg<NumOfSegFHT1; ++seg ){
 	  int nhit_l = gUnpacker.get_entries(k_device, l, seg, ud, k_leading);
 	  std::vector<int> vtdc;
 	  for(int m = 0; m<nhit_l; ++m){
 	    int tdc      = gUnpacker.get(k_device, l, seg, ud, k_leading,  m);
-	    hptr_array[fbt1_t_all_id]->Fill(tdc);
-	    hptr_array[fbt1_t_2d_id]->Fill(seg, tdc);
+	    hptr_array[fht1_t_all_id]->Fill(tdc);
+	    hptr_array[fht1_t_2d_id]->Fill(seg, tdc);
 	    if( tdc_min<tdc && tdc<tdc_max ){
 	      ++multiplicity;
-	      hptr_array[fbt1_hit_id]->Fill(seg);
+	      hptr_array[fht1_hit_id]->Fill(seg);
 	    }
 	    vtdc.push_back(tdc);
 	  }
@@ -1399,14 +1399,14 @@ process_event( void )
 	    int trailing = gUnpacker.get(k_device, l, seg, ud, k_trailing, m);
 	    if( nhit_l == nhit_t ){
 	      int tot      = vtdc[m] - trailing;
-	      hptr_array[fbt1_tot_all_id]->Fill(tot);
-	      hptr_array[fbt1_tot_2d_id]->Fill(seg, tot);
+	      hptr_array[fht1_tot_all_id]->Fill(tot);
+	      hptr_array[fht1_tot_2d_id]->Fill(seg, tot);
 	    }
 	  }
-	  // hptr_array[fbt1_tdc_id +i]->Fill(tdc);
-	  //  hptr_array[fbt1_tot_id +i]->Fill(tot);
+	  // hptr_array[fht1_tdc_id +i]->Fill(tdc);
+	  //  hptr_array[fht1_tot_id +i]->Fill(tot);
 	}
-	hptr_array[fbt1_mul_id]->Fill(multiplicity);
+	hptr_array[fht1_mul_id]->Fill(multiplicity);
       }
     }
 
@@ -1414,50 +1414,50 @@ process_event( void )
     // Debug, dump data relating this detector
     gUnpacker.dump_data_device(k_device);
 #endif
-  }//FBT1
+  }//FHT1
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
-  // FBT2 -----------------------------------------------------------
+  // FHT2 -----------------------------------------------------------
   {
     // data type
-    static const int k_device   = gUnpacker.get_device_id("FBT2");
-    static const int k_leading  = gUnpacker.get_data_id("FBT2", "leading");
-    static const int k_trailing = gUnpacker.get_data_id("FBT2", "trailing");
+    static const int k_device   = gUnpacker.get_device_id("FHT2");
+    static const int k_leading  = gUnpacker.get_data_id("FHT2", "leading");
+    static const int k_trailing = gUnpacker.get_data_id("FHT2", "trailing");
 
     // TDC gate range
-    static const int tdc_min = gUser.GetParameter("FBT2_TDC", 0);
-    static const int tdc_max = gUser.GetParameter("FBT2_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("FHT2_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("FHT2_TDC", 1);
 
     // sequential id
-    for( int l=0; l<NumOfLayersFBT; ++l ){
-      for( int ud=0; ud<NumOfUDStructureFBT; ++ud ){
-	//          int fbt2_tdc_id     = gHist.getSequentialID(kFBT2, l, kTDC,    1+ ud*FBTOffset);
-	//          int fbt2_tot_id     = gHist.getSequentialID(kFBT2, l, kADC,    1+ ud*FBTOffset);
-	int fbt2_t_all_id   = gHist.getSequentialID(kFBT2, l, kTDC,
-						    NumOfSegFBT2+1+ ud*FBTOffset);
-	int fbt2_tot_all_id = gHist.getSequentialID(kFBT2, l, kADC,
-						    NumOfSegFBT2+1+ ud*FBTOffset);
-	int fbt2_hit_id     = gHist.getSequentialID(kFBT2, l, kHitPat, 1+ ud*FBTOffset);
-	int fbt2_mul_id     = gHist.getSequentialID(kFBT2, l, kMulti,  1+ ud*FBTOffset);
+    for( int l=0; l<NumOfLayersFHT; ++l ){
+      for( int ud=0; ud<NumOfUDStructureFHT; ++ud ){
+	//          int fht2_tdc_id     = gHist.getSequentialID(kFHT2, l, kTDC,    1+ ud*FHTOffset);
+	//          int fht2_tot_id     = gHist.getSequentialID(kFHT2, l, kADC,    1+ ud*FHTOffset);
+	int fht2_t_all_id   = gHist.getSequentialID(kFHT2, l, kTDC,
+						    NumOfSegFHT2+1+ ud*FHTOffset);
+	int fht2_tot_all_id = gHist.getSequentialID(kFHT2, l, kADC,
+						    NumOfSegFHT2+1+ ud*FHTOffset);
+	int fht2_hit_id     = gHist.getSequentialID(kFHT2, l, kHitPat, 1+ ud*FHTOffset);
+	int fht2_mul_id     = gHist.getSequentialID(kFHT2, l, kMulti,  1+ ud*FHTOffset);
 
-	int fbt2_t_2d_id   = gHist.getSequentialID(kFBT2, l, kTDC2D, 1+ ud*FBTOffset);
-	int fbt2_tot_2d_id = gHist.getSequentialID(kFBT2, l, kADC2D, 1+ ud*FBTOffset);
+	int fht2_t_2d_id   = gHist.getSequentialID(kFHT2, l, kTDC2D, 1+ ud*FHTOffset);
+	int fht2_tot_2d_id = gHist.getSequentialID(kFHT2, l, kADC2D, 1+ ud*FHTOffset);
 
 	int multiplicity  = 0;
 
-	for( int seg=0; seg<NumOfSegFBT2; ++seg ){
+	for( int seg=0; seg<NumOfSegFHT2; ++seg ){
 	  int nhit_l = gUnpacker.get_entries(k_device, l, seg, ud, k_leading);
 	  std::vector<int> vtdc;
 	  for(int m = 0; m<nhit_l; ++m){
 	    int tdc      = gUnpacker.get(k_device, l, seg, ud, k_leading,  m);
-	    hptr_array[fbt2_t_all_id]->Fill(tdc);
-	    hptr_array[fbt2_t_2d_id]->Fill(seg, tdc);
+	    hptr_array[fht2_t_all_id]->Fill(tdc);
+	    hptr_array[fht2_t_2d_id]->Fill(seg, tdc);
 	    if( tdc_min<tdc && tdc<tdc_max ){
 	      ++multiplicity;
-	      hptr_array[fbt2_hit_id]->Fill(seg);
+	      hptr_array[fht2_hit_id]->Fill(seg);
 	    }
 	    vtdc.push_back(tdc);
 	  }
@@ -1466,14 +1466,14 @@ process_event( void )
 	    int trailing = gUnpacker.get(k_device, l, seg, ud, k_trailing, m);
 	    if( nhit_l == nhit_t ){
 	      int tot      = vtdc[m] - trailing;
-	      hptr_array[fbt2_tot_all_id]->Fill(tot);
-	      hptr_array[fbt2_tot_2d_id]->Fill(seg, tot);
+	      hptr_array[fht2_tot_all_id]->Fill(tot);
+	      hptr_array[fht2_tot_2d_id]->Fill(seg, tot);
 	    }
 	  }
-	  // hptr_array[fbt2_tdc_id +i]->Fill(tdc);
-	  //  hptr_array[fbt2_tot_id +i]->Fill(tot);
+	  // hptr_array[fht2_tdc_id +i]->Fill(tdc);
+	  //  hptr_array[fht2_tot_id +i]->Fill(tot);
 	}
-	hptr_array[fbt2_mul_id]->Fill(multiplicity);
+	hptr_array[fht2_mul_id]->Fill(multiplicity);
       }
     }
 
@@ -1481,7 +1481,7 @@ process_event( void )
     // Debug, dump data relating this detector
     gUnpacker.dump_data_device(k_device);
 #endif
-  }//FBT2
+  }//FHT2
 
   //------------------------------------------------------------------
   // TOF

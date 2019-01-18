@@ -19,7 +19,7 @@ enum DetectorType {
   kMsT, kMtx3D,
   // Detector unique ID in the KURAMA system
   kCFT,kBGO,kPiID,kSFT, kSDC1, kSAC, kSCH, kFHT1,
-  kSDC2, kSDC3, kFHT2, kTOF,kTOF_HT,kLC,
+  kSDC2, kSDC3, kFHT2, kTOF,kTOF_HT, kLAC, kLC,
   // VMEEASIROC unique ID
   kVMEEASIROC,
   // Old detectors E07
@@ -29,7 +29,7 @@ enum DetectorType {
   // Old detectors
   kBMW, kBAC_SAC, kSFV_SAC3, kGe, kPWO, kSP0,
   kBH2_E07, kBAC_E07, kSSD0, kSAC1, kKFAC,
-  kKIC, kHDC, kSDC4, kTOFMT, kLAC,
+  kKIC, kHDC, kSDC4, kTOFMT,
   // Others
   kTriggerFlag, kDAQ, kCorrelation,
   kCorrelation_catch, kMisc,
@@ -74,6 +74,13 @@ enum DataType{
   kCRM2D, kTFA2D, kPUR2D, kRST2D,
   sizeDataType,
   factorDataType = 1000
+};
+
+enum HistOffsetType{
+  kHistOffsetTypeZero,
+  //
+  kTOTcutOffset = 20,
+  sizeHistOffsetType,
 };
 
 TString getStr_FromEnum(const char* c);
@@ -145,6 +152,7 @@ public:
   TList* createFHT2( Bool_t flag_ps=true );
   TList* createTOF( Bool_t flag_ps=true );
   TList* createTOF_HT( Bool_t flag_ps=true );
+  TList* createLAC( Bool_t flag_ps=true );
   TList* createLC( Bool_t flag_ps=true );
   TList* createMsT( Bool_t flag_ps=true );
   TList* createMtx3D( Bool_t flag_ps=false );
@@ -179,7 +187,6 @@ public:
   TList* createSP0( Bool_t flag_ps=true );
   TList* createSDC4( Bool_t flag_ps=true );
   TList* createTOFMT( Bool_t flag_ps=true );
-  TList* createLAC( Bool_t flag_ps=true );
   TList* createTriggerFlag_E07( Bool_t flag_ps=true );
   TList* createPWO_E05( Bool_t flag_ps=true );
 

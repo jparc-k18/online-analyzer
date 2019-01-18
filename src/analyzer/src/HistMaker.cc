@@ -4318,6 +4318,7 @@ TList* HistMaker::createLAC( Bool_t flag_ps )
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
+#if 0
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -4339,6 +4340,7 @@ TList* HistMaker::createLAC( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
+#endif
 
   // TDC---------------------------------------------------------
   {

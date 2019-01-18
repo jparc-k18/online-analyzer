@@ -1480,26 +1480,29 @@ void PsMaker::create(TString& name)
   if(name == CONV_STRING(kLAC)){
     int base_id = 0;
     int index   = 0;
+#if 0
     // ADC
-    par_list[kXdiv] = 5; par_list[kYdiv] = 3;
+    par_list[kXdiv] = 4; par_list[kYdiv] = 4;
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 2000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
 
-    index = 0;
+    // ADC
     base_id = HistMaker::getUniqueID(kLAC, 0, kADC);
     for(int i = 0; i<NumOfSegLAC/2; ++i){id_list.push_back(base_id + index++);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 
     for(int i = 0; i<NumOfSegLAC/2; ++i){id_list.push_back(base_id + index++);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
+#endif
 
     // TDC
-    par_list[kXdiv] = 5; par_list[kYdiv] = 3;
+    par_list[kXdiv] = 4; par_list[kYdiv] = 4;
     par_list[kXrange_min] = 0; par_list[kXrange_max] = 4000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
     flag_log   = GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
 
+    // TDC
     index = 0;
     base_id = HistMaker::getUniqueID(kLAC, 0, kTDC);
     for(int i = 0; i<NumOfSegLAC/2; ++i){id_list.push_back(base_id + index++);}

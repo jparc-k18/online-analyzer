@@ -111,6 +111,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispFBT2"));
   tab_macro->Add(macro::Get("dispTOF"));
   tab_macro->Add(macro::Get("dispTOF_HT"));
+  tab_macro->Add(macro::Get("dispLAC"));
   tab_macro->Add(macro::Get("dispLC"));
   tab_macro->Add(macro::Get("dispTriggerFlag"));
   tab_macro->Add(macro::Get("dispHitPat"));
@@ -138,6 +139,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createFBT2());
   tab_hist->Add(gHist.createTOF());
   tab_hist->Add(gHist.createTOF_HT());
+  tab_hist->Add(gHist.createLAC());
   tab_hist->Add(gHist.createLC());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createTriggerFlag());
@@ -1823,6 +1825,53 @@ process_event( void )
     }
 
     hptr_array[tofmul_id]->Fill(multiplicity);
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+  //------------------------------------------------------------------
+  //LAC
+  //------------------------------------------------------------------
+  {
+    // data typep
+    static const int k_device = gUnpacker.get_device_id("LAC");
+    static const int k_u      = 0; // up
+    static const int k_tdc    = gUnpacker.get_data_id("LAC","tdc");
+
+    int lact_id   = gHist.getSequentialID(kLAC, 0, kTDC);
+    for(int seg = 0; seg<NumOfSegLAC; ++seg){
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      if(nhit != 0){
+	int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
+	if( tdc!=0 ){
+	  hptr_array[lact_id + seg]->Fill(tdc);
+	}
+      }
+    }
+
+    // Hit pattern && multiplicity
+    static const int lachit_id = gHist.getSequentialID(kLAC, 0, kHitPat);
+    static const int lacmul_id = gHist.getSequentialID(kLAC, 0, kMulti);
+    int multiplicity = 0;
+    for(int seg=0; seg<NumOfSegLAC; ++seg){
+      int nhit_lac = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      if(nhit_lac!=0){
+	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
+	if(tdc!=0){
+	  hptr_array[lachit_id]->Fill(seg);
+	  ++multiplicity;
+	}
+      }
+    }
+
+    hptr_array[lacmul_id]->Fill(multiplicity);
 
 #if 0
     // Debug, dump data relating this detector

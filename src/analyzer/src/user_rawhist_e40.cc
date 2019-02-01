@@ -43,7 +43,6 @@
 
 #define DEBUG    0
 #define FLAG_DAQ 1
-#define USE_copper 0
 
 namespace analyzer
 {
@@ -655,66 +654,6 @@ process_event( void )
 #endif
 
   // BC3 -------------------------------------------------------------
-#if USE_copper
-  //for copper
-  {
-    // data type
-    static const int k_device  = gUnpacker.get_device_id("BC3");
-    static const int k_tdc     = 0;
-
-    // TDC gate range
-    static const int tdc_min = gUser.GetParameter("BC3_TDC", 0);
-    static const int tdc_max = gUser.GetParameter("BC3_TDC", 1);
-
-    // sequential id
-    static const int bc3t_id    = gHist.getSequentialID(kBC3, 0, kTDC);
-    static const int bc3t1st_id = gHist.getSequentialID(kBC3, 0, kTDC2D);
-    static const int bc3hit_id  = gHist.getSequentialID(kBC3, 0, kHitPat);
-    static const int bc3mul_id  = gHist.getSequentialID(kBC3, 0, kMulti);
-    static const int bc3mulwt_id
-      = gHist.getSequentialID(kBC3, 0, kMulti, 1+NumOfLayersBC3);
-
-    // TDC & HitPat & Multi
-    for(int l = 0; l<NumOfLayersBC3; ++l){
-
-      int multiplicity    = 0;
-      int multiplicity_wt = 0;
-      for(int w = 0; w<NumOfWireBC3; ++w){
-	int nhit = gUnpacker.get_entries(k_device, l, 0, w, k_tdc);
-	if(nhit == 0){continue;}
-
-	// This wire fired at least one times.
-	++multiplicity;
-	//	hptr_array[bc3hit_id + l]->Fill(w, nhit);
-
-	bool flag_hit_wt = false;
-	int  tdc1st = 0;
-	for(int m = 0; m<nhit; ++m){
-       	  hptr_array[bc3hit_id + l]->Fill(w);
-	  int tdc = gUnpacker.get(k_device, l, 0, w, k_tdc, m);
-	  hptr_array[bc3t_id + l]->Fill(tdc);
-	  if( tdc1st<tdc ) tdc1st = tdc;
-	  // Drift time check
-	  if(tdc_min < tdc && tdc < tdc_max){
-	    flag_hit_wt = true;
-	  }
-	}
-
-	if( tdc1st!=0 ) hptr_array[bc3t1st_id + l]->Fill(tdc1st);
-	if(flag_hit_wt){ ++multiplicity_wt; }
-      }
-
-      hptr_array[bc3mul_id + l]->Fill(multiplicity);
-      hptr_array[bc3mulwt_id + l]->Fill(multiplicity_wt);
-    }
-
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }
-
-#else
   //for HULMHTDC
   std::vector< std::vector<int> > BC3HitCont(6);
   {
@@ -845,73 +784,11 @@ process_event( void )
 #endif
   }
 
-
-#endif
-
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
   // BC4 -------------------------------------------------------------
-#if USE_copper
-  //for copper
-  {
-    // data type
-    static const int k_device  = gUnpacker.get_device_id("BC4");
-    static const int k_tdc = 0;
-
-    // TDC gate range
-    static const int tdc_min = gUser.GetParameter("BC4_TDC", 0);
-    static const int tdc_max = gUser.GetParameter("BC4_TDC", 1);
-
-    // sequential id
-    static const int bc4t_id    = gHist.getSequentialID(kBC4, 0, kTDC);
-    static const int bc4t1st_id = gHist.getSequentialID(kBC4, 0, kTDC2D);
-    static const int bc4hit_id  = gHist.getSequentialID(kBC4, 0, kHitPat);
-    static const int bc4mul_id  = gHist.getSequentialID(kBC4, 0, kMulti);
-    static const int bc4mulwt_id
-      = gHist.getSequentialID(kBC4, 0, kMulti, 1+NumOfLayersBC4);
-
-    // TDC & HitPat & Multi
-    for(int l = 0; l<NumOfLayersBC4; ++l){
-
-      int multiplicity    = 0;
-      int multiplicity_wt = 0;
-      for(int w = 0; w<NumOfWireBC4; ++w){
-	int nhit = gUnpacker.get_entries(k_device, l, 0, w, k_tdc);
-	if(nhit == 0){continue;}
-
-	// This wire fired at least one times.
-	++multiplicity;
-	//	hptr_array[bc4hit_id + l]->Fill(w, nhit);
-
-	bool flag_hit_wt = false;
-	int  tdc1st = 0;
-	for(int m = 0; m<nhit; ++m){
-	  hptr_array[bc4hit_id + l]->Fill(w);
-	  int tdc = gUnpacker.get(k_device, l, 0, w, k_tdc, m);
-	  hptr_array[bc4t_id + l]->Fill(tdc);
-	  if( tdc1st<tdc ) tdc1st = tdc;
-	  // Drift time check
-	  if(tdc_min < tdc && tdc < tdc_max){
-	    flag_hit_wt = true;
-	  }
-	}
-
-	if( tdc1st!=0 ) hptr_array[bc4t1st_id + l]->Fill(tdc1st);
-	if(flag_hit_wt){ ++multiplicity_wt; }
-      }
-
-      hptr_array[bc4mul_id + l]->Fill(multiplicity);
-      hptr_array[bc4mulwt_id + l]->Fill(multiplicity_wt);
-    }
-
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }
-#else
   //for HULMHTDC
   std::vector< std::vector<int> > BC4HitCont(6);
   {
@@ -1041,8 +918,6 @@ process_event( void )
     gUnpacker.dump_data_device(k_device);
 #endif
   }
-
-#endif
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
@@ -1212,67 +1087,7 @@ process_event( void )
 #endif
 
   // SDC1 ------------------------------------------------------------
-#if USE_copper
-//for copper
-  {
-    // data type
-    static const int k_device = gUnpacker.get_device_id("SDC1");
-    static const int k_tdc    = 0;
 
-    // TDC gate range
-    static const int tdc_min = gUser.GetParameter("SDC1_TDC", 0);
-    static const int tdc_max = gUser.GetParameter("SDC1_TDC", 1);
-
-    // sequential id
-    static const int sdc1t_id    = gHist.getSequentialID(kSDC1, 0, kTDC, 1);
-    static const int sdc1t1st_id = gHist.getSequentialID(kSDC1, 0, kTDC2D, 1);
-    static const int sdc1hit_id  = gHist.getSequentialID(kSDC1, 0, kHitPat, 1);
-    static const int sdc1mul_id  = gHist.getSequentialID(kSDC1, 0, kMulti, 1);
-    static const int sdc1mulwt_id
-      = gHist.getSequentialID(kSDC1, 0, kMulti, 1+NumOfLayersSDC1);
-
-    // TDC & HitPat & Multi
-    for(int l = 0; l<NumOfLayersSDC1; ++l){
-      int multiplicity    = 0;
-      int multiplicity_wt = 0;
-      for(int w = 0; w<NumOfWireSDC1; ++w){
-	int nhit = gUnpacker.get_entries(k_device, l, 0, w, k_tdc);
-	if( nhit==0 ) continue;
-
-	// This wire fired at least one times.
-	++multiplicity;
-	// hptr_array[sdc1hit_id + l]->Fill(w, nhit);
-
-	bool flag_hit_wt = false;
-	int  tdc1st = 0;
-	for( int m=0; m<nhit; ++m ){
-	  int tdc = gUnpacker.get(k_device, l, 0, w, k_tdc, m);
-	  hptr_array[sdc1t_id + l]->Fill(tdc);
-	  if( tdc1st<tdc ) tdc1st = tdc;
-
-	  // Drift time check
-	  if( tdc_min<tdc && tdc<tdc_max ){
-	    flag_hit_wt = true;
-	  }
-	}
-
-	if( tdc1st!=0 ) hptr_array[sdc1t1st_id + l]->Fill(tdc1st);
-	if( flag_hit_wt ){
-	  ++multiplicity_wt;
-	  hptr_array[sdc1hit_id + l]->Fill( w );
-	}
-      }
-
-      hptr_array[sdc1mul_id + l]->Fill(multiplicity);
-      hptr_array[sdc1mulwt_id + l]->Fill(multiplicity_wt);
-    }
-
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device,0);
-#endif
-  }
-#else
   std::vector< std::vector<int> > SDC1HitCont(6);
   {
     // data type
@@ -1401,8 +1216,6 @@ process_event( void )
     gUnpacker.dump_data_device(k_device);
 #endif
   }
-
-#endif
 
 
 #if DEBUG

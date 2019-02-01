@@ -1,4 +1,8 @@
-// -*- C++ -*-
+/**
+ *  file: TrackHit.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef TRACK_HIT_HH
 #define TRACK_HIT_HH
@@ -6,12 +10,12 @@
 #include "DCLTrackHit.hh"
 #include "ThreeVector.hh"
 
-#include <TObject.h>
+#include <cstddef>
 
 class DCLocalTrack;
 
 //______________________________________________________________________________
-class TrackHit : public TObject
+class TrackHit
 {
 public:
   explicit TrackHit( DCLTrackHit *hit );
@@ -25,28 +29,24 @@ private:
   DCLTrackHit *m_dcltrack_hit;
   ThreeVector  m_cal_global_mom;
   ThreeVector  m_cal_global_pos;
-  Double_t     m_cal_local_pos;
+  double       m_cal_local_pos;
 
 public:
-  Bool_t             IsHoneycomb( void ) const { return m_dcltrack_hit->IsHoneycomb(); }
-  void               SetCalGMom( const ThreeVector& mom ) { m_cal_global_mom = mom; }
-  void               SetCalGPos( const ThreeVector& pos ) { m_cal_global_pos = pos; }
-  void               SetCalLPos( Double_t pos )           { m_cal_local_pos=pos; }
-  DCLTrackHit*       GetHit( void ) const { return m_dcltrack_hit; }
-  Double_t           GetWirePosition( void ) const { return m_dcltrack_hit->GetWirePosition(); }
-  Int_t              GetLayer( void )       const { return m_dcltrack_hit->GetLayer(); }
-  Double_t           GetLocalHitPos( void ) const;
+  bool               IsHoneycomb( void ) const { return m_dcltrack_hit->IsHoneycomb(); }
+  void               SetCalGMom( const ThreeVector &mom ) { m_cal_global_mom = mom; }
+  void               SetCalGPos( const ThreeVector &pos ) { m_cal_global_pos = pos; }
+  void               SetCalLPos( double pos )             { m_cal_local_pos=pos; }
+  DCLTrackHit*       GetHit( void )                       { return m_dcltrack_hit; }
+  double             GetWirePosition( void ) const { return m_dcltrack_hit->GetWirePosition(); }
+  int                GetLayer( void )       const { return m_dcltrack_hit->GetLayer(); }
+  double             GetLocalHitPos( void ) const;
   const ThreeVector& GetCalGPos( void )     const { return m_cal_global_pos; }
-  Double_t           GetCalLPos( void )     const { return m_cal_local_pos; }
-  Double_t           GetResidual( void )    const;
-  Double_t           GetResolution( void )  const { return m_dcltrack_hit->GetResolution(); }
-  Double_t           GetTiltAngle( void )   const;
-  DCLTrackHit*       GetDCLTrack( void ) const { return m_dcltrack_hit; }
-  Bool_t             ReCalc( Bool_t applyRecursively=false );
-  // for SSD
-  void               SetKaonFlag( void ){ m_dcltrack_hit->JoinKaonTrack(); }
-
-  ClassDef(TrackHit,0);
+  double             GetCalLPos( void )     const { return m_cal_local_pos; }
+  double             GetResidual( void )    const;
+  double             GetResolution( void )  const { return m_dcltrack_hit->GetResolution(); }
+  double             GetTiltAngle( void )   const;
+  DCLTrackHit*       GetDCLTrack( void ){ return m_dcltrack_hit; }
+  bool               ReCalc( bool applyRecursively=false );
 };
 
 #endif

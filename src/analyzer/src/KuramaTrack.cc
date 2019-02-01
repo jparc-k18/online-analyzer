@@ -1,9 +1,14 @@
-// -*- C++ -*-
+/**
+ *  file: KuramaTrack.cc
+ *  date: 2017.04.10
+ *
+ */
+
+#include "KuramaTrack.hh"
 
 #include <cstring>
 #include <iomanip>
 #include <iostream>
-#include <iterator>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -14,31 +19,28 @@
 #include "DCAnalyzer.hh"
 #include "DCGeomMan.hh"
 #include "DCLocalTrack.hh"
-#include "DebugCounter.hh"
-#include "FuncName.hh"
-#include "KuramaTrack.hh"
 #include "MathTools.hh"
 #include "PrintHelper.hh"
 #include "TrackHit.hh"
 
-ClassImp(KuramaTrack);
-
 namespace
 {
+  const std::string& class_name("KuramaTrack");
   const DCGeomMan& gGeom = DCGeomMan::GetInstance();
-  // const Int_t& IdTOF   = gGeom.DetectorId("TOF");
-  const Int_t  MaxIteraction = 100;
-  const Double_t InitialChiSqr = 1.e+10;
-  const Double_t MaxChiSqr     = 1.e+2;
-  const Double_t MinDeltaChiSqrR = 0.0002;
+  // const int& IdTOF   = gGeom.DetectorId("TOF");
+  const int& IdTOFUX = gGeom.DetectorId("TOF-UX");
+  const int& IdTOFDX = gGeom.DetectorId("TOF-DX");
+  const int    MaxIteraction = 100;
+  const double InitialChiSqr = 1.e+10;
+  const double MaxChiSqr     = 1.e+2;
+  const double MinDeltaChiSqrR = 0.0002;
 }
 
-#define WARNOUT 1
+#define WARNOUT 0
 
 //______________________________________________________________________________
 KuramaTrack::KuramaTrack( DCLocalTrack *track_in, DCLocalTrack *track_out )
-  : TObject(),
-    m_status( kInit ),
+  : m_status( kInit ),
     m_track_in( track_in ),
     m_track_out( track_out ),
     m_tof_seg( -1 ),
@@ -51,8 +53,7 @@ KuramaTrack::KuramaTrack( DCLocalTrack *track_in, DCLocalTrack *track_out )
     m_path_length_total( 0. ),
     m_tof_pos( ThreeVector( 0., 0., 0. ) ),
     m_tof_mom( ThreeVector( 0., 0., 0. ) ),
-    m_gfastatus( true ),
-    m_ssd_seg(NumOfLayersSsdIn)
+    m_gfastatus( true )
 {
   s_status[kInit]                = "Initialized";
   s_status[kPassed]              = "Passed";
@@ -63,28 +64,34 @@ KuramaTrack::KuramaTrack( DCLocalTrack *track_in, DCLocalTrack *track_out )
   s_status[kFailedSave]          = "Failed to Save";
   s_status[kFatal]               = "Fatal";
   FillHitArray();
-  debug::ObjectCounter::Increase(ClassName());
+  debug::ObjectCounter::increase(class_name);
 }
 
 //______________________________________________________________________________
 KuramaTrack::~KuramaTrack( void )
 {
   ClearHitArray();
-  debug::ObjectCounter::Decrease(ClassName());
+  debug::ObjectCounter::decrease(class_name);
 }
 
 //______________________________________________________________________________
 TrackHit*
-KuramaTrack::GetHit( Int_t i ) const
+KuramaTrack::GetHit( std::size_t nth ) const
 {
-  return m_hit_array.at(i);
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+  if( nth<m_hit_array.size() )
+    return m_hit_array[nth];
+  else
+    return 0;
 }
 
 //______________________________________________________________________________
 TrackHit*
-KuramaTrack::GetHitOfLayerNumber( Int_t lnum ) const
+KuramaTrack::GetHitOfLayerNumber( int lnum ) const
 {
-  for( Int_t i=0, n=m_hit_array.size(); i<n; ++i ){
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+  std::size_t nh = m_hit_array.size();
+  for( std::size_t i=0; i<nh; ++i ){
     if( m_hit_array[i]->GetLayer()==lnum )
       return m_hit_array[i];
   }
@@ -95,21 +102,20 @@ KuramaTrack::GetHitOfLayerNumber( Int_t lnum ) const
 void
 KuramaTrack::FillHitArray( void )
 {
-  static const Int_t IdTOFUX = gGeom.GetDetectorId("TOF-UX");
-  static const Int_t IdTOFDX = gGeom.GetDetectorId("TOF-DX");
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
 
-  Int_t nIn  = m_track_in->GetNHit();
-  Int_t nOut = m_track_out->GetNHit();
+  std::size_t nIn  = m_track_in->GetNHit();
+  std::size_t nOut = m_track_out->GetNHit();
   ClearHitArray();
   m_hit_array.reserve( nIn+nOut );
 
-  for( Int_t i=0; i<nIn; ++i ){
+  for( std::size_t i=0; i<nIn; ++i ){
     DCLTrackHit *hit  = m_track_in->GetHit( i );
     TrackHit    *thit = new TrackHit( hit );
     m_hit_array.push_back( thit );
   }
 
-  for( Int_t i=0; i<nOut; ++i ){
+  for( std::size_t i=0; i<nOut; ++i ){
     DCLTrackHit *hit  = m_track_out->GetHit( i );
     TrackHit    *thit = new TrackHit( hit );
     m_hit_array.push_back( thit );
@@ -125,22 +131,25 @@ KuramaTrack::FillHitArray( void )
 void
 KuramaTrack::ClearHitArray( void )
 {
-  Int_t nh = m_hit_array.size();
-  for( Int_t i=nh-1; i>=0; --i ){
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+  int nh = m_hit_array.size();
+  for( int i=nh-1; i>=0; --i ){
     delete m_hit_array[i];
   }
   m_hit_array.clear();
 }
 
 //______________________________________________________________________________
-Bool_t
-KuramaTrack::ReCalc( Bool_t applyRecursively )
+bool
+KuramaTrack::ReCalc( bool applyRecursively )
 {
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
   if( applyRecursively ){
     m_track_in->ReCalc(applyRecursively);
     m_track_out->ReCalc(applyRecursively);
-    //    Int_t nh=m_hit_array.size();
-    //    for( Int_t i=0; i<nh; ++i ){
+    //    int nh=m_hit_array.size();
+    //    for( int i=0; i<nh; ++i ){
     //      m_hit_array[i]->ReCalc(applyRecursively);
     //    }
   }
@@ -150,60 +159,62 @@ KuramaTrack::ReCalc( Bool_t applyRecursively )
 }
 
 //______________________________________________________________________________
-Bool_t
+bool
 KuramaTrack::DoFit( void )
 {
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
   m_status = kInit;
 
   if( m_initial_momentum<0 ){
-    hddaq::cout << "#E " << FUNC_NAME << " initial momentum must be positive"
-		<< m_initial_momentum << std::endl;
+    hddaq::cout << "#E " << func_name << " initial momentum must be positive"
+  		<< m_initial_momentum << std::endl;
     m_status = kFatal;
     return false;
   }
 
-  static const ThreeVector gTof = gGeom.GetGlobalPosition( "VTOF" );
-  const Double_t       xOut   = m_track_out->GetX( gTof.z() );
-  const Double_t       yOut   = m_track_out->GetY( gTof.z() );
+  static const ThreeVector gTof = gGeom.GetGlobalPosition( "TOF" );
+  const double       xOut   = m_track_out->GetX( gTof.z() );
+  const double       yOut   = m_track_out->GetY( gTof.z() );
   const ThreeVector& posOut = ThreeVector( xOut, yOut, gTof.z() );
-  const Double_t       uOut   = m_track_out->GetU0();
-  const Double_t       vOut   = m_track_out->GetV0();
-  const Double_t       pzOut  = m_initial_momentum/TMath::Sqrt( 1.+uOut*uOut+vOut*vOut );
+  const double       uOut   = m_track_out->GetU0();
+  const double       vOut   = m_track_out->GetV0();
+  const double       pzOut  = m_initial_momentum/std::sqrt( 1.+uOut*uOut+vOut*vOut );
   const ThreeVector& momOut = ThreeVector( pzOut*uOut, pzOut*vOut, pzOut );
 
   RKCordParameter     iniCord( posOut, momOut );
   RKCordParameter     prevCord;
   RKHitPointContainer preHPntCont;
 
-  Double_t chiSqr     = InitialChiSqr;
-  Double_t prevChiSqr = InitialChiSqr;
-  Double_t estDChisqr = InitialChiSqr;
-  Double_t lambdaCri  = 0.01;
-  Double_t dmp = 0.;
+  double chiSqr     = InitialChiSqr;
+  double prevChiSqr = InitialChiSqr;
+  double estDChisqr = InitialChiSqr;
+  double lambdaCri  = 0.01;
+  double dmp = 0.;
 
-  m_HitPointCont = RungeKutta::MakeHPContainer();
+  m_HitPointCont = RK::MakeHPContainer();
   RKHitPointContainer prevHPntCont;
 
-  Int_t iItr = 0, iItrEf = 1;
+  int iItr = 0, iItrEf = 1;
 
   while( ++iItr<MaxIteraction ){
-    m_status = (RKstatus)RungeKutta::Trace( iniCord, m_HitPointCont );
+    m_status = (RKstatus)RK::Trace( iniCord, m_HitPointCont );
     if( m_status != kPassed ){
 #ifdef WARNOUT
-      // hddaq::cerr << "#E " << FUNC_NAME << " "
+      // hddaq::cerr << "#E " << func_name << " "
       // 		<< "something is wrong : " << iItr << std::endl;
 #endif
       break;
     }
 
     chiSqr = CalcChiSqr( m_HitPointCont );
-    Double_t dChiSqr  = chiSqr - prevChiSqr;
-    Double_t dChiSqrR = dChiSqr/prevChiSqr;
-    Double_t Rchisqr  = dChiSqr/estDChisqr;
+    double dChiSqr  = chiSqr - prevChiSqr;
+    double dChiSqrR = dChiSqr/prevChiSqr;
+    double Rchisqr  = dChiSqr/estDChisqr;
 #if 0
     {
       PrintHelper helper( 3, std::ios::scientific );
-      hddaq::cout << FUNC_NAME << ": #"
+      hddaq::cout << func_name << ": #"
 		  << std::setw(3) << iItr << " ( "
 		  << std::setw(2) << iItrEf << " )"
 		  << " chi=" << std::setw(10) << chiSqr;
@@ -224,7 +235,7 @@ KuramaTrack::DoFit( void )
     PrintCalcHits( m_HitPointCont );
 #endif
 
-    if( TMath::Abs( dChiSqrR )<MinDeltaChiSqrR &&
+    if( std::abs( dChiSqrR )<MinDeltaChiSqrR &&
 	( chiSqr<MaxChiSqr || Rchisqr>1. ) ){
       // Converged
       m_status = kPassed;
@@ -263,7 +274,7 @@ KuramaTrack::DoFit( void )
     else {
       if( dmp==0. ) dmp = lambdaCri;
       else {
-	Double_t uf=2.;
+	double uf=2.;
 	if( 2.-Rchisqr > 2. ) uf=2.-Rchisqr;
 	dmp *= uf;
       }
@@ -273,7 +284,7 @@ KuramaTrack::DoFit( void )
 
     if( !GuessNextParameters( m_HitPointCont, iniCord,
 			      estDChisqr, lambdaCri, dmp ) ){
-      hddaq::cerr << "#W " << FUNC_NAME << " "
+      hddaq::cerr << "#W " << func_name << " "
 		  << "cannot guess next paramters" << std::endl;
       m_status = kFailedGuess;
       return false;
@@ -285,7 +296,7 @@ KuramaTrack::DoFit( void )
   m_nef_iteration = iItrEf;
   m_chisqr = chiSqr;
 
-  if( !RungeKutta::TraceToLast( m_HitPointCont ) )
+  if( !RK::TraceToLast( m_HitPointCont ) )
     m_status = kFailedTraceLast;
 
   if( !SaveCalcPosition( m_HitPointCont ) ||
@@ -293,7 +304,7 @@ KuramaTrack::DoFit( void )
     m_status = kFailedSave;
 
 #if 0
-  Print( "in "+FUNC_NAME );
+  Print( "in "+func_name );
 #endif
 
   if( m_status != kPassed )
@@ -303,44 +314,46 @@ KuramaTrack::DoFit( void )
 }
 
 //______________________________________________________________________________
-Bool_t
+bool
 KuramaTrack::DoFit( RKCordParameter iniCord )
 {
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
   //  ClearHitArray();
   //  FillHitArray();
 
   RKCordParameter prevCord;
   RKHitPointContainer preHPntCont;
 
-  Double_t chiSqr     = InitialChiSqr;
-  Double_t prevChiSqr = InitialChiSqr;
-  Double_t estDChisqr = InitialChiSqr;
-  Double_t lambdaCri  = 0.01;
-  Double_t dmp = 0.;
+  double chiSqr     = InitialChiSqr;
+  double prevChiSqr = InitialChiSqr;
+  double estDChisqr = InitialChiSqr;
+  double lambdaCri  = 0.01;
+  double dmp = 0.;
   m_status = kInit;
 
-  m_HitPointCont = RungeKutta::MakeHPContainer();
+  m_HitPointCont = RK::MakeHPContainer();
   RKHitPointContainer prevHPntCont;
 
-  Int_t iItr=0, iItrEf=1;
+  int iItr=0, iItrEf=1;
 
   while( ++iItr < MaxIteraction ){
-    if( !RungeKutta::Trace( iniCord, m_HitPointCont ) ){
+    if( !RK::Trace( iniCord, m_HitPointCont ) ){
       // Error
 #ifdef WARNOUT
-      //hddaq::cerr << FUNC_NAME << ": Error in RungeKutta::Trace. " << std::endl;
+      //hddaq::cerr << func_name << ": Error in RK::Trace. " << std::endl;
 #endif
       break;
     }
 
     chiSqr = CalcChiSqr( m_HitPointCont );
-    Double_t dChiSqr  = chiSqr-prevChiSqr;
-    Double_t dChiSqrR = dChiSqr/prevChiSqr;
-    Double_t Rchisqr  = dChiSqr/estDChisqr;
+    double dChiSqr  = chiSqr-prevChiSqr;
+    double dChiSqrR = dChiSqr/prevChiSqr;
+    double Rchisqr  = dChiSqr/estDChisqr;
 #if 0
     {
       PrintHelper helper( 3, std::ios::scientific );
-      hddaq::cout << FUNC_NAME << ": #"
+      hddaq::cout << func_name << ": #"
 		  << std::setw(3) << iItr << " ( "
 		  << std::setw(2) << iItrEf << " )"
 		  << " chi=" << std::setw(10) << chiSqr;
@@ -357,7 +370,7 @@ KuramaTrack::DoFit( RKCordParameter iniCord )
     PrintCalcHits( m_HitPointCont );
 #endif
 
-    if( TMath::Abs( dChiSqrR )<MinDeltaChiSqrR &&
+    if( std::abs( dChiSqrR )<MinDeltaChiSqrR &&
 	( chiSqr<MaxChiSqr || Rchisqr>1. ) ){
       // Converged
       m_status = kPassed;
@@ -396,7 +409,7 @@ KuramaTrack::DoFit( RKCordParameter iniCord )
     else {
       if( dmp==0.0 ) dmp=lambdaCri;
       else {
-	Double_t uf=2.;
+	double uf=2.;
 	if( 2.-Rchisqr > 2. ) uf=2.-Rchisqr;
 	dmp *= uf;
       }
@@ -414,7 +427,7 @@ KuramaTrack::DoFit( RKCordParameter iniCord )
   m_nef_iteration = iItrEf;
   m_chisqr        = chiSqr;
 
-  if( !RungeKutta::TraceToLast( m_HitPointCont ) )
+  if( !RK::TraceToLast( m_HitPointCont ) )
     m_status = kFailedTraceLast;
 
   if( !SaveCalcPosition( m_HitPointCont ) ||
@@ -422,7 +435,7 @@ KuramaTrack::DoFit( RKCordParameter iniCord )
     m_status = kFailedSave;
 
 #if 0
-  Print( "in "+FUNC_NAME );
+  Print( "in "+func_name );
 #endif
 
   if( m_status != kPassed )
@@ -432,97 +445,92 @@ KuramaTrack::DoFit( RKCordParameter iniCord )
 }
 
 //______________________________________________________________________________
-Double_t
+double
 KuramaTrack::CalcChiSqr( const RKHitPointContainer &hpCont ) const
 {
-  Int_t nh = m_hit_array.size();
+  std::size_t nh = m_hit_array.size();
 
-  Double_t chisqr=0.0;
-  Int_t n=0;
+  double chisqr=0.0;
+  int n=0;
 
-  for( Int_t i=0; i<nh; ++i ){
+  for( std::size_t i=0; i<nh; ++i ){
     TrackHit *thp = m_hit_array[i];
     if(!thp) continue;
-    Int_t    lnum = thp->GetLayer();
+    int    lnum = thp->GetLayer();
     const RKcalcHitPoint& calhp = hpCont.HitPointOfLayer( lnum );
     const ThreeVector& mom = calhp.MomentumInGlobal();
-    Double_t w = gGeom.GetResolution(lnum);
+    double w = gGeom.GetResolution(lnum);
     w = 1./(w*w);
-    Double_t hitpos = thp->GetLocalHitPos();
-    Double_t calpos = calhp.PositionInLocal();
-    Double_t a = thp->GetTiltAngle()*math::Deg2Rad();
-    Double_t u = mom.x()/mom.z();
-    Double_t v = mom.y()/mom.z();
-    Double_t dsdz = u*TMath::Cos(a)+v*TMath::Sin(a);
-    Double_t coss = thp->IsHoneycomb() ? TMath::Cos( TMath::ATan(dsdz) ) : 1.;
-    Double_t wp   = thp->GetWirePosition();
-    Double_t ss   = wp+(hitpos-wp)/coss;
-    Double_t res  = (ss-calpos)*coss;
+    double hitpos = thp->GetLocalHitPos();
+    double calpos = calhp.PositionInLocal();
+    double a = thp->GetTiltAngle()*math::Deg2Rad();
+    double u = mom.x()/mom.z();
+    double v = mom.y()/mom.z();
+    double dsdz = u*std::cos(a)+v*std::sin(a);
+    double coss = thp->IsHoneycomb() ? std::cos( std::atan(dsdz) ) : 1.;
+    double wp   = thp->GetWirePosition();
+    double ss   = wp+(hitpos-wp)/coss;
+    double res  = (ss-calpos)*coss;
     chisqr += w*res*res;
     ++n;
   }
-  chisqr /= (Double_t)GetNDF();
+  chisqr /= double(n-5);
   return chisqr;
 }
 
 //______________________________________________________________________________
-Int_t
-KuramaTrack::GetNDF( void ) const
-{
-  return m_hit_array.size()-5;
-}
-
-//______________________________________________________________________________
-Bool_t
+bool
 KuramaTrack::GuessNextParameters( const RKHitPointContainer& hpCont,
-				  RKCordParameter& Cord, Double_t& estDeltaChisqr,
-				  Double_t& lambdaCri, Double_t dmp ) const
+				  RKCordParameter& Cord, double& estDeltaChisqr,
+				  double& lambdaCri, double dmp ) const
 {
-  Double_t *a2[10], a2c[10*5], *v[5],  vc[5*5];
-  Double_t *a3[5],  a3c[5*5],  *v3[5], v3c[5*5], w3[5];
-  Double_t dm[5];
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
 
-  for( Int_t i=0; i<10; ++i ){
+  double *a2[10], a2c[10*5], *v[5],  vc[5*5];
+  double *a3[5],  a3c[5*5],  *v3[5], v3c[5*5], w3[5];
+  double dm[5];
+
+  for( int i=0; i<10; ++i ){
     a2[i] =& a2c[5*i];
   }
-  for( Int_t i=0; i<5; ++i ){
+  for( int i=0; i<5; ++i ){
     v[i]=&vc[5*i]; a3[i]=&a3c[5*i]; v3[i]=&v3c[5*i];
   }
 
-  Double_t cb2[10], wSvd[5], dcb[5];
-  Double_t wv[5];   // working space for SVD functions
+  double cb2[10], wSvd[5], dcb[5];
+  double wv[5];   // working space for SVD functions
 
-  Int_t nh = m_hit_array.size();
+  std::size_t nh = m_hit_array.size();
 
-  for( Int_t i=0; i<10; ++i ){
+  for( int i=0; i<10; ++i ){
     cb2[i]=0.0;
-    for( Int_t j=0; j<5; ++j ) a2[i][j]=0.0;
+    for( int j=0; j<5; ++j ) a2[i][j]=0.0;
   }
 
-  Int_t nth=0;
-  for( Int_t i=0; i<nh; ++i ){
+  int nth=0;
+  for( std::size_t i=0; i<nh; ++i ){
     TrackHit *thp = m_hit_array[i];
     if(!thp) continue;
-    Int_t lnum = thp->GetLayer();
+    int lnum = thp->GetLayer();
     const RKcalcHitPoint &calhp = hpCont.HitPointOfLayer( lnum );
     const ThreeVector&    mom   = calhp.MomentumInGlobal();
-    Double_t hitpos = thp->GetLocalHitPos();
-    Double_t calpos = calhp.PositionInLocal();
-    Double_t a = thp->GetTiltAngle()*math::Deg2Rad();
-    Double_t u = mom.x()/mom.z();
-    Double_t v = mom.y()/mom.z();
-    Double_t dsdz = u*TMath::Cos(a)+v*TMath::Sin(a);
-    Double_t coss = thp->IsHoneycomb() ? TMath::Cos( TMath::ATan(dsdz) ) : 1.;
-    Double_t wp   = thp->GetWirePosition();
-    Double_t ss   = wp+(hitpos-wp)/coss;
-    Double_t cb   = ss-calpos;
-    // Double_t cb = thp->GetLocalHitPos()-calhp.PositionInLocal();
-    // Double_t cb = thp->GetResidual();
-    Double_t wt = gGeom.GetResolution( lnum );
+    double hitpos = thp->GetLocalHitPos();
+    double calpos = calhp.PositionInLocal();
+    double a = thp->GetTiltAngle()*math::Deg2Rad();
+    double u = mom.x()/mom.z();
+    double v = mom.y()/mom.z();
+    double dsdz = u*std::cos(a)+v*std::sin(a);
+    double coss = thp->IsHoneycomb() ? std::cos( std::atan(dsdz) ) : 1.;
+    double wp   = thp->GetWirePosition();
+    double ss   = wp+(hitpos-wp)/coss;
+    double cb   = ss-calpos;
+    // double cb = thp->GetLocalHitPos()-calhp.PositionInLocal();
+    // double cb = thp->GetResidual();
+    double wt = gGeom.GetResolution( lnum );
     wt = 1./(wt*wt);
 
-    Double_t cfx=calhp.coefX(), cfy=calhp.coefY();
-    Double_t cfu=calhp.coefU(), cfv=calhp.coefV(), cfq=calhp.coefQ();
+    double cfx=calhp.coefX(), cfy=calhp.coefY();
+    double cfu=calhp.coefU(), cfv=calhp.coefV(), cfq=calhp.coefQ();
     ++nth;
 
     cb2[0] += 2.*cfx*wt*cb;  cb2[1] += 2.*cfy*wt*cb;  cb2[2] += 2.*cfu*wt*cb;
@@ -559,25 +567,25 @@ KuramaTrack::GuessNextParameters( const RKHitPointContainer& hpCont,
     a2[4][4] += 2.*wt*(cfq*cfq - cb*calhp.coefQQ());
   }
 
-  for( Int_t i=0; i<5; ++i )
-    for( Int_t j=0; j<5; ++j )
+  for( int i=0; i<5; ++i )
+    for( int j=0; j<5; ++j )
       a3[i][j]=a2[i][j];
 
   // Levenberg-Marqardt method
-  Double_t lambda = TMath::Sqrt( dmp );
+  double lambda = std::sqrt( dmp );
   //  a2[5][0]=a2[6][1]=a2[7][2]=a2[8][3]=a2[9][4]=lambda;
 
-  for( Int_t ii=0; ii<5; ++ii ){
+  for( int ii=0; ii<5; ++ii ){
     dm[ii]       = a2[ii][ii];
-    a2[ii+5][ii] = lambda * TMath::Sqrt( a2[ii][ii] );
+    a2[ii+5][ii] = lambda * std::sqrt( a2[ii][ii] );
   }
 
 #if 0
   {
     PrintHelper helper( 3, std::ios::scientific );
-    hddaq::cout << FUNC_NAME << ": A2 and CB2 before SVDcmp"
+    hddaq::cout << func_name << ": A2 and CB2 before SVDcmp"
 		<<  std::endl;
-    for( Int_t ii=0; ii<10; ++ii )
+    for( int ii=0; ii<10; ++ii )
       hddaq::cout << std::setw(12) << a2[ii][0] << ","
 		  << std::setw(12) << a2[ii][1] << ","
 		  << std::setw(12) << a2[ii][2] << ","
@@ -594,9 +602,9 @@ KuramaTrack::GuessNextParameters( const RKHitPointContainer& hpCont,
 #if 0
   {
     PrintHelper helper( 3, std::ios::scientific );
-    hddaq::cout << FUNC_NAME << ": A2 after SVDcmp"
+    hddaq::cout << func_name << ": A2 after SVDcmp"
 		<<  std::endl;
-    for( Int_t ii=0; ii<10; ++ii )
+    for( int ii=0; ii<10; ++ii )
       hddaq::cout << std::setw(12) << a2[ii][0] << ","
 		  << std::setw(12) << a2[ii][1] << ","
 		  << std::setw(12) << a2[ii][2] << ","
@@ -609,32 +617,32 @@ KuramaTrack::GuessNextParameters( const RKHitPointContainer& hpCont,
   // check orthogonality of decomposted matrics
   {
     PrintHelper helper( 5, std::ios::scientific );
-    hddaq::cout << FUNC_NAME << ": Check V*~V" <<  std::endl;
-    for( Int_t i=0; i<5; ++i ){
-      for( Int_t j=0; j<5; ++j ){
-	Double_t f=0.0;
-	for( Int_t k=0; k<5; ++k )
+    hddaq::cout << func_name << ": Check V*~V" <<  std::endl;
+    for( int i=0; i<5; ++i ){
+      for( int j=0; j<5; ++j ){
+	double f=0.0;
+	for( int k=0; k<5; ++k )
 	  f += v[i][k]*v[j][k];
 	hddaq::cout << std::setw(10) << f;
       }
       hddaq::cout << std::endl;
     }
-    hddaq::cout << FUNC_NAME << ": Check U*~U" <<  std::endl;
-    for( Int_t i=0; i<10; ++i ){
-      for( Int_t j=0; j<10; ++j ){
-	Double_t f=0.0;
-	for( Int_t k=0; k<5; ++k )
+    hddaq::cout << func_name << ": Check U*~U" <<  std::endl;
+    for( int i=0; i<10; ++i ){
+      for( int j=0; j<10; ++j ){
+	double f=0.0;
+	for( int k=0; k<5; ++k )
 	  f += a2[i][k]*a2[j][k];
 	hddaq::cout << std::setw(10) << f;
       }
       hddaq::cout << std::endl;
     }
 
-    hddaq::cout << FUNC_NAME << ": Check ~U*U" <<  std::endl;
-    for( Int_t i=0; i<5; ++i ){
-      for( Int_t j=0; j<5; ++j ){
-	Double_t f=0.0;
-	for( Int_t k=0; k<10; ++k )
+    hddaq::cout << func_name << ": Check ~U*U" <<  std::endl;
+    for( int i=0; i<5; ++i ){
+      for( int j=0; j<5; ++j ){
+	double f=0.0;
+	for( int k=0; k<10; ++k )
 	  f += a2[k][i]*a2[k][j];
 	hddaq::cout << std::setw(10) << f;
       }
@@ -643,20 +651,20 @@ KuramaTrack::GuessNextParameters( const RKHitPointContainer& hpCont,
   }
 #endif
 
-  Double_t wmax=0.0;
-  for( Int_t i=0; i<5; ++i )
+  double wmax=0.0;
+  for( int i=0; i<5; ++i )
     if( wSvd[i]>wmax ) wmax=wSvd[i];
 
-  Double_t wmin=wmax*1.E-15;
-  for( Int_t i=0; i<5; ++i )
+  double wmin=wmax*1.E-15;
+  for( int i=0; i<5; ++i )
     if( wSvd[i]<wmin ) wSvd[i]=0.0;
 
 #if 0
   {
     PrintHelper helper( 3, std::ios::scientific );
-    hddaq::cout << FUNC_NAME << ": V and Wsvd after SVDcmp"
+    hddaq::cout << func_name << ": V and Wsvd after SVDcmp"
 		<<  std::endl;
-    for( Int_t ii=0; ii<5; ++ii )
+    for( int ii=0; ii<5; ++ii )
       hddaq::cout << std::setw(12) << v[ii][0] << ","
 		  << std::setw(12) << v[ii][1] << ","
 		  << std::setw(12) << v[ii][2] << ","
@@ -671,7 +679,7 @@ KuramaTrack::GuessNextParameters( const RKHitPointContainer& hpCont,
 #if 0
   {
     PrintHelper helper( 5, std::ios::scientific );
-    hddaq::cout << FUNC_NAME << ": "
+    hddaq::cout << func_name << ": "
 		<< std::setw(12) << Cord.Z();
     hddaq::cout << "  Dumping Factor = " << std::setw(12) << dmp << std::endl;
     helper.setf( std::ios::fixed );
@@ -701,19 +709,19 @@ KuramaTrack::GuessNextParameters( const RKHitPointContainer& hpCont,
 			  Cord.Q()+dcb[4] );
 
   // calc. the critical dumping factor & est. delta-ChiSqr
-  Double_t s1=0., s2=0.;
-  for(  Int_t i=0; i<5; ++i ){
+  double s1=0., s2=0.;
+  for(  int i=0; i<5; ++i ){
     s1 += dcb[i]*dcb[i]; s2 += dcb[i]*cb2[i];
   }
-  estDeltaChisqr = (-s2-dmp*s1)/Double_t(nth-5);
+  estDeltaChisqr = (-s2-dmp*s1)/double(nth-5);
 
   if( !math::SVDcmp( a3, 5, 5, w3, v3, wv ) )
     return false;
 
-  Double_t spur=0.;
-  for( Int_t i=0; i<5; ++i ){
-    Double_t s=0.;
-    for( Int_t j=0; j<5; ++j )
+  double spur=0.;
+  for( int i=0; i<5; ++i ){
+    double s=0.;
+    for( int j=0; j<5; ++j )
       s += v3[i][j]*a3[i][j];
     if( w3[i]!=0.0 )
       spur += s/w3[i]*dm[i];
@@ -725,55 +733,49 @@ KuramaTrack::GuessNextParameters( const RKHitPointContainer& hpCont,
 }
 
 //______________________________________________________________________________
-Bool_t
+bool
 KuramaTrack::SaveCalcPosition( const RKHitPointContainer &hpCont )
 {
-  for( Int_t i=0, n=m_hit_array.size(); i<n; ++i ){
+  for( std::size_t i=0, n=m_hit_array.size(); i<n; ++i ){
     TrackHit *thp = m_hit_array[i];
     if( !thp ) continue;
-    Int_t lnum = thp->GetLayer();
+    int lnum = thp->GetLayer();
     const RKcalcHitPoint &calhp = hpCont.HitPointOfLayer( lnum );
     thp->SetCalGPos( calhp.PositionInGlobal() );
     thp->SetCalGMom( calhp.MomentumInGlobal() );
     thp->SetCalLPos( calhp.PositionInLocal() );
-    // thp->SetKaonFlag();
-    if( 7<=lnum && lnum<=10 ){
-      m_ssd_seg[lnum-7] = thp->GetHit()->GetWire();
-    }
   }
   return true;
 }
 
 //______________________________________________________________________________
 void
-KuramaTrack::Print( Option_t* ) const
+KuramaTrack::Print( const std::string& arg, std::ostream& ost )
 {
-  PrintHelper helper( 5, std::ios::fixed, hddaq::cout );
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
 
-  hddaq::cout << "#D " << FUNC_NAME << std::endl
-	      << "   status : " << s_status[m_status] << std::endl
-	      << " in " << std::setw(3) << m_n_iteration << " ( "
-	      << std::setw(2) << m_nef_iteration << " ) Iteractions "
-	      << " chisqr=" << std::setw(10) << m_chisqr << std::endl;
-  hddaq::cout << " Target X ( " << std::setprecision(2)
-	      << std::setw(7) << m_primary_position.x() << ", "
-	      << std::setw(7) << m_primary_position.y() << ", "
-	      << std::setw(7) << m_primary_position.z() << " )" << std::endl
-	      << "        P " << std::setprecision(5)
-	      << std::setw(7) << m_primary_momentum.Mag() << " ( "
-	      << std::setw(7) << m_primary_momentum.x() << ", "
-	      << std::setw(7) << m_primary_momentum.y() << ", "
-	      << std::setw(7) << m_primary_momentum.z() << " )"
-	      << " init=" << m_initial_momentum
-	      << std::endl
-	      << "        PathLength  " << std::setprecision(1)
-	      << std::setw(7) << m_path_length_tof << " "
-	      << "TOF# " << std::setw(2) << std::right
-	      << (int)m_tof_seg << std::endl;
-  //     << "SSD# ";
-  // std::copy(m_ssd_seg.begin(), m_ssd_seg.end(),
-  // 	    std::ostream_iterator<Double_t>(hddaq::cout, " "));
-  // hddaq::cout << std::endl;
+  PrintHelper helper( 5, std::ios::fixed, ost );
+
+  ost << "#D " << func_name << " " << arg << std::endl
+      << "   status : " << s_status[m_status] << std::endl
+      << " in " << std::setw(3) << m_n_iteration << " ( "
+      << std::setw(2) << m_nef_iteration << " ) Iteractions "
+      << " chisqr=" << std::setw(10) << m_chisqr << std::endl;
+  ost << " Target X ( " << std::setprecision(2)
+      << std::setw(7) << m_primary_position.x() << ", "
+      << std::setw(7) << m_primary_position.y() << ", "
+      << std::setw(7) << m_primary_position.z() << " )" << std::endl
+      << "        P " << std::setprecision(5)
+      << std::setw(7) << m_primary_momentum.Mag() << " ( "
+      << std::setw(7) << m_primary_momentum.x() << ", "
+      << std::setw(7) << m_primary_momentum.y() << ", "
+      << std::setw(7) << m_primary_momentum.z() << " )"
+      << " init=" << m_initial_momentum
+      << std::endl
+      << "        PathLength  " << std::setprecision(1)
+      << std::setw(7) << m_path_length_tof << " "
+      << "TOF#" << std::setw(2) << std::right
+      << (int)m_tof_seg << std::endl;
   //  << std::setw(7) << m_path_length_total << std::endl;
 
   PrintCalcHits( m_HitPointCont );
@@ -783,14 +785,16 @@ KuramaTrack::Print( Option_t* ) const
 void
 KuramaTrack::PrintCalcHits( const RKHitPointContainer &hpCont, std::ostream &ost ) const
 {
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
   PrintHelper helper( 2, std::ios::fixed, ost );
 
-  const Int_t n = m_hit_array.size();
+  const std::size_t n = m_hit_array.size();
   RKHitPointContainer::RKHpCIterator itr, end = hpCont.end();
   for( itr=hpCont.begin(); itr!=end; ++itr ){
-    Int_t lnum = itr->first;
+    int lnum = itr->first;
     TrackHit *thp = 0;
-    for( Int_t i=0; i<n; ++i ){
+    for( std::size_t i=0; i<n; ++i ){
       if( m_hit_array[i] && m_hit_array[i]->GetLayer()==lnum ){
 	thp = m_hit_array[i];
 	if( thp ) break;
@@ -827,11 +831,13 @@ KuramaTrack::PrintCalcHits( const RKHitPointContainer &hpCont, std::ostream &ost
 }
 
 //______________________________________________________________________________
-Bool_t
+bool
 KuramaTrack::SaveTrackParameters( const RKCordParameter &cp )
 {
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
   m_cord_param = cp;
-  const Int_t TGTid = m_HitPointCont.begin()->first;
+  const int TGTid = m_HitPointCont.begin()->first;
 
   // const RKcalcHitPoint& hpTof  = m_HitPointCont.HitPointOfLayer( IdTOF );
 
@@ -846,38 +852,37 @@ KuramaTrack::SaveTrackParameters( const RKCordParameter &cp )
 
   m_polarity = m_primary_momentum.z()<0. ? -1. : 1.;
 
-  static const Int_t IdTOFUX = gGeom.GetDetectorId("TOF-UX");
-  static const Int_t IdTOFDX = gGeom.GetDetectorId("TOF-DX");
-
   const RKcalcHitPoint& hpTofU = m_HitPointCont.HitPointOfLayer( IdTOFUX );
   const RKcalcHitPoint& hpTofD = m_HitPointCont.HitPointOfLayer( IdTOFDX );
 
-  if( (Int_t)m_tof_seg%2==0 ){ // upstream
-    m_path_length_tof = TMath::Abs( hpTgt.PathLength()-hpTofU.PathLength() );
+  if( (int)m_tof_seg%2==0 ){ // upstream
+    m_path_length_tof = std::abs( hpTgt.PathLength()-hpTofU.PathLength() );
     m_tof_pos = hpTofU.PositionInGlobal();
     m_tof_mom = hpTofU.MomentumInGlobal();
   }
-  else if( (Int_t)m_tof_seg%2==1 ){ // downstream
-    m_path_length_tof = TMath::Abs( hpTgt.PathLength()-hpTofD.PathLength() );
+  else if( (int)m_tof_seg%2==1 ){ // downstream
+    m_path_length_tof = std::abs( hpTgt.PathLength()-hpTofD.PathLength() );
     m_tof_pos = hpTofD.PositionInGlobal();
     m_tof_mom = hpTofD.MomentumInGlobal();
   }
   else {
-    m_path_length_tof = TMath::Abs( hpTgt.PathLength()-(hpTofU.PathLength()+hpTofD.PathLength())/2. );
+    m_path_length_tof = std::abs( hpTgt.PathLength()-(hpTofU.PathLength()+hpTofD.PathLength())/2. );
     m_tof_pos = (hpTofU.PositionInGlobal()+hpTofD.PositionInGlobal())*0.5;
     m_tof_mom = (hpTofU.MomentumInGlobal()+hpTofD.MomentumInGlobal())*0.5;
   }
 
-  m_path_length_total = TMath::Abs( hpTgt.PathLength()-hpLast.PathLength() );
+  m_path_length_total = std::abs( hpTgt.PathLength()-hpLast.PathLength() );
 
   return true;
 }
 
 //______________________________________________________________________________
-Bool_t
-KuramaTrack::GetTrajectoryLocalPosition( Int_t layer, Double_t & x, Double_t & y ) const
+bool
+KuramaTrack::GetTrajectoryLocalPosition( int layer, double & x, double & y ) const
 {
-  try {
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
+   try {
     const RKcalcHitPoint& HP   = m_HitPointCont.HitPointOfLayer( layer );
     const ThreeVector&    gpos = HP.PositionInGlobal();
     ThreeVector lpos = gGeom.Global2LocalPos( layer,gpos );

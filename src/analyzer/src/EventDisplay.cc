@@ -82,6 +82,7 @@ ClassImp(EventDisplay);
 
 namespace
 {
+  const std::string& class_name("EventDisplay");
   using namespace hddaq;
   using namespace hddaq::unpacker;
 
@@ -144,8 +145,7 @@ namespace
 
 //______________________________________________________________________________
 EventDisplay::EventDisplay( void )
-  : TObject(),
-    m_is_ready(false),
+  : m_is_ready(false),
     m_text( new TLatex ),
     m_theApp(0),
     m_geometry(0),
@@ -189,7 +189,7 @@ EventDisplay::EventDisplay( void )
 //______________________________________________________________________________
 EventDisplay::~EventDisplay( void )
 {
-  utility::DeleteObject( m_theApp );
+  del::DeleteObject( m_theApp );
 }
 
 //______________________________________________________________________________
@@ -2046,8 +2046,8 @@ void
 EventDisplay::DrawVertex( const ThreeVector& vertex )
 {
 #if Vertex
-  utility::DeleteObject( m_VertexPointXZ );
-  utility::DeleteObject( m_VertexPointYZ );
+  del::DeleteObject( m_VertexPointXZ );
+  del::DeleteObject( m_VertexPointYZ );
 
   Double_t x = vertex.x();
   Double_t y = vertex.y();
@@ -2108,7 +2108,7 @@ EventDisplay::DrawMissingMomentum( const ThreeVector& mom, const ThreeVector& po
 void
 EventDisplay::DrawKuramaTrack( Int_t nStep, ThreeVector *StepPoint, Int_t Polarity )
 {
-  utility::DeleteObject( m_kurama_step_mark );
+  del::DeleteObject( m_kurama_step_mark );
 
   m_kurama_step_mark = new TPolyMarker3D( nStep );
   for( Int_t i=0; i<nStep; ++i ){
@@ -2128,7 +2128,7 @@ EventDisplay::DrawKuramaTrack( Int_t nStep, ThreeVector *StepPoint, Int_t Polari
   m_canvas->Update();
 
 #if Vertex
-  utility::DeleteObject( m_KuramaMarkVertexX );
+  del::DeleteObject( m_KuramaMarkVertexX );
   m_KuramaMarkVertexX = new TPolyMarker( nStep );
   for( Int_t i=0; i<nStep; ++i ){
     Double_t x = StepPoint[i].x()-BeamAxis;
@@ -2140,7 +2140,7 @@ EventDisplay::DrawKuramaTrack( Int_t nStep, ThreeVector *StepPoint, Int_t Polari
   m_KuramaMarkVertexX->SetMarkerStyle(8);
   m_canvas_vertex->cd(1);
   m_KuramaMarkVertexX->Draw();
-  utility::DeleteObject( m_KuramaMarkVertexY );
+  del::DeleteObject( m_KuramaMarkVertexY );
   m_KuramaMarkVertexY = new TPolyMarker( nStep );
   for( Int_t i=0; i<nStep; ++i ){
     Double_t y = StepPoint[i].y();
@@ -2276,21 +2276,21 @@ EventDisplay::DrawTrigger( const std::vector<Int_t>& flag )
 void
 EventDisplay::EndOfEvent( void )
 {
-  utility::DeleteObject( m_init_step_mark );
-  utility::DeleteObject( m_BcOutXZ_line );
-  utility::DeleteObject( m_BcOutYZ_line );
-  utility::DeleteObject( m_SdcInXZ_line );
-  utility::DeleteObject( m_SdcInYZ_line );
-  utility::DeleteObject( m_BcOutTrack );
-  utility::DeleteObject( m_SdcInTrack );
-  utility::DeleteObject( m_SdcOutTrack );
-  utility::DeleteObject( m_kurama_step_mark );
-  utility::DeleteObject( m_VertexPointXZ );
-  utility::DeleteObject( m_VertexPointYZ );
-  utility::DeleteObject( m_MissMomXZ_line );
-  utility::DeleteObject( m_MissMomYZ_line );
-  utility::DeleteObject( m_KuramaMarkVertexX );
-  utility::DeleteObject( m_KuramaMarkVertexY );
+  del::DeleteObject( m_init_step_mark );
+  del::DeleteObject( m_BcOutXZ_line );
+  del::DeleteObject( m_BcOutYZ_line );
+  del::DeleteObject( m_SdcInXZ_line );
+  del::DeleteObject( m_SdcInYZ_line );
+  del::DeleteObject( m_BcOutTrack );
+  del::DeleteObject( m_SdcInTrack );
+  del::DeleteObject( m_SdcOutTrack );
+  del::DeleteObject( m_kurama_step_mark );
+  del::DeleteObject( m_VertexPointXZ );
+  del::DeleteObject( m_VertexPointYZ );
+  del::DeleteObject( m_MissMomXZ_line );
+  del::DeleteObject( m_MissMomYZ_line );
+  del::DeleteObject( m_KuramaMarkVertexX );
+  del::DeleteObject( m_KuramaMarkVertexY );
 
   ResetVisibility();
 }
@@ -2348,7 +2348,7 @@ EventDisplay::PrintKurama( KuramaTrack *tp, Double_t m2 )
   const ThreeVector& p = tp->PrimaryMomentum();
 
   text[kNHit]->SetText( 0.950, 0.550, Form("%d", tp->GetNHits()) );
-  text[kChiSqr]->SetText( 0.950, 0.520, Form("%lf", tp->Chisqr()) );
+  text[kChiSqr]->SetText( 0.950, 0.520, Form("%lf", tp->chisqr()) );
   text[kP]->SetText( 0.950, 0.490, Form("%lf", p.Mag()) );
   text[kPath]->SetText( 0.950, 0.460, Form("%lf", tp->PathLengthToTOF()) );
   TString q = tp->Polarity()>0. ? "+" : "-";

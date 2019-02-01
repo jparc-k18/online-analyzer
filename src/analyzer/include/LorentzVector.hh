@@ -1,7 +1,6 @@
-/**   -*- C++ -*-
- *
+/**
  *  file: LorentzVector.hh
- *  date: 2017.06.17
+ *  date: 2017.04.10
  *
  */
 
@@ -11,7 +10,6 @@
 #include <ostream>
 
 #include <TLorentzVector.h>
-
 typedef TLorentzVector LorentzVector;
 
 //______________________________________________________________________________

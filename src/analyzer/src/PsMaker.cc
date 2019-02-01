@@ -1425,7 +1425,7 @@ void PsMaker::create(TString& name)
     // TDC U
     index = 0;
     base_id = HistMaker::getUniqueID(kTOF_HT, 0, kTDC);
-    for(int i = 0; i<NumOfSegTOF_HT; ++i){id_list.push_back(base_id + index++);}
+    for(int i = 0; i<NumOfSegHtTOF; ++i){id_list.push_back(base_id + index++);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 
 //    for(int i = 0; i<NumOfSegTOF_HT/2; ++i){id_list.push_back(base_id + index++);}

@@ -1,32 +1,38 @@
-// -*- C++ -*-
+/**
+ *  file: DCPairHitCluster.cc
+ *  date: 2017.04.10
+ *
+ */
 
 #include "DCPairHitCluster.hh"
 #include "DCLTrackHit.hh"
 #include "DebugCounter.hh"
 
-ClassImp(DCPairHitCluster);
+namespace
+{
+  const std::string& class_name("DCPairHitCluster");
+}
 
 //______________________________________________________________________________
 DCPairHitCluster::DCPairHitCluster( DCLTrackHit *hitA, DCLTrackHit *hitB )
-  : TObject(),
-    m_hitA(hitA),
+  : m_hitA(hitA),
     m_hitB(hitB),
     m_nhits(0)
 {
   if(m_hitA) ++m_nhits;
   if(m_hitB) ++m_nhits;
-  debug::ObjectCounter::Increase(ClassName());
+  debug::ObjectCounter::increase(class_name);
 }
 
 //______________________________________________________________________________
 DCPairHitCluster::~DCPairHitCluster( void )
 {
-  debug::ObjectCounter::Decrease(ClassName());
+  debug::ObjectCounter::decrease(class_name);
 }
 
 //______________________________________________________________________________
 DCLTrackHit*
-DCPairHitCluster::GetHit( Int_t i ) const
+DCPairHitCluster::GetHit( int i ) const
 {
   if(i==0) return m_hitA;
   if(i==1) return m_hitB;
@@ -45,7 +51,7 @@ DCPairHitCluster::IsHoneycomb( void ) const
 
 //______________________________________________________________________________
 void
-DCPairHitCluster::SetHoneycomb( Bool_t flag )
+DCPairHitCluster::SetHoneycomb( bool flag )
 {
   if( m_hitA ) m_hitA->SetHoneycomb( flag );
   if( m_hitB ) m_hitB->SetHoneycomb( flag );

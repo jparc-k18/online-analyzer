@@ -5,15 +5,14 @@
 
 #include <exception>
 #include <stdexcept>
-#include <string>
 
-#include <TObject.h>
 #include <TString.h>
 
-  //______________________________________________________________________________
-class Exception : public std::exception, TObject
+//______________________________________________________________________________
+class Exception : public std::exception
 {
 public:
+  static TString ClassName( void );
   Exception( const TString& msg );
   virtual ~Exception( void ) throw();
 
@@ -23,8 +22,14 @@ private:
 public:
   virtual void          hoge( const TString& arg="" ) const;
   virtual const Char_t* what( void ) const throw();
-
-  ClassDef(Exception,0);
 };
+
+//______________________________________________________________________________
+inline TString
+Exception::ClassName( void )
+{
+  static TString g_name("Exception");
+  return g_name;
+}
 
 #endif

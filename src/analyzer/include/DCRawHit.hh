@@ -1,38 +1,44 @@
-// -*- C++ -*-
+/**
+ *  file: DCRawHit.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef DC_RAW_HIT_HH
 #define DC_RAW_HIT_HH
 
+#include <cstddef>
+#include <string>
 #include <vector>
 
-#include <TObject.h>
-#include <TString.h>
+typedef std::vector<int> IntVec;
 
 //______________________________________________________________________________
-class DCRawHit : public TObject
+class DCRawHit
 {
 public:
-  DCRawHit( Int_t plane_id, Int_t wire_id );
+  DCRawHit( int plane_id, int wire_id );
   ~DCRawHit( void );
 
 private:
-  Int_t              m_plane_id;
-  Int_t              m_wire_id;
-  std::vector<Int_t> m_tdc;
-  std::vector<Int_t> m_trailing;
+  int    m_plane_id;
+  int    m_wire_id;
+  IntVec m_tdc;
+  IntVec m_trailing;
+  bool   m_oftdc; // module tdc over flow
 
 public:
-  Int_t GetTdc( Int_t nh )      const { return m_tdc.at(nh); }
-  Int_t GetTdcSize( void )      const { return m_tdc.size(); }
-  Int_t GetTrailing( Int_t nh ) const { return m_trailing.at(nh); }
-  Int_t GetTrailingSize( void ) const { return m_trailing.size(); }
-  Int_t PlaneId( void )         const { return m_plane_id; }
-  void  SetTdc( Int_t tdc )           { m_tdc.push_back(tdc); }
-  void  SetTrailing( Int_t tdc )      { m_trailing.push_back(tdc); }
-  Int_t WireId( void )          const { return m_wire_id;  }
-  void  Print( Option_t* option="" ) const;
-
-  ClassDef(DCRawHit,0);
+  int  PlaneId( void ) const { return m_plane_id; }
+  int  WireId( void )  const { return m_wire_id;  }
+  void SetTdc( int tdc )        { m_tdc.push_back(tdc); }
+  void SetTrailing( int tdc )   { m_trailing.push_back(tdc); }
+  void SetTdcOverflow( int fl ) { m_oftdc = static_cast<bool>( fl ); }
+  int  GetTdc( int nh )        const { return m_tdc[nh]; }
+  int  GetTdcSize( void )      const { return m_tdc.size(); }
+  int  GetTrailing( int nh )   const { return m_trailing[nh]; }
+  int  GetTrailingSize( void ) const { return m_trailing.size(); }
+  bool IsTdcOverflow( void )      const { return m_oftdc; }
+  void Print( const std::string& arg="" ) const;
 };
 
 #endif

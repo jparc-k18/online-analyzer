@@ -548,7 +548,7 @@ process_event( void )
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-
+  /*
   // BFT
   {
     // TDC gate range
@@ -604,7 +604,7 @@ process_event( void )
     hptr_array[bft_mul_id]->Fill(multiplicity);
     hptr_array[bft_cmul_id]->Fill(cmultiplicity);
   }
-
+  */
   // BC3 -------------------------------------------------------------
   {
     // data type
@@ -1365,7 +1365,7 @@ process_event( void )
     static const int tdc_max = gUser.GetParameter("FHT1_TDC", 1);
 
     // sequential id
-    for( int l=0; l<NumOfLayersFHT; ++l ){
+    for( int l=0; l<NumOfLayersFHT1; ++l ){
       for( int ud=0; ud<NumOfUDStructureFHT; ++ud ){
 	//          int fht1_tdc_id     = gHist.getSequentialID(kFHT1, l, kTDC,    1+ ud*FHTOffset);
 	//          int fht1_tot_id     = gHist.getSequentialID(kFHT1, l, kADC,    1+ ud*FHTOffset);
@@ -1432,7 +1432,7 @@ process_event( void )
     static const int tdc_max = gUser.GetParameter("FHT2_TDC", 1);
 
     // sequential id
-    for( int l=0; l<NumOfLayersFHT; ++l ){
+    for( int l=0; l<NumOfLayersFHT2; ++l ){
       for( int ud=0; ud<NumOfUDStructureFHT; ++ud ){
 	//          int fht2_tdc_id     = gHist.getSequentialID(kFHT2, l, kTDC,    1+ ud*FHTOffset);
 	//          int fht2_tot_id     = gHist.getSequentialID(kFHT2, l, kADC,    1+ ud*FHTOffset);
@@ -1670,7 +1670,7 @@ process_event( void )
     //    int tofa_id   = gHist.getSequentialID(kTOF_HT, 0, kADC);
     int toft_id   = gHist.getSequentialID(kTOF_HT, 0, kTDC);
     //    int tofawt_id = gHist.getSequentialID(kTOF_HT, 0, kADCwTDC);
-    for(int seg = 0; seg<NumOfSegTOF_HT; ++seg){
+    for(int seg = 0; seg<NumOfSegHtTOF; ++seg){
       //     // ADC
       //     int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
       //     if( nhit!=0 ){
@@ -1725,7 +1725,7 @@ process_event( void )
     static const int tofhit_id = gHist.getSequentialID(kTOF_HT, 0, kHitPat);
     static const int tofmul_id = gHist.getSequentialID(kTOF_HT, 0, kMulti);
     int multiplicity = 0;
-    for(int seg=0; seg<NumOfSegTOF_HT; ++seg){
+    for(int seg=0; seg<NumOfSegHtTOF; ++seg){
       int nhit_tofu = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       //      int nhit_tofd = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
       // AND

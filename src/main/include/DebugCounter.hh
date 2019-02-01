@@ -31,7 +31,7 @@ private:
   ObjectMap m_map;
 
 public:
-  void        CheckCounter( void ) const;
+  //void        CheckCounter( void ) const;
   void        PrintCounter( void ) const;
   // static method
   static void Check( void );

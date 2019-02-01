@@ -1,22 +1,23 @@
-// -*- C++ -*-
+/**
+ *  file: RawData.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef RAW_DATA_HH
 #define RAW_DATA_HH
 
-#include <vector>
-
-#include <TObject.h>
-
 #include "DetectorID.hh"
+#include <vector>
 
 class HodoRawHit;
 class DCRawHit;
 
 typedef std::vector<HodoRawHit*> HodoRHitContainer;
 typedef std::vector<DCRawHit*>   DCRHitContainer;
-
+typedef std::vector <int>        FADCRHitContainer;
 //______________________________________________________________________________
-class RawData : public TObject
+class RawData
 {
 public:
   RawData( void );
@@ -27,74 +28,240 @@ private:
   RawData& operator=( const RawData& );
 
 private:
-  Bool_t                         m_is_decoded;
-  HodoRHitContainer              m_BH1RawHC;
-  HodoRHitContainer              m_BH2RawHC;
-  HodoRHitContainer              m_BACRawHC;
-  HodoRHitContainer              m_SACRawHC;
-  HodoRHitContainer              m_TOFRawHC;
-  HodoRHitContainer              m_LCRawHC;
+  bool              m_is_decoded;
+  HodoRHitContainer m_BH1RawHC;
+  HodoRHitContainer m_BH2RawHC;
+  HodoRHitContainer m_SACRawHC;
+  HodoRHitContainer m_TOFRawHC;
+  HodoRHitContainer m_HtTOFRawHC;
+  HodoRHitContainer m_LCRawHC;
   std::vector<HodoRHitContainer> m_BFTRawHC;
   std::vector<HodoRHitContainer> m_SFTRawHC;
-  HodoRHitContainer              m_SCHRawHC;
+  std::vector<HodoRHitContainer> m_CFTRawHC;
+  HodoRHitContainer m_BGORawHC;
+  std::vector<FADCRHitContainer> m_BGOFadcRawHC;
+  HodoRHitContainer m_PiIDRawHC;
+  HodoRHitContainer m_SCHRawHC;
+  std::vector<HodoRHitContainer> m_FHT1RawHC;
+  std::vector<HodoRHitContainer> m_FHT2RawHC;
 
   std::vector<DCRHitContainer> m_BcInRawHC;
   std::vector<DCRHitContainer> m_BcOutRawHC;
   std::vector<DCRHitContainer> m_SdcInRawHC;
   std::vector<DCRHitContainer> m_SdcOutRawHC;
-  std::vector<DCRHitContainer> m_SsdInRawHC;
-  std::vector<DCRHitContainer> m_SsdOutRawHC;
 
-  // HodoRHitContainer              m_ScalerRawHC;
-  HodoRHitContainer              m_TrigRawHC;
-  // HodoRHitContainer              m_VmeCalibRawHC;
-  // HodoRHitContainer              m_MsTRMRawHC;
-  // std::vector<HodoRHitContainer> m_MsTRawHC;
-  // HodoRHitContainer              m_HulTOFRawHC;
-  // HodoRHitContainer              m_HulFBHRawHC;
-  // HodoRHitContainer              m_HulSCHRawHC;
+  HodoRHitContainer m_ScalerRawHC;
+  HodoRHitContainer m_TrigRawHC;
+  HodoRHitContainer m_VmeCalibRawHC;
 
-private:
-  enum EUorD { kOneSide=1, kBothSide=2 };
-  enum EDCDataType { kLeading, kTrailing, kNDCDataType };
+  HodoRHitContainer m_FpgaBH2MtRawHC;
 
 public:
-  Bool_t AddHodoRawHit( HodoRHitContainer& cont,
-			Int_t id, Int_t plane, Int_t seg, Int_t UorD, Int_t AorT, Int_t data );
-  Bool_t AddDCRawHit( DCRHitContainer& cont,
-		      int plane, int wire, int tdc, int type=kLeading );
-  void   DecodeHodo( Int_t id, Int_t plane, Int_t nseg, Int_t nch, HodoRHitContainer& cont );
-  void   DecodeHodo( Int_t id, Int_t nseg, Int_t nch, HodoRHitContainer& cont );
-
   void                     ClearAll( void );
-  Bool_t                   DecodeHits( void );
-  Bool_t                   DecodeCalibHits( void );
-  const HodoRHitContainer& GetBH1RawHC( void ) const { return m_BH1RawHC; }
-  const HodoRHitContainer& GetBH2RawHC( void ) const { return m_BH2RawHC; }
-  const HodoRHitContainer& GetBACRawHC( void ) const { return m_BACRawHC; }
-  const HodoRHitContainer& GetSACRawHC( void ) const { return m_SACRawHC; }
-  const HodoRHitContainer& GetTOFRawHC( void ) const { return m_TOFRawHC; }
-  const HodoRHitContainer& GetLCRawHC( void ) const { return m_LCRawHC; }
-  const HodoRHitContainer& GetBFTRawHC( Int_t plane ) const { return m_BFTRawHC[plane]; }
-  const HodoRHitContainer& GetSFTRawHC( Int_t plane ) const { return m_SFTRawHC[plane]; }
-  const HodoRHitContainer& GetSCHRawHC( void ) const { return m_SCHRawHC; }
-  // const DCRHitContainer&   GetBcInRawHC( Int_t layer ) const { return m_BcInRawHC[layer]; }
-  const DCRHitContainer&   GetBcOutRawHC( Int_t layer ) const { return m_BcOutRawHC[layer]; }
-  const DCRHitContainer&   GetSdcInRawHC( Int_t layer ) const { return m_SdcInRawHC[layer]; }
-  const DCRHitContainer&   GetSdcOutRawHC( Int_t layer ) const { return m_SdcOutRawHC[layer]; }
-  const DCRHitContainer&   GetSsdInRawHC( Int_t layer ) const { return m_SsdInRawHC[layer]; }
-  const DCRHitContainer&   GetSsdOutRawHC( Int_t layer ) const { return m_SsdOutRawHC[layer]; }
-  const DCRHitContainer&   GetSsdOutSdcInRawHC( Int_t layer ) const;
-  // const HodoRHitContainer& GetScalerRawHC( void ) const { return m_ScalerRawHC; }
-  const HodoRHitContainer& GetTrigRawHC( void ) const { return m_TrigRawHC; }
-  // const HodoRHitContainer& GetVmeCalibRawHC( void ) const { return m_VmeCalibRawHC; }
-  // const HodoRHitContainer& GetMsTRMRawHC( void ) const { return m_MsTRMRawHC; }
-  // const HodoRHitContainer& GetMsTRawHC( Int_t layer ) const { return m_MsTRawHC.at(layer); }
-  // const HodoRHitContainer& GetHulTOFRawHC( void ) const { return m_HulTOFRawHC; }
-  // const HodoRHitContainer& GetHulFBHRawHC( void ) const { return m_HulFBHRawHC; }
-  // const HodoRHitContainer& GetHulSCHRawHC( void ) const { return m_HulSCHRawHC; }
+  bool                     DecodeHits( void );
+  bool                     DecodeCalibHits( void );
 
-  ClassDef(RawData,0);
+  const HodoRHitContainer& GetBH1RawHC( void ) const;
+  const HodoRHitContainer& GetBH2RawHC( void ) const;
+  const HodoRHitContainer& GetSACRawHC( void ) const;
+  const HodoRHitContainer& GetTOFRawHC( void ) const;
+  const HodoRHitContainer& GetHtTOFRawHC( void ) const;
+  const HodoRHitContainer& GetLCRawHC( void ) const;
+
+  const HodoRHitContainer& GetBFTRawHC( int plane ) const;
+  const HodoRHitContainer& GetSFTRawHC( int plane ) const;
+
+  const HodoRHitContainer& GetCFTRawHC( int plane ) const;
+  const HodoRHitContainer& GetBGORawHC( void ) const;
+  const FADCRHitContainer& GetBGOFAdcRawHC( int segment ) const;
+  const HodoRHitContainer& GetPiIDRawHC( void ) const;
+
+  const HodoRHitContainer& GetSCHRawHC( void ) const;
+  const HodoRHitContainer& GetFHT1RawHC( int layer, int UorD ) const;
+  const HodoRHitContainer& GetFHT2RawHC( int layer, int UorD ) const;
+
+  const DCRHitContainer&   GetBcInRawHC( int layer ) const;
+  const DCRHitContainer&   GetBcOutRawHC( int layer ) const;
+  const DCRHitContainer&   GetSdcInRawHC( int layer ) const;
+  const DCRHitContainer&   GetSdcOutRawHC( int layer ) const;
+
+  const HodoRHitContainer& GetScalerRawHC( void ) const;
+  const HodoRHitContainer& GetTrigRawHC( void ) const;
+  const HodoRHitContainer& GetVmeCalibRawHC( void ) const;
+
+  const HodoRHitContainer& GetFpgaBH2MtRawHC( void ) const;
 };
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetBH1RawHC( void ) const
+{
+  return m_BH1RawHC;
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetBH2RawHC( void ) const
+{
+  return m_BH2RawHC;
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetSACRawHC( void ) const
+{
+  return m_SACRawHC;
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetTOFRawHC( void ) const
+{
+  return m_TOFRawHC;
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetHtTOFRawHC( void ) const
+{
+  return m_HtTOFRawHC;
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetLCRawHC( void ) const
+{
+  return m_LCRawHC;
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetBFTRawHC( int plane ) const
+{
+  if( plane<0 || plane>NumOfPlaneBFT-1 ) plane=0;
+  return m_BFTRawHC[plane];
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetSFTRawHC( int plane ) const
+{
+  if( plane<0 || plane>NumOfPlaneSFT-1 ) plane=0;
+  return m_SFTRawHC[plane];
+}
+
+inline const HodoRHitContainer&
+RawData::GetCFTRawHC( int plane ) const
+{
+  if( plane<0 || plane>NumOfPlaneCFT-1 ) plane=0;
+  return m_CFTRawHC[plane];
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetBGORawHC( void ) const
+{
+  return m_BGORawHC;
+}
+
+//______________________________________________________________________________
+inline const FADCRHitContainer&
+RawData::GetBGOFAdcRawHC( int segment ) const
+{
+  if( segment<0 || segment>NumOfSegBGO ) segment=0;
+  return m_BGOFadcRawHC[segment];
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetPiIDRawHC( void ) const
+{
+  return m_PiIDRawHC;
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetSCHRawHC( void ) const
+{
+  return m_SCHRawHC;
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetFHT1RawHC( int layer, int UorD ) const
+{
+  if( layer<0 || layer>NumOfLayersFHT1-1 ) layer = 0;
+  if( !(0 <= UorD && UorD <= 1)) layer = 0;
+  return m_FHT1RawHC[2*layer + UorD];
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetFHT2RawHC( int layer, int UorD ) const
+{
+  if( layer<0 || layer>NumOfLayersFHT2-1 ) layer = 0;
+  if( !(0 <= UorD && UorD <= 1)) layer = 0;
+  return m_FHT2RawHC[2*layer + UorD];
+}
+
+//______________________________________________________________________________
+inline const DCRHitContainer&
+RawData::GetBcInRawHC( int layer ) const
+{
+  if( layer<0 || layer>NumOfLayersBcIn ) layer = 0;
+  return m_BcInRawHC[layer];
+}
+
+//______________________________________________________________________________
+inline const DCRHitContainer&
+RawData::GetBcOutRawHC( int layer ) const
+{
+  if( layer<0 || layer>NumOfLayersBcOut ) layer = 0;
+  return m_BcOutRawHC[layer];
+}
+
+//______________________________________________________________________________
+inline const DCRHitContainer&
+RawData::GetSdcInRawHC( int layer ) const
+{
+  if( layer<0 || layer>NumOfLayersSdcIn ) layer = 0;
+  return m_SdcInRawHC[layer];
+}
+
+//______________________________________________________________________________
+inline const DCRHitContainer&
+RawData::GetSdcOutRawHC( int layer ) const
+{
+  if( layer<0 || layer>NumOfLayersSdcOut ) layer = 0;
+  return m_SdcOutRawHC[layer];
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetScalerRawHC( void ) const
+{
+  return m_ScalerRawHC;
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetTrigRawHC( void ) const
+{
+  return m_TrigRawHC;
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetVmeCalibRawHC( void ) const
+{
+  return m_VmeCalibRawHC;
+}
+
+//______________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetFpgaBH2MtRawHC( void ) const
+{
+  return m_FpgaBH2MtRawHC;
+}
 
 #endif

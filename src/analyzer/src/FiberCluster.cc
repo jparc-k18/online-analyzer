@@ -1,82 +1,86 @@
-// -*- C++ -*-
+/**
+ *  file: FiberCluster.cc
+ *  date: 2017.04.10
+ *
+ */
+
+#include "FiberCluster.hh"
 
 #include <cmath>
 #include <string>
-
-#include <TMath.h>
+#include <limits>
 
 #include <std_ostream.hh>
 
 #include "DebugCounter.hh"
-#include "FLHit.hh"
-#include "FiberCluster.hh"
 #include "FiberHit.hh"
-#include "FuncName.hh"
+#include "FLHit.hh"
 
-ClassImp(FiberCluster);
+static const bool reject_nan = false;
+
+namespace
+{
+  const std::string& class_name("FiberCluster");
+}
 
 //______________________________________________________________________________
 FiberCluster::FiberCluster( void )
-  : TObject(),
-    m_hit_container(),
-    m_cluster_size(0),
-    m_mean_time(),
-    m_real_mean_time(),
-    m_max_width(),
-    m_mean_seg(),
-    m_mean_pos(),
-    m_flag( kNFlagsFiber, false )
+  : m_cluster_size(0), m_max_adcHi(0.), m_max_adcLow(0.), m_max_mipLow(0.), m_max_dELow(0.), m_max_cluster_id(-1)
 {
-  debug::ObjectCounter::Increase(ClassName());
+  for ( int i=0; i<sizeFlagsFiber; ++i ){
+    m_flag[i] = false;
+  }
+  debug::ObjectCounter::increase(class_name);
 }
 
 //______________________________________________________________________________
 FiberCluster::~FiberCluster( void )
 {
   m_hit_container.clear();
-  debug::ObjectCounter::Decrease(ClassName());
+  debug::ObjectCounter::decrease(class_name);
 }
 
 //______________________________________________________________________________
 FLHit*
-FiberCluster::GetHit( Int_t i ) const
+FiberCluster::GetHit( int i ) const
 {
-  return m_hit_container[i];
+  return m_hit_container.at(i);
 }
 
 //______________________________________________________________________________
-Bool_t
-FiberCluster::GoodForAnalysis( Bool_t status )
+bool
+FiberCluster::GoodForAnalysis( bool status )
 {
-  Bool_t ret = m_flag[kGoodForAnalysis];
-  m_flag[kGoodForAnalysis] = status;
+  bool ret = m_flag[gfastatus];
+  m_flag[gfastatus] = status;
   return ret;
 }
 
 //______________________________________________________________________________
-Bool_t
+bool
 FiberCluster::Calculate( void )
 {
-  if( m_flag[kInitialized] ){
-    hddaq::cerr << "#E " << FUNC_NAME << " "
+  static const std::string funcname("["+class_name+"::"+__func__+"()]");
+
+  if( m_flag[Initialized] ){
+    hddaq::cerr << "#E " << funcname << " "
 		<< "Already initialied" << std::endl;
     return false;
   }
 
-  m_cluster_size = m_hit_container.size();
-  if( m_cluster_size == 0 ){
-    hddaq::cerr << "#E " << FUNC_NAME << " "
+  if( 0 == (m_cluster_size = m_hit_container.size()) ){
+    hddaq::cerr << "#E " << funcname << " "
 		<< "No FiberHit in local container" << std::endl;
     return false;
   }
 
-  Int_t width = (Int_t)m_hit_container[0]->GetWidth();
-  if( width == -1 )
-    CalculateWithoutWidth();
-  else
-    CalculateWithWidth();
+  calc();
+  if(m_cluster_size == 0){
+    //    std::cout << "FiberCluster is destroied" << std::endl;
+    return false;
+  }
 
-  m_flag[kInitialized] = true;
+  m_flag[Initialized] = true;
 
 #ifdef DEBUG
   Debug();
@@ -87,75 +91,95 @@ FiberCluster::Calculate( void )
 
 //______________________________________________________________________________
 void
-FiberCluster::CalculateWithoutWidth( void )
+FiberCluster::calc( void )
 {
-  Double_t mean_seg  = 0.;
-  Double_t mean_pos  = 0.;
-  Double_t mean_time = 0.;
+  double mean_seg       = 0.;
+  double mean_pos       = 0.;
+  double mean_r         = 0.;
+  double mean_phi       = 0.;
+  double sum_adcLow     = 0.;
+  double sum_mipLow     = 0.;
+  double sum_dELow      = 0.;
+  double mean_time      = std::numeric_limits<double>::quiet_NaN();
+  double max_width      = 0.;
+  double min_width      = 0.;
+  double real_mean_time = 0.;
+  int    cluster_id     = 0;
 
-  mean_seg  = m_hit_container[0]->SegmentId();
-  mean_pos  = m_hit_container[0]->GetPosition();
-  mean_time = m_hit_container[0]->GetCTime();
+  double max_seg        = 0.;
+  double max_adcHi     = 0.;
+  double max_adcLow     = 0.;
+  double max_mipLow     = 0.;
+  double max_dELow      = 0.;
 
-  for( Int_t i = 1; i<m_cluster_size; ++i ){
-    mean_seg += m_hit_container[0]->SegmentId();
-    mean_pos += m_hit_container[i]->GetPosition();
-    Double_t time = m_hit_container[i]->GetCTime();
-    if( TMath::Abs(time) < TMath::Abs(mean_time) ){
+  for( int i=0; i<m_cluster_size; ++i ){
+    if(reject_nan && isnan(m_hit_container.at(i)->GetWidth())){
+      --m_cluster_size;
+      continue;
+    }
+
+    mean_seg       += m_hit_container.at(i)->SegmentId();
+    mean_pos       += m_hit_container.at(i)->GetPosition();
+    mean_r         += m_hit_container.at(i)->GetPositionR();
+    mean_phi       += m_hit_container.at(i)->GetPositionPhi();
+    sum_adcLow     += m_hit_container.at(i)->GetAdcLow();
+    sum_mipLow     += m_hit_container.at(i)->GetMIPLow();
+    sum_dELow      += m_hit_container.at(i)->GetdELow();
+    real_mean_time += m_hit_container.at(i)->GetCTime();
+    double time = m_hit_container.at(i)->GetCTime();
+
+    if(isnan(mean_time)){
+      mean_time = time;
+    }else if( std::abs(time) < std::abs(mean_time) ){
       mean_time = time;
     }
+
+    if( max_width < m_hit_container.at(i)->GetWidth() ){
+      max_width = m_hit_container.at(i)->GetWidth();
+    }
+    if( min_width > m_hit_container.at(i)->GetWidth() ){
+      min_width = m_hit_container.at(i)->GetWidth();
+    }
+
+    if( max_adcLow <= m_hit_container.at(i)->GetAdcLow() ){
+      max_adcHi = m_hit_container.at(i)->GetAdcHi();
+      max_adcLow = m_hit_container.at(i)->GetAdcLow();
+      max_seg = m_hit_container.at(i)->SegmentId();
+      m_max_cluster_id = i;
+    }
+
+    if( max_mipLow <= m_hit_container.at(i)->GetMIPLow() )
+      max_mipLow = m_hit_container.at(i)->GetMIPLow();
+
+    if( max_dELow <= m_hit_container.at(i)->GetdELow() )
+      max_dELow = m_hit_container.at(i)->GetdELow();
+
+    cluster_id  += m_hit_container.at(i)->PairId();
   }
 
-  mean_seg /= Double_t(m_cluster_size);
-  mean_pos /= Double_t(m_cluster_size);
-
-  m_mean_seg  = mean_seg;
-  m_mean_pos  = mean_pos;
-  m_mean_time = mean_time;
-  m_max_width = -1;
-
-}
-
-//______________________________________________________________________________
-void
-FiberCluster::CalculateWithWidth( void )
-{
-  Double_t mean_seg       = 0.;
-  Double_t mean_pos       = 0.;
-  Double_t mean_time      = 0.;
-  Double_t max_width      = 0.;
-  Double_t real_mean_time = 0.;
-  Int_t    cluster_id     = 0;
-
-  mean_seg       = m_hit_container[0]->SegmentId();
-  mean_pos       = m_hit_container[0]->GetPosition();
-  mean_time      = m_hit_container[0]->GetCTime();
-  max_width      = m_hit_container[0]->GetWidth();
-  real_mean_time = m_hit_container[0]->GetCTime();
-  cluster_id     = m_hit_container[0]->PairId();
-
-  for( Int_t i=1; i<m_cluster_size; ++i ){
-    mean_seg       += m_hit_container[i]->SegmentId();
-    mean_pos       += m_hit_container[i]->GetPosition();
-    real_mean_time += m_hit_container[i]->GetCTime();
-    Double_t time = m_hit_container[i]->GetCTime();
-    if( TMath::Abs(time) < TMath::Abs(mean_time) ){
-      mean_time = time;
-    }
-    if( max_width < m_hit_container[i]->GetWidth() ){
-      max_width = m_hit_container[i]->GetWidth();
-    }
-    cluster_id  += m_hit_container[i]->PairId();
-  }
-
-  mean_seg       /= Double_t(m_cluster_size);
-  mean_pos       /= Double_t(m_cluster_size);
-  real_mean_time /= Double_t(m_cluster_size);
+  mean_seg       /= double(m_cluster_size);
+  mean_pos       /= double(m_cluster_size);
+  mean_r         /= double(m_cluster_size);
+  mean_phi       /= double(m_cluster_size);
+  real_mean_time /= double(m_cluster_size);
 
   m_mean_time      = mean_time;
   m_max_width      = max_width;
+  m_min_width      = min_width;
   m_mean_seg       = mean_seg;
   m_mean_pos       = mean_pos;
+  m_mean_r         = mean_r;
+  m_mean_phi       = mean_phi;
+  m_sum_adcLow     = sum_adcLow;
+  m_sum_mipLow     = sum_mipLow;
+  m_sum_dELow      = sum_dELow;
+
+  m_max_adcHi      = max_adcHi;
+  m_max_adcLow     = max_adcLow;
+  m_max_mipLow     = max_mipLow;
+  m_max_dELow      = max_dELow;
+  m_max_seg        = max_seg;
+
   m_real_mean_time = real_mean_time;
   m_cluster_id     = (m_cluster_size == 1) ? 2*cluster_id : cluster_id;
 }
@@ -165,13 +189,13 @@ void
 FiberCluster::Debug( void )
 {
   hddaq::cout << "Used hit" << std::endl;
-  for( Int_t i = 0; i<m_cluster_size; ++i ){
-    m_hit_container[i]->Dump();
+  for(int i = 0; i<m_cluster_size; ++i){
+    m_hit_container.at(i)->Dump();
   }
 }
 
 //______________________________________________________________________________
-Int_t
+int
 FiberCluster::PlaneId( void ) const
 {
   return m_hit_container.at(0)->PlaneId();

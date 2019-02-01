@@ -1,4 +1,10 @@
-// -*- C++ -*-
+/**
+ *  file: TrackHit.cc
+ *  date: 2017.04.10
+ *
+ */
+
+#include "TrackHit.hh"
 
 #include <cstring>
 #include <sstream>
@@ -7,55 +13,56 @@
 #include "DCGeomMan.hh"
 #include "DCLocalTrack.hh"
 #include "DebugCounter.hh"
-#include "TrackHit.hh"
 
-ClassImp(TrackHit);
+namespace
+{
+  const std::string& class_name("TrackHit");
+}
 
 //______________________________________________________________________________
 TrackHit::TrackHit( DCLTrackHit *hit )
-  : TObject(),
-    m_dcltrack_hit(hit)
+  : m_dcltrack_hit(hit)
 {
-  debug::ObjectCounter::Increase(ClassName());
+  debug::ObjectCounter::increase(class_name);
 }
 
 //______________________________________________________________________________
 TrackHit::~TrackHit( void )
 {
-  debug::ObjectCounter::Decrease(ClassName());
+  debug::ObjectCounter::decrease(class_name);
 }
 
 //______________________________________________________________________________
-Double_t
+double
 TrackHit::GetLocalHitPos( void ) const
 {
   return m_dcltrack_hit->GetLocalHitPos();
 }
 
 //______________________________________________________________________________
-Double_t
+double
 TrackHit::GetResidual( void ) const
 {
-  Double_t a = GetTiltAngle()*math::Deg2Rad();
-  Double_t u = m_cal_global_mom.x()/m_cal_global_mom.z();
-  Double_t v = m_cal_global_mom.y()/m_cal_global_mom.z();
-  Double_t dsdz = u*std::cos(a)+v*std::sin(a);
-  Double_t coss = IsHoneycomb() ? std::cos( std::atan(dsdz) ) : 1.;
-  Double_t wp   = GetWirePosition();
-  Double_t ss   = wp+(GetLocalHitPos()-wp)/coss;
+  double a = GetTiltAngle()*math::Deg2Rad();
+  double u = m_cal_global_mom.x()/m_cal_global_mom.z();
+  double v = m_cal_global_mom.y()/m_cal_global_mom.z();
+  double dsdz = u*std::cos(a)+v*std::sin(a);
+  double coss = IsHoneycomb() ? std::cos( std::atan(dsdz) ) : 1.;
+  double wp   = GetWirePosition();
+  double ss   = wp+(GetLocalHitPos()-wp)/coss;
   return (ss-m_cal_local_pos)*coss;
 }
 
 //______________________________________________________________________________
-Double_t
+double
 TrackHit::GetTiltAngle( void ) const
 {
   return m_dcltrack_hit->GetTiltAngle();
 }
 
 //______________________________________________________________________________
-Bool_t
-TrackHit::ReCalc( Bool_t applyRecursively )
+bool
+TrackHit::ReCalc( bool applyRecursively )
 {
   if( applyRecursively )
     return m_dcltrack_hit->ReCalc(applyRecursively);

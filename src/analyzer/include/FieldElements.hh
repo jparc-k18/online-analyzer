@@ -1,19 +1,21 @@
-// -*- C++ -*-
+/**
+ *  file: FieldElements.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef FIELD_ELEMENTS_HH
 #define FIELD_ELEMENTS_HH
-
-#include <TObject.h>
 
 #include "DCGeomRecord.hh"
 #include "ThreeVector.hh"
 
 //______________________________________________________________________________
-class FieldElements : public TObject
+class FieldElements
 {
 public:
-  FieldElements( const TString& name, const ThreeVector& pos,
-                 Double_t ta, Double_t ra1, Double_t ra2 );
+  FieldElements( const char *name, const ThreeVector &pos,
+                 double ta, double ra1, double ra2 );
   virtual ~FieldElements( void );
 
 private:
@@ -22,7 +24,7 @@ private:
 
 public:
   static FERegion FERSurface( void ) { return kFERSurface; }
-  static FERegion FERInside( void )  { return kFERInside;  }
+  static FERegion FERInside( void ) { return kFERInside;  }
   static FERegion FEROutside( void ) { return kFEROutside; }
   ThreeVector     Local2GlobalPos( const ThreeVector &in ) const;
   ThreeVector     Local2GlobalDir( const ThreeVector &in ) const;
@@ -30,11 +32,9 @@ public:
   ThreeVector     Global2LocalDir( const ThreeVector &in ) const;
 
   virtual ThreeVector GetField( const ThreeVector &gPos ) const = 0;
-  virtual Bool_t      ExistField( const ThreeVector &gPos ) const = 0;
+  virtual bool        ExistField( const ThreeVector &gPos ) const = 0;
   virtual FERegion    CheckRegion( const ThreeVector &gPos,
-				   Double_t Tolerance ) const = 0;
-
-  ClassDef(FieldElements,0);
+				   double Tolerance ) const = 0;
 };
 
 #endif

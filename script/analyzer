@@ -27,8 +27,7 @@ data_dir=(
 )
 
 ##### configure file
-#conf_file=/param/conf/analyzer.conf
-conf_file=/param/conf/analyzer_20180628.conf
+conf_file=/param/conf/analyzer.conf
 
 #######################################################################
 if [ ! -f $exe_file ]; then

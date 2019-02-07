@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// Author: Shuhei Hayakawa
+#include "ScalerAnalyzer.hh"
 
 #include <algorithm>
 #include <iomanip>
@@ -8,7 +8,6 @@
 #include <iterator>
 #include <sstream>
 #include <stdexcept>
-#include <string>
 
 #include <TCanvas.h>
 #include <TLatex.h>
@@ -25,10 +24,7 @@
 #include "DetectorID.hh"
 #include "Exception.hh"
 #include "FuncName.hh"
-#include "ScalerAnalyzer.hh"
 #include "UserParamMan.hh"
-
-ClassImp(ScalerAnalyzer);
 
 namespace
 {
@@ -229,7 +225,7 @@ ScalerAnalyzer::DrawOneLine( const TString& title1, const TString& val1,
   line.SetLineColor(kBlack);
   line.DrawLine( 0.34, y-0.5*ystep, 0.34, y+0.5*ystep );
   line.DrawLine( 0.66, y-0.5*ystep, 0.66, y+0.5*ystep );
-  if( i==1 || i==5 || i==16 )
+  if( i==1 || i==5 || i==15 )
     line.DrawLine( 0.05, y-0.5*ystep, 0.95, y-0.5*ystep );
 
   ++i;
@@ -310,7 +306,6 @@ ScalerAnalyzer::Print( Option_t* ) const
 {
   m_ost << "\033[2J" << std::endl;
 
-  // Double_t kpi_ratio = (Double_t)Get("K-Beam")/Get("pi-Beam");
   TString end_mark = m_is_spill_end ? "Spill End" : "";
 
   Int_t event_number = gUnpacker.get_event_number();
@@ -322,9 +317,6 @@ ScalerAnalyzer::Print( Option_t* ) const
 	    << std::right << std::setw(16) << end_mark
 	    << std::endl << std::endl;
 
-  Double_t beam      = (Double_t)Get("Beam");
-  Double_t tm        = (Double_t)Get("TM");
-  Double_t bh2k      = (Double_t)Get("(BH2,K)");
   for( Int_t i=0; i<MaxRow; ++i ){
     m_ost << std::left  << std::setw(16) << m_info[kLeft][i].name
 	  << std::right << std::setw(16) << SeparateComma( m_info[kLeft][i].data )
@@ -338,13 +330,13 @@ ScalerAnalyzer::Print( Option_t* ) const
   }
   m_ost << std::endl  << std::setprecision(6) << std::fixed
 	<< std::left  << std::setw(16) << "Beam/TM"
-	<< std::right << std::setw(16) << beam/tm << " : "
+	<< std::right << std::setw(16) << Fraction("Beam", "TM") << " : "
 	<< std::left  << std::setw(16) << "Live/Real"
 	<< std::right << std::setw(16) << Fraction("Live-Time","Real-Time") << " : "
 	<< std::left  << std::setw(16) << "DAQ-Eff"
 	<< std::right << std::setw(16) << Fraction("L1-Acc","L1-Req") << std::endl
 	<< std::left  << std::setw(16) << "(BH2,K)/Beam"
-	<< std::right << std::setw(16) << bh2k/beam << " : "
+	<< std::right << std::setw(16) << Fraction("(BH2,K)", "Beam") << " : "
 	<< std::left  << std::setw(16) << "L2-Eff"
 	<< std::right << std::setw(16) << Fraction("L2-Acc","L1-Acc") << " : "
 	<< std::left  << std::setw(16) << "Duty-Factor"
@@ -418,21 +410,23 @@ ScalerAnalyzer::PrintScalerSheet( void )
 	       "(BH2,TOF)", SeparateComma( Get("(BH2,TOF)") ),
 	       "Width", "[s]" );
 
-  DrawOneLine( "BH1",    "BH1-SUM",  "L1-Req"   );
-  DrawOneLine( "BH2",    "BH2-SUM",  "L1-Acc"   );
+  DrawOneLine( "BH1",    "BH1-SUM",  "L1-Req"  );
+  DrawOneLine( "BH2",    "BH2-SUM",  "L1-Acc"  );
   DrawOneLine( "SAC",    "(BH2,pi)",  "Matrix"  );
   DrawOneLine( "SCH",    "(BH2,p)",   "Mst-Acc" );
-  DrawOneLine( "FHT1",   "K-Scat",   "Mst-Clr"  );
-  DrawOneLine( "FHT2",   "(BH2,K)",  "Clear"    );
-  DrawOneLine( "TOF",    "CFT-Phi1", "L2-Req"   );
-  DrawOneLine( "TOF-HT", "CFT-Phi2", "L2-Acc"   );
-  DrawOneLine( "TOF-24", "CFT-Phi3", "PiID"     );
-  DrawOneLine( "LC",     "CFT-Phi4", "pi-Scat"  );
-  DrawOneLine( "BGO",    "CFT-3Coin", "p-Scat"  );
+  DrawOneLine( "TOF",    "K-Scat",   "Mst-Clr" );
+  DrawOneLine( "TOF-HT", "(BH2,K)",  "Clear"   );
+  DrawOneLine( "TOF-24", "CFT-Phi1", "L2-Req"  );
+  DrawOneLine( "LC",     "CFT-Phi2", "L2-Acc"  );
+  DrawOneLine( "BGO",    "CFT-Phi3", "pi-Scat" );
+  DrawOneLine( "PiID",   "CFT-Phi4", "p-Scat"  );
 
-  DrawOneLine( "L2 Eff",      Form("%.6lf", Fraction("L2-Acc","L1-Acc")),
-	       "Duty Factor", Form("%.6lf", Duty()),
-	       "DAQ Eff",     Form("%.6lf", Fraction("L1-Acc","L1-Req")) );
+  DrawOneLine( "Beam/TM",   Form("%.6lf", Fraction("Beam","TM")),
+	       "Live/Real", Form("%.6lf", Fraction("Live-Time","Real-Time")),
+	       "DAQ Eff",   Form("%.6lf", Fraction("L1-Acc","L1-Req")) );
+  DrawOneLine( "(BH2,K)/Beam", Form("%.6lf", Fraction("(BH2,K)","Beam")),
+	       "L2 Eff",       Form("%.6lf", Fraction("L2-Acc","L1-Acc")),
+	       "Duty Factor",  Form("%.6lf", Duty()) );
 
   const TString& scaler_sheet_pdf("/tmp/scaler_sheet.pdf");
   m_canvas->Print( scaler_sheet_pdf );

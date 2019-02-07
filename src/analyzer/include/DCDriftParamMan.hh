@@ -1,27 +1,34 @@
-// -*- C++ -*-
+/**
+ *  file: DCDriftParamMan.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef DC_DRIFT_PARAM_MAN_HH
 #define DC_DRIFT_PARAM_MAN_HH
 
 #include <map>
 #include <string>
+#include <vector>
 
-#include <TObject.h>
-#include <TString.h>
+struct DCDriftParamRecord;
 
 //______________________________________________________________________________
 struct DCDriftParamRecord
 {
-public:
-  Int_t type, np;
-  std::vector<Double_t> p;
+  int type, np;
+  std::vector<double> param;
+  DCDriftParamRecord( int t, int n, std::vector<double> p )
+    : type(t), np(n), param(p)
+  {}
 };
 
 //______________________________________________________________________________
-class DCDriftParamMan : public TObject
+class DCDriftParamMan
 {
 public:
-  static DCDriftParamMan& GetInstance( void );
+  static DCDriftParamMan&   GetInstance( void );
+  static const std::string& ClassName( void );
   ~DCDriftParamMan( void );
 
 private:
@@ -30,31 +37,35 @@ private:
   DCDriftParamMan& operator =( const DCDriftParamMan& );
 
 private:
-  Bool_t                                m_is_ready;
-  TString                               m_file_name;
-  std::map<UInt_t, DCDriftParamRecord*> m_map;
+  typedef std::map<unsigned int, DCDriftParamRecord*> DCDriftContainer;
+  typedef DCDriftContainer::const_iterator DCDriftIterator;
+  bool             m_is_ready;
+  std::string      m_file_name;
+  DCDriftContainer m_container;
 
 public:
-  Bool_t Initialize( void );
-  Bool_t Initialize( const TString& file_name ) { SetFileName(file_name); return Initialize(); }
-  Bool_t IsReady( void ) const { return m_is_ready; }
-  void   SetFileName( const TString& file_name) { m_file_name = file_name; }
-  Bool_t CalcDrift( Int_t PlaneId, Double_t WireId, Double_t ctime,
-		    Double_t & dt, Double_t & dl ) const;
+  bool CalcDrift( int PlaneId, double WireId, double ctime, double & dt, double & dl ) const;
+  bool Initialize( void );
+  bool Initialize( const std::string& file_name );
+  bool IsReady( void ) const { return m_is_ready; }
+  void SetFileName( const std::string& file_name ) { m_file_name = file_name; }
 
 private:
-  DCDriftParamRecord* getParameter( Int_t PlaneId, Double_t WireId ) const;
-  void clearElements( void );
-
-  Double_t DriftLength1( Double_t dt, Double_t vel ) const;
-  Double_t DriftLength2( Double_t dt, Double_t p1, Double_t p2, Double_t p3,
-			 Double_t st, Double_t p5, Double_t p6 ) const;
-  Double_t DriftLength3( Double_t dt, Double_t p1, Double_t p2, Int_t PlaneId) const;
-  Double_t DriftLength4( Double_t dt, Double_t p1, Double_t p2, Double_t p3) const;
-  Double_t DriftLength5( Double_t dt, Double_t p1, Double_t p2, Double_t p3, Double_t p4, Double_t p5) const;
-  Double_t DriftLength6( Int_t PlaneId, Double_t dt, Double_t p1, Double_t p2 ,Double_t p3, Double_t p4, Double_t p5) const;
-
-  ClassDef(DCDriftParamMan,0);
+  void                ClearElements( void );
+  static double       DriftLength1( double dt, double vel );
+  static double       DriftLength2( double dt, double p1, double p2, double p3,
+				    double st, double p5, double p6 );
+  static double       DriftLength3( double dt, double p1, double p2, int PlaneId );
+  static double       DriftLength4( double dt, double p1, double p2, double p3 );
+  static double       DriftLength5( double dt, double p1, double p2, double p3,
+				    double p4, double p5 );
+  static double       DriftLength6( int PlaneId,
+				    double dt, double p1, double p2, double p3,
+				    double p4, double p5 );
+  static double       DriftLength7( int PlaneId,
+				    double dt, double p1, double p2, double p3,
+				    double p4, double p5, double p6 );
+  DCDriftParamRecord* GetParameter( int PlaneId, double WireId ) const;
 };
 
 //______________________________________________________________________________
@@ -63,6 +74,14 @@ DCDriftParamMan::GetInstance( void )
 {
   static DCDriftParamMan g_instance;
   return g_instance;
+}
+
+//______________________________________________________________________________
+inline const std::string&
+DCDriftParamMan::ClassName( void )
+{
+  static std::string g_name("DCDriftParamMan");
+  return g_name;
 }
 
 #endif

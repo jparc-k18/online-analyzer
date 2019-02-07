@@ -1,23 +1,28 @@
-// -*- C++ -*-
+/**
+ *  file: FieldMan.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef FIELD_MAN_HH
 #define FIELD_MAN_HH
 
+#include "ThreeVector.hh"
 #include <string>
 #include <vector>
-
-#include <TObject.h>
-
-#include "ThreeVector.hh"
 
 class KuramaFieldMap;
 class FieldElements;
 
+typedef std::vector <FieldElements*> FEContainer;
+typedef std::vector <FieldElements*>::const_iterator FEIterator;
+
 //______________________________________________________________________________
-class FieldMan : public TObject
+class FieldMan
 {
 public:
-  static FieldMan& GetInstance( void );
+  static FieldMan&          GetInstance( void );
+  static const std::string& ClassName( void );
   ~FieldMan( void );
 
 private:
@@ -26,30 +31,25 @@ private:
   FieldMan & operator =( const FieldMan& );
 
 private:
-  typedef std::vector<FieldElements*> FEContainer;
-  typedef FEContainer::const_iterator FEIterator;
-
-  Bool_t          m_is_ready;
-  TString         m_file_name;
-  KuramaFieldMap* m_kurama_map;
+  bool            m_is_ready;
+  std::string     m_file_name;
+  KuramaFieldMap *m_kurama_map;
   FEContainer     m_element_list;
 
 public:
-  Bool_t      Initialize( void );
-  Bool_t      Initialize( const TString& file_name );
-  Bool_t      IsReady( void ) const { return m_is_ready; }
+  bool        Initialize( void );
+  bool        Initialize( const char *file_name );
+  bool        Initialize( const std::string& file_name );
+  bool        IsReady( void ) const { return m_is_ready; }
   ThreeVector GetField( const ThreeVector& position ) const;
   ThreeVector GetdBdX( const ThreeVector& position ) const;
   ThreeVector GetdBdY( const ThreeVector& position ) const;
   ThreeVector GetdBdZ( const ThreeVector& position ) const;
   void        ClearElementsList( void );
-  void        AddElement( FieldElements* element );
-  void        SetFileName( const TString& file_name ) { m_file_name = file_name; }
-  Double_t    StepSize( const ThreeVector& position,
-			Double_t default_step_size,
-			Double_t min_step_size ) const;
-
-  ClassDef(FieldMan,0);
+  void        AddElement( FieldElements *element );
+  void        SetFileName( const std::string& file_name ) { m_file_name = file_name; }
+  double      StepSize( const ThreeVector& position,
+			double default_step_size, double min_step_size ) const;
 };
 
 //______________________________________________________________________________
@@ -58,6 +58,14 @@ FieldMan::GetInstance( void )
 {
   static FieldMan g_instance;
   return g_instance;
+}
+
+//______________________________________________________________________________
+inline const std::string&
+FieldMan::ClassName( void )
+{
+  static std::string g_name("FieldMan");
+  return g_name;
 }
 
 #endif

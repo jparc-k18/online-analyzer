@@ -4186,13 +4186,13 @@ TList* HistMaker::createTOF_HT( Bool_t flag_ps )
     // Make histogram and add it
     Int_t target_id = getUniqueID(kTOF_HT, 0, kTDC, 0);
     //    for(Int_t i = 0; i<NumOfSegTOF_HT*2; ++i){
-    for(Int_t i = 0; i<NumOfSegTOF_HT; ++i){
+    for(Int_t i = 0; i<NumOfSegHtTOF; ++i){
       const char* title = NULL;
-      if(i < NumOfSegTOF_HT){
+      if(i < NumOfSegHtTOF){
 	//	Int_t seg = i+1; // 1 origin
 	//	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
 	//	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg;
-		title = DetTOF_HT::STOF_HT[i];
+		title = DetHtTOF::SHtTOF[i];
 	//      }else{
 	//	Int_t seg = i+1-NumOfSegTOF_HT; // 1 origin
 	//	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
@@ -4213,7 +4213,7 @@ TList* HistMaker::createTOF_HT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kTOF_HT, 0, kHitPat, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-			   NumOfSegTOF_HT, 0, NumOfSegTOF_HT,
+			   NumOfSegHtTOF, 0, NumOfSegHtTOF,
 			   "Segment", ""));
   }
 
@@ -4223,7 +4223,7 @@ TList* HistMaker::createTOF_HT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kTOF_HT, 0, kMulti, 0);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-			   NumOfSegTOF_HT, 0, NumOfSegTOF_HT,
+			   NumOfSegHtTOF, 0, NumOfSegHtTOF,
 			   "Multiplicity", ""));
   }
 
@@ -6216,9 +6216,75 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
+  //cluster ADC-2D HighGain -----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kCluster_hgadc);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kCFT, kCluster, kHighGain, 10);
+    const char* sub_name = "seg-MaxHG";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfPlaneCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     4096/8, 0, 4096,
+			     "Fiber", "ADC [ch]"));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  //cluster ADC-2D LowGain -----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kCluster_lgadc);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kCFT, kCluster, kLowGain, 10);
+    const char* sub_name = "seg-MaxLG";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfPlaneCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     4096/8, 0, 4096,
+			     "Fiber", "ADC [ch]"));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  //cluster TDC-2D -----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kCluster_tdc);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kCFT, kCluster, kTDC2D, 0);
+    const char* sub_name = "seg-TDC maxseg";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfPlaneCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_2D_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegCFT[i], 0, NumOfSegCFT[i],
+			     1024, 0, 1024,
+			     "Fiber", "TDC [ch]"));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
+
+
 
 // -------------------------------------------------------------------------
 // createBGO

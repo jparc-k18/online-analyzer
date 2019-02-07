@@ -1,86 +1,97 @@
-// -*- C++ -*-
+/**
+ *  file: DCGeomMan.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef DC_GEOM_MAN_HH
 #define DC_GEOM_MAN_HH
 
+#include "ThreeVector.hh"
 #include <string>
 #include <vector>
 #include <map>
 
-#include "ThreeVector.hh"
-
 class DCGeomRecord;
 
 //______________________________________________________________________________
-class DCGeomMan : public TObject
+class DCGeomMan
 {
 public:
-  static DCGeomMan & GetInstance( void );
+  static DCGeomMan&         GetInstance( void );
+  static const std::string& ClassName( void );
   ~DCGeomMan( void );
 
 private:
   DCGeomMan( void );
   DCGeomMan( const DCGeomMan& );
-  DCGeomMan& operator =( const DCGeomMan& );
+  DCGeomMan& operator=( const DCGeomMan& );
 
 private:
-  typedef std::map <Int_t, DCGeomRecord *> DCGeomMap;
-  typedef DCGeomMap::const_iterator        DCGeomIterator;
-  Bool_t    m_is_ready;
-  TString   m_file_name;
-  DCGeomMap m_map;
-  Int_t     TOFid_;
-  Int_t     LCid_;
+  typedef std::map <int, DCGeomRecord*>   DCGeomContainer;
+  typedef DCGeomContainer::const_iterator DCGeomIterator;
+  typedef std::map <std::string, int>     IntList;
+  typedef std::map <std::string, double>  DoubleList;
+  bool            m_is_ready;
+  std::string     m_file_name;
+  DCGeomContainer m_container;
+  IntList         m_detector_id_map;
+  DoubleList      m_global_z_map;
+  DoubleList      m_local_z_map;
 
 public:
-  void                SetFileName( const char* file_name ) { m_file_name = file_name; }
-  void                SetFileName( const TString & file_name ) { m_file_name = file_name; }
-  Bool_t              Initialize( void );
-  Bool_t              Initialize( const char* file_name )
-  { m_file_name = file_name; return Initialize(); }
-  Bool_t              Initialize( const TString& file_name )
-  { m_file_name = file_name; return Initialize(); }
-  Bool_t              IsReady( void ) const { return m_is_ready; }
-  Double_t            GetLocalZ( Int_t lnum ) const;
-  Double_t            GetLocalZ( const TString& name ) const;
-  Double_t            GetResolution( Int_t lnum ) const;
-  Double_t            GetResolution( const TString& name ) const;
-  Double_t            GetTiltAngle( Int_t lnum ) const;
-  Double_t            GetTiltAngle( const TString& name ) const;
-  Double_t            GetRotAngle1( Int_t lnum ) const;
-  Double_t            GetRotAngle1( const TString& name ) const;
-  Double_t            GetRotAngle2( Int_t lnum ) const;
-  Double_t            GetRotAngle2( const TString& name ) const;
-  const ThreeVector&  GetGlobalPosition( Int_t lnum ) const;
-  const ThreeVector&  GetGlobalPosition( const TString& name ) const;
-  ThreeVector         NormalVector( Int_t lnum ) const;
-  ThreeVector         NormalVector( const TString& name ) const;
-  ThreeVector         UnitVector( Int_t lnum ) const;
-  ThreeVector         UnitVector( const TString& name ) const;
-  const DCGeomRecord* GetRecord( Int_t lnum ) const;
-  const DCGeomRecord* GetRecord( const TString& name ) const;
-  ThreeVector         Local2GlobalPos( Int_t lnum, const ThreeVector &in ) const;
-  ThreeVector         Local2GlobalPos( const TString& name, const ThreeVector &in ) const;
-  ThreeVector         Global2LocalPos( Int_t lnum, const ThreeVector &in ) const;
-  ThreeVector         Global2LocalPos( const TString& name, const ThreeVector &in ) const;
-  ThreeVector         Local2GlobalDir( Int_t lnum, const ThreeVector &in ) const;
-  ThreeVector         Local2GlobalDir( const TString& name, const ThreeVector &in ) const;
-  ThreeVector         Global2LocalDir( Int_t lnum, const ThreeVector &in ) const;
-  ThreeVector         Global2LocalDir( const TString& name, const ThreeVector &in ) const;
-  Double_t            CalcWirePosition( Int_t lnum, Double_t wire ) const;
-  Int_t               CalcWireNumber( Int_t lnum, Double_t position ) const;
-  std::vector<Int_t>  GetDetectorIDList( void ) const;
-  Int_t               GetTofId( void ) const { return TOFid_; }
-  Int_t               GetLcId( void ) const { return LCid_; }
-  Int_t               GetDetectorId( const TString& name ) const;
+  bool                Initialize( void );
+  bool                Initialize( const char *file_name );
+  bool                Initialize( const std::string& file_name );
+  bool                IsReady( void ) const { return m_is_ready; }
+  double              GetLocalZ( int lnum ) const;
+  double              GetLocalZ( const std::string& key ) const;
+  double              GetResolution( int lnum ) const;
+  double              GetResolution( const std::string& key ) const;
+  double              GetTiltAngle( int lnum ) const;
+  double              GetTiltAngle( const std::string& key ) const;
+  double              GetRotAngle1( int lnum ) const;
+  double              GetRotAngle1( const std::string& key ) const;
+  double              GetRotAngle2( int lnum ) const;
+  double              GetRotAngle2( const std::string& key ) const;
+  const ThreeVector&  GetGlobalPosition( int lnum ) const;
+  const ThreeVector&  GetGlobalPosition( const std::string& key ) const;
+  ThreeVector         NormalVector( int lnum ) const;
+  ThreeVector         NormalVector( const std::string& key ) const;
+  ThreeVector         UnitVector( int lnum ) const;
+  ThreeVector         UnitVector( const std::string& key ) const;
+  const DCGeomRecord* GetRecord( int lnum ) const;
+  const DCGeomRecord* GetRecord( const std::string& key ) const;
+  ThreeVector         Local2GlobalPos( int lnum, const ThreeVector &in ) const;
+  ThreeVector         Local2GlobalPos( const std::string& key, const ThreeVector &in ) const;
+  ThreeVector         Global2LocalPos( int lnum, const ThreeVector &in ) const;
+  ThreeVector         Global2LocalPos( const std::string& key, const ThreeVector &in ) const;
+  ThreeVector         Local2GlobalDir( int lnum, const ThreeVector &in ) const;
+  ThreeVector         Local2GlobalDir( const std::string& key, const ThreeVector &in ) const;
+  ThreeVector         Global2LocalDir( int lnum, const ThreeVector &in ) const;
+  ThreeVector         Global2LocalDir( const std::string& key, const ThreeVector &in ) const;
+  double              CalcWirePosition( int lnum, double wire ) const;
+  double              CalcWirePosition( const std::string& key, double wire ) const;
+  int                 CalcWireNumber( int lnum, double position ) const;
+  int                 CalcWireNumber( const std::string& key, double position ) const;
+  std::vector<int>    GetDetectorIDList( void ) const;
+  int                 GetDetectorId( const std::string &key ) const;
+  void                SetFileName( const char *file_name );
+  void                SetFileName( const std::string &file_name );
   // Do not use this method except for special cases
-  void                SetResolution( Int_t lnum, Double_t res );
-  //
+  void                SetResolution( int lnum, double res );
+  void                SetResolution( const std::string& key, double res );
+
+  double              CalcCFTPositionR(  int lnum, int seg ) const;
+  double              CalcCFTPositionPhi(int lnum, int seg ) const;
+
+  // Static method
+  static const int&    DetectorId( const std::string& key );
+  static const double& GlobalZ( const std::string& key );
+  static const double& LocalZ( const std::string& key );
 
 private:
-  void clearElements( void );
-
-  ClassDef(DCGeomMan,0);
+  void ClearElements( void );
 };
 
 //______________________________________________________________________________
@@ -89,6 +100,35 @@ DCGeomMan::GetInstance( void )
 {
   static DCGeomMan g_instance;
   return g_instance;
+}
+
+//______________________________________________________________________________
+inline const std::string&
+DCGeomMan::ClassName( void )
+{
+  static std::string g_name("DCGeomMan");
+  return g_name;
+}
+
+//______________________________________________________________________________
+inline const int&
+DCGeomMan::DetectorId( const std::string& key )
+{
+  return GetInstance().m_detector_id_map[key];
+}
+
+//______________________________________________________________________________
+inline const double&
+DCGeomMan::GlobalZ( const std::string& key )
+{
+  return GetInstance().m_global_z_map[key];
+}
+
+//______________________________________________________________________________
+inline const double&
+DCGeomMan::LocalZ( const std::string& key )
+{
+  return GetInstance().m_local_z_map[key];
 }
 
 #endif

@@ -1,19 +1,21 @@
-// -*- C++ -*-
+/**
+ *  file: KuramaTrack.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef KURAMA_TRACK_HH
 #define KURAMA_TRACK_HH
+
+#include "RungeKuttaUtilities.hh"
+#include "ThreeVector.hh"
 
 #include <vector>
 #include <iosfwd>
 #include <iostream>
 #include <functional>
 
-#include <TObject.h>
-
 #include <std_ostream.hh>
-
-#include "RungeKuttaUtilities.hh"
-#include "ThreeVector.hh"
 
 class DCLocalTrack;
 class TrackHit;
@@ -21,7 +23,7 @@ class DCAnalyzer;
 class Hodo2Hit;
 
 //______________________________________________________________________________
-class KuramaTrack : public TObject
+class KuramaTrack
 {
 public:
   KuramaTrack( DCLocalTrack *track_in, DCLocalTrack *track_out );
@@ -47,85 +49,80 @@ private:
   RKstatus                m_status;
   DCLocalTrack           *m_track_in;
   DCLocalTrack           *m_track_out;
-  Double_t                m_tof_seg;
-  Double_t                m_initial_momentum;
+  double                  m_tof_seg;
+  double                  m_initial_momentum;
   std::vector<TrackHit*>  m_hit_array;
   RKHitPointContainer     m_HitPointCont;
-  Int_t                   m_n_iteration;
-  Int_t                   m_nef_iteration;
-  Double_t                m_chisqr;
-  Double_t                m_polarity;
+  int                     m_n_iteration;
+  int                     m_nef_iteration;
+  double                  m_chisqr;
+  double                  m_polarity;
   ThreeVector             m_primary_position;
   ThreeVector             m_primary_momentum;
-  Double_t                m_path_length_tof;
-  Double_t                m_path_length_total;
+  double                  m_path_length_tof;
+  double                  m_path_length_total;
   ThreeVector             m_tof_pos;
   ThreeVector             m_tof_mom;
   RKCordParameter         m_cord_param;
-  Bool_t                  m_gfastatus;
-  std::vector<Double_t>   m_ssd_seg;
+  bool                    m_gfastatus;
 
 public:
-  DCLocalTrack*      GetLocalTrackIn( void ) const { return m_track_in;}
-  DCLocalTrack*      GetLocalTrackOut( void ) const { return m_track_out; }
-  Bool_t             DoFit( void );
-  Bool_t             DoFit( RKCordParameter iniCord );
-  Bool_t             DoFitMinuit( void );
-  Bool_t             Status( void ) const { return m_status; }
-  Int_t              Niteration( void ) const { return m_n_iteration; }
-  void               SetInitialMomentum( Double_t initial_momentum ) { m_initial_momentum = initial_momentum; }
+  DCLocalTrack*      GetLocalTrackIn( void ) { return m_track_in;}
+  DCLocalTrack*      GetLocalTrackOut( void ) { return m_track_out; }
+  bool               DoFit( void );
+  bool               DoFit( RKCordParameter iniCord );
+  bool               DoFitMinuit( void );
+  bool               Status( void ) const { return m_status; }
+  int                Niteration( void ) const { return m_n_iteration; }
+  void               SetInitialMomentum( double initial_momentum )
+  { m_initial_momentum = initial_momentum; }
   const ThreeVector& PrimaryPosition( void ) const { return m_primary_position; }
   const ThreeVector& PrimaryMomentum( void ) const { return m_primary_momentum; }
-  Double_t           PrimaryMomMag( void )   const { return m_primary_momentum.Mag();}
-  Double_t           PathLengthToTOF( void ) const { return m_path_length_tof; }
-  Double_t           PathLengthTotal( void ) const { return m_path_length_total; }
-  Double_t           TofSeg( void ) const { return m_tof_seg; }
+  double             PrimaryMomMag( void )   const { return m_primary_momentum.Mag();}
+  double             PathLengthToTOF( void ) const { return m_path_length_tof; }
+  double             PathLengthTotal( void ) const { return m_path_length_total; }
+  double             TofSeg( void ) const { return m_tof_seg; }
   const ThreeVector& TofPos( void ) const { return m_tof_pos; }
   const ThreeVector& TofMom( void ) const { return m_tof_mom; }
-  Double_t           Chisqr( void )          const { return m_chisqr; }
-  Double_t           Polarity( void )        const { return m_polarity; }
-  Int_t              GetNDF( void )          const;
-  Int_t              GetNHits( void )        const { return m_hit_array.size(); }
-  TrackHit*          GetHit( Int_t i ) const;
-  TrackHit*          GetHitOfLayerNumber( Int_t lnum ) const;
-  Bool_t             GoodForAnalysis( void ) const { return m_gfastatus; }
-  Bool_t             GoodForAnalysis( Bool_t status )
-  { Bool_t ret=m_gfastatus; m_gfastatus=status; return ret; }
-  Double_t           GetInitialMomentum( void ) const { return m_initial_momentum; }
-  Bool_t             GetTrajectoryLocalPosition( Int_t layer, Double_t & x, Double_t & y ) const;
-  // for SSD
-  std::vector<Double_t> GetSsdSeg( void ) const { return m_ssd_seg; }
-
-  void               Print( Option_t* option="" ) const;
-  Bool_t             ReCalc( Bool_t applyRecursively=false );
+  double             chisqr( void )          const { return m_chisqr; }
+  double             Polarity( void )        const { return m_polarity; }
+  std::size_t        GetNHits( void )        const { return m_hit_array.size(); }
+  TrackHit*          GetHit( std::size_t nth ) const;
+  TrackHit*          GetHitOfLayerNumber( int lnum ) const;
+  bool               GoodForAnalysis( void ) const { return m_gfastatus; }
+  bool               GoodForAnalysis( bool status )
+  { bool ret=m_gfastatus; m_gfastatus=status; return ret; }
+  double             GetInitialMomentum( void ) const { return m_initial_momentum; }
+  bool               GetTrajectoryLocalPosition( int layer, double & x, double & y ) const;
+  void               Print( const std::string& arg="", std::ostream& ost=hddaq::cout );
+  bool               ReCalc( bool applyRecursively=false );
 
 private:
-  void     FillHitArray( void );
-  void     ClearHitArray( void );
-  Double_t CalcChiSqr( const RKHitPointContainer &hpCont ) const;
-  Bool_t   GuessNextParameters( const RKHitPointContainer &hpCont,
-				RKCordParameter &Cord,
-				Double_t &estDeltaChisqr,
-				Double_t &lambdaCri, Double_t dmp=0. ) const;
-  Bool_t   SaveCalcPosition( const RKHitPointContainer &hpCont );
-  void     PrintCalcHits( const RKHitPointContainer &hpCont,
-			  std::ostream &ost = std::cout ) const;
-  Bool_t   SaveTrackParameters( const RKCordParameter &cp );
+  void   FillHitArray( void );
+  void   ClearHitArray( void );
+  double CalcChiSqr( const RKHitPointContainer &hpCont ) const;
+  bool   GuessNextParameters( const RKHitPointContainer &hpCont,
+			      RKCordParameter &Cord,
+			      double &estDeltaChisqr,
+			      double &lambdaCri, double dmp=0. ) const;
+  bool   SaveCalcPosition( const RKHitPointContainer &hpCont );
+  void   PrintCalcHits( const RKHitPointContainer &hpCont,
+			std::ostream &ost = std::cout ) const;
+  bool   SaveTrackParameters( const RKCordParameter &cp );
 
-  ClassDef(KuramaTrack,0);
 };
 
 //______________________________________________________________________________
 struct KuramaTrackComp
-  : public std::binary_function<KuramaTrack*, KuramaTrack*, Bool_t>
+  : public std::binary_function<KuramaTrack*, KuramaTrack*, bool>
 {
-  Bool_t operator()( const KuramaTrack * const p1,
-		     const KuramaTrack * const p2 ) const
+  bool operator()( const KuramaTrack * const p1,
+		   const KuramaTrack * const p2 ) const
   {
-    Int_t n1=p1->GetNHits(), n2=p2->GetNHits();
+    int n1=p1->GetNHits(), n2=p2->GetNHits();
     if( n1>n2+1 ) return true;
     if( n2>n1+1 ) return false;
-    return (p1->Chisqr())<(p2->Chisqr());
+    return (p1->chisqr())<(p2->chisqr());
   }
 };
 

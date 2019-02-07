@@ -17,7 +17,7 @@
 #include <UnpackerManager.hh>
 
 #include "user_analyzer.hh"
-#include "DebugCounter.hh"
+//#include "DebugCounter.hh"
 
 ClassImp(analyzer::Main)
 
@@ -219,7 +219,7 @@ Main::run()
 	      if (isRunning())
 		{
 		  // TThread::Lock();
-		  debug::ObjectCounter::Check();
+		  //debug::ObjectCounter::Check();
 		  int ret = process_event();
 		  if( ret!=0 ){
 		    std::cout << "#D1 analyzer::process_event() return " << ret << std::endl;
@@ -259,7 +259,7 @@ Main::run()
       g_unpacker.initialize();
       for ( ; !g_unpacker.eof() && !gSystem->ProcessEvents();
 	    ++g_unpacker ){
-	debug::ObjectCounter::Check();
+	//debug::ObjectCounter::Check();
 	int ret = process_event();
 	if( ret!=0 ){
 	  std::cout << "#D2 analyzer::process_event() return " << ret << std::endl;

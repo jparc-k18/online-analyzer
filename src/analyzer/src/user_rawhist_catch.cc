@@ -41,6 +41,11 @@
 #include "SsdAnalyzer.hh"
 #include "UserParamMan.hh"
 
+#include "RawData.hh"
+#include "FiberCluster.hh"
+#include "HodoAnalyzer.hh"
+#include "FiberHit.hh"
+
 #define DEBUG    0
 #define FLAG_DAQ 1
 
@@ -69,7 +74,7 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
   gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
 //  gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D", "MATRIX3D");
-  gConfMan.InitializeParameter<MsTParamMan>("MASS");
+  //gConfMan.InitializeParameter<MsTParamMan>("MASS");
   gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
@@ -164,6 +169,14 @@ process_event( void )
   const int event_number = gUnpacker.get_event_number();
   if( flag_event_cut && event_number%event_cut_factor!=0 )
     return 0;
+
+  RawData *rawData;
+  rawData = new RawData;
+  rawData->DecodeHits();
+  HodoAnalyzer *hodoAna;
+  hodoAna = new HodoAnalyzer;
+
+
 
 //  // DAQ -------------------------------------------------------------
 //  {
@@ -384,6 +397,10 @@ process_event( void )
     int cft_cmul_id    = gHist.getSequentialID(kCFT, 0, kMulti,  11);
     int cft_cmulbgo_id = gHist.getSequentialID(kCFT, 0, kMulti,  21);
 
+    int cft_cl_hgadc2d_id =gHist.getSequentialID(kCFT, kCluster, kHighGain, 11);
+    int cft_cl_lgadc2d_id =gHist.getSequentialID(kCFT, kCluster, kLowGain, 11);
+    int cft_cl_tdc2d_id =gHist.getSequentialID(kCFT,kCluster, kTDC2D, 1);
+
     int multiplicity[NumOfLayersCFT] ;
     int cmultiplicity[NumOfLayersCFT];
     int cbgomultiplicity[NumOfLayersCFT];
@@ -495,6 +512,56 @@ process_event( void )
 						 + cmultiplicity[4] + cmultiplicity[6]);
     hptr_array[cft_cmul_id+NumOfLayersCFT + 1]->Fill(cmultiplicity[1] + cmultiplicity[3]
 						     + cmultiplicity[5] + cmultiplicity[7]);
+
+
+    //clustering analysis
+  hodoAna->DecodeCFTHits(rawData);
+  // Fiber Cluster
+  for(int p = 0; p<NumOfPlaneCFT; ++p){
+    //int nhits = hodoAna->GetNHitsCFT(p);
+    //std::cout<<"plane= "<<p<<",NHits="<<nhits<<std::endl;
+
+    //hodoAna->TimeCutCFT(p, -30, 30); // CATCH@J-PARC
+    hodoAna->AdcCutCFT(p, 0, 4000); // CATCH@J-PARC
+    //hodoAna->AdcCutCFT(p, 50, 4000); // CATCH@J-PARC  for proton
+    //hodoAna->WidthCutCFT(p, 60, 300); // pp scattering
+    //hodoAna->WidthCutCFT(p, 30, 300); // cosmic ray
+
+    int ncl = hodoAna->GetNClustersCFT(p);
+    //std::cout<<"plane= "<<p<<",NClusters="<<ncl<<std::endl;
+    for(int i=0; i<ncl; ++i){
+      FiberCluster *cl = hodoAna->GetClusterCFT(p,i);
+      if(!cl) continue;
+      double size  = cl->ClusterSize();
+      //double seg = cl->MeanSeg();
+      //double ctime = cl->CMeanTime();
+      //double width = -cl->minWidth();
+      //double width = cl->Width();
+      //double sumADC= cl->SumAdcLow();
+      //double sumMIP= cl->SumMIPLow();
+      //double sumdE = cl->SumdELow();
+      //double r     = cl->MeanPositionR();
+      //double phi   = cl->MeanPositionPhi();
+      int Mseg  = cl->MaxSeg();
+      int MADCHi  = cl->MaxAdcHi();
+      int MADCLow = cl->MaxAdcLow();
+      //std::cout<<"cluster="<<i<<" , Maxseg="<<Mseg<<" , MaxADC"<<MADCHi<<std::endl;
+      hptr_array[cft_cl_hgadc2d_id + p] ->Fill(Mseg, MADCHi);
+      hptr_array[cft_cl_lgadc2d_id + p] ->Fill(Mseg, MADCLow);
+      int fmulti =hodoAna->GetNHitsCFT(p);
+      for(int j=0; j<fmulti; ++j){
+	FiberHit *fhit = hodoAna->GetHitCFT(p,j);
+	int seg_temp = fhit->PairId();
+	if(seg_temp == Mseg){
+	  int Mhit =fhit ->GetNumOfHit();
+	  for(int k=0; k<Mhit; ++k){
+	    double Mtime =fhit->GetLeading(k);
+	    hptr_array[cft_cl_tdc2d_id + p] ->Fill(Mseg, Mtime);
+	  }
+	}
+      }
+    }
+  }
 
 #if 0
     // Debug, dump data relating this detector

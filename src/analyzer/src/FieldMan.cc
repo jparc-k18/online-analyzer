@@ -1,26 +1,27 @@
-// -*- C++ -*-
+/**
+ *  file: FieldMan.cc
+ *  date: 2017.04.10
+ *
+ */
+
+#include "FieldMan.hh"
 
 #include <cmath>
 
-#include <std_ostream.hh>
-
 #include "FieldElements.hh"
-#include "FieldMan.hh"
-#include "FuncName.hh"
 #include "KuramaFieldMap.hh"
 
-ClassImp(FieldMan);
+#include "std_ostream.hh"
 
 namespace
 {
-  const Double_t Delta = 0.1;
+  const std::string class_name("FieldMan");
+  const double Delta = 0.1;
 }
 
 //______________________________________________________________________________
 FieldMan::FieldMan( void )
-  : TObject(),
-    m_is_ready(false),
-    m_kurama_map()
+  : m_is_ready(false), m_kurama_map(0)
 {
 }
 
@@ -31,11 +32,13 @@ FieldMan::~FieldMan( void )
 }
 
 //______________________________________________________________________________
-Bool_t
+bool
 FieldMan::Initialize( void )
 {
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
   if( m_is_ready ){
-    hddaq::cerr << "#W " << FUNC_NAME
+    hddaq::cerr << "#W " << func_name
 		<< " already initialied" << std::endl;
     return false;
   }
@@ -53,8 +56,8 @@ FieldMan::Initialize( void )
 }
 
 //______________________________________________________________________________
-Bool_t
-FieldMan::Initialize( const TString &file_name )
+bool
+FieldMan::Initialize( const std::string &file_name )
 {
   m_file_name = file_name;
   return Initialize();
@@ -66,7 +69,7 @@ FieldMan::GetField( const ThreeVector& position ) const
 {
   ThreeVector field( 0., 0., 0. );
   if( m_kurama_map ){
-    Double_t p[3], b[3];
+    double p[3], b[3];
     p[0] = position.x()*0.1;
     p[1] = position.y()*0.1;
     p[2] = position.z()*0.1;
@@ -136,15 +139,15 @@ FieldMan::AddElement( FieldElements *element )
 }
 
 //______________________________________________________________________________
-Double_t
+double
 FieldMan::StepSize( const ThreeVector &position,
-		    Double_t def_step_size, Double_t min_step_size ) const
+		    double def_step_size, double min_step_size ) const
 {
-  Double_t d = TMath::Abs( def_step_size );
-  Double_t s = def_step_size/d;
-  min_step_size = TMath::Abs( min_step_size );
+  double d = std::abs( def_step_size );
+  double s = def_step_size/d;
+  min_step_size = std::abs( min_step_size );
 
-  Bool_t flag = true;
+  bool flag = true;
   FEIterator itr, itr_end = m_element_list.end();
   while ( flag && d>min_step_size ){
     for( itr=m_element_list.begin(); itr!=itr_end; ++itr ){

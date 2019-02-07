@@ -1,4 +1,8 @@
-// -*- C++ -*-
+/**
+ *  file: DCLocalTrack.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef DC_LOCAL_TRACK_HH
 #define DC_LOCAL_TRACK_HH
@@ -8,17 +12,20 @@
 
 #include <std_ostream.hh>
 
-#include "DCLTrackHit.hh"
 #include "ThreeVector.hh"
+#include "DCLTrackHit.hh"
+#include "DetectorID.hh"
 
 class DCLTrackHit;
 class DCAnalyzer;
 
+const double MaxChi2CFT  = 300.;
+
 //______________________________________________________________________________
-class DCLocalTrack : public TObject
+class DCLocalTrack
 {
 public:
-  DCLocalTrack( void );
+  explicit DCLocalTrack( void );
   ~DCLocalTrack( void );
 
 private:
@@ -26,144 +33,228 @@ private:
   DCLocalTrack & operator =( const DCLocalTrack & );
 
 private:
-  Bool_t                    m_is_fitted;     // flag of DoFit()
-  Bool_t                    m_is_calculated; // flag of Calculate()
+  bool   m_is_fitted;     // flag of DoFit()
+  bool   m_is_calculated; // flag of Calculate()
   std::vector<DCLTrackHit*> m_hit_array;
-  Double_t                  m_Ax;
-  Double_t                  m_Ay;
-  Double_t                  m_Au;
-  Double_t                  m_Av;
-  Double_t                  m_Chix;
-  Double_t                  m_Chiy;
-  Double_t                  m_Chiu;
-  Double_t                  m_Chiv;
-  Double_t                  m_x0;
-  Double_t                  m_y0;
-  Double_t                  m_u0;
-  Double_t                  m_v0;
-  Double_t                  m_a;
-  Double_t                  m_b;
-  Double_t                  m_chisqr;
-  Bool_t                    m_good_for_tracking;
+  std::vector<DCLTrackHit*> m_hit_arrayUV;
+  double m_Ax;
+  double m_Ay;
+  double m_Au;
+  double m_Av;
+  double m_Chix;
+  double m_Chiy;
+  double m_Chiu;
+  double m_Chiv;
+
+  double m_x0;
+  double m_y0;
+  double m_u0;
+  double m_v0;
+  double m_a;
+  double m_b;
+  double m_chisqr;
+  bool   m_good_for_tracking;
   // for SSD
-  Double_t                  m_de;
+  double m_de;
   // for Honeycomb
-  Double_t                  m_chisqr1st; // 1st iteration for honeycomb
-  Double_t                  m_n_iteration;
+  double m_chisqr1st; // 1st iteration for honeycomb
+  double m_n_iteration;
+  // for CFT
+  int m_xyFitFlag; // 0:y=ax+b, 1:x=ay+b
+  int m_zTrackFlag;
+  double m_Axy, m_Bxy;
+  double m_Az , m_Bz ;
+  double m_chisqrXY;
+  double m_chisqrZ;
+  double m_vtx_z;
+  double m_theta;
+  ThreeVector m_Dir, m_Pos0;
+  double m_meanseg[NumOfPlaneCFT*2];
+  // phi
+  double m_phi_ini[NumOfPlaneCFT*2];  //initial phi from segNo
+  double m_phi_track[NumOfPlaneCFT*2];// phi from tracking
+  double m_dphi[NumOfPlaneCFT*2];     // delta phi (ini - calc)
+  double m_dist_phi[NumOfPlaneCFT*2]; // residual of XY plane
+  // z
+  double m_z_ini[NumOfPlaneCFT*2];    //initial z from segNo&phi
+  double m_z_track[NumOfPlaneCFT*2];  // z from tracking
+  double m_dz[NumOfPlaneCFT*2];     // delta z (ini - calc)
+  double m_dist_uv[NumOfPlaneCFT*2]; // residual of Z_XY plane
+  // dE value
+  double m_sum_adc[NumOfPlaneCFT*2]; double m_max_adc[NumOfPlaneCFT*2];
+  double m_sum_mip[NumOfPlaneCFT*2]; double m_max_mip[NumOfPlaneCFT*2];
+  double m_sum_dE[NumOfPlaneCFT*2];  double m_max_dE[NumOfPlaneCFT*2]; 
+  double m_total_adc   , m_total_max_adc;
+  double m_total_mip   , m_total_max_mip;
+  double m_total_dE    , m_total_max_dE;
+  double m_total_dE_phi, m_total_max_dE_phi; // only phi sum
+  double m_total_dE_uv , m_total_max_dE_uv;  // only uv  sum
+
 
 public:
   void         AddHit( DCLTrackHit *hitp );
+  void         AddHitUV( DCLTrackHit *hitp );
   void         Calculate( void );
+  void         CalculateCFT( void );
   void         DeleteNullHit( void );
-  Bool_t       DoFit( void );
-  Bool_t       DoFitBcSdc( void );
-  Bool_t       FindLayer( Int_t layer ) const;
-  Int_t        GetNDF( void ) const;
-  Int_t        GetNHit( void ) const { return m_hit_array.size(); }
-  DCLTrackHit* GetHit( Int_t i ) const;
-  DCLTrackHit* GetHitOfLayerNumber( Int_t lnum ) const;
-  Double_t     GetWire( Int_t layer ) const;
-  Bool_t       HasHoneycomb( void ) const;
-  Bool_t       IsFitted( void ) const { return m_is_fitted; }
-  Bool_t       IsCalculated( void ) const { return m_is_calculated; }
+  bool         DoFit( void );
+  bool         DoFitBcSdc( void );
+  bool         FindLayer( int layer ) const;
+  int          GetNDF( void ) const;
+  int          GetNHit( void ) const { return m_hit_array.size();  }
+  int          GetNHitUV(void )const { return m_hit_arrayUV.size();}
+  int          GetNHitSFT( void ) const;
+  int          GetNHitY( void ) const;
+  DCLTrackHit* GetHit( std::size_t nth ) const;
+  DCLTrackHit* GetHitUV( std::size_t nth ) const;
+  DCLTrackHit* GetHitOfLayerNumber( int lnum ) const;
+  double       GetWire( int layer ) const;
+  bool         HasHoneycomb( void ) const;
+  bool         IsFitted( void ) const { return m_is_fitted; }
+  bool         IsCalculated( void ) const { return m_is_calculated; }
 
-  void SetAx( Double_t Ax ) { m_Ax = Ax; }
-  void SetAy( Double_t Ay ) { m_Ay = Ay; }
-  void SetAu( Double_t Au ) { m_Au = Au; }
-  void SetAv( Double_t Av ) { m_Av = Av; }
-  void SetChix( Double_t Chix ) { m_Chix = Chix; }
-  void SetChiy( Double_t Chiy ) { m_Chiy = Chiy; }
-  void SetChiu( Double_t Chiu ) { m_Chiu = Chiu; }
-  void SetChiv( Double_t Chiv ) { m_Chiv = Chiv; }
-  void SetDe( Double_t de ) { m_de = de; }
+  void SetAx( double Ax ) { m_Ax = Ax; }
+  void SetAy( double Ay ) { m_Ay = Ay; }
+  void SetAu( double Au ) { m_Au = Au; }
+  void SetAv( double Av ) { m_Av = Av; }
+  void SetAz( double Az ){  m_Az = Az; }
+  void SetBz( double Bz ){  m_Bz = Bz; }
+  void SetChix( double Chix ) { m_Chix = Chix; }
+  void SetChiy( double Chiy ) { m_Chiy = Chiy; }
+  void SetChiu( double Chiu ) { m_Chiu = Chiu; }
+  void SetChiv( double Chiv ) { m_Chiv = Chiv; }
+  void SetDe( double de ) { m_de = de; }
 
-  Double_t GetX0( void ) const { return m_x0; }
-  Double_t GetY0( void ) const { return m_y0; }
-  Double_t GetU0( void ) const { return m_u0; }
-  Double_t GetV0( void ) const { return m_v0; }
+  double GetX0( void ) const { return m_x0; }
+  double GetY0( void ) const { return m_y0; }
+  double GetU0( void ) const { return m_u0; }
+  double GetV0( void ) const { return m_v0; }
 
   //For XUV Tracking
-  Bool_t DoFitVXU( void );
+  bool DoFitVXU( void );
 
-  Double_t GetVXU_A( void ) const { return m_a; }
-  Double_t GetVXU_B( void ) const { return m_b; }
-  Double_t GetVXU( Double_t z ) const { return m_a*z+m_b; }
-  Double_t GetAx( void ) const { return m_Ax; }
-  Double_t GetAy( void ) const { return m_Ay; }
-  Double_t GetAu( void ) const { return m_Au; }
-  Double_t GetAv( void ) const { return m_Av; }
+  double GetVXU_A( void ) const { return m_a; }
+  double GetVXU_B( void ) const { return m_b; }
+  double GetVXU( double z ) const { return m_a*z+m_b; }
+  double GetAx( void ) const { return m_Ax; }
+  double GetAy( void ) const { return m_Ay; }
+  double GetAu( void ) const { return m_Au; }
+  double GetAv( void ) const { return m_Av; }
 
-  Double_t GetDifVXU( void ) const ;
-  Double_t GetDifVXUSDC34( void ) const;
-  Double_t GetChiSquare( void ) const { return m_chisqr; }
-  Double_t GetChiSquare1st( void ) const { return m_chisqr1st; }
-  Double_t GetChiX( void ) const { return m_Chix; }
-  Double_t GetChiY( void ) const { return m_Chiy; }
-  Double_t GetChiU( void ) const { return m_Chiu; }
-  Double_t GetChiV( void ) const { return m_Chiv; }
-  Double_t GetX( Double_t z ) const { return m_x0+m_u0*z; }
-  Double_t GetY( Double_t z ) const { return m_y0+m_v0*z; }
-  Double_t GetS( Double_t z, Double_t tilt ) const { return GetX(z)*std::cos(tilt)+GetY(z)*std::sin(tilt); }
-  Int_t    GetNIteration( void ) const { return m_n_iteration; }
-  Double_t GetTheta( void ) const;
-  Bool_t   GoodForTracking( void ) const { return m_good_for_tracking; }
-  Bool_t   GoodForTracking( Bool_t status )
-  { Bool_t ret = m_good_for_tracking; m_good_for_tracking = status; return ret; }
-  Bool_t   ReCalc( Bool_t ApplyRecursively=false );
-  Double_t GetDe( void ) const { return m_de; }
-  virtual void Print( Option_t* option="" ) const;
+  double GetAz ( void ) const { return m_Az;  }
+  double GetBz ( void ) const { return m_Bz;  }
+
+  double GetDifVXU( void ) const ;
+  double GetDifVXUSDC34( void ) const;
+  double GetChiSquare( void ) const { return m_chisqr; }
+  double GetChiSquare1st( void ) const { return m_chisqr1st; }
+  double GetChiX( void ) const { return m_Chix; }
+  double GetChiY( void ) const { return m_Chiy; }
+  double GetChiU( void ) const { return m_Chiu; }
+  double GetChiV( void ) const { return m_Chiv; }
+  double GetX( double z ) const { return m_x0+m_u0*z; }
+  double GetY( double z ) const { return m_y0+m_v0*z; }
+  double GetS( double z, double tilt ) const { return GetX(z)*std::cos(tilt)+GetY(z)*std::sin(tilt); }
+  int    GetNIteration( void ) const { return m_n_iteration; }
+  double GetTheta( void ) const;
+  bool   GoodForTracking( void ) const { return m_good_for_tracking; }
+  bool   GoodForTracking( bool status )
+  { bool ret = m_good_for_tracking; m_good_for_tracking = status; return ret; }
+  bool   ReCalc( bool ApplyRecursively=false );
+  double GetDe( void ) const { return m_de; }
+  void   Print( const std::string& arg="", std::ostream& ost=hddaq::cout ) const;
   void   PrintVXU( const std::string& arg="" ) const;
 
-  ClassDef(DCLocalTrack,0);
+  // for CFT
+  bool   DoFitPhi ( void );
+  bool   DoFitPhi2nd( void );
+  bool   DoFitUV ( void );
+  bool   DoFitUV2nd( void );
+  bool   SetCalculatedValueCFT();
+  bool   GetCrossPointR(double r, double *phi, int layer);
+  void   SetAxy( double Axy){ m_Axy= Axy;}
+  void   SetBxy( double Bxy){ m_Bxy= Bxy;}
+  double GetAxy( void ) const { return m_Axy; }
+  double GetBxy( void ) const { return m_Bxy; }
+  double GetChiSquareXY( void ) const { return m_chisqrXY; }
+  double GetChiSquareZ ( void ) const { return m_chisqrZ; }
+  double calcPhi(double x, double y);
+  double CalculateZpos(double phi, DCLTrackHit *cl);
+  double GetVtxZ( void ) const { return m_vtx_z; }
+  double GetThetaCFT( void ) const { return m_theta; }
+  int    GetCFTxyFlag( void ) const { return m_xyFitFlag;  }
+  int    GetCFTzFlag ( void ) const { return m_zTrackFlag; }
+
+  double GetPhiIni(  int layer) const {return m_phi_ini[layer];   }
+  double GetPhiTrack(int layer) const {return m_phi_track[layer]; }
+  double GetdPhi(    int layer) const {return m_dphi[layer]     ; }
+  double GetZIni(    int layer) const {return m_z_ini[layer]    ; }
+  double GetZTrack(  int layer) const {return m_z_track[layer]  ; }
+  double GetdZ(      int layer) const {return m_dz[layer]     ; }
+  ThreeVector GetPos0( void ) const { return m_Pos0; }
+  ThreeVector GetDir( void )  const { return m_Dir; }
+  double GetSumAdc(  int layer) const {return m_sum_adc[layer];   }
+  double GetSumMIP(  int layer) const {return m_sum_mip[layer];   }
+  double GetSumdE (  int layer) const {return m_sum_dE[layer];   }
+  double GetMaxAdc(  int layer) const {return m_max_adc[layer];   }
+  double GetMaxMIP(  int layer) const {return m_max_mip[layer];   }
+  double GetMaxdE (  int layer) const {return m_max_dE[layer];   }
+
+  double GetTotalSumAdc( void ) const {return m_total_adc;   }
+  double GetTotalSumMIP( void ) const {return m_total_mip;   }
+  double GetTotalSumdE ( void ) const {return m_total_dE ;   }
+  double GetTotalSumdEphi ( void ) const {return m_total_dE_phi ;   }
+  double GetTotalSumdEuv  ( void ) const {return m_total_dE_uv ;   }
+  double GetTotalMaxAdc( void ) const {return m_total_max_adc;   }
+  double GetTotalMaxMIP( void ) const {return m_total_max_mip;   }
+  double GetTotalMaxdE ( void ) const {return m_total_max_dE ;   }
+  double GetTotalMaxdEphi ( void ) const {return m_total_max_dE_phi ;   }
+  double GetTotalMaxdEuv  ( void ) const {return m_total_max_dE_uv ;   }
+
 };
+
 
 //______________________________________________________________________________
 inline
 std::ostream&
-operator <<( std::ostream& ost, const DCLocalTrack& track )
+operator <<( std::ostream& ost,
+	     const DCLocalTrack& track )
 {
-  track.Print();
+  track.Print( "", ost );
   return ost;
 }
 
 //______________________________________________________________________________
 struct DCLTrackComp
-  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, Bool_t>
+  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, bool>
 {
-  Bool_t operator()( const DCLocalTrack * const p1,
-		     const DCLocalTrack * const p2 ) const
+  bool operator()( const DCLocalTrack * const p1,
+		   const DCLocalTrack * const p2 ) const
   {
-    Int_t n1=p1->GetNHit(), n2=p2->GetNHit();
-    Double_t chi1=p1->GetChiSquare(), chi2=p2->GetChiSquare();
+    int n1=p1->GetNHit(), n2=p2->GetNHit();
+    double chi1=p1->GetChiSquare(), chi2=p2->GetChiSquare();
     if( n1>n2+1 )
       return true;
     if( n2>n1+1 )
       return false;
     if( n1<=4 || n2<=4 )
       return ( n1 >= n2 );
+    if( n1==n2 )
+      return ( chi1 <= chi2 );
 
-    return ( chi1 <= chi2 );
-
-    // if( n1==n2 )
-    //   return ( chi1 <= chi2 );
-
-    // static const Double_t th = 3.; // 5-sigma
-    // if( n1>n2 )
-    //   return ( chi1-chi2 <= th/(n1-4) );
-    // else
-    //   return ( chi2-chi1 <= th/(n2-4) );
+    return ( chi1-chi2 <= 3./(n1-4) );// 3-sigma
   }
 };
 
 //______________________________________________________________________________
 struct DCLTrackComp1
-  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, Bool_t>
+  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, bool>
 {
-  Bool_t operator()( const DCLocalTrack * const p1,
-		     const DCLocalTrack * const p2 ) const
+  bool operator()( const DCLocalTrack * const p1,
+		   const DCLocalTrack * const p2 ) const
   {
-    Int_t n1=p1->GetNHit(), n2=p2->GetNHit();
-    Double_t chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
+    int n1=p1->GetNHit(), n2=p2->GetNHit();
+    double chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
     if(n1>n2) return true;
     if(n2>n1) return false;
     return ( chi1<=chi2 );
@@ -173,13 +264,13 @@ struct DCLTrackComp1
 
 //______________________________________________________________________________
 struct DCLTrackComp2
-  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, Bool_t>
+  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, bool>
 {
-  Bool_t operator()( const DCLocalTrack * const p1,
-		     const DCLocalTrack * const p2 ) const
+  bool operator()( const DCLocalTrack * const p1,
+		   const DCLocalTrack * const p2 ) const
   {
-    Int_t n1=p1->GetNHit(), n2=p2->GetNHit();
-    Double_t chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
+    int n1=p1->GetNHit(), n2=p2->GetNHit();
+    double chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
     if(n1<n2) return true;
     if(n2<n1) return false;
     return ( chi1<=chi2 );
@@ -189,14 +280,14 @@ struct DCLTrackComp2
 
 //______________________________________________________________________________
 struct DCLTrackComp3
-  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, Bool_t>
+  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, bool>
 {
-  Bool_t operator()( const DCLocalTrack * const p1,
-		     const DCLocalTrack * const p2 ) const
+  bool operator()( const DCLocalTrack * const p1,
+		   const DCLocalTrack * const p2 ) const
   {
-    Int_t n1=p1->GetNHit(), n2=p2->GetNHit();
-    Double_t chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
-    Double_t a1= std::abs(1.-chi1), a2=std::abs(1.-chi2);
+    int n1=p1->GetNHit(), n2=p2->GetNHit();
+    double chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
+    double a1= std::abs(1.-chi1), a2=std::abs(1.-chi2);
     if(a1<a2) return true;
     if(a2<a1) return false;
     return (n1<=n2);
@@ -206,13 +297,13 @@ struct DCLTrackComp3
 
 //______________________________________________________________________________
 struct DCLTrackComp4
-  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, Bool_t>
+  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, bool>
 {
-  Bool_t operator()( const DCLocalTrack * const p1,
-		     const DCLocalTrack * const p2 ) const
+  bool operator()( const DCLocalTrack * const p1,
+		   const DCLocalTrack * const p2 ) const
   {
-    Int_t n1=p1->GetNHit(), n2=p2->GetNHit();
-    Double_t chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
+    int n1=p1->GetNHit(), n2=p2->GetNHit();
+    double chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
     if( (n1>n2+1) && (std::abs(chi1-chi2)<2.) )
       return true;
     if( (n2>n1+1) && ( std::abs(chi1-chi2)<2.) )
@@ -223,23 +314,60 @@ struct DCLTrackComp4
 };
 
 //______________________________________________________________________________
-struct DCLTrackCompSdcInFiber
-  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, Bool_t>
+
+struct DCLTrackComp_Nhit 
+  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, bool>
 {
-  Bool_t operator()( const DCLocalTrack * const p1,
-		     const DCLocalTrack * const p2 ) const
+  bool operator()( const DCLocalTrack * const p1,
+                   const DCLocalTrack * const p2 ) const
   {
-    Int_t n1=p1->GetNHit(), n2=p2->GetNHit();
-    Double_t chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
-    Int_t NofFiberHit1 = 0;
-    Int_t NofFiberHit2 = 0;
-    for(Int_t ii=0;ii<n1;ii++){
-      Int_t layer = p1->GetHit(ii)->GetLayer();
-      if( layer <= 4 ) NofFiberHit1++;
+    const int minimum=8;
+
+    int n1=p1->GetNHit(), n2=p2->GetNHit();
+
+    if( n1>=n2 )
+      return true;
+    else
+      return false;
+  }
+};
+
+//______________________________________________________________________________
+
+struct DCLTrackComp_Chisqr
+  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, bool>
+{
+  bool operator()( const DCLocalTrack * const p1,
+                   const DCLocalTrack * const p2 ) const
+  {
+    double chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
+
+    if (chi1 <= chi2)
+      return true;
+    else
+      return false;
+  }
+};
+
+
+//______________________________________________________________________________
+struct DCLTrackCompSdcInFiber
+  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, bool>
+{
+  bool operator()( const DCLocalTrack * const p1,
+		   const DCLocalTrack * const p2 ) const
+  {
+    int n1=p1->GetNHit(), n2=p2->GetNHit();
+    double chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
+    int NofFiberHit1 = 0;
+    int NofFiberHit2 = 0;
+    for(int ii=0;ii<n1;ii++){
+      int layer = p1->GetHit(ii)->GetLayer();
+      if( layer > 6 ) NofFiberHit1++;
     }
-    for(Int_t ii=0;ii<n2;ii++){
-      Int_t layer = p2->GetHit(ii)->GetLayer();
-      if( layer <= 4 ) NofFiberHit2++;
+    for(int ii=0;ii<n2;ii++){
+      int layer = p2->GetHit(ii)->GetLayer();
+      if( layer > 6 ) NofFiberHit2++;
     }
 
     if( (n1>n2+1) ){
@@ -262,81 +390,54 @@ struct DCLTrackCompSdcInFiber
 };
 
 //______________________________________________________________________________
-struct DCLTrackCompSsd
-  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, Bool_t>
-{
-  Bool_t operator()( const DCLocalTrack * const p1,
-		     const DCLocalTrack * const p2 ) const
-  {
-    Int_t n1 = p1->GetNHit(), n2 = p2->GetNHit();
-    if( (n1>n2) ) return true;
-    if( (n2>n1) ) return false;
-    // return ( p1->GetDe() >= p2->GetDe() );
-    return ( p1->GetChiSquare() <= p2->GetChiSquare() );
-  }
-};
-
-//______________________________________________________________________________
-struct DCLTrackCompSsdSdc
-  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, Bool_t>
-{
-  Bool_t operator()( const DCLocalTrack * const p1,
-		     const DCLocalTrack * const p2 ) const
-  {
-    Int_t n1=p1->GetNHit(), n2=p2->GetNHit();
-    Double_t chi1=p1->GetChiSquare(),chi2=p2->GetChiSquare();
-
-    Int_t nSsdXHit1=0, nSsdXHit2=0;
-    Int_t nSsdYHit1=0, nSsdYHit2=0;
-    for( Int_t i=0; i<n1; ++i ){
-      Int_t layer = p1->GetHit(i)->GetLayer();
-      switch( layer ){
-      case 8: case 10: case 11: case 13:
-	nSsdXHit1++;
-	break;
-      case 7: case 9: case 12: case 14:
-	nSsdYHit1++;
-	break;
-      }
-    }
-    for( Int_t i=0; i<n2; ++i ){
-      Int_t layer = p2->GetHit(i)->GetLayer();
-      switch( layer ){
-      case 8: case 10: case 11: case 13:
-	nSsdXHit2++;
-	break;
-      case 7: case 9: case 12: case 14:
-	nSsdYHit2++;
-	break;
-      }
-    }
-
-    // Bool_t SsdXYHit1 = ( nSsdXHit1>0 && nSsdYHit1>0 );
-    // Bool_t SsdXYHit2 = ( nSsdXHit2>0 && nSsdYHit2>0 );
-    // Int_t  nSsdHit1  = nSsdXHit1 + nSsdYHit1;
-    // Int_t  nSsdHit2  = nSsdXHit2 + nSsdYHit2;
-
-    if( (n1>n2+1) ) return true;
-    if( (n2>n1+1) ) return false;
-    // if( nSsdXHit1 > nSsdXHit2+1 ) return true;
-    // if( nSsdYHit1 > nSsdYHit2+1 ) return true;
-    return (chi1<=chi2);
-  }
-};
-
-//______________________________________________________________________________
 struct DCLTrackCompSdcOut
-  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, Bool_t>
+  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, bool>
 {
-  Bool_t operator()( const DCLocalTrack * const p1,
-		     const DCLocalTrack * const p2 ) const
+  bool operator()( const DCLocalTrack * const p1,
+		   const DCLocalTrack * const p2 ) const
   {
-    Int_t n1=p1->GetNHit(), n2=p2->GetNHit();
-    Double_t chi1=p1->GetChiSquare(), chi2=p2->GetChiSquare();
+    int n1=p1->GetNHit(), n2=p2->GetNHit();
+    double chi1=p1->GetChiSquare(), chi2=p2->GetChiSquare();
     if( n1 > n2 ) return true;
     if( n2 > n1 ) return false;
     return ( chi1 <= chi2 );
   }
 };
+
+//______________________________________________________________________________
+struct DCLTrackCompCFT
+  : public std::binary_function <DCLocalTrack *, DCLocalTrack *, bool>
+{
+  bool operator()( const DCLocalTrack * const p1,
+		   const DCLocalTrack * const p2 ) const
+  {
+    /*
+    int n1=p1->GetNHit(), n2=p2->GetNHit();
+    double chi1=p1->GetChiSquare(), chi2=p2->GetChiSquare();
+    if( n1 > n2 ) return true;
+    if( n2 > n1 ) return false;
+    return ( chi1 <= chi2 );
+    */
+    int nphi1=p1->GetNHit(), nphi2=p2->GetNHit();
+    int nuv1=p1->GetNHitUV(), nuv2=p2->GetNHitUV();
+    int n1=nphi1+nuv1, n2=nphi2+nuv2;
+    
+    //double chi1=p1->GetChiSquareXY(),chi2=p2->GetChiSquareXY();// zantei
+    
+    double chiXY1=p1->GetChiSquareXY(),chiZ1=p2->GetChiSquareZ();
+    double chiXY2=p2->GetChiSquareXY(),chiZ2=p2->GetChiSquareZ();
+    double chi1=sqrt(chiXY1*chiXY1+chiZ1*chiZ1);
+    double chi2=sqrt(chiXY2*chiXY2+chiZ2*chiZ2);
+    
+    if( (n1>n2)&&(chi1<MaxChi2CFT*sqrt(2.))){
+      return true;
+    }else if( (n2>n1)&&(chi2<MaxChi2CFT*sqrt(2.))){
+      return false;
+    }else{
+      return (chi1<=chi2);
+    }
+  }
+};
+
 
 #endif

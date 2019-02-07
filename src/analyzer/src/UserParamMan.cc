@@ -1,28 +1,35 @@
-// -*- C++ -*-
+/**
+ *  file: UserParamMan.cc
+ *  date: 2017.04.10
+ *
+ */
 
-#include <sstream>
-#include <fstream>
-#include <iostream>
+#include "UserParamMan.hh"
+
 #include <cstdlib>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <sstream>
+#include <stdexcept>
 
 #include <std_ostream.hh>
 
-#include "ConfMan.hh"
-#include "Exception.hh"
-#include "FuncName.hh"
-#include "UserParamMan.hh"
-
 namespace
 {
-  // throw exception when no parameter is found
-  const Bool_t ThrowException = true;
+  const std::string& class_name("UserParamMan");
+  const double default_value = -9999.;
 }
 
-ClassImp(UserParamMan);
+// if no parameter,
+//   0: throw exception
+//   1: return default value
+#define ReturnDefaultValue 0
 
 //______________________________________________________________________________
 UserParamMan::UserParamMan( void )
-  : TObject()
+  : m_is_ready(false), m_file_name("")
 {
 }
 
@@ -32,75 +39,121 @@ UserParamMan::~UserParamMan( void )
 }
 
 //______________________________________________________________________________
-Int_t
-UserParamMan::GetSize( const TString& name ) const
+bool
+UserParamMan::Initialize( void )
 {
-  mapType::const_iterator itr = param_container_.find(name);
-  if( itr != param_container_.end() ){
-    return itr->second.size();
-  } else {
-    if( ThrowException ){
-      throw Exception( FUNC_NAME+" No such parameter : "+name );
-    } else {
-      std::cerr << "#W " << FUNC_NAME
-		<< " No such parameter : " << name << std::endl;
-      return -1;
-    }
-  }
-}
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
 
-//______________________________________________________________________________
-Double_t
-UserParamMan::GetParameter( const TString& name, Int_t index ) const
-{
-  static const Double_t default_value = -9999.;
-
-  mapType::const_iterator itr = param_container_.find(name);
-  if( itr != param_container_.end() ){
-    return itr->second.at(index);
-  } else {
-    if( ThrowException ){
-      throw Exception( FUNC_NAME+" No such parameter : "+name );
-    } else {
-      std::cerr << "#W " << FUNC_NAME
-		<< " No such parameter : " << name << " -> "
-		<< default_value << std::endl;
-      return default_value;
-    }
-  }
-}
-
-//______________________________________________________________________________
-Bool_t
-UserParamMan::Initialize( const TString& filename )
-{
-  std::ifstream ifs( filename );
+  std::ifstream ifs( m_file_name.c_str() );
   if( !ifs.is_open() ){
-    hddaq::cerr << "#E " << FUNC_NAME
-		<< " No such file : " << filename << std::endl;
-    return false;
+    hddaq::cerr << "#E " << func_name << " "
+		<< "No such parameter file : " << m_file_name << std::endl;
+    std::exit(EXIT_FAILURE);
   }
 
-  TString line;
-  while( ifs.good() && line.ReadLine(ifs) ){
-    if( line[0] == '#' ) continue;
+  std::string line;
+  while( ifs.good() && std::getline(ifs,line) ){
+    if( line.empty() || line[0]=='#' ) continue;
+    std::istringstream input_line(line);
 
-    // get first word
-    std::istringstream LineTo( line.Data() );
-    TString buf_word;
-    LineTo >> buf_word;
+    std::string first_param;
+    input_line >> first_param;
 
-    // This is parameter line
-    TString   name_param = buf_word;
-    arrayType param_array;
-    Double_t  param_val;
-    while( LineTo >> param_val ){
-      param_array.push_back( param_val );
+    std::string& key = first_param;
+    ParamArray   param_array;
+    double       param;
+    while( input_line >> param ){
+      param_array.push_back( param );
     }
 
-    // insert to map
-    param_container_[name_param] = param_array;
+    m_param_map[key] = param_array;
   }
 
+  m_is_ready = true;
   return true;
+}
+
+//______________________________________________________________________________
+bool
+UserParamMan::Initialize( const std::string& filename )
+{
+  m_file_name = filename;
+  return Initialize();
+};
+
+//______________________________________________________________________________
+int
+UserParamMan::GetSize( const std::string& key ) const
+{
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
+  PIterator itr = m_param_map.find(key);
+  if( itr==m_param_map.end() ){
+    Print(m_file_name);
+    hddaq::cerr << "#E " << func_name << " "
+		<< "No such key : " << key << std::endl;
+    return 0;
+  }
+
+  return itr->second.size();
+}
+
+//______________________________________________________________________________
+double
+UserParamMan::GetParameter( const std::string& key, std::size_t i ) const
+{
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
+  std::stringstream param;
+  param << key << "(" << i << ")";
+
+  PIterator itr = m_param_map.find(key);
+
+  if( itr==m_param_map.end() ){
+    Print( m_file_name );
+#if ReturnDefaultValue
+    hddaq::cerr << "#E " << func_name
+		<< "set default value : "       << param.str() << " -> "
+		<< default_value << std::endl;
+    return default_value;
+#else
+    throw std::out_of_range( func_name+" No such key : "+key );
+#endif
+  }
+
+  if( i+1 > itr->second.size() ){
+    Print( m_file_name );
+#if ReturnDefaultValue
+    hddaq::cerr << "#E " << func_name
+		<< "set default value : "        << param.str() << " -> "
+		<< default_value << std::endl;
+    return default_value;
+#else
+    throw std::out_of_range( func_name+" No such key : "+key );
+#endif
+  }
+
+  return itr->second.at(i);
+}
+
+//______________________________________________________________________________
+void
+UserParamMan::Print( const std::string& arg ) const
+{
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
+  hddaq::cout << "#D " << func_name << " " << arg << std::endl;
+
+  const int w = 20;
+  PIterator itr, end=m_param_map.end();
+  for( itr=m_param_map.begin(); itr!=end; ++itr){
+    hddaq::cout << " key = " << std::setw(w) << std::left
+		<< itr->first << itr->second.size() << " : ";
+    const std::size_t size = itr->second.size();
+    for( std::size_t i=0; i<size; ++i ){
+      hddaq::cout << std::setw(5) << std::right
+		  << itr->second.at(i) << " ";
+    }
+    hddaq::cout << std::endl;
+  }
 }

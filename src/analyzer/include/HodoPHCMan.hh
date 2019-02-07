@@ -1,40 +1,49 @@
-// -*- C++ -*-
+/**
+ *  file: HodoPHCMan.hh
+ *  date: 2017.04.10
+ *
+ */
 
-#ifndef HODO_PHC_MAN_H
-#define HODO_PHC_MAN_H
+#ifndef HODO_PHC_MAN_HH
+#define HODO_PHC_MAN_HH
 
 #include <map>
-
-#include <TObject.h>
-#include <TString.h>
+#include <string>
+#include <vector>
 
 //______________________________________________________________________________
-class HodoPHCParam : public TObject
+class HodoPHCParam
 {
 public:
-  HodoPHCParam( int type, int np, double *parlist );
-  ~HodoPHCParam();
+  HodoPHCParam( int type, int np, std::vector<double> parlist );
+  ~HodoPHCParam( void );
+
 private:
-  HodoPHCParam( const HodoPHCParam &right );
-  HodoPHCParam & operator = ( const HodoPHCParam & );
+  HodoPHCParam( const HodoPHCParam& right );
+  HodoPHCParam& operator =( const HodoPHCParam& );
+
 private:
-  int Type, NPar;
-  double *ParList;
+  int                 m_type;
+  int                 m_n_param;
+  std::vector<double> m_param_list;
+
 public:
-  double DoPHC( double time, double de );
-  double DoRPHC( double time, double de );
+  double DoPHC( double time, double de ) const;
+  double DoRPHC( double time, double de ) const;
+
 private:
-  double type1Correction( double time, double de );
-  double type2Correction( double time, double de ); // For fiber
-  double type1RCorrection( double time, double de );
+  double type1Correction( double time, double de ) const;
+  double type2Correction( double time, double de ) const; // For fiber
+  double type1RCorrection( double time, double de ) const;
 };
 
 //______________________________________________________________________________
-class HodoPHCMan : public TObject
+class HodoPHCMan
 {
 public:
+  static HodoPHCMan&        GetInstance( void );
+  static const std::string& ClassName( void );
   ~HodoPHCMan( void );
-  static HodoPHCMan& GetInstance( void );
 
 private:
   HodoPHCMan( void );
@@ -42,26 +51,25 @@ private:
   HodoPHCMan& operator =( const HodoPHCMan& );
 
 private:
-  typedef std::map <int, HodoPHCParam *> PHCPContainer;
-  typedef PHCPContainer::const_iterator  PHCPIterator;
-  Bool_t        m_is_initialized;
-  TString       m_file_name;
-  PHCPContainer m_map;
+  typedef std::map <int, HodoPHCParam *> PhcPContainer;
+  typedef std::map <int, HodoPHCParam *>::const_iterator PhcPIterator;
+  bool          m_is_ready;
+  std::string   m_file_name;
+  PhcPContainer m_container;
 
 public:
-  void   SetFileName( const TString& file_name ) { m_file_name = file_name; }
-  Bool_t Initialize( void );
-  Bool_t Initialize( const TString& file_name ) { SetFileName(file_name); return Initialize(); }
-  Bool_t IsReady( void ) const { return m_is_initialized; }
-  Bool_t DoCorrection( int cid, int plid, int seg, int ud, double time,
-                     double de, double &ctime ) const;
-  Bool_t DoRCorrection( int cid, int plid, int seg, int ud, double time,
-                      double de, double &ctime ) const;
-private:
-  HodoPHCParam * GetMap( int cid, int plid, int seg, int ud ) const;
-  void clearMap( void );
+  bool Initialize( void );
+  bool Initialize( const std::string& file_name );
+  bool IsReady( void ) const { return m_is_ready; }
+  bool DoCorrection( int cid, int plid, int seg, int ud, double time,
+                     double de, double& ctime ) const;
+  bool DoRCorrection( int cid, int plid, int seg, int ud, double time,
+                      double de, double& ctime ) const;
+  void SetFileName( const std::string& file_name ) { m_file_name = file_name; }
 
-  ClassDef(HodoPHCMan,0);
+private:
+  void          ClearElements( void );
+  HodoPHCParam* GetMap( int cid, int plid, int seg, int ud ) const;
 };
 
 //______________________________________________________________________________
@@ -70,6 +78,14 @@ HodoPHCMan::GetInstance( void )
 {
   static HodoPHCMan g_instance;
   return g_instance;
+}
+
+//______________________________________________________________________________
+inline const std::string&
+HodoPHCMan::ClassName( void )
+{
+  static std::string g_name("HodoPHCMan");
+  return g_name;
 }
 
 #endif

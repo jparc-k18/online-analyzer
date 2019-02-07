@@ -1,17 +1,19 @@
-// -*- C++ -*-
+/**
+ *  file: DCPairHitCluster.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef DC_PAIR_HIT_CLUSTER_HH
 #define DC_PAIR_HIT_CLUSTER_HH
 
-#include <TObject.h>
-
 class DCLTrackHit;
 
 //______________________________________________________________________________
-class DCPairHitCluster : public TObject
+class DCPairHitCluster
 {
 public:
-  DCPairHitCluster( DCLTrackHit *hitA, DCLTrackHit *hitB=nullptr );
+  DCPairHitCluster( DCLTrackHit *hitA, DCLTrackHit *hitB=0 );
   ~DCPairHitCluster( void );
 
 private:
@@ -21,15 +23,13 @@ private:
 private:
   DCLTrackHit *m_hitA;
   DCLTrackHit *m_hitB;
-  Int_t        m_nhits;
+  int          m_nhits;
 
 public:
-  Int_t        NumberOfHits( void ) const { return m_nhits; }
-  DCLTrackHit* GetHit( Int_t i=0 )  const;
-  Bool_t       IsHoneycomb( void )  const;
-  void         SetHoneycomb( Bool_t flag );
-
-  ClassDef(DCPairHitCluster,0);
+  int          NumberOfHits( void ) const { return m_nhits; }
+  DCLTrackHit* GetHit( int i=0 )    const;
+  bool         IsHoneycomb( void )  const;
+  void         SetHoneycomb( bool flag );
 };
 
 #endif

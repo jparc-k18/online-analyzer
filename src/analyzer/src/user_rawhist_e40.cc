@@ -1612,7 +1612,7 @@ process_event( void )
 
     // sequential id
     int toft_id   = gHist.getSequentialID(kTOF_HT, 0, kTDC);
-    for(int seg = 0; seg<NumOfSegTOF_HT; ++seg){
+    for(int seg = 0; seg<NumOfSegHtTOF; ++seg){
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       if(nhit != 0){
 	int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
@@ -1626,7 +1626,7 @@ process_event( void )
     static const int tofhit_id = gHist.getSequentialID(kTOF_HT, 0, kHitPat);
     static const int tofmul_id = gHist.getSequentialID(kTOF_HT, 0, kMulti);
     int multiplicity = 0;
-    for(int seg=0; seg<NumOfSegTOF_HT; ++seg){
+    for(int seg=0; seg<NumOfSegHtTOF; ++seg){
       int nhit_tofu = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       if(nhit_tofu!=0){
 	unsigned int tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);

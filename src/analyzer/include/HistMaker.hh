@@ -42,6 +42,8 @@ enum SubDetectorType {
   kSubDetectorZero,
   // FHT Layers
   kFHT_L1, kFHT_L2,
+  //CFT cluster
+  kCluster,
   // Detector unique sub ID in Counters
   kSP0_L1, kSP0_L2, kSP0_L3, kSP0_L4,
   kSP0_L5, kSP0_L6, kSP0_L7, kSP0_L8,

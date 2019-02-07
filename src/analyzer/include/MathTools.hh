@@ -1,6 +1,6 @@
 /**
  *  file: MathTools.hh
- *  date: 2017.08.21
+ *  date: 2017.04.10
  *
  */
 
@@ -15,25 +15,25 @@
 namespace math
 {
   //______________________________________________________________________________
-  inline Double_t Rad2Deg( void ){ return TMath::RadToDeg(); }
-  inline Double_t Deg2Rad( void ){ return TMath::DegToRad(); }
-  inline Double_t Rad2Deg( Double_t rad ){ return rad*Rad2Deg(); }
-  inline Double_t Deg2Rad( Double_t deg ){ return deg*Deg2Rad(); }
+  inline double Rad2Deg( void ){ return TMath::RadToDeg(); }
+  inline double Deg2Rad( void ){ return TMath::DegToRad(); }
+  inline double Rad2Deg( double rad ){ return rad*Rad2Deg(); }
+  inline double Deg2Rad( double deg ){ return deg*Deg2Rad(); }
 
   //______________________________________________________________________________
-  inline Double_t nan( void ) { return TMath::QuietNaN(); }
-  inline Double_t Infinity( void ) { return TMath::Infinity(); }
-  inline Double_t Epsilon( void ) { return TMath::Limits<Double_t>::Epsilon(); }
-  inline Int_t    Round( Double_t a ) { return Int_t(a+0.5-(a<0.)); }
+  inline double nan( void ) { return TMath::QuietNaN(); }
+  inline double Infinity( void ) { return TMath::Infinity(); }
+  inline double Epsilon( void ) { return TMath::Limits<double>::Epsilon(); }
+  inline int    Round( double a ) { return int(a+0.5-(a<0.)); }
 
   //______________________________________________________________________________
   template <typename T>
   inline T Sign( T a ) { return (a>0) - (a<0); }
 
   template <typename Container>
-  inline Double_t Accumulate( const Container& c )
+  inline double Accumulate( const Container& c )
   {
-    Double_t sum = 0.;
+    double sum = 0.;
     typename Container::const_iterator itr, end=c.end();
     for( itr=c.begin(); itr!=end; ++itr ){
       sum += *itr;
@@ -42,33 +42,33 @@ namespace math
   }
 
   template <typename Container>
-  inline Double_t Average( const Container& c )
+  inline double Average( const Container& c )
   {
     return Accumulate(c)/c.size();
   }
 
   template <typename Container>
-  inline Double_t Deviation( const Container& c )
+  inline double Deviation( const Container& c )
   {
-    Double_t sum  = 0.;
-    Double_t sum2 = 0.;
+    double sum  = 0.;
+    double sum2 = 0.;
     typename Container::const_iterator itr, end=c.end();
     for( itr=c.begin(); itr!=end; ++itr ){
       sum  += *itr;
       sum2 += (*itr) * (*itr);
     }
     std::size_t n = c.size();
-    return TMath::Sqrt( ( sum2-(sum*sum/n) ) / n );
+    return std::sqrt( ( sum2-(sum*sum/n) ) / n );
   }
 
   template <typename Container>
-  inline Double_t MaxElement( const Container& c )
+  inline double MaxElement( const Container& c )
   {
     return *std::max_element(c.begin(), c.end());
   }
 
   template <typename Container>
-  inline Double_t MinElement( const Container& c )
+  inline double MinElement( const Container& c )
   {
     return *std::min_element(c.begin(), c.end());
   }
@@ -76,40 +76,40 @@ namespace math
   //______________________________________________________________________________
   // compare l and r
   template <typename T>
-  inline Bool_t Equal( const T& l, const T& r );
+  inline bool Equal( const T& l, const T& r );
 
   // 3.14159265358979323846
-  inline Double_t Pi( void ) { return TMath::Pi(); }
+  inline double Pi( void ) { return TMath::Pi(); }
   // velocity of light : 299.792458 mm ns^-1
-  inline Double_t C( void ) { return TMath::C()*1e-6; }
+  inline double C( void ) { return TMath::C()*1e-6; }
   // base of natural log
-  inline Double_t E( void ) { return TMath::E(); }
+  inline double E( void ) { return TMath::E(); }
 
-  Bool_t SolveGaussJordan( const std::vector<Double_t>& z,
-			   const std::vector<Double_t>& w,
-			   const std::vector<Double_t>& s,
-			   const std::vector<Double_t>& ct,
-			   const std::vector<Double_t>& st,
-			   Double_t& x0,
-			   Double_t& u0,
-			   Double_t& y0,
-			   Double_t& v0 );
+  bool SolveGaussJordan( const std::vector<double>& z,
+			 const std::vector<double>& w,
+			 const std::vector<double>& s,
+			 const std::vector<double>& ct,
+			 const std::vector<double>& st,
+			 double& x0,
+			 double& u0,
+			 double& y0,
+			 double& v0 );
 
-  Bool_t GaussElim( Double_t **a, Int_t n, Double_t *b, Int_t *indx, Int_t *ipiv );
-  Bool_t GaussJordan( Double_t **a, Int_t n, Double_t *b,
-		      Int_t *indxc, Int_t *indxd, Int_t *ipiv );
-  Bool_t InterpolateRatio( Int_t n, const Double_t *xa, const Double_t *ya,
-			   Double_t *w1, Double_t *w2,
-			   Double_t x, Double_t &y, Double_t &dy );
-  Bool_t InterpolatePol( Int_t n, const Double_t *xa, const Double_t *ya,
-			 Double_t *w1, Double_t *w2,
-			 Double_t x, Double_t &y, Double_t &dy );
-  Bool_t SVDksb( Double_t **u, const Double_t *w, Double_t **v,
-		 Int_t m, Int_t n, const Double_t *b, Double_t *x, Double_t *wv );
-  Bool_t SVDcmp( Double_t **a, Int_t m, Int_t n, Double_t *w, Double_t **v, Double_t *wv );
+  bool GaussElim( double **a, int n, double *b, int *indx, int *ipiv );
+  bool GaussJordan( double **a, int n, double *b,
+		    int *indxc, int *indxd, int *ipiv );
+  bool InterpolateRatio( int n, const double *xa, const double *ya,
+			 double *w1, double *w2,
+			 double x, double &y, double &dy );
+  bool InterpolatePol( int n, const double *xa, const double *ya,
+		       double *w1, double *w2,
+		       double x, double &y, double &dy );
+  bool SVDksb( double **u, const double *w, double **v,
+	       int m, int n, const double *b, double *x, double *wv );
+  bool SVDcmp( double **a, int m, int n, double *w, double **v, double *wv );
   template <typename T>
   void PrintMatrix( T *mat, const std::string& arg="",
-		    const Int_t column=4, const Int_t line=4 );
+		    const int column=4, const int line=4 );
   template <typename T>
   void PrintVector( T *vec, const std::string& arg="",
 		    const std::size_t size=4 );
@@ -117,16 +117,16 @@ namespace math
 
 //______________________________________________________________________________
 template <typename T>
-inline Bool_t
+inline bool
 math::Equal( const T& l, const T& r )
 {
-  Double_t al = TMath::Abs(l), ar = TMath::Abs(r);
+  double al = std::abs(l), ar = std::abs(r);
   return
     ( ( al <= Epsilon() ) || ( ar <= Epsilon() ) )
     ?
-    ( TMath::Abs(l-r) <= Epsilon() )
+    ( std::abs(l-r) <= Epsilon() )
     :
-    ( ( TMath::Abs(l-r)/TMath::Max( al, ar ) ) <= Epsilon() );
+    ( ( std::abs(l-r)/std::max( al, ar ) ) <= Epsilon() );
 }
 
 

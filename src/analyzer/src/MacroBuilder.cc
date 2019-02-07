@@ -552,7 +552,7 @@ TOF_HT( void )
 
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(5,3);
-  for( Int_t i=0; i<NumOfSegTOF_HT; ++i ){
+  for( Int_t i=0; i<NumOfSegHtTOF; ++i ){
       c1->cd(i+1);
       TH1 *h = GHist::get(id+i);
       if( !h ) continue;

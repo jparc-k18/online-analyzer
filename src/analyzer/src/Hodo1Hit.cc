@@ -1,4 +1,10 @@
-// -*- C++ -*-
+/**
+ *  file: Hodo1Hit.cc
+ *  date: 2017.04.10
+ *
+ */
+
+#include "Hodo1Hit.hh"
 
 #include <cstring>
 #include <iomanip>
@@ -10,79 +16,77 @@
 #include <std_ostream.hh>
 
 #include "DebugCounter.hh"
-#include "FuncName.hh"
-#include "Hodo1Hit.hh"
 #include "HodoParamMan.hh"
 #include "HodoPHCMan.hh"
 #include "RawData.hh"
 
-ClassImp(Hodo1Hit);
-
 namespace
 {
+  const std::string& class_name("Hodo1Hit");
   const HodoParamMan& gHodo = HodoParamMan::GetInstance();
   const HodoPHCMan&   gPHC  = HodoPHCMan::GetInstance();
 }
 
 //______________________________________________________________________________
-Hodo1Hit::Hodo1Hit( HodoRawHit *rhit, Int_t index )
-  : TObject(),
-    m_raw(rhit),
-    m_is_calculated(false),
-    m_multi_hit(),
-    m_a(),
-    m_t(),
-    m_ct(),
-    m_index(index)
+HodoHit::HodoHit(){};
+HodoHit::~HodoHit(){};
+
+//______________________________________________________________________________
+Hodo1Hit::Hodo1Hit( HodoRawHit *rhit, int index )
+  : HodoHit(), m_raw(rhit), m_is_calculated(false), m_index(index)
 {
-  debug::ObjectCounter::Increase(ClassName());
+  debug::ObjectCounter::increase(class_name);
 }
 
 //______________________________________________________________________________
 Hodo1Hit::~Hodo1Hit( void )
 {
-  debug::ObjectCounter::Decrease(ClassName());
+  debug::ObjectCounter::decrease(class_name);
 }
 
 //______________________________________________________________________________
 bool
-Hodo1Hit::Calculate( void )
+//Hodo1Hit::Calculate( void )
+Hodo1Hit::Calculate( bool tdc_flag )
 {
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
   if( m_is_calculated ){
-    hddaq::cout << FUNC_NAME << " already calculated" << std::endl;
+    hddaq::cout << func_name << " already calculated" << std::endl;
     return false;
   }
 
-  if( m_raw->GetNumOfTdcHits()!=1 )
+  if( tdc_flag && m_raw->GetNumOfTdcHits()!=1 )
     return false;
 
   if( !gHodo.IsReady() ){
-    hddaq::cout << FUNC_NAME << " HodoParamMan must be initialized" << std::endl;
+    hddaq::cout << func_name << " HodoParamMan must be initialized" << std::endl;
     return false;
   }
 
   if( !gPHC.IsReady() ){
-    hddaq::cout << FUNC_NAME << " HodoPHCMan must be initialized" << std::endl;
+    hddaq::cout << func_name << " HodoPHCMan must be initialized" << std::endl;
     return false;
   }
 
-  Int_t cid  = m_raw->DetectorId();
-  Int_t plid = m_raw->PlaneId();
-  Int_t seg  = m_raw->SegmentId();
+  int cid  = m_raw->DetectorId();
+  int plid = m_raw->PlaneId();
+  int seg  = m_raw->SegmentId();
 
   // hit information
-  m_multi_hit = m_raw->SizeTdc1();
-  Int_t UorD=0;
-  Int_t adc = m_raw->GetAdc1(0);
+  m_multi_hit_l = m_raw->SizeTdc1()  > m_raw->SizeTdc2()?  m_raw->SizeTdc1()  : m_raw->SizeTdc2();
+  m_multi_hit_t = m_raw->SizeTdcT1() > m_raw->SizeTdcT2()? m_raw->SizeTdcT1() : m_raw->SizeTdcT2();
+  int UorD=0;
+  int adc = m_raw->GetAdc1(0);
   if( 0 > m_raw->GetTdc1(0) ){
     UorD=1;
     adc = m_raw->GetAdc2(0);
   }
 
-  Double_t dE = 0.;
+  double dE = 0.;
   if( adc>=0 ){
     if( !gHodo.GetDe( cid, plid, seg, UorD, adc, dE ) ){
-      hddaq::cerr << "#E " << FUNC_NAME
+      hddaq::cerr << "#E " << func_name
 		  << " something is wrong at GetDe("
 		  << cid  << ", " << plid << ", " << seg << ", "
 		  << UorD << ", " << adc  << ", " << dE  << ")" << std::endl;
@@ -92,9 +96,10 @@ Hodo1Hit::Calculate( void )
 
   m_a.push_back(dE);
 
-  for( Int_t m=0; m<m_multi_hit; ++m ){
-    Int_t    tdc  = -999;
-    Double_t time = -999.;
+  int mhit = m_multi_hit_l;
+  for( int m=0; m<mhit; ++m ){
+    int    tdc  = -999;
+    double time = -999.;
     if(0 == UorD){
       tdc = m_raw->GetTdc1(m);
     }else{
@@ -104,7 +109,7 @@ Hodo1Hit::Calculate( void )
     if( tdc<0 ) continue;
 
     if( !gHodo.GetTime( cid, plid, seg, UorD, tdc, time ) ){
-      hddaq::cerr << "#E " << FUNC_NAME
+      hddaq::cerr << "#E " << func_name
 		  << " something is wrong at GetTime("
 		  << cid  << ", " << plid << ", " << seg  << ", "
 		  << UorD << ", " << tdc  << ", " << time << ")" << std::endl;
@@ -112,11 +117,24 @@ Hodo1Hit::Calculate( void )
     }
     m_t.push_back(time);
 
-    Double_t ctime = time;
+    double ctime = time;
     gPHC.DoCorrection(cid, plid, seg, UorD, time, dE, ctime );
     m_ct.push_back(ctime);
+
+    m_flag_join.push_back(false);
   }
 
   m_is_calculated = true;
   return true;
+}
+
+// ____________________________________________________________
+bool
+Hodo1Hit::JoinedAllMhit()
+{
+  bool ret = true;
+  for(int i = 0; i<m_flag_join.size(); ++i){
+    ret = ret & m_flag_join[i];
+  }// for(i)
+  return ret;
 }

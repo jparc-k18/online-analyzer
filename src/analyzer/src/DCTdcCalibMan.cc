@@ -1,42 +1,40 @@
-// -*- C++ -*-
+/**
+ *  file: DCTdcCalibMan.cc
+ *  date: 2017.04.10
+ *
+ */
+
+#include "DCTdcCalibMan.hh"
 
 #include <cstdio>
+#include <cstdlib>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 
-#include "ConfMan.hh"
-#include "DCTdcCalibMan.hh"
-#include "Exception.hh"
-#include "FuncName.hh"
+#include <std_ostream.hh>
 
-ClassImp(DCTdcCalibMan);
+#include "DeleteUtility.hh"
 
-//______________________________________________________________________________
 namespace
 {
-  inline UInt_t MakeKey( Int_t plane, Double_t wire )
-  {
-    return (plane<<10) | Int_t(wire);
-  }
+  const std::string& class_name("DCTdcCalibMan");
 }
 
 //______________________________________________________________________________
 struct DCTdcCalMap
 {
-  DCTdcCalMap( Double_t q0, Double_t q1 )
+  double p0, p1;
+  DCTdcCalMap( double q0, double q1 )
     : p0(q0), p1(q1)
   {}
-  Double_t p0, p1;
 };
 
 //______________________________________________________________________________
 DCTdcCalibMan::DCTdcCalibMan( void )
-  : TObject(),
-    m_is_ready(false),
-    m_file_name(),
-    m_map()
+  : m_is_ready(false),
+    m_file_name("")
 {
 }
 
@@ -50,106 +48,135 @@ DCTdcCalibMan::~DCTdcCalibMan( void )
 void
 DCTdcCalibMan::ClearElements( void )
 {
-  std::map <UInt_t, DCTdcCalMap *>::iterator itr;
-  for( itr=m_map.begin(); itr!=m_map.end(); ++itr ){
-    delete itr->second;
-    itr->second = 0;
-  }
-  m_map.clear();
+  del::ClearMap( m_container );
 }
 
 //______________________________________________________________________________
-Bool_t
+inline unsigned int
+MakeKey( int plane_id, double wire_id )
+{
+  return (plane_id<<10) | int(wire_id);
+}
+
+//______________________________________________________________________________
+bool
 DCTdcCalibMan::Initialize( void )
 {
-  Int_t pid, wid;
-  Double_t p0, p1;
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
 
-  std::ifstream ifs( m_file_name );
-  if( !ifs.is_open() ){
-    hddaq::cerr << "#E " << FUNC_NAME << " file open fail : "
-		<< m_file_name << std::endl;
+  if( m_is_ready ){
+    hddaq::cerr << "#W " << func_name
+		<< " already initialied" << std::endl;
     return false;
   }
 
-  TString line;
-  while( ifs.good() && line.ReadLine(ifs) ){
-    if( line[0] == '#' ) continue;
-    if( std::sscanf( line.Data(), "%d %d %lf %lf",
-		     &pid, &wid, &p1, &p0 ) == 4 ){
-      UInt_t key = MakeKey( pid, wid );
-      DCTdcCalMap *p = new DCTdcCalMap( p0, p1 );
-      if(p){
-	if(m_map[key]) delete m_map[key];
-	m_map[key]=p;
-      }
-      else{
-	std::cerr << FUNC_NAME << ": new fail. "
-		  << " Plane=" << std::setw(3) << std::dec << pid
-		  << " Wire=" << std::setw(3) << std::dec << wid
-		  << std::endl;
-      }
+  std::ifstream ifs( m_file_name.c_str() );
+  if( !ifs.is_open() ){
+    hddaq::cerr << "#E " << func_name << " "
+		<< "file open fail : " << m_file_name << std::endl;
+    return false;
+  }
+
+  ClearElements();
+
+  std::string line;
+  while( ifs.good() && std::getline(ifs, line) ){
+    if( line.empty() || line[0]=='#' ) continue;
+    std::istringstream iss( line );
+    int    plane_id=-1, wire_id=-1;
+    double p0=-9999., p1=-9999.;
+    if( iss >> plane_id >> wire_id >> p1 >> p0 ){
+      unsigned int key = MakeKey( plane_id, wire_id );
+      DCTdcCalMap *tdc_calib = new DCTdcCalMap( p0, p1 );
+      if( m_container[key] ) delete m_container[key];
+      m_container[key] = tdc_calib;
     }
     else{
-      std::cerr << FUNC_NAME << ": Bad format => "
-      		<< line << std::endl;
+      hddaq::cerr << func_name << ": Bad format => "
+		  << line << std::endl;
     }
   }
 
   m_is_ready = true;
-  return true;
+  return m_is_ready;
+}
+
+//______________________________________________________________________________
+bool
+DCTdcCalibMan::Initialize( const std::string& file_name )
+{
+  m_file_name = file_name;
+  return Initialize();
 }
 
 //______________________________________________________________________________
 DCTdcCalMap*
-DCTdcCalibMan::GetMap( Int_t PlaneId, Double_t WireId ) const
+DCTdcCalibMan::GetMap( int plane_id, double wire_id ) const
 {
-  UInt_t key = MakeKey( PlaneId, WireId );
-  std::map<UInt_t, DCTdcCalMap*>::const_iterator itr = m_map.find(key);
-  if( itr != m_map.end() )
-    return itr->second;
-  else
-    return nullptr;
+  unsigned int key = MakeKey( plane_id, wire_id );
+  DCTdcCalMap *map = 0;
+  DCTdcIterator itr = m_container.find(key);
+  if( itr!=m_container.end() ) map = itr->second;
+  return map;
 }
 
 //______________________________________________________________________________
-Bool_t
-DCTdcCalibMan::GetTime( Int_t PlaneId, Double_t WireId,
-			Int_t tdc, Double_t & time ) const
+bool
+DCTdcCalibMan::GetTime( int plane_id, double wire_id,
+			int tdc, double& time ) const
 {
-  DCTdcCalMap *p = GetMap(PlaneId,WireId);
-  if(p){
-    time=(p->p0)+(p->p1)*tdc;
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+  DCTdcCalMap *tdc_calib = GetMap( plane_id, wire_id );
+  if( tdc_calib ){
+    time = ( tdc + (tdc_calib->p0) ) * (tdc_calib->p1);
     return true;
   }
   else{
-    std::stringstream ss;
-    ss << FUNC_NAME << ": No record. "
-       << " PlaneId=" << std::setw(3) << std::dec << PlaneId
-       << " WireId=" << std::setw(3) << std::dec << WireId
-       << std::endl;
-    throw Exception( ss.str() );
-    // return false;
+    hddaq::cerr << func_name << ": No record. "
+		<< " PlaneId=" << std::setw(3) << std::dec << plane_id
+		<< " WireId="  << std::setw(3) << std::dec << wire_id
+		<< std::endl;
+    return false;
   }
 }
 
 //______________________________________________________________________________
-Bool_t
-DCTdcCalibMan::GetTdc( Int_t PlaneId, Double_t WireId,
-		       Double_t time, Int_t &tdc ) const
+bool
+DCTdcCalibMan::GetTdc( int plane_id, double wire_id,
+		       double time, int &tdc ) const
 {
-  DCTdcCalMap *p = GetMap( PlaneId, WireId );
-  if(p){
-    tdc = (Int_t)((time-(p->p0))/(p->p1));
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+  DCTdcCalMap *tdc_calib = GetMap( plane_id, wire_id );
+  if( tdc_calib ){
+    tdc = int((time-(tdc_calib->p0))/(tdc_calib->p1));
     return true;
   }
   else{
-    std::stringstream ss;
-    ss << FUNC_NAME << ": No record. "
-       << " PlaneId=" << std::setw(3) << std::dec << PlaneId
-       << " WireId=" << std::setw(3) << std::dec << WireId
-       << std::endl;
-    throw Exception( ss.str() );
-    // return false;
+    hddaq::cerr << func_name << ": No record. "
+		<< " PlaneId=" << std::setw(3) << std::dec << plane_id
+		<< " WireId="  << std::setw(3) << std::dec << wire_id
+		<< std::endl;
+    return false;
+  }
+}
+
+//______________________________________________________________________________                                             
+bool
+DCTdcCalibMan::GetParameter( int plane_id, double wire_id,
+			     double &p0, double &p1 ) const
+{
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+  DCTdcCalMap *tdc_calib = GetMap( plane_id, wire_id );
+  if( tdc_calib ){
+    p0 = tdc_calib->p0;
+    p1 = tdc_calib->p1;
+    return true;
+  }
+  else{
+    hddaq::cerr << func_name << ": No record. "
+                << " PlaneId=" << std::setw(3) << std::dec << plane_id
+                << " WireId="  << std::setw(3) << std::dec << wire_id
+                << std::endl;
+    return false;
   }
 }

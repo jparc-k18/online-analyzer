@@ -1,98 +1,105 @@
-// -*- C++ -*-
+/**
+ *  file: DebugTimer.hh
+ *  date: 2017.04.10
+ *
+ */
+
+#include "DebugTimer.hh"
 
 #include <ctime>
 #include <iomanip>
 #include <iostream>
 
-#include <TTimeStamp.h>
-
 #include <std_ostream.hh>
-
-#include "DebugCounter.hh"
-#include "DebugTimer.hh"
-
-ClassImp(debug::Timer);
 
 namespace debug
 {
-
-//______________________________________________________________________________
-Timer::Timer( const TString& msg, Bool_t verbose )
-  : TObject(),
-    m_start( new TTimeStamp ),
-    m_stop(),
-    m_msg(msg),
-    m_verbose(verbose)
-{
-  m_start->Add( -TTimeStamp::GetZoneOffset() );
-  ObjectCounter::Increase(ClassName());
-}
-
-//______________________________________________________________________________
-Timer::~Timer( void )
-{
-  if( !m_stop ){
-    Stop();
-    if( m_verbose )
-      PrintVerbose("s");
-    else
-      Print();
+  //______________________________________________________________________________
+  Timer::Timer( const std::string& msg, bool verbose )
+    : m_start(new ::timespec),
+      m_stop(0),
+      m_cstart(),
+      m_cstop(),
+      m_msg(msg),
+      m_verbose(verbose)
+  {
+    ::clock_gettime(CLOCK_REALTIME, m_start);
+    const std::time_t& start = std::time(0);
+    m_cstart = std::ctime(&start);
   }
-  delete m_stop;
-  delete m_start;
-  ObjectCounter::Decrease(ClassName());
-}
 
-//______________________________________________________________________________
-Int_t
-Timer::Sec( void ) const
-{
-  if ( m_start && m_stop )
-    return m_stop->GetSec() - m_start->GetSec();
-  else
-    return 0;
-}
+  //______________________________________________________________________________
+  Timer::~Timer( void )
+  {
+    if (!m_stop){
+      stop();
+      if( m_verbose )
+	print_verbose();
+      else
+	print();
+    }
 
-//______________________________________________________________________________
-Int_t
-Timer::NanoSec( void ) const
-{
-  if ( m_start && m_stop )
-    return m_stop->GetNanoSec() - m_start->GetNanoSec();
-  else
-    return 0;
-}
+    delete m_stop;  m_stop = 0;
+    delete m_start; m_start = 0;
+  }
 
-//______________________________________________________________________________
-void
-Timer::Print( Option_t* ) const
-{
-  hddaq::cout << "#DTimer " << m_msg << " "
-	      << std::setw(10) << (Sec()*1.e9 + NanoSec()) << " nsec ("
-	      << (Sec() + NanoSec()*1.e-9) << " sec)" << std::endl;
-}
+  //______________________________________________________________________________
+  double
+  Timer::sec( void ) const
+  {
+    if ( m_start && m_stop )
+      return m_stop->tv_sec - m_start->tv_sec;
+    else
+      return 0.;
+  }
 
-//______________________________________________________________________________
-void
-Timer::PrintVerbose( Option_t* option ) const
-{
-  const Int_t t = Sec();
-  hddaq::cout << "#DTimer " << m_msg << std::endl
-	      << "   Process Start   : " << m_start->AsString(option) << std::endl
-	      << "   Process Stop    : " << m_stop->AsString(option) << std::endl
-	      << "   Processing Time : " << t/3600 << ":"
-	      << std::setfill('0') << std::setw(2) << std::right
-	      << (t/60)%60 << ":"
-	      << std::setfill('0') << std::setw(2) << std::right
-	      << t%60 << std::endl;
-}
+  //______________________________________________________________________________
+  double
+  Timer::nsec( void ) const
+  {
+    if ( m_start && m_stop )
+      return m_stop->tv_nsec - m_start->tv_nsec;
+    else
+      return 0.;
+  }
 
-//______________________________________________________________________________
-void
-Timer::Stop( void )
-{
-  m_stop = new TTimeStamp;
-  m_stop->Add( -TTimeStamp::GetZoneOffset() );
-}
+  //______________________________________________________________________________
+  void
+  Timer::print( const std::string& arg, std::ostream& ost ) const
+  {
+    const double sec  = m_stop->tv_sec  - m_start->tv_sec;
+    const double nsec = m_stop->tv_nsec - m_start->tv_nsec;
+    ost << "#DTimer " << m_msg << " " << arg << std::endl
+	<< "        " << std::setw(10) << (sec*.1e9 + nsec) << " nsec ("
+	<< (sec + nsec*1.e-9) << " sec)" << std::endl;
+  }
+
+  //______________________________________________________________________________
+  void
+  Timer::print_verbose( const std::string& arg, std::ostream& ost ) const
+  {
+    const std::clock_t& time = m_stop->tv_sec - m_start->tv_sec;
+    ost << "#DTimer " << m_msg << " " << arg << std::endl
+	<< "   Process Start   : " << m_cstart
+	<< "   Process Stop    : " << m_cstop
+	<< "   Processing Time : " << time/3600 << ":"
+	<< std::setfill('0') << std::setw(2) << std::right
+	<< (time/60)%60 << ":"
+	<< std::setfill('0') << std::setw(2) << std::right
+	<< time%60 << std::endl;
+
+    return;
+  }
+
+  //______________________________________________________________________________
+  void
+  Timer::stop( void )
+  {
+    m_stop = new ::timespec;
+    ::clock_gettime(CLOCK_REALTIME, m_stop);
+    const std::time_t& stop = std::time(0);
+    m_cstop = std::ctime(&stop);
+    return;
+  }
 
 }

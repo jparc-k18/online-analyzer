@@ -7,18 +7,17 @@
 #include <vector>
 #include <set>
 
-#include <TObject.h>
-
 #include "DCAnalyzer.hh"
 
 class DCHit;
 class HodoAnalyzer;
 
 //______________________________________________________________________________
-class BH2Filter : public TObject
+class BH2Filter
 {
 public:
-  static BH2Filter& GetInstance( void );
+  static BH2Filter&         GetInstance( void );
+  static const std::string& ClassName( void );
   ~BH2Filter( void );
 
 private:
@@ -70,8 +69,6 @@ public:
 
 private:
   void                         BuildCandidates( std::set<Int_t>& seg, FilterList& cands );
-
-  ClassDef(BH2Filter,0);
 };
 
 //______________________________________________________________________________
@@ -80,6 +77,14 @@ BH2Filter::GetInstance( void )
 {
   static BH2Filter g_instance;
   return g_instance;
+}
+
+//______________________________________________________________________________
+inline const std::string&
+BH2Filter::ClassName( void )
+{
+  static std::string g_name("BH2Filter");
+  return g_name;
 }
 
 #endif

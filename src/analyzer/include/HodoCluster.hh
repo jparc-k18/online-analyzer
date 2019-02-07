@@ -1,18 +1,22 @@
-// -*- C++ -*-
+/**
+ *  file: HodoCluster.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef HODO_CLUSTER_HH
 #define HODO_CLUSTER_HH
 
-#include <TObject.h>
+#include <cstddef>
 
-class Hodo2Hit;
+class HodoHit;
 class HodoAnalyzer;
 
 //______________________________________________________________________________
-class HodoCluster : public TObject
+class HodoCluster
 {
 public:
-  HodoCluster( Hodo2Hit *hitA, Hodo2Hit *hitB=0, Hodo2Hit *hitC=0 );
+  HodoCluster( HodoHit *hitA, HodoHit *hitB=0, HodoHit *hitC=0 );
   virtual ~HodoCluster( void );
 
 private:
@@ -20,41 +24,49 @@ private:
   HodoCluster & operator = ( const HodoCluster & );
 
 private:
-  Hodo2Hit *m_hitA;
-  Hodo2Hit *m_hitB;
-  Hodo2Hit *m_hitC;
-  Int_t     m_cluster_size;
-  Double_t  m_mean_time;
-  Double_t  m_de;
-  Double_t  m_mean_seg;
-  Double_t  m_time_diff;
-  Double_t  m_1st_seg;
-  Double_t  m_1st_time;
-  Bool_t    m_good_for_analysis;
+  HodoHit *m_hitA;
+  HodoHit *m_hitB;
+  HodoHit *m_hitC;
+  int       m_indexA;
+  int       m_indexB;
+  int       m_indexC;
+  int       m_cluster_size;
+  double    m_mean_time;
+  double    m_cmean_time;
+  double    m_de;
+  double    m_mean_seg;
+  double    m_time_diff;
+  double    m_1st_seg;
+  double    m_1st_time;
+  bool      m_good_for_analysis;
 
 public:
-  Hodo2Hit* GetHit( Int_t i )       const;
-  Int_t     ClusterSize( void )     const { return m_cluster_size; }
-  Double_t  CMeanTime( void )       const { return m_mean_time;    }
-  Double_t  DeltaE( void )          const { return m_de;           }
-  Double_t  MeanSeg( void )         const { return m_mean_seg;     }
-  Double_t  TimeDif( void )         const { return m_time_diff;    }
-  Double_t  C1stSeg( void )         const { return m_1st_seg;      }
-  Double_t  C1stTime( void )        const { return m_1st_time;     }
-  Bool_t    GoodForAnalysis( void ) const { return m_good_for_analysis; }
-  Bool_t    GoodForAnalysis( Bool_t status )
+  void Calculate( void );
+  HodoHit*  GetHit( int i )         const;
+  int       ClusterSize( void )     const { return m_cluster_size; }
+  double    MeanTime( void )        const { return m_mean_time;    }
+  double    CMeanTime( void )       const { return m_cmean_time;    }
+  double    DeltaE( void )          const { return m_de;           }
+  double    MeanSeg( void )         const { return m_mean_seg;     }
+  double    TimeDif( void )         const { return m_time_diff;    }
+  double    C1stSeg( void )         const { return m_1st_seg;      }
+  double    C1stTime( void )        const { return m_1st_time;     }
+  bool      GoodForAnalysis( void ) const { return m_good_for_analysis; }
+  bool      GoodForAnalysis( bool status )
   {
-    Bool_t pre_status = m_good_for_analysis;
+    bool pre_status = m_good_for_analysis;
     m_good_for_analysis = status;
     return pre_status;
   }
 
-  Bool_t ReCalc( Bool_t applyRecusively=false );
+  void      SetIndex(int iA, int iB=0, int iC=0)
+  {
+    m_indexA = iA; m_indexB = iB; m_indexC = iC;
+  }
+
+  bool ReCalc( bool applyRecusively=false );
 
 private:
-  void Calculate( void );
 
-  ClassDef(HodoCluster,0);
 };
-
 #endif

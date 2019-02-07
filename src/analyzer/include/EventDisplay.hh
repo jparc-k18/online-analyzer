@@ -42,10 +42,11 @@ class TTUBS;
 class TView;
 
 //______________________________________________________________________________
-class EventDisplay : public TObject
+class EventDisplay// public TObject
 {
 public:
   static EventDisplay& GetInstance( void );
+  static const std::string& ClassName( void );
   ~EventDisplay( void );
 
 private:
@@ -192,7 +193,7 @@ private:
   void   ResetVisibility( TNode *& node, Color_t c=kBlack );
   void   ResetVisibility( std::vector<TNode*>& node, Color_t c=kBlack );
 
-  ClassDef(EventDisplay,0);
+  //  ClassDef(EventDisplay,0);
 };
 
 //______________________________________________________________________________
@@ -201,6 +202,14 @@ EventDisplay::GetInstance( void )
 {
   static EventDisplay g_instance;
   return g_instance;
+}
+
+//______________________________________________________________________________
+inline const std::string&
+EventDisplay::ClassName( void )
+{
+  static std::string g_name("EventDisplay");
+  return g_name;
 }
 
 #endif

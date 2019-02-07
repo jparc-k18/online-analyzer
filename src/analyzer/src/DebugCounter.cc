@@ -1,53 +1,67 @@
-// -*- C++ -*-
+/**
+ *  file: DebugCounter.cc
+ *  date: 2017.04.10
+ *
+ */
+
+#include "DebugCounter.hh"
 
 #include <iomanip>
 #include <iostream>
 #include <iterator>
 #include <map>
 
-#include "FuncName.hh"
-#include "DebugCounter.hh"
-
-ClassImp(debug::ObjectCounter);
+#include <std_ostream.hh>
 
 namespace debug
 {
+  namespace
+  {
+    const std::string& class_name("ObjectCounter");
+  }
 
-//______________________________________________________________________________
+//_____________________________________________________________________
 ObjectCounter::ObjectCounter( void )
-  : TObject(),
-    m_map()
+  : m_map()
 {
 }
 
-//______________________________________________________________________________
+//_____________________________________________________________________
 ObjectCounter::~ObjectCounter( void )
 {
 }
 
-//______________________________________________________________________________
+//_____________________________________________________________________
 void
-ObjectCounter::CheckCounter( void ) const
+ObjectCounter::check( const std::string& arg ) const
 {
 #ifdef MemoryLeak
-  Bool_t has_leak = false;
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
+  bool has_leak = false;
+
   ObjectIter itr, end=m_map.end();
   for( itr=m_map.begin(); itr!=end; ++itr ){
     if( itr->second!=0 ) has_leak = true;
   }
-  if( has_leak ) Print();
+
+  if( has_leak )
+    print( arg+" "+func_name );
+
 #endif
 }
 
-//______________________________________________________________________________
+//_____________________________________________________________________
 void
-ObjectCounter::PrintCounter( void ) const
+ObjectCounter::print( const std::string& arg ) const
 {
-  std::cout << "#DCounter " << FUNC_NAME << std::endl;
+  static const std::string func_name("["+class_name+"::"+__func__+"()]");
+
+  hddaq::cout << "#DCounter " << func_name << " " << arg << std::endl;
   ObjectIter itr, end=m_map.end();
   for( itr=m_map.begin(); itr!=end; ++itr ){
-    std::cout << std::setw(20) << std::left
-	      << itr->first << " : " << itr->second << std::endl;
+    hddaq::cout << std::setw(20) << std::left
+		<< itr->first << " : " << itr->second << std::endl;
   }
 }
 

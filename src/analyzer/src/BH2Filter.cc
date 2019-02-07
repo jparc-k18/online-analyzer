@@ -20,12 +20,10 @@
 #include "HodoAnalyzer.hh"
 #include "HodoCluster.hh"
 
-ClassImp(BH2Filter);
-
 //______________________________________________________________________________
 BH2Filter::Param::Param( void )
-  : m_xmin(NumOfLayersBcOut),
-    m_xmax(NumOfLayersBcOut)
+  : m_xmin(NumOfLayersBcOut+1),
+    m_xmax(NumOfLayersBcOut+1)
 {
 }
 
@@ -57,8 +55,7 @@ BH2Filter::Param::Print( const TString& arg ) const
 
 //______________________________________________________________________________
 BH2Filter::BH2Filter( void )
-  : TObject(),
-    m_is_ready(false),
+  : m_is_ready(false),
     m_verbose(false),
     m_param(NumOfSegBH2)
 {
@@ -113,9 +110,9 @@ BH2Filter::BuildCandidates( std::set<Int_t>& seg, FilterList& cands )
 	itSeg!=itSegEnd; ++itSeg, ++itCont ){
     const Int_t iSeg = *itSeg;
     std::vector<DCHitContainer>& c = *itCont;
-    c.resize(NumOfLayersBcOut+1);
+    c.resize(NumOfLayersBcOut+2);
     if( m_verbose ) std::cout << "  BH2 seg = " << iSeg << std::endl;
-    for( Int_t iplane=0; iplane<NumOfLayersBcOut; ++iplane ){
+    for( Int_t iplane=0; iplane<NumOfLayersBcOut+1; ++iplane ){
       Int_t iLayer = iplane + 1;
       DCHitContainer& after = c[iLayer];
       const Double_t xmin = m_param[iSeg].m_xmin[iplane];

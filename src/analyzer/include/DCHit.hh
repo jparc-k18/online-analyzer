@@ -1,185 +1,214 @@
-// -*- C++ -*-
+/**
+ *  file: DCHit.hh
+ *  date: 2017.04.10
+ *
+ */
 
 #ifndef DC_HIT_HH
 #define DC_HIT_HH
 
+#include <cmath>
 #include <vector>
 #include <deque>
 #include <string>
+#include <numeric>
+#include <cstddef>
 
-#include <Rtypes.h>
 #include <TObject.h>
 
 #include <std_ostream.hh>
 
+#include "DebugCounter.hh"
+
+//typedef std::vector<bool>   BoolVec;
+typedef std::deque<bool>    BoolVec;
+typedef std::vector<int>    IntVec;
+typedef std::vector<double> DoubleVec;
+
 class DCLTrackHit;
 
 //______________________________________________________________________________
-class DCHit : public TObject
+class DCHit
 {
 public:
   DCHit( void );
-  DCHit( Int_t layer );
-  DCHit( Int_t layer, Double_t wire );
+  DCHit( int layer );
+  DCHit( int layer, double wire );
   ~DCHit( void );
 
 private:
   DCHit( const DCHit& );
   DCHit& operator =( const DCHit& );
 
-private:
-  Int_t                 m_layer;
-  Double_t              m_wire;
-  std::vector<Int_t>    m_tdc;
-  std::vector<Int_t>    m_adc;
-  std::vector<Int_t>    m_trailing;
-  std::vector<Double_t> m_dt;
-  std::vector<Double_t> m_dl;
-  std::vector<Double_t> m_trailing_time;
-  Double_t              m_wpos;
-  Double_t              m_angle;
-  std::deque<Bool_t>    m_belong_track;
-  std::deque<Bool_t>    m_dl_range;
-  ///// for MWPC
-  Int_t                 m_cluster_size;
-  Bool_t                m_mwpc_flag;
-  Double_t              m_mwpc_wire;
-  Double_t              m_mwpc_wpos;
-  ///// for SSD
-  Bool_t                m_is_ssd;
-  Bool_t                m_zero_suppressed;
-  Bool_t                m_time_corrected;
-  Bool_t                m_good_waveform;
-  Int_t                 m_pedestal;
-  Int_t                 m_peak_height;
-  Int_t                 m_peak_position;
-  Double_t              m_deviation;
-  Double_t              m_amplitude;
-  Double_t              m_peak_time;
-  Double_t              m_adc_sum;
-  Double_t              m_de;
-  Double_t              m_rms;
-  Double_t              m_chisqr;
-  std::vector<Double_t> m_time;
-  std::vector<Double_t> m_waveform;
-  Bool_t                m_belong_kaon;
-  ///// for TOF
-  Double_t              m_z;
+protected:
+  //private:
+  int       m_layer;
+  double    m_wire;
+  IntVec    m_tdc;
+  IntVec    m_adc;
+  IntVec    m_trailing;
 
-  mutable std::vector <DCLTrackHit*> m_register_container;
+  //  DoubleVec m_dt;
+  //  DoubleVec m_dl;
+  //  DoubleVec m_trailing_time;
+
+  // For DC with HUL MH-TDC
+  struct data_pair{
+    double drift_time;
+    double drift_length;
+    double trailing_time;
+    double tot;
+    int    index_t;
+    bool   belong_track;
+    bool   dl_range;
+  };
+
+  std::vector<data_pair> m_pair_cont;
+
+  double  m_wpos;
+  double  m_angle;
+  //  BoolVec m_belong_track;
+  //  BoolVec m_dl_range;
+
+  ///// for MWPC
+  int    m_cluster_size;
+  bool   m_mwpc_flag;
+  double m_mwpc_wire;
+  double m_mwpc_wpos;
+
+  ///// for TOF
+  double    m_z;
+
+  ///// For E40 Acrylic TOF
+  double    m_ofs_dt;
+
+  ///// for CFT
+  double m_meanseg;
+  double m_maxseg;
+  double m_adc_low;
+  double m_mip_low;
+  double m_dE_low;
+  double max_adc_low;
+  double max_mip_low;
+  double max_dE_low;
+  double m_r;
+  double m_phi;
+  BoolVec m_belong_track;
+
+  mutable std::vector <DCLTrackHit *> m_register_container;
 
 public:
-  Bool_t CalcDCObservables( void );
-  Bool_t CalcMWPCObservables( void );
-  Bool_t CalcFiberObservables( void );
-  Bool_t CalcSsdObservables( void );
-  //  Bool_t CalcObservablesSimulation( Double_t dlength);
+  bool CalcDCObservables( void );
+  bool CalcMWPCObservables( void );
+  bool CalcFiberObservables( void );
+  bool CalcCFTObservables( void );
+  //  bool CalcObservablesSimulation( double dlength);
 
-  void SetLayer( Int_t layer )              { m_layer = layer; }
-  void SetWire( Double_t wire )             { m_wire  = wire; }
-  void SetTdcVal( Int_t tdc );
-  void SetAdcVal( Int_t adc );
-  void SetTdcTrailing( Int_t tdc )          { m_trailing.push_back(tdc); }
-  void SetDriftTime( Double_t dt )          { m_dt.push_back(dt); }
-  void ClearDriftTime( void )             { m_dt.clear(); }
-  void SetDriftLength( Double_t dl )        { m_dl.push_back(dl); }
-  void SetDriftLength( Int_t ith, Double_t dl ) { m_dl[ith] = dl; }
-  void ClearDriftLength( void )           { m_dl.clear();}
-  void SetTiltAngle( Double_t angleDegree ) { m_angle = angleDegree; }
-  void SetTrailingTime( Double_t t )        { m_trailing_time.push_back(t); }
+  void SetLayer( int layer )              { m_layer = layer;                    }
+  void SetWire( double wire )             { m_wire  = wire;                     }
+  void SetTdcVal( int tdc )               { m_tdc.push_back(tdc);               }
+  void SetAdcVal( int adc )               { m_adc.push_back(adc);               }
+  void SetTdcTrailing(int tdc)            { m_trailing.push_back(tdc);          }
+  void SetDummyPair();
+  void SetDriftLength( int ith, double dl ){m_pair_cont.at(ith).drift_length = dl;}
+  void SetDriftTime( int ith, double dt ) { m_pair_cont.at(ith).drift_time = dt;  }
+  void SetTiltAngle( double angleDegree ) { m_angle = angleDegree;              }
 
-  void SetClusterSize( Int_t size )          { m_cluster_size = size;  }
-  void SetMWPCFlag( Bool_t flag )            { m_mwpc_flag    = flag;  }
-  void SetMeanWire( Double_t mwire )         { m_mwpc_wire    = mwire; }
-  void SetMeanWirePosition( Double_t mwpos ) { m_mwpc_wpos    = mwpos; }
-  void SetWirePosition( Double_t wpos )      { m_wpos         = wpos;  }
-
-  ///// for SSD
-  void SetSsdFlag( Bool_t flag=true )          { m_is_ssd        = flag;          }
-  void SetGoodWaveForm( Bool_t good=true )     { m_good_waveform = good;          }
-  void SetPedestal( Int_t pedestal )           { m_pedestal      = pedestal;      }
-  void SetRms( Double_t rms )                  { m_rms           = rms;           }
-  void SetAdcSum( Double_t sum )               { m_adc_sum       = sum;           }
-  void SetDe( Double_t de )                    { m_de            = de;            }
-  void SetDeviation( Double_t deviation )      { m_deviation     = deviation;     }
-  void SetTime( std::vector<Double_t> time )             { m_time          = time;          }
-  void SetWaveform( std::vector<Double_t> waveform )     { m_waveform      = waveform;      }
-  void SetAmplitude( Double_t amplitude )      { m_amplitude     = amplitude;     }
-  void SetPeakTime( Double_t peaktime )        { m_peak_time     = peaktime;      }
-  void SetPeakHeight( Int_t height )           { m_peak_height   = height;        }
-  void SetPeakPosition( Int_t position )       { m_peak_position = position;      }
-  void SetChisquare( Double_t chisqr )         { m_chisqr        = chisqr;        }
+  void SetClusterSize( int size )          { m_cluster_size   = size;           }
+  void SetMWPCFlag( bool flag )            { m_mwpc_flag = flag;                }
+  void SetMeanWire( double mwire )         { m_mwpc_wire = mwire;               }
+  void SetMeanWirePosition( double mwpos ) { m_mwpc_wpos = mwpos;               }
+  void SetWirePosition( double wpos )      { m_wpos      = wpos;                }
 
   ///// for TOF
-  void SetZ( Double_t z ) { m_z = z; }
+  void SetZ( double z ) { m_z = z; }
 
-  Int_t GetLayer( void ) const { return m_layer; }
-  Double_t GetWire( void )  const {
+  ///// For E40 Acrylic TOF
+  void SetOfsdT( double ofs) { m_ofs_dt = ofs;}
+
+  ///// for CFT
+  void SetMeanSeg    ( double seg ) { m_meanseg    = seg;   }
+  void SetMaxSeg     ( double seg ) { m_maxseg     = seg;   }
+  void SetAdcLow     ( double adc ) { m_adc_low    = adc;   }
+  void SetMIPLow     ( double mip ) { m_mip_low    = mip;   }
+  void SetdELow      ( double dE )  { m_dE_low     = dE;   }
+  void SetMaxAdcLow  ( double adc ) { max_adc_low    = adc;   }
+  void SetMaxMIPLow  ( double mip ) { max_mip_low    = mip;   }
+  void SetMaxdELow   ( double dE )  { max_dE_low     = dE;   }
+  void SetPositionR  ( double r   ) { m_r    = r;   }
+  void SetPositionPhi( double phi ) { m_phi  = phi; }
+  void SetTdcCFT( int tdc );
+
+
+  void GateDriftTime(double min, double max, bool select_1st);
+
+  int GetLayer( void ) const { return m_layer; }
+  double GetWire( void )  const {
     if( m_mwpc_flag ) return m_mwpc_wire;
-    else return m_wire;
+    else return int(m_wire);
   }
 
-  Int_t GetTdcSize( void ) const { return m_tdc.size(); }
-  Int_t GetAdcSize( void ) const { return m_adc.size(); }
-  Int_t GetDriftTimeSize( void ) const { return m_dt.size(); }
-  Int_t GetDriftLengthSize( void ) const { return m_dl.size(); }
-  Int_t GetTdcVal( Int_t nh=0 ) const { return m_tdc[nh]; }
-  Int_t GetAdcVal( Int_t nh=0 ) const { return m_adc[nh]; }
-  Int_t GetTdcTrailing( Int_t nh=0 ) const { return m_trailing[nh]; }
-  Int_t GetTdcTrailingSize( void ) const { return m_trailing.size(); }
+  int GetTdcSize( void )             const { return m_tdc.size(); }
+  int GetAdcSize( void )             const { return m_adc.size(); }
+  int GetDriftTimeSize( void )       const { return m_pair_cont.size(); }
+  int GetDriftLengthSize( void )     const { return m_pair_cont.size(); }
+  int GetTdcVal( int nh=0 )          const { return m_tdc[nh]; }
+  int GetAdcVal( int nh=0 )          const { return m_adc[nh]; }
+  int GetTdcTrailing( int nh=0 )     const { return m_trailing[nh]; }
+  int GetTdcTrailingSize( void )     const { return m_trailing.size(); }
 
-  Double_t GetResolution( void ) const;
+  double GetResolution( void )       const;
 
-  Double_t GetDriftTime( Int_t nh=0 ) const { return m_dt[nh]; }
-  Double_t GetDriftLength( Int_t nh=0 ) const { return m_dl[nh]; }
-  Double_t GetTrailingTime( Int_t nh=0 ) const { return m_trailing_time[nh]; }
+  double GetDriftTime( int nh=0 )    const { return m_pair_cont.at(nh).drift_time; }
+  double GetDriftLength( int nh=0 )  const { return m_pair_cont.at(nh).drift_length; }
+  double GetTrailingTime( int nh=0 ) const { return m_pair_cont.at(nh).trailing_time; }
+  double GetTot( int nh=0 )          const { return m_pair_cont.at(nh).tot; }
 
-  Double_t GetTiltAngle( void ) const { return m_angle; }
-  Double_t GetWirePosition( void ) const {
+  double GetTiltAngle( void ) const { return m_angle; }
+  double GetWirePosition( void ) const {
     if( m_mwpc_flag ) return m_mwpc_wpos;
     else return m_wpos;
   }
 
-  Int_t GetClusterSize( void ) const { return m_cluster_size; }
-  Double_t GetMeamWire( void ) const { return m_mwpc_wire; }
-  Double_t GetMeamWirePosition( void ) const { return m_mwpc_wpos; }
-
-  ///// for SSD
-  Bool_t    IsSsd( void )              const { return m_is_ssd;          }
-  Bool_t    IsTimeCorrected( void )    const { return m_time_corrected;  }
-  Bool_t    IsGoodWaveForm( void )     const { return m_good_waveform;   }
-  Bool_t    IsZeroSuppressed( void )   const { return m_zero_suppressed; }
-  Int_t     GetPedestal( void )        const { return m_pedestal;        }
-  std::vector<Double_t> GetTime( void )            const { return m_time;            }
-  std::vector<Double_t> GetWaveform( void )        const { return m_waveform;        }
-  Double_t  GetAmplitude( void )       const { return m_amplitude;       }
-  Double_t  GetDeviation( void )       const { return m_deviation;       }
-  Double_t  GetAdcSum( void )          const { return m_adc_sum;         }
-  Double_t  GetDe( void )              const { return m_de;              }
-  Double_t  GetPeakTime( void )        const { return m_peak_time;       }
-  Double_t  GetRms( void )             const { return m_rms;             }
-  Double_t  GetAdcPeakHeight( void )   const { return m_peak_height;     }
-  Double_t  GetAdcPeakPosition( void ) const { return m_peak_position;   }
-  Double_t  GetChisquare( void )       const { return m_chisqr;          }
-  Bool_t    DoTimeCorrection( Double_t offset );
-  void      JoinKaonTrack( void ) { m_belong_kaon = true; }
-  void      QuitKaonTrack( void ) { m_belong_kaon = false; }
-  Bool_t    BelongToKaonTrack( void ) const { return m_belong_kaon; }
+  int GetClusterSize( void ) const { return m_cluster_size; }
+  double GetMeamWire( void ) const { return m_mwpc_wire; }
+  double GetMeamWirePosition( void ) const { return m_mwpc_wpos; }
 
   ///// for TOF
-  Double_t GetZ( void ) const { return m_z; }
+  double GetZ( void ) const { return m_z; }
 
-  void JoinTrack( Int_t nh=0 ) { m_belong_track[nh] = true; }
-  void QuitTrack( Int_t nh=0 ) { m_belong_track[nh] = false; }
-  Bool_t BelongToTrack( Int_t nh=0 ) const { return m_belong_track[nh]; }
-  Bool_t IsWithinRange( Int_t nh=0 ) const { return m_dl_range[nh]; }
+  ///// for CFT
+  double GetMeanSeg    ( void ) const { return m_meanseg; }
+  double GetMaxSeg     ( void ) const { return m_maxseg;  }
+  double SetMaxSeg     ( void ) const { return m_maxseg;  }
+  double GetAdcLow     ( void ) const { return m_adc_low; }
+  double GetMIPLow     ( void ) const { return m_mip_low; }
+  double GetdELow      ( void ) const { return m_dE_low ; }
+  double GetMaxAdcLow  ( void ) const { return max_adc_low; }
+  double GetMaxMIPLow  ( void ) const { return max_mip_low; }
+  double GetMaxdELow   ( void ) const { return max_dE_low ; }
+
+  double GetPositionR  ( void ) const { return m_r;        }
+  double GetPositionPhi( void ) const { return m_phi;      }
+
+  void JoinTrack( int nh=0 ) { m_pair_cont.at(nh).belong_track = true; }
+  void QuitTrack( int nh=0 ) { m_pair_cont.at(nh).belong_track = false;}
+  bool BelongToTrack( int nh=0 ) const { return m_pair_cont.at(nh).belong_track; }
+  bool IsWithinRange( int nh=0 ) const { return m_pair_cont.at(nh).dl_range; }
+
+  void JoinTrackCFT( int nh=0 ) {m_belong_track[nh] = true; }
+  void QuitTrackCFT( int nh=0 ) {m_belong_track[nh] = false; }
+  bool BelongToTrackCFT( int nh=0 ) const { return m_belong_track[nh]; }
 
   void RegisterHits( DCLTrackHit *hit ) const
   { m_register_container.push_back(hit); }
 
-  Bool_t ReCalcDC( Bool_t applyRecursively=false ) { return CalcDCObservables(); }
-  Bool_t ReCalcMWPC( Bool_t applyRecursively=false ) { return CalcMWPCObservables(); }
-  void Print( Option_t* option="" ) const;
+  bool ReCalcDC( bool applyRecursively=false ) { return CalcDCObservables(); }
+  bool ReCalcMWPC( bool applyRecursively=false ) { return CalcMWPCObservables(); }
+
+  void TotCut(double min_tot, bool adotp_nan);
+
+  void Print( const std::string& arg="", std::ostream& ost=hddaq::cout ) const;
 
 protected:
   void ClearRegisteredHits( void );
@@ -191,7 +220,7 @@ protected:
 inline std::ostream&
 operator <<( std::ostream& ost, const DCHit& hit )
 {
-  hit.Print();
+  hit.Print( "", ost );
   return ost;
 }
 

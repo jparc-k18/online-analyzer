@@ -1,21 +1,17 @@
 // -*- C++ -*-
 
-#include <string>
+#include "Exception.hh"
 
 #include <TString.h>
 
 #include <escape_sequence.hh>
 #include <std_ostream.hh>
 
-#include "Exception.hh"
 #include "FuncName.hh"
-
-ClassImp(Exception);
 
 //______________________________________________________________________________
 Exception::Exception( const TString& msg )
-  : TObject(),
-    m_msg()
+  : m_msg()
 {
   m_msg = hddaq::unpacker::esc::k_yellow
     + FUNC_NAME + " " + msg

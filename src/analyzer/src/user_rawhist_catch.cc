@@ -172,7 +172,9 @@ process_event( void )
 
   RawData *rawData;
   rawData = new RawData;
+
   rawData->DecodeHits();
+
   HodoAnalyzer *hodoAna;
   hodoAna = new HodoAnalyzer;
 
@@ -562,6 +564,9 @@ process_event( void )
       }
     }
   }
+
+  delete rawData;
+  delete hodoAna;
 
 #if 0
     // Debug, dump data relating this detector

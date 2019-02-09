@@ -35,7 +35,7 @@
 #include "RawData.hh"
 #include "UserParamMan.hh"
 
-#define BH2FILTER 0
+#define BH2FILTER 1
 
 namespace analyzer
 {

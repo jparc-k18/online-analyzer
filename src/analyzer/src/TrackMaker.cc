@@ -49,7 +49,7 @@ TrackMaker::MakeTracks( std::vector<DCLocalTrack*>& trackList )
   static const std::string funcname("["+class_name+"::"+__func__+"]");
 
   std::vector<int> nCombi(m_npp);
-  for( int i=0; i<m_npp; ++i ){
+  for( int i=0; i<static_cast<int>(m_npp); ++i ){
     nCombi[i] = m_candidates[i].size();
   }
 

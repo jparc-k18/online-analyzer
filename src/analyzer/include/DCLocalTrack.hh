@@ -83,7 +83,7 @@ private:
   // dE value
   double m_sum_adc[NumOfPlaneCFT*2]; double m_max_adc[NumOfPlaneCFT*2];
   double m_sum_mip[NumOfPlaneCFT*2]; double m_max_mip[NumOfPlaneCFT*2];
-  double m_sum_dE[NumOfPlaneCFT*2];  double m_max_dE[NumOfPlaneCFT*2]; 
+  double m_sum_dE[NumOfPlaneCFT*2];  double m_max_dE[NumOfPlaneCFT*2];
   double m_total_adc   , m_total_max_adc;
   double m_total_mip   , m_total_max_mip;
   double m_total_dE    , m_total_max_dE;
@@ -315,14 +315,12 @@ struct DCLTrackComp4
 
 //______________________________________________________________________________
 
-struct DCLTrackComp_Nhit 
+struct DCLTrackComp_Nhit
   : public std::binary_function <DCLocalTrack *, DCLocalTrack *, bool>
 {
   bool operator()( const DCLocalTrack * const p1,
                    const DCLocalTrack * const p2 ) const
   {
-    const int minimum=8;
-
     int n1=p1->GetNHit(), n2=p2->GetNHit();
 
     if( n1>=n2 )
@@ -421,14 +419,14 @@ struct DCLTrackCompCFT
     int nphi1=p1->GetNHit(), nphi2=p2->GetNHit();
     int nuv1=p1->GetNHitUV(), nuv2=p2->GetNHitUV();
     int n1=nphi1+nuv1, n2=nphi2+nuv2;
-    
+
     //double chi1=p1->GetChiSquareXY(),chi2=p2->GetChiSquareXY();// zantei
-    
+
     double chiXY1=p1->GetChiSquareXY(),chiZ1=p2->GetChiSquareZ();
     double chiXY2=p2->GetChiSquareXY(),chiZ2=p2->GetChiSquareZ();
     double chi1=sqrt(chiXY1*chiXY1+chiZ1*chiZ1);
     double chi2=sqrt(chiXY2*chiXY2+chiZ2*chiZ2);
-    
+
     if( (n1>n2)&&(chi1<MaxChi2CFT*sqrt(2.))){
       return true;
     }else if( (n2>n1)&&(chi2<MaxChi2CFT*sqrt(2.))){

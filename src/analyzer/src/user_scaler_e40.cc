@@ -191,8 +191,8 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "Other1",        0, 29 ) );
     gScaler.Set( c, r++, ScalerInfo( "Other2",        0, 30 ) );
     gScaler.Set( c, r++, ScalerInfo( "Other3",        0, 31 ) );
-    gScaler.Set( c, r++, ScalerInfo( "Other4",        0, 32 ) );
-    gScaler.Set( c, r++, ScalerInfo( "Other5",        0, 33 ) );
+    gScaler.Set( c, r++, ScalerInfo( "BGO-OR",        0, 32 ) );
+    gScaler.Set( c, r++, ScalerInfo( "LAC",           0, 33 ) );
   }
 
   gScaler.PrintFlags();

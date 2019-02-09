@@ -55,14 +55,14 @@ DCLocalTrack::DCLocalTrack( void )
     m_good_for_tracking(true),
     m_de(0.),
     m_chisqr1st(1.e+10),
+    m_n_iteration(0),
+    m_xyFitFlag(-1),
+    m_zTrackFlag(-1),
     m_Axy(0.), m_Bxy(0.), m_Az(0.), m_Bz(0.),
     m_chisqrXY(1.e+10),
     m_chisqrZ(1.e+10),
     m_vtx_z(-999.),
-    m_xyFitFlag(-1),
-    m_zTrackFlag(-1),
-    m_theta(-999),
-    m_n_iteration(0)
+    m_theta(-999)
 {
   m_hit_array.reserve( ReservedNumOfHits );
   m_hit_arrayUV.reserve( ReservedNumOfHits );
@@ -74,16 +74,16 @@ DCLocalTrack::DCLocalTrack( void )
 
   for(int i=0; i<NumOfPlaneCFT*2; i++){
     m_meanseg[i]   = -999;
-    m_phi_ini[i]   = -999;  
+    m_phi_ini[i]   = -999;
     m_phi_track[i] = -999;
-    m_dphi[i]      = -999;        
-    m_z_ini[i]     = -999;    
-    m_z_track[i]   = -999;  
-    m_dz[i]        = -999;           
-    m_dist_phi[i]  = -999;           
+    m_dphi[i]      = -999;
+    m_z_ini[i]     = -999;
+    m_z_track[i]   = -999;
+    m_dz[i]        = -999;
+    m_dist_phi[i]  = -999;
     m_sum_adc[i]=0;  m_max_adc[i]=0;
     m_sum_mip[i]=0;  m_max_mip[i]=0;
-    m_sum_dE [i]=0;  m_max_dE [i]=0; 
+    m_sum_dE [i]=0;  m_max_dE [i]=0;
   }
 
 }
@@ -156,11 +156,11 @@ DCLocalTrack::CalculateCFT( void )
     DCLTrackHit *hitp = m_hit_array[i];
     double z0 = hitp->GetZ();
     hitp->SetCalPosition( GetX(z0), GetY(z0) );
-    hitp->SetCalUV( m_u0, m_v0 );    
+    hitp->SetCalUV( m_u0, m_v0 );
     // for Honeycomb
     if( !hitp->IsHoneycomb() )
       continue;
-    hitp->SetLocalHitPos( 0 );    
+    hitp->SetLocalHitPos( 0 );
   }
 
   const std::size_t nUV = m_hit_arrayUV.size();
@@ -168,11 +168,11 @@ DCLocalTrack::CalculateCFT( void )
     DCLTrackHit *hitp = m_hit_arrayUV[i];
     double z0 = hitp->GetZ();
     hitp->SetCalPosition( GetX(z0), GetY(z0) );
-    hitp->SetCalUV( m_u0, m_v0 );    
+    hitp->SetCalUV( m_u0, m_v0 );
     // for Honeycomb
     if( !hitp->IsHoneycomb() )
       continue;
-    hitp->SetLocalHitPos( 0 );    
+    hitp->SetLocalHitPos( 0 );
   }
 
   m_is_calculated = true;
@@ -550,18 +550,18 @@ DCLocalTrack::DoFitPhi( void )
   std::vector <int> l;
   x.reserve(n); y.reserve(n); s.reserve(n);
 
-  // initial Phi 
-  double iniPhi[n]; 
-  double delta_Phi[n]; 
-  double Layer[n]; 
+  // initial Phi
+  double iniPhi[n];
+  double delta_Phi[n];
+  double Layer[n];
   double sumPhi = 0.;
   double Phi0 = -999.;
 
-  for(int jj=0; jj<n; ++jj ){   
+  for(int jj=0; jj<static_cast<int>(n); ++jj ){
     DCLTrackHit *ini_hitp = m_hit_array[jj];
-    Layer[jj] = ini_hitp->GetLayer();    
+    Layer[jj] = ini_hitp->GetLayer();
     iniPhi[jj] = ini_hitp->GetPositionPhi();
-    sumPhi += iniPhi[jj];    
+    sumPhi += iniPhi[jj];
 
     m_meanseg[(int)Layer[jj]] = ini_hitp->GetMeanSeg();
     m_phi_ini[(int)Layer[jj]] = iniPhi[jj];
@@ -569,22 +569,22 @@ DCLocalTrack::DoFitPhi( void )
   Phi0 = sumPhi/(double)n;
   double Phi0_ = Phi0;
 
-  if(Phi0<=40||Phi0>=320){ 
-    Phi0+=180.; 
+  if(Phi0<=40||Phi0>=320){
+    Phi0+=180.;
     if(Phi0>360){Phi0-=360.;}
   }
 
   if(n<=4){// normal tracking
     // initial Phi cut
-    for(int k=0; k<n; ++k ){      
-      if(Phi0_<=40||Phi0_>=320){ 
-	iniPhi[k]+=180.;	
+    for(int k=0; k<static_cast<int>(n); ++k ){
+      if(Phi0_<=40||Phi0_>=320){
+	iniPhi[k]+=180.;
 	if(iniPhi[k]>360){iniPhi[k]-=360.;}
       }
       delta_Phi[k] = iniPhi[k] -Phi0;
-      if( fabs(delta_Phi[k])>70 && fabs(delta_Phi[k])<270 ){ 	  
+      if( fabs(delta_Phi[k])>70 && fabs(delta_Phi[k])<270 ){
 	return false;
-      }      
+      }
     }
   }
 
@@ -594,19 +594,19 @@ DCLocalTrack::DoFitPhi( void )
       int lnum = hitp->GetLayer();
 
       double rr = hitp->GetPositionR();
-      double pphi = hitp->GetPositionPhi()*math::Deg2Rad();      
+      double pphi = hitp->GetPositionPhi()*math::Deg2Rad();
       //double rr = hitp->GetPositionRMax();
       //double pphi = hitp->GetPositionPhiMax()*math::Deg2Rad();
       double xx = rr*cos(pphi);
       double yy = rr*sin(pphi);
-      double ss = 0.75/sqrt(12);  
+      double ss = 0.75/sqrt(12);
 
       x.push_back( xx ); y.push_back( yy ); s.push_back(ss);
       l.push_back( lnum );
 
 #if 0
       double phi = hitp->GetPositionPhi();
-      std::cout << std::setw(10) << "layer = " << lnum 
+      std::cout << std::setw(10) << "layer = " << lnum
 		<< std::setw(10) << "x  = " << xx << ", y  =  " << yy
 		<< ", phi = " << pphi*math::Rad2Deg()
 		<< std::endl;
@@ -617,7 +617,7 @@ DCLocalTrack::DoFitPhi( void )
   double A=0., B=0., C=0., D=0., E=0., F=0.;
 
   // y = ax + b
-  for (int i=0; i<n; i++) {
+  for (int i=0; i<static_cast<int>(n); i++) {
     A += x[i]/(s[i]*s[i]);
     B += 1./(s[i]*s[i]);
     C += y[i]/(s[i]*s[i]);
@@ -628,21 +628,21 @@ DCLocalTrack::DoFitPhi( void )
 
   m_Axy=(E*B-C*A)/(D*B-A*A);
   m_Bxy=(D*C-E*A)/(D*B-A*A);
-  
+
 #if 0
   std::cout << "Axy = " << m_Axy
 	    << "Bxy = " << m_Bxy << ", phi = " << atan(m_Axy)*math::Rad2Deg()
-	    << std::endl;  
-#endif  
+	    << std::endl;
+#endif
 
   if (fabs(m_Axy) <= 1.) {  //y  = ax + b
     m_xyFitFlag=0;
     m_chisqrXY = 0.;
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       double ycal = m_Axy*x[i] + m_Bxy;
       m_chisqrXY += (y[i]-ycal)*(y[i]-ycal)/(s[i]*s[i]);
 
-      // +phi or -phi             
+      // +phi or -phi
       if(m_Axy>=0){
 	if(x[i]>=0){
 	  m_dist_phi[l[i]] = (y[i]-m_Axy*x[i]-m_Bxy)/sqrt(1+m_Axy*m_Axy);
@@ -655,16 +655,16 @@ DCLocalTrack::DoFitPhi( void )
 	}else{
 	  m_dist_phi[l[i]] = (y[i]-m_Axy*x[i]-m_Bxy)/sqrt(1+m_Axy*m_Axy);
 	}
-      }      
+      }
 
     }
     m_chisqrXY /= n;
 
-  }else{ // x = ay + b    
+  }else{ // x = ay + b
     m_xyFitFlag=1;
 
     A=0.; B=0.; C=0.; D=0.; E=0.; F=0.;
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       A += y[i]/(s[i]*s[i]);
       B += 1./(s[i]*s[i]);
       C += x[i]/(s[i]*s[i]);
@@ -676,11 +676,11 @@ DCLocalTrack::DoFitPhi( void )
     m_Bxy=(D*C-E*A)/(D*B-A*A);
 
     m_chisqrXY = 0.;
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       double xcal = m_Axy*y[i] + m_Bxy;
       m_chisqrXY += (x[i]-xcal)*(x[i]-xcal)/(s[i]*s[i]);
 
-      // +phi or -phi 
+      // +phi or -phi
       if(m_Axy>=0){
 	if(y[i]>=0){
 	  m_dist_phi[l[i]] = -(x[i]-m_Axy*y[i]-m_Bxy)/sqrt(1+m_Axy*m_Axy);
@@ -714,18 +714,18 @@ bool DCLocalTrack::DoFitUV()
   if(n < CFTLocalMinNHits ) return false;
 
 
-  // initial z 
-  double iniZ[n]; 
-  double delta_z[n]; 
-  double delta_dz[n]; 
-  double sum_dz=0; 
-  double c_dz=0; 
-  double delta_n=0; 
-  int Layer[n]; 
-  double rrr[n]; 
+  // initial z
+  double iniZ[n];
+  //  double delta_z[n];
+  //  double delta_dz[n];
+  //  double sum_dz=0;
+  //  double c_dz=0;
+  //  double delta_n=0;
+  int Layer[n];
+  double rrr[n];
   double phi;
-  
-  for(int jj=0; jj<n; ++jj ){
+
+  for(int jj=0; jj<static_cast<int>(n); ++jj ){
     DCLTrackHit *ini_hitp = m_hit_arrayUV[jj];
     Layer[jj] = ini_hitp->GetLayer();
     m_meanseg[(int)Layer[jj]] = ini_hitp->GetMeanSeg();
@@ -739,39 +739,39 @@ bool DCLocalTrack::DoFitUV()
       //      std::cout << funcname << " GetCrossPointR false r=" << r
       //		<< ", phi=" << phi << ", phi0=" << Phi0_ << std::endl;
       return false;
-    }    
-    
+    }
+
     iniZ[jj] = CalculateZpos(phi, ini_hitp);
     m_phi_ini[(int)Layer[jj]] = phi;
-    
+
   }
 
-#if 0  
+#if 0
   // z slope cut
   for(int k=0; k<n-1; ++k ){
-    delta_z[k] = (iniZ[k+1]-iniZ[k])/(Layer[k+1]-Layer[k]) *2;     
-    std::cout << "delta_Z=" << delta_z[k] 
-    	      <<", Layer " << Layer[k] 
-    	      << " and " << Layer[k+1] << std::endl ;    
+    delta_z[k] = (iniZ[k+1]-iniZ[k])/(Layer[k+1]-Layer[k]) *2;
+    std::cout << "delta_Z=" << delta_z[k]
+    	      <<", Layer " << Layer[k]
+    	      << " and " << Layer[k+1] << std::endl ;
     sum_dz+=delta_z[k];
   }
   c_dz = sum_dz/((double)n-1);
   std::cout << " c_dz=" << c_dz << std::endl ;
-#endif  
-  
+#endif
+
   std::vector <double> z, xy, s;
-  z.reserve(n); xy.reserve(n); s.reserve(n);  
+  z.reserve(n); xy.reserve(n); s.reserve(n);
 
   for( std::size_t i=0; i<n; ++i ){
-    
+
     DCLTrackHit *hitp = m_hit_arrayUV[i];
     if( hitp ){
       int lnum = hitp->GetLayer();
       int l_geo = lnum +301;
       if(lnum>7){l_geo -= 8;}
-      double seg = hitp->GetMeanSeg();
+      //      double seg = hitp->GetMeanSeg();
       double r = hitp->GetPositionR();
-      
+
       double phi;
       bool ret = GetCrossPointR(r, &phi, lnum);
       if (!ret) {
@@ -780,7 +780,7 @@ bool DCLocalTrack::DoFitUV()
       }
 
       double z1 = CalculateZpos(phi, hitp);
-      m_z_ini[lnum] = z1; 
+      m_z_ini[lnum] = z1;
 
       double xy1=-999.;
       if (m_xyFitFlag==0) { // x
@@ -788,29 +788,29 @@ bool DCLocalTrack::DoFitUV()
       }else{ // y
 	xy1 = r*sin(phi*math::Deg2Rad());
       }
-      
+
       double ss = geomMan.GetResolution( l_geo );
       z.push_back( z1 ); xy.push_back( xy1 ); s.push_back(ss);
-      rrr[i] = r;    
-    
+      rrr[i] = r;
+
 #if 0
-    std::cout << std::setw(10) << "layer = " << lnum 
+    std::cout << std::setw(10) << "layer = " << lnum
 	      << std::setw(10) << "z  = " << z1 << ", xy  =  " << xy1
 	      << ", phi = " << phi
 	      << std::endl;
-#endif    
+#endif
     }
   }
-  
-  
+
+
   double slope = (xy[n-1]-xy[0])/(z[n-1]-z[0]);
   if (fabs(slope)<=1) {
     // x = az + b
     m_zTrackFlag = 0;
-    
+
     double A=0., B=0., C=0., D=0., E=0., F=0.;
 
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       A += z[i]/(s[i]*s[i]);
       B += 1./(s[i]*s[i]);
       C += xy[i]/(s[i]*s[i]);
@@ -818,10 +818,10 @@ bool DCLocalTrack::DoFitUV()
       E += z[i]*xy[i]/(s[i]*s[i]);
       F += xy[i]*xy[i]/(s[i]*s[i]);
     }
-    
+
     m_Az=(E*B-C*A)/(D*B-A*A);
     m_Bz=(D*C-E*A)/(D*B-A*A);
-    
+
     if (m_xyFitFlag==0) {
       m_u0 = m_Az;
       m_x0 = m_Bz;
@@ -833,19 +833,19 @@ bool DCLocalTrack::DoFitUV()
       m_v0 = m_Az;
       m_y0 = m_Bz;
     }
-    
-    m_chisqrZ = 0.;
-    for (int i=0; i<n; i++) {
-      double xycal = m_Az*z[i] + m_Bz;
-      double xcal = m_u0*z[i] + m_x0;
-      double ycal = m_v0*z[i] + m_y0;
 
-      double zcal = (xy[i]-m_Bz)/m_Az;      	      
+    m_chisqrZ = 0.;
+    for (int i=0; i<static_cast<int>(n); i++) {
+      double xycal = m_Az*z[i] + m_Bz;
+      //      double xcal = m_u0*z[i] + m_x0;
+      //      double ycal = m_v0*z[i] + m_y0;
+
+      double zcal = (xy[i]-m_Bz)/m_Az;
       m_z_track[Layer[i]] = zcal;
-      
+
       m_chisqrZ += (xy[i]-xycal)*(xy[i]-xycal)/(s[i]*s[i]);
-      
-      // inner(-) or outer(+)       
+
+      // inner(-) or outer(+)
       if(m_xyFitFlag==0){// x = az + b
 	if(xy[i]>=0){
 	  m_dist_uv[Layer[i]] = (xy[i]-m_Az*z[i]-m_Bz)/sqrt(1+m_Az*m_Az);
@@ -859,19 +859,19 @@ bool DCLocalTrack::DoFitUV()
 	  m_dist_uv[Layer[i]] = (xy[i]-m_Az*z[i]-m_Bz)/sqrt(1+m_Az*m_Az);
 	}
       }
-      
+
     }
-    m_chisqrZ /= n;   
+    m_chisqrZ /= n;
     m_vtx_z = -m_Bz/m_Az;
-    
+
 
 
   } else {
     // z = ax + b or z = ay + b
-    m_zTrackFlag = 1;    
-    
+    m_zTrackFlag = 1;
+
     double A=0., B=0., C=0., D=0., E=0., F=0.;
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       A += xy[i]/(s[i]*s[i]);
       B += 1./(s[i]*s[i]);
       C += z[i]/(s[i]*s[i]);
@@ -896,20 +896,20 @@ bool DCLocalTrack::DoFitUV()
     }
 
     m_chisqrZ = 0.;
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       double zcal = m_Az*xy[i] + m_Bz;
       m_z_track[Layer[i]] = zcal;
       m_chisqrZ += (z[i]-zcal)*(z[i]-zcal)/(s[i]*s[i]);
 
-      // realistic       
+      // realistic
       m_dist_uv[Layer[i]] = -(z[i]-m_Az*xy[i]-m_Bz)/sqrt(1+m_Az*m_Az);
 
     }
-    m_chisqrZ /= n;    
+    m_chisqrZ /= n;
     m_vtx_z = m_Bz;
-    
-  }  
-  
+
+  }
+
   return true;
 }
 
@@ -951,9 +951,9 @@ DCLocalTrack::DoFitPhi2nd( void )
       //double rr = hitp->GetPositionRMax();
       double xx = rr*cos(m_phi_ini[ll]*math::Deg2Rad());
       double yy = rr*sin(m_phi_ini[ll]*math::Deg2Rad());
- 
-      
-      double ss = 0.75/sqrt(12);  
+
+
+      double ss = 0.75/sqrt(12);
 
       double zz=-1500.;
       // z dependence
@@ -971,19 +971,19 @@ DCLocalTrack::DoFitPhi2nd( void )
 	}else if(m_xyFitFlag==1){
 	  zz = m_Az*yy + m_Bz;
 	}
-      }      
+      }
       m_z_track[ll] = zz;
 
       // parameter for position correction
-      double par[6], par2nd[6];
+      double par[6];//, par2nd[6];
       for(int ip=0; ip<6; ip++){
-	par[ip] = gHodo.GetPar(113,lnum,seg,0,ip);	
+	par[ip] = gHodo.GetPar(113,lnum,seg,0,ip);
 	//par2nd[ip] = gHodo.GetPar(113,lnum,seg,1,ip);
-      }      
+      }
 
 #if 1 // correction depending on z
       if(zz>=0&&zz<400){
-	double d_phi = par[0]*pow(zz,0) +par[1]*pow(zz,1) 
+	double d_phi = par[0]*pow(zz,0) +par[1]*pow(zz,1)
 	  +par[2]*pow(zz,2) +par[3]*pow(zz,3)
 	  +par[4]*pow(zz,4) +par[5]*pow(zz,5) ;
 	if(fabs(d_phi)>6){
@@ -994,22 +994,22 @@ DCLocalTrack::DoFitPhi2nd( void )
 	}
       }else{}
 #endif
-      
+
       // re:calc
       xx = rr*cos(m_phi_ini[ll]*math::Deg2Rad() );
       yy = rr*sin(m_phi_ini[ll]*math::Deg2Rad() );
-            
+
       x.push_back( xx ); y.push_back( yy ); s.push_back(ss);
       l.push_back( lnum );
 
 #if 0
       double phi = hitp->GetPositionPhi();
-      std::cout << std::setw(10) << "layer = " << lnum 
+      std::cout << std::setw(10) << "layer = " << lnum
 		<< std::setw(10) << "x  = " << xx << ", y  =  " << yy
 		<< ", phi = " << pphi*math::Rad2Deg()
 		<< std::endl;
-      std::cout << "param0  layer" <<lnum << ", seg=" <<seg 
-		<< " par0=" <<par[0] << ", par1=" <<par[1] 
+      std::cout << "param0  layer" <<lnum << ", seg=" <<seg
+		<< " par0=" <<par[0] << ", par1=" <<par[1]
 		<< ", par2=" <<par[2] << ", par3=" <<par[3]
 		<< ", par4=" <<par[4] << ", par5=" <<par[5] << std::endl;
 #endif
@@ -1019,7 +1019,7 @@ DCLocalTrack::DoFitPhi2nd( void )
   double A=0., B=0., C=0., D=0., E=0., F=0.;
 
   // y = ax + b
-  for (int i=0; i<n; i++) {
+  for (int i=0; i<static_cast<int>(n); i++) {
     A += x[i]/(s[i]*s[i]);
     B += 1./(s[i]*s[i]);
     C += y[i]/(s[i]*s[i]);
@@ -1030,21 +1030,21 @@ DCLocalTrack::DoFitPhi2nd( void )
 
   m_Axy=(E*B-C*A)/(D*B-A*A);
   m_Bxy=(D*C-E*A)/(D*B-A*A);
-  
+
 #if 0
   std::cout << "Axy = " << m_Axy
 	    << "Bxy = " << m_Bxy << ", phi = " << atan(m_Axy)*math::Rad2Deg()
-	    << std::endl;  
-#endif  
+	    << std::endl;
+#endif
 
   if (fabs(m_Axy) <= 1.) {  //y  = ax + b
     m_xyFitFlag=0;
     m_chisqrXY = 0.;
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       double ycal = m_Axy*x[i] + m_Bxy;
       m_chisqrXY += (y[i]-ycal)*(y[i]-ycal)/(s[i]*s[i]);
 
-      // +phi or -phi             
+      // +phi or -phi
       if(m_Axy>=0){
 	if(x[i]>=0){
 	  m_dist_phi[l[i]] = (y[i]-m_Axy*x[i]-m_Bxy)/sqrt(1+m_Axy*m_Axy);
@@ -1057,16 +1057,16 @@ DCLocalTrack::DoFitPhi2nd( void )
 	}else{
 	  m_dist_phi[l[i]] = (y[i]-m_Axy*x[i]-m_Bxy)/sqrt(1+m_Axy*m_Axy);
 	}
-      }      
+      }
 
     }
     m_chisqrXY /= n;
 
-  }else{ // x = ay + b    
+  }else{ // x = ay + b
     m_xyFitFlag=1;
 
     A=0.; B=0.; C=0.; D=0.; E=0.; F=0.;
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       A += y[i]/(s[i]*s[i]);
       B += 1./(s[i]*s[i]);
       C += x[i]/(s[i]*s[i]);
@@ -1078,11 +1078,11 @@ DCLocalTrack::DoFitPhi2nd( void )
     m_Bxy=(D*C-E*A)/(D*B-A*A);
 
     m_chisqrXY = 0.;
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       double xcal = m_Axy*y[i] + m_Bxy;
       m_chisqrXY += (x[i]-xcal)*(x[i]-xcal)/(s[i]*s[i]);
 
-      // +phi or -phi 
+      // +phi or -phi
       if(m_Axy>=0){
 	if(y[i]>=0){
 	  m_dist_phi[l[i]] = -(x[i]-m_Axy*y[i]-m_Bxy)/sqrt(1+m_Axy*m_Axy);
@@ -1114,14 +1114,14 @@ bool DCLocalTrack::DoFitUV2nd()
   std::size_t n = m_hit_arrayUV.size();
   if(n < CFTLocalMinNHits ) return false;
 
-  // initial z 
-  int Layer[n];   
+  // initial z
+  int Layer[n];
   std::vector <double> z, xy, s;
   z.reserve(n); xy.reserve(n); s.reserve(n);
-  
+
 
   for( std::size_t i=0; i<n; ++i ){
-    
+
     DCLTrackHit *hitp = m_hit_arrayUV[i];
     if( hitp ){
       int lnum = hitp->GetLayer();
@@ -1133,7 +1133,7 @@ bool DCLocalTrack::DoFitUV2nd()
       int l_geo = lnum +301;
       if(lnum>7){l_geo -= 8;}
       double r = hitp->GetPositionR();
-      
+
       double phi;
       bool ret = GetCrossPointR(r, &phi, ll);
       if (!ret) {
@@ -1142,61 +1142,61 @@ bool DCLocalTrack::DoFitUV2nd()
       }
 
       double z1 = CalculateZpos(phi, hitp);
-      m_z_ini[ll] = z1;      
-      m_phi_track[ll] = phi;    
+      m_z_ini[ll] = z1;
+      m_phi_track[ll] = phi;
 
       // parameter for position correction
       double par[6], par2nd[6];;
       for(int ip=0; ip<6; ip++){
-	par[ip] = gHodo.GetPar(113,lnum,seg,0,ip);	
+	par[ip] = gHodo.GetPar(113,lnum,seg,0,ip);
 	par2nd[ip] = gHodo.GetPar(113,lnum,seg,1,ip);
-      }      
+      }
 
 #if 1 // position correction
       // divide <180 or >=180
       double d_z = 0;
       if(phi<180){// use 1st par
-	d_z = par[0]*pow(phi,0) +par[1]*pow(phi,1) 
+	d_z = par[0]*pow(phi,0) +par[1]*pow(phi,1)
 	    +par[2]*pow(phi,2) +par[3]*pow(phi,3)
-	  +par[4]*pow(phi,4) +par[5]*pow(phi,5) ;	  
+	  +par[4]*pow(phi,4) +par[5]*pow(phi,5) ;
       }else{// use 2nd par
-	d_z = par2nd[0]*pow(phi,0) +par2nd[1]*pow(phi,1) 
+	d_z = par2nd[0]*pow(phi,0) +par2nd[1]*pow(phi,1)
 	  +par2nd[2]*pow(phi,2) +par2nd[3]*pow(phi,3)
 	  +par2nd[4]*pow(phi,4) +par2nd[5]*pow(phi,5) ;
-      }     
+      }
       if(fabs(d_z)>6){z1 -= (d_z/2.);}
       else{z1 -= d_z;}
 
-#endif      
-      m_z_ini[ll] = z1;      
+#endif
+      m_z_ini[ll] = z1;
 
       double xy1=-999.;
       if (m_xyFitFlag==0) { // x
 	xy1 = r*cos(m_phi_track[ll]*math::Deg2Rad());
       }else{ // y
 	xy1 = r*sin(m_phi_track[ll]*math::Deg2Rad());
-      }      
+      }
       double ss = geomMan.GetResolution( l_geo );
       z.push_back( z1 ); xy.push_back( xy1 ); s.push_back(ss);
-    
+
 #if 0
-    std::cout << std::setw(10) << "layer = " << lnum 
+    std::cout << std::setw(10) << "layer = " << lnum
 	      << std::setw(10) << "z  = " << z1 << ", xy  =  " << xy1
 	      << ", phi = " << phi
 	      << std::endl;
-#endif    
+#endif
     }
   }
-  
-  
+
+
   double slope = (xy[n-1]-xy[0])/(z[n-1]-z[0]);
   if (fabs(slope)<=1) {
     // x = az + b
     m_zTrackFlag = 0;
-    
+
     double A=0., B=0., C=0., D=0., E=0., F=0.;
 
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       A += z[i]/(s[i]*s[i]);
       B += 1./(s[i]*s[i]);
       C += xy[i]/(s[i]*s[i]);
@@ -1204,10 +1204,10 @@ bool DCLocalTrack::DoFitUV2nd()
       E += z[i]*xy[i]/(s[i]*s[i]);
       F += xy[i]*xy[i]/(s[i]*s[i]);
     }
-    
+
     m_Az=(E*B-C*A)/(D*B-A*A);
     m_Bz=(D*C-E*A)/(D*B-A*A);
-    
+
     if (m_xyFitFlag==0) {
       m_u0 = m_Az;
       m_x0 = m_Bz;
@@ -1219,19 +1219,19 @@ bool DCLocalTrack::DoFitUV2nd()
       m_v0 = m_Az;
       m_y0 = m_Bz;
     }
-    
-    m_chisqrZ = 0.;
-    for (int i=0; i<n; i++) {
-      double xycal = m_Az*z[i] + m_Bz;
-      double xcal = m_u0*z[i] + m_x0;
-      double ycal = m_v0*z[i] + m_y0;
 
-      double zcal = (xy[i]-m_Bz)/m_Az;      	      
+    m_chisqrZ = 0.;
+    for (int i=0; i<static_cast<int>(n); i++) {
+      double xycal = m_Az*z[i] + m_Bz;
+      //      double xcal = m_u0*z[i] + m_x0;
+      //      double ycal = m_v0*z[i] + m_y0;
+
+      double zcal = (xy[i]-m_Bz)/m_Az;
       m_z_track[Layer[i]] = zcal;
-      
+
       m_chisqrZ += (xy[i]-xycal)*(xy[i]-xycal)/(s[i]*s[i]);
-      
-      // inner(-) or outer(+)       
+
+      // inner(-) or outer(+)
       if(m_xyFitFlag==0){// x = az + b
 	if(xy[i]>=0){
 	  m_dist_uv[Layer[i]] = (xy[i]-m_Az*z[i]-m_Bz)/sqrt(1+m_Az*m_Az);
@@ -1245,19 +1245,19 @@ bool DCLocalTrack::DoFitUV2nd()
 	  m_dist_uv[Layer[i]] = (xy[i]-m_Az*z[i]-m_Bz)/sqrt(1+m_Az*m_Az);
 	}
       }
-      
+
     }
-    m_chisqrZ /= n;   
+    m_chisqrZ /= n;
     m_vtx_z = -m_Bz/m_Az;
-    
+
 
 
   } else {
     // z = ax + b or z = ay + b
-    m_zTrackFlag = 1;    
-    
+    m_zTrackFlag = 1;
+
     double A=0., B=0., C=0., D=0., E=0., F=0.;
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       A += xy[i]/(s[i]*s[i]);
       B += 1./(s[i]*s[i]);
       C += z[i]/(s[i]*s[i]);
@@ -1282,20 +1282,20 @@ bool DCLocalTrack::DoFitUV2nd()
     }
 
     m_chisqrZ = 0.;
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<static_cast<int>(n); i++) {
       double zcal = m_Az*xy[i] + m_Bz;
       m_z_track[Layer[i]] = zcal;
       m_chisqrZ += (z[i]-zcal)*(z[i]-zcal)/(s[i]*s[i]);
 
-      // realistic       
+      // realistic
       m_dist_uv[Layer[i]] = -(z[i]-m_Az*xy[i]-m_Bz)/sqrt(1+m_Az*m_Az);
 
     }
-    m_chisqrZ /= n;    
+    m_chisqrZ /= n;
     m_vtx_z = m_Bz;
-    
-  }  
-  
+
+  }
+
   return true;
 }
 
@@ -1484,7 +1484,7 @@ bool DCLocalTrack::GetCrossPointR(double r, double *phi, int layer)
 {
   double a = m_Axy;
   double b = m_Bxy;
-  double x1, y1, x2, y2;
+  double x1=0, y1=0, x2=0, y2=0;
 
   if (m_xyFitFlag==0) {
     double hanbetsu = a*a*b*b-(1.+a*a)*(b*b-r*r);
@@ -1508,8 +1508,6 @@ bool DCLocalTrack::GetCrossPointR(double r, double *phi, int layer)
     }
   }
 
-
-  
   double phi1 = calcPhi(x1, y1);
   double phi2 = calcPhi(x2, y2);
   if(phi1 < 0){phi1 += 360.;}
@@ -1542,7 +1540,7 @@ bool DCLocalTrack::GetCrossPointR(double r, double *phi, int layer)
   double n1=0., n2=0.;
   for (int i=0; i<nPhiHit; i++) {
     double phiVal = m_hit_array[i]->GetPositionPhi();
-    
+
     phi__[i]=phiVal;
     //std::cout << i << ":" <<phiVal << std::endl;
     if(llayer[i]<8 && phi){meanPhi1 += phiVal;n1+=1.;}
@@ -1575,7 +1573,8 @@ double DCLocalTrack::calcPhi(double x, double y)
     return 180. + atan(y/x)*math::Rad2Deg();
   else if (x>=0 && y<0)
     return 360. + atan(y/x)*math::Rad2Deg();
-
+  else
+    return 0;
 }
 
 double DCLocalTrack::CalculateZpos(double phi, DCLTrackHit *cl)
@@ -1607,12 +1606,12 @@ double DCLocalTrack::CalculateZpos(double phi, DCLTrackHit *cl)
   if(a1<0)a1+=400;
   if(a2>400)a2-=400;
   if(a2<0)a2+=400;
-  
+
   if (a1>=0 && a1<=400){
       if(a1<0)
       std::cout << "a1   layer=" << layer << ", seg=" << seg
 		<<", z0=" << z0 << ", slope" << slope
-		<< ", phi0=" << phi0 << ", a1=" << a1 << std::endl;  
+		<< ", phi0=" << phi0 << ", a1=" << a1 << std::endl;
     return (a1);
   }
   else if (a2>=0 && a2<=400){
@@ -1630,7 +1629,7 @@ double DCLocalTrack::CalculateZpos(double phi, DCLTrackHit *cl)
 bool DCLocalTrack::SetCalculatedValueCFT()
 {
   const std::string funcname = "[DCLocalTrack::SetCalculatedValueCFT()]";
-  const DCGeomMan & geomMan=DCGeomMan::GetInstance();
+  //  const DCGeomMan & geomMan=DCGeomMan::GetInstance();
 
   std::size_t n = m_hit_array.size();
 
@@ -1639,7 +1638,7 @@ bool DCLocalTrack::SetCalculatedValueCFT()
   // phi on track for not hit layer
   int Nlayer = 8;
   if(n>4){Nlayer=16;}
-  for( std::size_t i=0; i<Nlayer; ++i ){
+  for( std::size_t i=0; i<static_cast<unsigned int>(Nlayer); ++i ){
     double phi;
     int lnum=i, seg=0;
     int l_geo = i +301;
@@ -1650,7 +1649,7 @@ bool DCLocalTrack::SetCalculatedValueCFT()
       //std::cout << funcname << " return at GetCrossPointR" << std::endl;
       return false;
     }
-    m_phi_track[lnum] = phi;    
+    m_phi_track[lnum] = phi;
   }
 
   for( std::size_t i=0; i<n; ++i ){
@@ -1675,8 +1674,8 @@ bool DCLocalTrack::SetCalculatedValueCFT()
 
       m_total_dE_phi     += m_sum_dE[lnum];
       m_total_max_dE_phi += m_max_dE[lnum];
-      
-      int seg=0;
+
+      //      int seg=0;
       int l_geo = lnum +301;
       if(lnum>7){l_geo -= 8;}
       //double r = hitp->GetRMax();
@@ -1687,7 +1686,7 @@ bool DCLocalTrack::SetCalculatedValueCFT()
 	std::cout << funcname << " return at GetCrossPointR" << std::endl;
 	return false;
       }
-      
+
       m_dphi[lnum] = m_phi_ini[lnum] - phi;
       m_phi_track[lnum] = phi;
 
@@ -1712,10 +1711,10 @@ bool DCLocalTrack::SetCalculatedValueCFT()
 
 	if (m_xyFitFlag==0) {
 	  zcal = m_Az *xcal + m_Bz;
-	  ycal = m_Axy*xcal + m_Bxy; 
+	  ycal = m_Axy*xcal + m_Bxy;
 	} else {
 	  zcal = m_Az *ycal + m_Bz;
-	  xcal = m_Axy*ycal + m_Bxy; 
+	  xcal = m_Axy*ycal + m_Bxy;
 	}
 
 	if (i==0) {
@@ -1731,11 +1730,11 @@ bool DCLocalTrack::SetCalculatedValueCFT()
 
   m_Pos0 = pos1;
   m_Dir = pos2-pos1;
-  
+
   double D=(m_Dir.x()*m_Dir.x()+m_Dir.y()*m_Dir.y()+m_Dir.z()*m_Dir.z());
   m_theta = acos(m_Dir.z()/sqrt(D))*180./acos(-1.);
 
-  
+
   std::size_t nUV = m_hit_arrayUV.size();
   for( std::size_t i=0; i<nUV; ++i ){
     DCLTrackHit *hitp = m_hit_arrayUV[i];
@@ -1765,7 +1764,7 @@ bool DCLocalTrack::SetCalculatedValueCFT()
       if(lnum>7){l_geo -= 8;}
       //double r = hitp->GetRMax();
       double r = hitp->GetPositionR();
-      double phi;      
+      double phi;
       bool ret = GetCrossPointR(r, &phi, lnum);
       if (!ret) {
 	//std::cout << funcname << " return at GetCrossPointR" << std::endl;
@@ -1773,16 +1772,16 @@ bool DCLocalTrack::SetCalculatedValueCFT()
       }
       m_phi_track[lnum] = phi;
 
-      double z1 = CalculateZpos(phi, hitp);
-      double xycal = m_Az*z1 + m_Bz;
-      double xcal = m_u0*z1 + m_x0;
-      double ycal = m_v0*z1 + m_y0;
+      //      double z1 = CalculateZpos(phi, hitp);
+      //      double xycal = m_Az*z1 + m_Bz;
+      //      double xcal = m_u0*z1 + m_x0;
+      //      double ycal = m_v0*z1 + m_y0;
 
       m_dz[lnum] = m_z_ini[lnum] - m_z_track[lnum];
 
     }
   }
-  
+
   return true;
 
 }

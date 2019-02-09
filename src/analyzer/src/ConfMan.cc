@@ -211,6 +211,8 @@ ConfMan::Initialize( const std::vector<std::string>& argv )
 
   // Initialize of ConfMan and Unpacker were done
   flag_.set(kIsGood);
+
+  return true;
 }
 
 //______________________________________________________________________________

@@ -35,7 +35,7 @@
 #include "RawData.hh"
 #include "UserParamMan.hh"
 
-#define BH2FILTER 1
+#define BH2FILTER 0
 
 namespace analyzer
 {
@@ -251,7 +251,8 @@ process_event( void )
   }
 
   // BH2 % BcOut Hit
-  if( segBh2 >= 0 && TMath::Abs( bh2mt ) < 0.1 ){
+  //  if( segBh2 >= 0 && TMath::Abs( bh2mt ) < 0.1 ){
+  {
     const std::vector<Double_t>& xmin = gBH2Filter.GetXmin( segBh2 );
     const std::vector<Double_t>& xmax = gBH2Filter.GetXmax( segBh2 );
     for( Int_t l=0; l<NumOfLayersBcOut; ++l ){

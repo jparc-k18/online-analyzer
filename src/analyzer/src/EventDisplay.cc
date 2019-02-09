@@ -2347,7 +2347,7 @@ EventDisplay::PrintKurama( KuramaTrack *tp, Double_t m2 )
   const ThreeVector& x = tp->PrimaryPosition();
   const ThreeVector& p = tp->PrimaryMomentum();
 
-  text[kNHit]->SetText( 0.950, 0.550, Form("%d", tp->GetNHits()) );
+  text[kNHit]->SetText( 0.950, 0.550, Form("%d", static_cast<int>(tp->GetNHits())) );
   text[kChiSqr]->SetText( 0.950, 0.520, Form("%lf", tp->chisqr()) );
   text[kP]->SetText( 0.950, 0.490, Form("%lf", p.Mag()) );
   text[kPath]->SetText( 0.950, 0.460, Form("%lf", tp->PathLengthToTOF()) );

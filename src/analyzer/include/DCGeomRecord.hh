@@ -90,16 +90,18 @@ public:
   void   Print( const std::string& arg="", std::ostream& ost=hddaq::cout ) const;
 
   //CFT Pos
-  double FiberPosR( int seg ) const 
+  double FiberPosR( int seg ) const
   {
     if(((int)seg%2) == 0){
-      return m_pos[0];//R1(innner)     
+      return m_pos[0];//R1(innner)
     }else if(((int)seg%2) == 1){
-      return m_pos[1];//R2(outer)     
+      return m_pos[1];//R2(outer)
+    }else{
+      return m_pos[1];//R2(outer)
     }
-  }   
+  }
   double FiberPosPhi( int seg ) const //  phi
-  { 
+  {
     // look from upstream to downstream
     double phi = 90.; // 90 degree
     if( (int)m_id==301 || (int)m_id==305 ){  // U->opposite direction (301&305)
@@ -109,9 +111,9 @@ public:
     }
     if(phi<0){phi+=360.;}
     else if(phi>360.){phi-=360.;}
-    
-    return phi; 
-  }   
+
+    return phi;
+  }
 
 
 private:

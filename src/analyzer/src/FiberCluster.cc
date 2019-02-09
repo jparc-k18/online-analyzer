@@ -25,7 +25,7 @@ namespace
 
 //______________________________________________________________________________
 FiberCluster::FiberCluster( void )
-  : m_cluster_size(0), m_max_adcHi(0.), m_max_adcLow(0.), m_max_mipLow(0.), m_max_dELow(0.), m_max_cluster_id(-1)
+  : m_cluster_size(0), m_max_cluster_id(-1), m_max_adcHi(0.), m_max_adcLow(0.), m_max_mipLow(0.), m_max_dELow(0.)
 {
   for ( int i=0; i<sizeFlagsFiber; ++i ){
     m_flag[i] = false;

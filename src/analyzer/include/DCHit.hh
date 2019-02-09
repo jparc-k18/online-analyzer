@@ -34,7 +34,7 @@ public:
   DCHit( void );
   DCHit( int layer );
   DCHit( int layer, double wire );
-  ~DCHit( void );
+  virtual ~DCHit( void );
 
 private:
   DCHit( const DCHit& );

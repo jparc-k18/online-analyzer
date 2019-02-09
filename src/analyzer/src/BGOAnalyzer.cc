@@ -43,7 +43,7 @@ BGOAnalyzer::BGOAnalyzer( void )
 {
   debug::ObjectCounter::increase(class_name);
 
-  const BGOTemplateManager& gBGOTemp = BGOTemplateManager::GetInstance(); 
+  const BGOTemplateManager& gBGOTemp = BGOTemplateManager::GetInstance();
 
   m_fitFunction = gBGOTemp.GetFitFunction();
   m_func = new TF1("m_func", m_fitFunction, fitStart, fitEnd, ParaMax );
@@ -51,7 +51,7 @@ BGOAnalyzer::BGOAnalyzer( void )
   for (int seg=0; seg<NumOfSegBGO; seg++) {
     double tdc0    = gHodo.GetOffset(DetIdBGO, 0, seg, 1); // FADC UorD = 1
     double pedestal = gHodo.GetP0(DetIdBGO, 0, seg, 1);     // FADC UorD = 1
-    
+
     m_Tdc0[seg] = tdc0;
     m_Pedestal[seg] = pedestal;
   }
@@ -96,7 +96,7 @@ bool BGOAnalyzer::DecodeBGO( RawData *rawData )
 
   /*
   double Offset[NumOfSegBGO] = {
-    0, 0, 16040, 16120, 16060, 
+    0, 0, 16040, 16120, 16060,
     16090, 15970, 15980, 15920, 15540,
     15530, 16290, 16370, 15350, 16350,
     16060, 16060, 16070, 16080, 15540,
@@ -149,7 +149,7 @@ bool BGOAnalyzer::PulseSearch( void )
     double risetime = 0.1;
 
     SearchParam sp1={"sp1", {index_original_graph, index_diff_graph},
-		     fitStart, fitEnd, fitStart, fitEnd, 
+		     fitStart, fitEnd, fitStart, fitEnd,
 		     threshold, width, risetime};
 
     bool flagPresearch = PreSearch(seg, &sp1);
@@ -169,14 +169,14 @@ bool BGOAnalyzer::PulseSearch( void )
     //}
 
     double trigx = FittedTrigX(fp1,1.0);
-    //trigx =1;/////////////////////                                             
+    //trigx =1;/////////////////////
     if(fabs(trigx)<TrigTimeReso){
       double max_res = 0;
       fp1.Residual=  RisingResidual(seg, index_original_graph, trigx, max_res);
       //fp1.Residual=1;/////////////
 
       m_FitParamCont[seg].push_back(fp1);
-      TF1 *func = new TF1(Form("func%d_0", seg), m_fitFunction, 
+      TF1 *func = new TF1(Form("func%d_0", seg), m_fitFunction,
 			  fitStart, fitEnd, ParaMax );
       func->SetLineColor(fp1.color);
       for (int i=0; i<fp1.ParaNum; i++) {
@@ -214,14 +214,14 @@ bool BGOAnalyzer::PulseSearch( void )
 
 bool BGOAnalyzer::MakeGraph(int seg)
 {
-  
+
   int nc = m_fadcContBGO[seg].size();
 
   int n_range = 0;
   for (int i=0; i<nc; i++) {
     FAdcData fadc = m_fadcContBGO[seg][i];
-    //if ( fadc.x >= fitStart && fadc.x <= fitEnd ) 
-    if ( fadc.x >= graphStart && fadc.x <= graphEnd ) 
+    //if ( fadc.x >= fitStart && fadc.x <= fitEnd )
+    if ( fadc.x >= graphStart && fadc.x <= graphEnd )
       n_range++;
   }
 
@@ -239,7 +239,7 @@ bool BGOAnalyzer::MakeGraph(int seg)
 
     }
   }
-  
+
   m_TGraphCont[seg].push_back(gr);
 
   return true;
@@ -350,15 +350,15 @@ bool BGOAnalyzer::PreSearch(int seg, struct SearchParam *sp)
   WidthCut(rise100, fall100, width_thr, entry100);
 
   CompareRise(entry30,entry100,0.05,entry30_100);
-  //  for(int i=0;i<entry30_100.size();i++)                                                                
-  //    std::cout<<"entry "<<entry30_100[i]<<std::endl;                                                    
+  //  for(int i=0;i<entry30_100.size();i++)
+  //    std::cout<<"entry "<<entry30_100[i]<<std::endl;
 
   SetInitial(seg, entry30_100,begin,end,sp->threshold,sp->risetime);
 
   int index_original_graph = 0;
   for(unsigned int i=0;i<entry30_100.size();i++){
     sp->foundx.push_back(entry30_100[i]+sp->risetime);
-    sp->foundy.push_back(-GXtoGY(seg, index_original_graph, 
+    sp->foundy.push_back(-GXtoGY(seg, index_original_graph,
 				 entry30_100[i]+sp->risetime)) ;
   }
 
@@ -402,9 +402,9 @@ void BGOAnalyzer::CompareRise(std::vector<double> rise1,
 			      std::vector<double> rise2,
 			      double width, std::vector<double> &outrise)
 {
-  for(int i=0;i<rise2.size();i++){
+  for(int i=0;i<static_cast<int>(rise2.size());i++){
     int t=0;
-    for(int j=0;j<rise1.size();j++){
+    for(int j=0;j<static_cast<int>(rise1.size());j++){
       if( rise2[i]-rise1[j] <width )
         t++;
     }
@@ -419,7 +419,7 @@ void BGOAnalyzer::CompareRise(std::vector<double> rise1,
   rise2.clear();
 }
 
-void BGOAnalyzer::SetInitial(int seg, std::vector<double> &v, 
+void BGOAnalyzer::SetInitial(int seg, std::vector<double> &v,
 			     double begin, double end,
 			     double thre, double rise)
 {
@@ -444,7 +444,7 @@ void BGOAnalyzer::SetInitial(int seg, std::vector<double> &v,
   int index_original_graph = 0;
   for(int i=0;i<size;i++)
     if(v[i]!=-1){
-      //      std::cout<<"GX "<<v[i]+0.15<<" GY "<<Original->GXtoGY(v[i]+0.15)<<std::endl;                 
+      //      std::cout<<"GX "<<v[i]+0.15<<" GY "<<Original->GXtoGY(v[i]+0.15)<<std::endl;
       bool flagOverThr = false;
       for (double ratio =0; ratio <= 1.0; ratio += 0.1)
 	if(GXtoGY(seg, index_original_graph, v[i]+rise*ratio)<thre)
@@ -525,7 +525,7 @@ void BGOAnalyzer::SetFitParam(FitParam *fp, std::vector<double> &inix,
   for(int i=0;i<wm;i++){
     fp->par[2+2*i]=inix[i];
     fp->par[3+2*i]=iniy[i];
-    //    std::cout<<"InitialY"<<InitialY[i]<<"fp y"<<fp->par[3+2*i]<<" iniy "<<iniy[i]<<std::endl;        
+    //    std::cout<<"InitialY"<<InitialY[i]<<"fp y"<<fp->par[3+2*i]<<" iniy "<<iniy[i]<<std::endl;
   }
 
 
@@ -539,7 +539,7 @@ void BGOAnalyzer::Fit1(int seg, FitParam *fp)
   int ParaNum = fp->ParaNum;
   double par[ParaNum];
   par[0]=wavenum;
-  //std::cout << "wavenum = "  << wavenum << std::endl;   
+  //std::cout << "wavenum = "  << wavenum << std::endl;
 
   for(Int_t i=0;i<ParaNum;i++){
     m_func -> ReleaseParameter(i);
@@ -551,7 +551,7 @@ void BGOAnalyzer::Fit1(int seg, FitParam *fp)
   m_func -> SetNpx(1000);
   m_func -> SetParameters(&par[0]);
   m_func -> FixParameter(0,par[0]);
-  //m_func -> FixParameter(1,0);                                                                             
+  //m_func -> FixParameter(1,0);
   m_func -> SetLineColor(fp->color);
   for(int nine= ParaNum;nine<ParaMax;nine++)
     m_func -> FixParameter(nine,0);
@@ -578,7 +578,7 @@ double BGOAnalyzer::FittedTrigX(FitParam fp,double allowance)
   std::vector<double> xx;
   for(int i=0;i<num;i++){
     double x =fp.FitParam[2+2*i];
-    //std::cout<<"x "<<x<<"  ref "<<mean<<std::endl;                                                       
+    //std::cout<<"x "<<x<<"  ref "<<mean<<std::endl;
     if(x > - reso && x< reso ){
       inrange++;
       xx.push_back(x);
@@ -619,14 +619,14 @@ double BGOAnalyzer::RisingResidual(int seg, int tge_No, double trig, double &res
     a = GXtoGY(seg, tge_No, x);
     b = m_func -> Eval(x);
     if(a !=0) {
-      //Residual += sqrt((a-b)*(a-b))/ CEI->GetError() ;                                                   
-      Residual += sqrt((a-b)*(a-b))/ 15 ; //kuso tekito                        
+      //Residual += sqrt((a-b)*(a-b))/ CEI->GetError() ;
+      Residual += sqrt((a-b)*(a-b))/ 15 ; //kuso tekito
 
       if (fabs(max_res) < fabs(a-b))
         max_res = a-b;
-                            
+
     }
-    //std::cout<<"Residual x:"<<x<<"  a:"<<a<<"  b:"<<b<<std::endl; 
+    //std::cout<<"Residual x:"<<x<<"  a:"<<a<<"  b:"<<b<<std::endl;
   }
 
   Residual /= -GXtoGY(seg, tge_No, trig);
@@ -640,7 +640,7 @@ double BGOAnalyzer::RisingResidual(int seg, int tge_No, double trig, double &res
 
 //______________________________________________________________________________
 bool
-BGOAnalyzer::GetBGOData0(int segment, BGOData &bgoData) 
+BGOAnalyzer::GetBGOData0(int segment, BGOData &bgoData)
 {
   if( segment<0 || segment>NumOfSegBGO ) return false;
 
@@ -655,7 +655,7 @@ BGOAnalyzer::GetBGOData0(int segment, BGOData &bgoData)
       index = i;
     }
   }
-  
+
   bgoData = m_BGODataCont[segment][index];
 
   return  true;

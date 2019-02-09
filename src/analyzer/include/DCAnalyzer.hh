@@ -319,7 +319,7 @@ DCAnalyzer::GetTOFHC( void ) const
 inline DCLocalTrack*
 DCAnalyzer::GetTrackBcIn( int i ) const
 {
-  if( i<m_BcInTC.size() )
+  if( i<static_cast<int>(m_BcInTC.size()) )
     return m_BcInTC[i];
   else
     return 0;
@@ -329,7 +329,7 @@ DCAnalyzer::GetTrackBcIn( int i ) const
 inline DCLocalTrack*
 DCAnalyzer::GetTrackBcOut( int i ) const
 {
-  if( i<m_BcOutTC.size() )
+  if( i<static_cast<int>(m_BcOutTC.size()) )
     return m_BcOutTC[i];
   else
     return 0;
@@ -339,7 +339,7 @@ DCAnalyzer::GetTrackBcOut( int i ) const
 inline DCLocalTrack*
 DCAnalyzer::GetTrackSdcIn( int i ) const
 {
-  if( i<m_SdcInTC.size() )
+  if( i<static_cast<int>(m_SdcInTC.size()) )
     return m_SdcInTC[i];
   else
     return 0;
@@ -349,7 +349,7 @@ DCAnalyzer::GetTrackSdcIn( int i ) const
 inline DCLocalTrack*
 DCAnalyzer::GetTrackSdcOut( int i ) const
 {
-  if( i<m_SdcOutTC.size() )
+  if( i<static_cast<int>(m_SdcOutTC.size()) )
     return m_SdcOutTC[i];
   else
     return 0;
@@ -359,7 +359,7 @@ DCAnalyzer::GetTrackSdcOut( int i ) const
 inline DCLocalTrack*
 DCAnalyzer::GetTrackSdcInEx( int layer, int i ) const
 {
-  if( i<m_SdcInExTC[layer].size() )
+  if( i<static_cast<int>(m_SdcInExTC[layer].size()) )
     return m_SdcInExTC[layer][i];
   else
     return 0;
@@ -369,7 +369,7 @@ DCAnalyzer::GetTrackSdcInEx( int layer, int i ) const
 inline DCLocalTrack*
 DCAnalyzer::GetTrackSdcOutEx( int layer, int i ) const
 {
-  if( i<m_SdcOutExTC[layer].size() )
+  if( i<static_cast<int>(m_SdcOutExTC[layer].size()) )
     return m_SdcOutExTC[layer][i];
   else
     return 0;
@@ -379,7 +379,7 @@ DCAnalyzer::GetTrackSdcOutEx( int layer, int i ) const
 inline K18TrackU2D*
 DCAnalyzer::GetK18TrackU2D( int i ) const
 {
-  if( i<m_K18U2DTC.size() )
+  if( i<static_cast<int>(m_K18U2DTC.size()) )
     return m_K18U2DTC[i];
   else
     return 0;
@@ -389,7 +389,7 @@ DCAnalyzer::GetK18TrackU2D( int i ) const
 inline K18TrackD2U*
 DCAnalyzer::GetK18TrackD2U( int i ) const
 {
-  if( i<m_K18D2UTC.size() )
+  if( i<static_cast<int>(m_K18D2UTC.size()) )
     return m_K18D2UTC[i];
   else
     return 0;
@@ -399,7 +399,7 @@ DCAnalyzer::GetK18TrackD2U( int i ) const
 inline KuramaTrack*
 DCAnalyzer::GetKuramaTrack( int i ) const
 {
-  if( i<m_KuramaTC.size() )
+  if( i<static_cast<int>(m_KuramaTC.size()) )
     return m_KuramaTC[i];
   else
     return 0;
@@ -409,7 +409,7 @@ DCAnalyzer::GetKuramaTrack( int i ) const
 inline DCLocalTrack*
 DCAnalyzer::GetTrackBcOutSdcIn( int i ) const
 {
-  if( i<m_BcOutSdcInTC.size() )
+  if( i<static_cast<int>(m_BcOutSdcInTC.size()) )
     return m_BcOutSdcInTC[i];
   else
     return 0;
@@ -419,7 +419,7 @@ DCAnalyzer::GetTrackBcOutSdcIn( int i ) const
 inline DCLocalTrack*
 DCAnalyzer::GetTrackSdcInSdcOut( int i ) const
 {
-  if( i<m_SdcInSdcOutTC.size() )
+  if( i<static_cast<int>(m_SdcInSdcOutTC.size()) )
     return m_SdcInSdcOutTC[i];
   else
     return 0;
@@ -429,7 +429,7 @@ DCAnalyzer::GetTrackSdcInSdcOut( int i ) const
 inline DCLocalTrack*
 DCAnalyzer::GetTrackCFT( int i ) const
 {
-  if( i<m_CFTTC.size() )
+  if( i<static_cast<int>(m_CFTTC.size()) )
     return m_CFTTC[i];
   else
     return 0;
@@ -439,7 +439,7 @@ DCAnalyzer::GetTrackCFT( int i ) const
 inline DCLocalTrack*
 DCAnalyzer::GetTrackCFT16( int i ) const
 {
-  if( i<m_CFT16TC.size() )
+  if( i<static_cast<int>(m_CFT16TC.size()) )
     return m_CFT16TC[i];
   else
     return 0;

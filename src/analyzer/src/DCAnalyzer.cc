@@ -131,12 +131,13 @@ DCAnalyzer::DCAnalyzer( void )
     m_much_combi(n_type),
     m_MWPCClCont(NumOfLayersBcIn+1),
     m_TempBcInHC(NumOfLayersBcIn+1),
-    m_CFTHC(NumOfPlaneCFT),
-    m_CFT16HC(NumOfPlaneCFT*2+1),
+
     m_BcInHC(NumOfLayersBcIn+1),
     m_BcOutHC(NumOfLayersBcOut+2),
     m_SdcInHC(NumOfLayersSdcIn+1),
     m_SdcOutHC(NumOfLayersSdcOut+1),
+    m_CFTHC(NumOfPlaneCFT),
+    m_CFT16HC(NumOfPlaneCFT*2+1),
     m_SdcInExTC(NumOfLayersSdcIn+1),
     m_SdcOutExTC(NumOfLayersSdcOut+1)
 {
@@ -620,11 +621,11 @@ DCAnalyzer::DecodeCFT16Hits( RawData* rawData ,DCLocalTrack* tp , int i )
     for ( int j = 0; j < ncl; ++j ) {
       FiberCluster* cl = hodoAna.GetClusterCFT( layer, j );
       int    segCl  = (int)cl->MeanSeg();
-      double size  = cl->ClusterSize();
+      //      double size  = cl->ClusterSize();
       double posR   = cl->MeanPositionR();
       double posPhi = cl->MeanPositionPhi();
-      double time   = cl->CMeanTime();
-      double adcLow   = cl->SumAdcLow();
+      //      double time   = cl->CMeanTime();
+      //      double adcLow   = cl->SumAdcLow();
       if(seg == segCl){
 	DCHit *hit = new DCHit(ll);
 	hit->SetTdcCFT( static_cast<int>( 0 ) );
@@ -653,11 +654,11 @@ DCAnalyzer::DecodeCFT16Hits( RawData* rawData ,DCLocalTrack* tp , int i )
     for ( int j = 0; j < ncl; ++j ) {
       FiberCluster* cl = hodoAna.GetClusterCFT( layer, j );
       int    segCl  = (int)cl->MeanSeg();
-      double size  = cl->ClusterSize();
+      //      double size  = cl->ClusterSize();
       double posR   = cl->MeanPositionR();
       double posPhi = cl->MeanPositionPhi();
-      double time   = cl->CMeanTime();
-      double adcLow   = cl->SumAdcLow();
+      //      double time   = cl->CMeanTime();
+      //      double adcLow   = cl->SumAdcLow();
       if(seg == segCl){
 	DCHit *hit = new DCHit(ll);
 	hit->SetTdcCFT( static_cast<int>( 0 ) );

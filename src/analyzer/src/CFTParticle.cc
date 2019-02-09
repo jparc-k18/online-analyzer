@@ -10,11 +10,11 @@
 const double Deg2Rad = acos(-1.)/180.;
 const double Rad2Deg = 180./acos(-1.);
 CFTParticle::CFTParticle(DCLocalTrack *track, RawData *rawData)
-  : Track_(track), RawData_(rawData), 
-    CFTVtx_(-999, -999, -999),
+  : Track_(track), RawData_(rawData),
     m_bgo_seg(-1),
-    m_piid_seg(-1)
-{  
+    m_piid_seg(-1),
+    CFTVtx_(-999, -999, -999)
+{
 Calculate();
 }
 
@@ -24,7 +24,7 @@ CFTParticle::~CFTParticle()
 
 Hodo1Hit * CFTParticle::GetBGOHit(int i)
 {
-  if (i>=0 && i<BGOCont_.size())
+  if (i>=0 && i<static_cast<int>(BGOCont_.size()))
     return BGOCont_[i];
   else
     return 0;
@@ -32,7 +32,7 @@ Hodo1Hit * CFTParticle::GetBGOHit(int i)
 
 Hodo2Hit * CFTParticle::GetPiVHit(int i)
 {
-  if (i>=0 && i<PiVCont_.size())
+  if (i>=0 && i<static_cast<int>(PiVCont_.size()))
     return PiVCont_[i];
   else
     return 0;
@@ -50,9 +50,9 @@ bool CFTParticle::Calculate()
 
 
   int xyFlag = Track_->GetCFTxyFlag();
-  int zFlag  = Track_->GetCFTzFlag() ;
+  //  int zFlag  = Track_->GetCFTzFlag() ;
   double Axy = Track_->GetAxy(); double Bxy = Track_->GetBxy();
-  double Az  = Track_->GetAz() ; double Bz  = Track_->GetBz();
+  //  double Az  = Track_->GetAz() ; double Bz  = Track_->GetBz();
   ThreeVector Pos0 = Track_->GetPos0();
   ThreeVector Dir  = Track_->GetDir();
 
@@ -89,7 +89,7 @@ bool CFTParticle::Calculate()
     double u=Dir.x(), v=Dir.y();
     double x0=Pos0.x(), y0=Pos0.y();
     double t = (u*(x-x0)+v*(y-y0))/(u*u+v*v);
-    if (t>=0) {	
+    if (t>=0) {
       if (fabs(distBGO)<25) {
 	AddBGOHit(hit);
 	if(adc>max_adc){
@@ -108,9 +108,9 @@ bool CFTParticle::Calculate()
     int mhit = hit->GetNLeading();
     int seg = hit->PairId();
     bool hit_flag = false;
-    for(int m = 0; m<mhit; ++m){	
+    for(int m = 0; m<mhit; ++m){
       double ctime  = hit->GetCTime(m);
-      if(ctime>-50&&ctime<50){hit_flag=true;}    
+      if(ctime>-50&&ctime<50){hit_flag=true;}
     }
     if(!hit_flag)continue;
     double x, y;
@@ -120,18 +120,18 @@ bool CFTParticle::Calculate()
     double u=Dir.x(), v=Dir.y();
     double x0=Pos0.x(), y0=Pos0.y();
     double t = (u*(x-x0)+v*(y-y0))/(u*u+v*v);
-    if (t>=0) {	
+    if (t>=0) {
       if (fabs(distPiID)<40) {
 	m_piid_seg = seg;
       }
     }
   }
 
-#if 0    
+#if 0
   int nc = BGOCont_.size();
   for (int i=0; i<nc; i++) {
     Hodo1Hit *hitp = BGOCont_[i];
-    //BGO_E_ += hitp->DeltaEBGO(); here!    
+    //BGO_E_ += hitp->DeltaEBGO(); here!
   }
   int ncPiV = PiVCont_.size();
   for (int i=0; i<ncPiV; i++) {
@@ -143,7 +143,7 @@ bool CFTParticle::Calculate()
   //TotalE_ = FiberTotal_E_ + BGO_E_;
 
 
-#if 0    
+#if 0
   if (nc ==1 || nc>= 3) {
     double delta;
     if (checkProton(BGO_E_, &delta))
@@ -165,18 +165,18 @@ bool CFTParticle::Calculate()
     flag2 = checkProton(BGO_E2, &delta2);
 
     if (flag0) {
-      Mass_ = 0.9382720;      
+      Mass_ = 0.9382720;
     } else if (flag1 && flag2) {
-      Mass_ = 0.9382720;      
+      Mass_ = 0.9382720;
       if (fabs(delta1) < fabs(delta2))
 	BGO_E_ = BGO_E1;
       else
 	BGO_E_ = BGO_E2;
     } else if (flag1) {
-      Mass_ = 0.9382720;      
+      Mass_ = 0.9382720;
       BGO_E_ = BGO_E1;
     } else if (flag2) {
-      Mass_ = 0.9382720;      
+      Mass_ = 0.9382720;
       BGO_E_ = BGO_E2;
     }  else if (checkPi(BGO_E_)){
       Mass_ = 0.1395701;
@@ -189,9 +189,9 @@ bool CFTParticle::Calculate()
       Mass_ = 0.1395701;
 
   }
-#endif  
+#endif
 
-#if 0    
+#if 0
   double shiftE = 32.;
   if (PiV_E_>0.2 && Mass_ < 0. ) {
     double delta;
@@ -225,9 +225,9 @@ bool CFTParticle::Calculate()
       }
     }
   }
-#endif  
+#endif
 
-#if 0    
+#if 0
   // assume proton stop before BGO and BGO was hit by pi
   if (Mass_ < 0. ) {
     double delta;
@@ -237,14 +237,14 @@ bool CFTParticle::Calculate()
       BGO_E_ = 0;
     }
   }
-#endif  
+#endif
 
-#if 0  
+#if 0
   if (NormalizedFiberTotal_E_>=0.5)
     Mass_ = 0.9382720;
   else if (NormalizedFiberTotal_E_>=0 && NormalizedFiberTotal_E_<0.5)
     Mass_ = 0.1395701;
-#endif  
+#endif
 
   return true;
 
@@ -281,7 +281,7 @@ bool CFTParticle::checkProton( double BGO_E, double *delta)
 
   if (NormalizedFiberTotal_E_ >= cut1 && NormalizedFiberTotal_E_ <= cut2)
     return true;
-  else 
+  else
     return false;
 
 }
@@ -311,7 +311,7 @@ bool CFTParticle::checkPi( double BGO_E)
 
   if (NormalizedFiberTotal_E_ < cut1)
     return true;
-  else 
+  else
     return false;
 
 }
@@ -319,10 +319,10 @@ bool CFTParticle::checkPi( double BGO_E)
 
 void CFTParticle::BGOPos(int seg, double *x, double *y) const
 {
-  int UnitNum = seg/(NumOfBGOInOneUnit+NumOfBGOInOneUnit2);
+  //  int UnitNum = seg/(NumOfBGOInOneUnit+NumOfBGOInOneUnit2);
   int SegInUnit = seg%(NumOfBGOInOneUnit+NumOfBGOInOneUnit2);
 
-  double theta = 22.5+(double)UnitNum*45.;
+  //  double theta = 22.5+(double)UnitNum*45.;
   double x0 = RadiusOfBGOSurface+BGO_Y/2;
   double y0 = (double)(SegInUnit-1)*BGO_X;
   double xc = 0.;
@@ -332,7 +332,7 @@ void CFTParticle::BGOPos(int seg, double *x, double *y) const
     double n=(seg+1)/3;
     double angle = +22.5+45.*(n-1); // axis change
     xc = (120.+25./2.)*cos(angle*Deg2Rad);
-    yc = (120.+25./2.)*sin(angle*Deg2Rad);    
+    yc = (120.+25./2.)*sin(angle*Deg2Rad);
 #if 1 // new
   }else if(seg==0 || seg==1){
     xc = 100.0 + 25./2.;
@@ -345,7 +345,7 @@ void CFTParticle::BGOPos(int seg, double *x, double *y) const
   }else if(seg==12 || seg==13){
     xc = -100.0 - 25./2.;
     if(seg==12){yc = 30.0/2.;}
-    else if(seg==13){yc = -30.0/2.;}  
+    else if(seg==13){yc = -30.0/2.;}
   }else if(seg==18 || seg==19){
     yc = -100.0 -25./2.;
     if     (seg==18){xc = -30.0/2.;}
@@ -356,45 +356,45 @@ void CFTParticle::BGOPos(int seg, double *x, double *y) const
     y0 = (100. + 25./2.)*sin(angle*Deg2Rad);
     if(seg==4){
       xc = x0 - 30./2.*cos(-angle*Deg2Rad);
-      yc = y0 - 30./2.*sin(-angle*Deg2Rad);	
+      yc = y0 - 30./2.*sin(-angle*Deg2Rad);
     }else if(seg==3){
       xc = x0 + 30./2.*cos(-angle*Deg2Rad);
-      yc = y0 + 30./2.*sin(-angle*Deg2Rad);	
+      yc = y0 + 30./2.*sin(-angle*Deg2Rad);
     }
   }else if(seg==9 || seg==10){
     //double angle = -45.;
     double angle = 135.;
     x0 = (100 + 25./2.)*cos(angle*Deg2Rad);
-    y0 = (100 + 25./2.)*sin(angle*Deg2Rad);      
+    y0 = (100 + 25./2.)*sin(angle*Deg2Rad);
     if(seg==10){
       xc = x0 + 30./2.*cos(-angle*Deg2Rad);
-      yc = y0 + 30./2.*sin(-angle*Deg2Rad);	
+      yc = y0 + 30./2.*sin(-angle*Deg2Rad);
     }else if(seg==9){
       xc = x0 - 30./2.*cos(-angle*Deg2Rad);
-      yc = y0 - 30./2.*sin(-angle*Deg2Rad);	
+      yc = y0 - 30./2.*sin(-angle*Deg2Rad);
     }
   }else if(seg==15 || seg==16){
     double angle = -135.;
     x0 = (100. + 25./2.)*cos(angle*Deg2Rad);
-    y0 = (100. + 25./2.)*sin(angle*Deg2Rad);      
+    y0 = (100. + 25./2.)*sin(angle*Deg2Rad);
     if(seg==16){
       xc = x0 - 30./2.*cos(-angle*Deg2Rad);
-      yc = y0 - 30./2.*sin(-angle*Deg2Rad);	
+      yc = y0 - 30./2.*sin(-angle*Deg2Rad);
     }else if(seg==15){
       xc = x0 + 30./2.*cos(-angle*Deg2Rad);
-      yc = y0 + 30./2.*sin(-angle*Deg2Rad);	
+      yc = y0 + 30./2.*sin(-angle*Deg2Rad);
     }
   }else if(seg==21 || seg==22){
     //double angle = 135.;
     double angle = -45.;
     x0 = (100. + 25./2.)*cos(angle*Deg2Rad);
-    y0 = (100. + 25./2.)*sin(angle*Deg2Rad);      
+    y0 = (100. + 25./2.)*sin(angle*Deg2Rad);
     if(seg==22){
       xc = x0 + 30./2.*cos(-angle*Deg2Rad);
-      yc = y0 + 30./2.*sin(-angle*Deg2Rad);	
+      yc = y0 + 30./2.*sin(-angle*Deg2Rad);
     }else if(seg==21){
       xc = x0 - 30./2.*cos(-angle*Deg2Rad);
-      yc = y0 - 30./2.*sin(-angle*Deg2Rad);	
+      yc = y0 - 30./2.*sin(-angle*Deg2Rad);
     }
   }
 #endif
@@ -404,44 +404,45 @@ void CFTParticle::BGOPos(int seg, double *x, double *y) const
 
 void CFTParticle::PiIDPos(int seg, double *x, double *y) const
 {
-  int UnitNum = seg/(NumOfBGOInOneUnit+NumOfBGOInOneUnit2);
+  //  int UnitNum = seg/(NumOfBGOInOneUnit+NumOfBGOInOneUnit2);
   int SegInUnit = seg%(NumOfBGOInOneUnit+NumOfBGOInOneUnit2);
-  double theta = 22.5+(double)UnitNum*45.;
+  //  double theta = 22.5+(double)UnitNum*45.;
   double x0 = RadiusOfBGOSurface+BGO_Y/2;
   double y0 = (double)(SegInUnit-1)*BGO_X;
   double xc = 0.;
   double yc = 0.;
   double w  = 30.,  t = 15.;//width, thickness
-  double ww = 40., tt = 15.;//width, thickness for 45 deg.
+  double tt = 15.;          //thickness for 45 deg.
+  //  double ww = 40.,
 
   if(seg%4==3){ // single segment
     double n=(seg+1)/4;
     double angle = +22.5+45.*(n-1); // axis change
     xc = (164.1+tt/2.)*cos(angle*Deg2Rad);
-    yc = (164.1+tt/2.)*sin(angle*Deg2Rad);    
-  }else if(seg==0 || seg==1 || seg==2){      
+    yc = (164.1+tt/2.)*sin(angle*Deg2Rad);
+  }else if(seg==0 || seg==1 || seg==2){
     xc = 159.0 + t/2.;
     if     (seg==0){yc = -1.*w;}
     else if(seg==1){yc =  0.*w;}
-    else if(seg==2){yc =  1.*w;}      
+    else if(seg==2){yc =  1.*w;}
 
   }else if(seg==8 || seg==9 || seg==10){
     yc = 159.0 + t/2.;
     if     (seg==8) {xc = 1.*w;}
     else if(seg==9) {xc = 0.*w;}
-    else if(seg==10){xc =-1.*w;}      
+    else if(seg==10){xc =-1.*w;}
 
   }else if(seg==16 || seg==17 || seg==18){
     xc = -159.0 - t/2.;
     if     (seg==16){yc = 1.*w;}
     else if(seg==17){yc = 0.*w;}
-    else if(seg==18){yc =-1.*w;}      
+    else if(seg==18){yc =-1.*w;}
 
   }else if(seg==24 || seg==25 || seg==26){
     yc = -159.0 - t/2.;
     if     (seg==24) {xc =-1.*w;}
     else if(seg==25) {xc = 0.*w;}
-    else if(seg==26) {xc = 1.*w;}      
+    else if(seg==26) {xc = 1.*w;}
 
   }else if(seg==4 || seg==5 || seg==6){ // Line
     double angle = 45.;
@@ -454,9 +455,9 @@ void CFTParticle::PiIDPos(int seg, double *x, double *y) const
       xc = x0 - 0*cos(45.*Deg2Rad);
       yc = y0 + 0*cos(45.*Deg2Rad);
     }else if(seg==4){
-      xc = x0 + w*cos(45.*Deg2Rad); 
-      yc = y0 - w*cos(45.*Deg2Rad); 
-    }   
+      xc = x0 + w*cos(45.*Deg2Rad);
+      yc = y0 - w*cos(45.*Deg2Rad);
+    }
 
   }else if(seg==12 || seg==13 || seg==14){ // Line
       double angle = 135.;
@@ -478,11 +479,11 @@ void CFTParticle::PiIDPos(int seg, double *x, double *y) const
     x0 = (159. +t/2.)*cos(angle*Deg2Rad);
     y0 = (159. +t/2.)*sin(angle*Deg2Rad);
     if(seg==22){
-      xc = x0 + 1.*w*cos(45.*Deg2Rad); 
-      yc = y0 - 1.*w*cos(45.*Deg2Rad); 
+      xc = x0 + 1.*w*cos(45.*Deg2Rad);
+      yc = y0 - 1.*w*cos(45.*Deg2Rad);
     }else if(seg==21){
-      xc = x0 + 0.*w*cos(45.*Deg2Rad); 
-      yc = y0 - 0.*w*cos(45.*Deg2Rad); 
+      xc = x0 + 0.*w*cos(45.*Deg2Rad);
+      yc = y0 - 0.*w*cos(45.*Deg2Rad);
     }else if(seg==20){
       xc = x0 - 1.*w*cos(45.*Deg2Rad);
       yc = y0 + 1.*w*cos(45.*Deg2Rad);

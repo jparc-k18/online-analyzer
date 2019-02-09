@@ -534,7 +534,7 @@ process_event( void )
     for(int i=0; i<ncl; ++i){
       FiberCluster *cl = hodoAna->GetClusterCFT(p,i);
       if(!cl) continue;
-      double size  = cl->ClusterSize();
+      //      double size  = cl->ClusterSize();
       //double seg = cl->MeanSeg();
       //double ctime = cl->CMeanTime();
       //double width = -cl->minWidth();

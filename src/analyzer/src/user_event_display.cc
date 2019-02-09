@@ -94,7 +94,7 @@ process_end( void )
 Int_t
 process_event( void )
 {
-  static const Double_t MaxMultiHitBcOut  = gUser.GetParameter("MaxMultiHitBcOut");
+  //  static const Double_t MaxMultiHitBcOut  = gUser.GetParameter("MaxMultiHitBcOut");
   static const Double_t MaxMultiHitSdcIn  = gUser.GetParameter("MaxMultiHitSdcIn");
   static const Double_t MaxMultiHitSdcOut = gUser.GetParameter("MaxMultiHitSdcOut");
 
@@ -341,7 +341,7 @@ process_event( void )
   }
 
   event.TrackSearchKurama();
-  Int_t ntKurama = dcAna->GetNTracksKurama();
+  //  Int_t ntKurama = dcAna->GetNTracksKurama();
 
   gEvDisp.Update();
 

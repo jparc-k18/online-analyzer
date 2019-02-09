@@ -133,7 +133,7 @@ bool
 Hodo1Hit::JoinedAllMhit()
 {
   bool ret = true;
-  for(int i = 0; i<m_flag_join.size(); ++i){
+  for(int i = 0; i<static_cast<int>(m_flag_join.size()); ++i){
     ret = ret & m_flag_join[i];
   }// for(i)
   return ret;

@@ -1229,9 +1229,9 @@ HodoAnalyzer::MakeUpClustersCFT( const FiberHitContainer& cont,
       double cmtA    = (double)HitA->GetCTime(mhitA);
       int    CurrentPair = HitA->PairId();
 
-      bool   fl_Hit[MaxSizeCl];
+      bool fl_Hit[MaxSizeCl];
       bool fl_ClCand[MaxSizeCl];
-      double cmt[MaxSizeCl]; double mt[MaxSizeCl];
+      double cmt[MaxSizeCl];
       int seg_[MaxSizeCl];
       double peLow[MaxSizeCl];
       FiberHit* Hit[MaxSizeCl];
@@ -1792,8 +1792,10 @@ namespace{
 BH2Cluster*
 HodoAnalyzer::GetTime0BH2Cluster()
 {
+#if REQDE
   static const double MinDe = gUser.GetParameter("DeBH2", 0);
   static const double MaxDe = gUser.GetParameter("DeBH2", 1);
+#endif
   static const double MinMt = gUser.GetParameter("MtBH2", 0);
   static const double MaxMt = gUser.GetParameter("MtBH2", 1);
 
@@ -1801,7 +1803,9 @@ HodoAnalyzer::GetTime0BH2Cluster()
   double min_mt = -9999;
   for(const auto& cluster : m_BH2ClCont){
     double mt = cluster->MeanTime();
+#if REQDE
     double de = cluster->DeltaE();
+#endif
 
     if(true
        && std::abs(mt) < std::abs(min_mt)
@@ -1822,8 +1826,10 @@ HodoAnalyzer::GetTime0BH2Cluster()
 HodoCluster*
 HodoAnalyzer::GetBtof0BH1Cluster(double time0)
 {
+#if REQDE
   static const double MinDe   = gUser.GetParameter("DeBH1", 0);
   static const double MaxDe   = gUser.GetParameter("DeBH1", 1);
+#endif
   static const double MinBtof = gUser.GetParameter("BTOF",  0);
   static const double MaxBtof = gUser.GetParameter("BTOF",  1);
 
@@ -1831,7 +1837,9 @@ HodoAnalyzer::GetBtof0BH1Cluster(double time0)
   double min_btof            = -9999;
   for(const auto& cluster : m_BH1ClCont){
     double cmt  = cluster->CMeanTime();
+#if REQDE
     double de   = cluster->DeltaE();
+#endif
     double btof = cmt - time0;
 
     if(true

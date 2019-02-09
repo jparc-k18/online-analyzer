@@ -41,8 +41,11 @@ FiberHit::FiberHit( HodoRawHit *object, const char* name )
     m_position(-999.),
     m_offset(0),
     m_pair_id(0),
+    m_status(false),
     m_adc_hi(-1.),
     m_adc_low(-1.),
+    m_pedcor_hi(-99999.),
+    m_pedcor_low(-99999.),
     //m_nphoton_hi(0.),
     //m_nphoton_low(0.),
     m_mip_hi(-1.),
@@ -50,10 +53,7 @@ FiberHit::FiberHit( HodoRawHit *object, const char* name )
     m_dE_hi(0.),
     m_dE_low(0.),
     m_r(0.),
-    m_phi(0.),
-    m_pedcor_hi(-99999.),
-    m_pedcor_low(-99999.),
-    m_status(false)
+    m_phi(0.)
 {
   debug::ObjectCounter::increase(class_name);
 }
@@ -105,19 +105,19 @@ FiberHit::Calculate( void )
       m_pair_id  = 1;
     }
     m_pair_id += 2*m_raw->SegmentId();
-  }else if(false 
-	   || "FBT1-UX1" == m_detector_name 
-	   || "FBT1-UX2" == m_detector_name
-	   || "FBT2-UX1" == m_detector_name 
-	   || "FBT2-UX2" == m_detector_name
+  }else if(false
+	   || "FHT1-UX1" == m_detector_name
+	   || "FHT1-UX2" == m_detector_name
+	   || "FHT2-UX1" == m_detector_name
+	   || "FHT2-UX2" == m_detector_name
 	   ){
     m_ud = 0;
     m_pair_id = seg;
   }else if(false
-	   || "FBT1-DX1" == m_detector_name 
-	   || "FBT1-DX2" == m_detector_name
-	   || "FBT2-DX1" == m_detector_name 
-	   || "FBT2-DX2" == m_detector_name
+	   || "FHT1-DX1" == m_detector_name
+	   || "FHT1-DX2" == m_detector_name
+	   || "FHT2-DX1" == m_detector_name
+	   || "FHT2-DX2" == m_detector_name
 	   ){
     m_ud = 1;
     m_pair_id = seg;
@@ -147,7 +147,7 @@ FiberHit::Calculate( void )
     }
 
     std::sort(leading_cont.begin(),  leading_cont.end(),  std::greater<int>());
-    std::sort(trailing_cont.begin(), trailing_cont.end(), std::greater<int>());    
+    std::sort(trailing_cont.begin(), trailing_cont.end(), std::greater<int>());
 
     int i_t = 0;
     for(int i = 0; i<m_multi_hit_l; ++i){
@@ -224,13 +224,13 @@ FiberHit::Calculate( void )
 
     m_a.push_back( tot );
     m_ct.push_back( ctime_leading );
-    
+
     if(cid==113){ // CFT
       m_pair_cont.at(m_multi_hit_l -1 -i).time_l  = time_leading;
       m_pair_cont.at(m_multi_hit_l -1 -i).time_t  = time_trailing;
       m_pair_cont.at(m_multi_hit_l -1 -i).ctime_l = ctime_leading;
       m_pair_cont.at(m_multi_hit_l -1 -i).tot     = tot;
-    }else{    
+    }else{
       m_pair_cont.at(i).time_l  = time_leading;
       m_pair_cont.at(i).time_t  = time_trailing;
       m_pair_cont.at(i).ctime_l = ctime_leading;
@@ -240,7 +240,7 @@ FiberHit::Calculate( void )
   }// for(i)
 
   // CFT ADC
-  if(cid==113){ 
+  if(cid==113){
     double nhit_adc = m_raw->SizeAdc1();
     if(nhit_adc>0){
       double hi  =  m_raw->GetAdc1();
@@ -257,7 +257,7 @@ FiberHit::Calculate( void )
       if (low>0)
 	m_adc_low = low - pedeLow;
       //m_mip_hi  = (hi  - pedeHi )/(gainHi  - pedeHi );
-      //m_mip_low = (low - pedeLow)/(gainLow - pedeLow);      
+      //m_mip_low = (low - pedeLow)/(gainLow - pedeLow);
       if (m_pedcor_hi>-2000 && hi >0)
 	m_adc_hi  = hi  + m_pedcor_hi;
       if (m_pedcor_low>-2000 && low >0)
@@ -266,8 +266,8 @@ FiberHit::Calculate( void )
       if (m_adc_hi>0/* && gainHi > 0*/)
 	m_mip_hi  = m_adc_hi/gainHi ;
       if (m_adc_low>0/* && gainLow >0*/)
-	m_mip_low = m_adc_low/gainLow;      
-      
+	m_mip_low = m_adc_low/gainLow;
+
       if(m_mip_low>0){
 	m_dE_low = -(Alow/Blow) * log(1. - m_mip_low/Alow);// [MeV]
 	if(1-m_mip_low/Alow<0){ // when pe is too big
@@ -282,14 +282,14 @@ FiberHit::Calculate( void )
 	std::cout << "layer = " << plid << ", seg = " << seg << ", adcLow = " << m_adc_low << ", dE = " << m_dE_low << ", mip_low = " << m_mip_low << ", gainLow = " << gainLow << ", gainHi = " << gainHi << std::endl;
       }
       */
-      
-      for (int j=0; j< m_pair_cont.size(); j++) {
+
+      for (int j=0; j< static_cast<int>(m_pair_cont.size()); j++) {
 	double time= m_pair_cont.at(j).time_l;
 	double ctime = -100;
 	if (m_adc_hi>20) {
 	  gPHC.DoCorrection( cid, plid, seg, m_ud, time, m_adc_hi, ctime);
 	  m_pair_cont.at(j).ctime_l = ctime;
-	} else 
+	} else
 	  m_pair_cont.at(j).ctime_l = time;
       }
     }

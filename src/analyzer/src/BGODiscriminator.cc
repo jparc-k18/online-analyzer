@@ -28,7 +28,7 @@ void BGODiscriminator::SetGraph(TGraphErrors *graph)
   m_sample_size = graph->GetN();
   double *x = graph->GetX();
   double *y = graph->GetY();
-  
+
   m_GraphX.clear();
   m_GraphY.clear();
 
@@ -80,7 +80,7 @@ bool BGODiscriminator::SelectRange(double threshold,double begin,double last)
     std::cout<<"Threshold search is failed. The search range is 'begin>=last' "<<std::endl;
     exit(-1);
   }
-  
+
   for(int i=0;i<m_sample_size;i++){
     if(m_GraphX[i]>=begin && m_GraphX[i]<=last)
       m_target.push_back(m_GraphY[i]);
@@ -94,18 +94,18 @@ bool BGODiscriminator::SelectRange(double threshold,double begin,double last)
     std::cout<<"begin=" << begin << "-> last=" << last <<std::endl;
     return false;
   }
-  
+
   GetCrossPoint(threshold);
-  
+
   return true;
-  
+
 };
 
 
 bool BGODiscriminator::SelectRange(double threshold){
   for(int i=0;i<m_sample_size;i++)
     m_target.push_back(m_GraphX[i]);
-  
+
   GetCrossPoint(threshold);
 
   return true;
@@ -121,7 +121,7 @@ void BGODiscriminator::GetRisingPoint(std::vector<double> &v){
   */
   v.resize(m_RisingPoint.size());
 
-  for(int i=0;i<m_RisingPoint.size();i++){
+  for(int i=0;i<static_cast<int>(m_RisingPoint.size());i++){
     //      std::cout<<"RisingPoint"<<RisingPoint[i]<<std::endl;
     //std::cout<<"v.size : "<<v.size()<<std::endl;
     v[i] =  m_GraphX[m_RisingPoint[i]] ;
@@ -132,15 +132,15 @@ void BGODiscriminator::GetFallingPoint(std::vector<double> &v){
     v.clear();
   /*
   if(FallingPoint.empty())
-    std::cout<<"BGODiscriminator::GeFallingPoint :FallingPoint have no data"<<std::endl;  
+    std::cout<<"BGODiscriminator::GeFallingPoint :FallingPoint have no data"<<std::endl;
   */
 
   v.resize(m_FallingPoint.size());
   for(unsigned int i=0;i<m_FallingPoint.size();i++){
     v[i] = m_GraphX[m_FallingPoint[i]] ;
-    
+
   }
-  
+
 }
 
 
@@ -166,7 +166,7 @@ int BGODiscriminator::GetPeakNum(double threshold,bool AbsFlag,bool LorS)
   int DataSize = m_target.size();
   if(!m_cross.empty())
     m_cross.clear();
-  
+
   bool thre[DataSize];
   if(AbsFlag)
     for(int i=0; i<DataSize;i++)
@@ -174,7 +174,7 @@ int BGODiscriminator::GetPeakNum(double threshold,bool AbsFlag,bool LorS)
   else
     for(int i=0; i<DataSize;i++)
       thre[i]=SloveBin(m_target[i],threshold,LorS);
-      
+
   for(int i=0;i<DataSize;i++) {
     if(i>0) {
       if(thre[i-1] ^ thre[i]) { // XOR
@@ -199,11 +199,11 @@ int BGODiscriminator::GetPeakNum(double threshold,bool AbsFlag,bool LorS)
     m_cross.push_back(0);
   for(int i=0;i<DataSize+1;i++)
     PeakNum += m_cross[i];
-  
+
   if(m_target.size()!=m_cross.size()-1)
     std::cout<<"Error in BGODiscriminator::GetPeakNum"<<std::endl;
-  
-  
+
+
   PeakNum /= 3;
   return PeakNum;
 }
@@ -214,7 +214,7 @@ int BGODiscriminator::GetCrossPoint(double threshold)
   int FoundNum = GetPeakNum(threshold,false,false);
 
   if(FoundNum>0){
-    for(int i=0;i<m_cross.size();i++){
+    for(int i=0;i<static_cast<int>(m_cross.size());i++){
       switch(m_cross[i]){
       case 1:
 	m_RisingPoint.push_back(i);
@@ -224,7 +224,7 @@ int BGODiscriminator::GetCrossPoint(double threshold)
 	break;
       }
     }
-    
+
   }
   return FoundNum;
 }

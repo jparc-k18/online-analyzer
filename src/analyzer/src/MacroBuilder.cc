@@ -563,6 +563,23 @@ TOF_HT( void )
 
 //____________________________________________________________________________
 TCanvas*
+LAC( void )
+{
+  Int_t id = HistMaker::getUniqueID(kLAC, 0, kTDC, 1);
+
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(6, 5);
+  for( Int_t i=0; i<NumOfSegLAC; ++i ){
+      c1->cd(i+1);
+      TH1 *h = GHist::get(id+i);
+      if( !h ) continue;
+      h->Draw();
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
 LC( void )
 {
   Int_t id = HistMaker::getUniqueID(kLC, 0, kTDC, 1);

@@ -112,6 +112,7 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(gHist.createFHT2());
   gHttp.Register(gHist.createTOF());
   gHttp.Register(gHist.createTOF_HT());
+  gHttp.Register(gHist.createLAC());
   gHttp.Register(gHist.createLC());
   gHttp.Register(gHist.createCorrelation());
   gHttp.Register(gHist.createTriggerFlag());
@@ -165,6 +166,7 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::TOFADC());
   gHttp.Register(http::TOFTDC());
   gHttp.Register(http::TOF_HT());
+  gHttp.Register(http::LAC());
   gHttp.Register(http::LC());
   gHttp.Register(http::TriggerFlag());
   gHttp.Register(http::HitPattern());
@@ -226,13 +228,13 @@ process_event( void )
     run_number = gUnpacker.get_root()->get_run_number();
   }
 
-  EventAnalyzer event;
-  event.DecodeRawData();
-  event.DecodeHodoAnalyzer();
-  event.DecodeDCAnalyzer();
+  // EventAnalyzer event;
+  // event.DecodeRawData();
+  // event.DecodeHodoAnalyzer();
+  // event.DecodeDCAnalyzer();
 
   // const RawData*      const rawData = event.GetRawData();
-  const HodoAnalyzer* const hodoAna = event.GetHodoAnalyzer();
+  // const HodoAnalyzer* const hodoAna = event.GetHodoAnalyzer();
   // const DCAnalyzer*   const DCAna   = event.GetDCAnalyzer();
 
   // TriggerFlag ---------------------------------------------------
@@ -1754,6 +1756,52 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+  //------------------------------------------------------------------
+  //LAC
+  //------------------------------------------------------------------
+  {
+    // data typep
+    static const int k_device = gUnpacker.get_device_id("LAC");
+    static const int k_u      = 0; // up
+    static const int k_tdc    = gUnpacker.get_data_id("LAC","tdc");
+
+    int lact_id   = gHist.getSequentialID(kLAC, 0, kTDC);
+    for(int seg = 0; seg<NumOfSegLAC; ++seg){
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      if(nhit != 0){
+	int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
+	if( tdc!=0 ){
+	  hptr_array[lact_id + seg]->Fill(tdc);
+	}
+      }
+    }
+
+    // Hit pattern && multiplicity
+    static const int lachit_id = gHist.getSequentialID(kLAC, 0, kHitPat);
+    static const int lacmul_id = gHist.getSequentialID(kLAC, 0, kMulti);
+    int multiplicity = 0;
+    for(int seg=0; seg<NumOfSegLAC; ++seg){
+      int nhit_lac = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      if(nhit_lac!=0){
+	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
+	if(tdc!=0){
+	  hptr_array[lachit_id]->Fill(seg);
+	  ++multiplicity;
+	}
+      }
+    }
+
+    hptr_array[lacmul_id]->Fill(multiplicity);
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
 
   //------------------------------------------------------------------
   //LC

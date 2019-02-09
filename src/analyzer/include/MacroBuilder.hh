@@ -48,6 +48,7 @@ namespace http
   TCanvas* TOFADC( void );
   TCanvas* TOFTDC( void );
   TCanvas* TOF_HT( void );
+  TCanvas* LAC( void );
   TCanvas* LC( void );
   TCanvas* MsTTDC( void );
   TCanvas* BC3TDC( void );

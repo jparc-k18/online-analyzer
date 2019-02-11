@@ -69,6 +69,7 @@ public:
     kSpillBySpill,
     kSemiOnline,
     kScalerSheet,
+    kScalerSch,
     nFlag
   };
 

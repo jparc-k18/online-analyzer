@@ -24,14 +24,14 @@
 #include "DetectorID.hh"
 #include "Exception.hh"
 #include "FuncName.hh"
-#include "UserParamMan.hh"
 
 namespace
 {
   using namespace hddaq::unpacker;
   const UnpackerManager& gUnpacker = GUnpacker::get_instance();
   const std::vector<TString> sFlag =
-    { "SeparateComma", "SpillBySpill", "SemiOnline", "ScalerSheet" };
+    { "SeparateComma", "SpillBySpill", "SemiOnline", "ScalerSheet",
+      "ScalerSch" };
 }
 
 //______________________________________________________________________________
@@ -46,7 +46,7 @@ ScalerAnalyzer::ScalerAnalyzer( void )
 {
   for( Int_t i=0; i<MaxColumn; ++i ){
     for( Int_t j=0; j<MaxRow; ++j ){
-      m_info[i][j] = ScalerInfo("n/a", i, j, false );
+      m_info[i][j] = ScalerInfo( "n/a", i, j, false );
     }
   }
 }
@@ -155,6 +155,28 @@ ScalerAnalyzer::Decode( void )
       m_info[p.first][p.second].data = 0;
       for( Int_t i=0; i<NumOfSegBH2; ++i ){
 	m_info[p.first][p.second].data += Get( Form("BH2-%02d", i+1) );
+      }
+    }
+  }
+
+  //////////////////// for SCH SUM
+  {
+    if( Has("SCH-SUM") ){
+      static std::pair<Int_t,Int_t> p = Find("SCH-SUM");
+      m_info[p.first][p.second].data = 0;
+      for( Int_t i=0; i<NumOfSegSCH; ++i ){
+	m_info[p.first][p.second].data += Get( Form("SCH-%02d", i+1) );
+      }
+    }
+  }
+
+  //////////////////// for LAC SUM
+  {
+    if( Has("LAC-SUM") ){
+      static std::pair<Int_t,Int_t> p = Find("LAC-SUM");
+      m_info[p.first][p.second].data = 0;
+      for( Int_t i=0; i<NumOfSegLAC/2; ++i ){
+	m_info[p.first][p.second].data += Get( Form("LAC-%02d", i+1) );
       }
     }
   }
@@ -309,39 +331,40 @@ ScalerAnalyzer::Print( Option_t* ) const
   TString end_mark = m_is_spill_end ? "Spill End" : "";
 
   Int_t event_number = gUnpacker.get_event_number();
-  std::cout << std::left  << std::setw(16) << "RUN"
-	    << std::right << std::setw(16) << SeparateComma( m_run_number ) << " : "
-	    << std::left  << std::setw(16) << "Event Number"
-	    << std::right << std::setw(16) << SeparateComma( event_number ) << " : "
-	    << std::left  << std::setw(16) << ""
-	    << std::right << std::setw(16) << end_mark
-	    << std::endl << std::endl;
-
+  m_ost << std::left  << std::setw(16) << "RUN"
+	<< std::right << std::setw(16) << SeparateComma( m_run_number ) << " : "
+	<< std::left  << std::setw(16) << "Event Number"
+	<< std::right << std::setw(16) << SeparateComma( event_number );
+  m_ost << " : "
+	<< std::left  << std::setw(16) << ""
+	<< std::right << std::setw(16) << end_mark
+	<< std::endl << std::endl;
   for( Int_t i=0; i<MaxRow; ++i ){
     m_ost << std::left  << std::setw(16) << m_info[kLeft][i].name
 	  << std::right << std::setw(16) << SeparateComma( m_info[kLeft][i].data )
 	  << " : "
 	  << std::left  << std::setw(16) << m_info[kCenter][i].name
-	  << std::right << std::setw(16) << SeparateComma( m_info[kCenter][i].data )
-	  << " : "
+	  << std::right << std::setw(16) << SeparateComma( m_info[kCenter][i].data ) << " : "
 	  << std::left  << std::setw(16) << m_info[kRight][i].name
 	  << std::right << std::setw(16) << SeparateComma( m_info[kRight][i].data )
 	  <<std::endl;
   }
-  m_ost << std::endl  << std::setprecision(6) << std::fixed
-	<< std::left  << std::setw(16) << "Beam/TM"
-	<< std::right << std::setw(16) << Fraction("Beam", "TM") << " : "
-	<< std::left  << std::setw(16) << "Live/Real"
-	<< std::right << std::setw(16) << Fraction("Live-Time","Real-Time") << " : "
-	<< std::left  << std::setw(16) << "DAQ-Eff"
-	<< std::right << std::setw(16) << Fraction("L1-Acc","L1-Req") << std::endl
-	<< std::left  << std::setw(16) << "(BH2,K)/Beam"
-	<< std::right << std::setw(16) << Fraction("(BH2,K)", "Beam") << " : "
-	<< std::left  << std::setw(16) << "L2-Eff"
-	<< std::right << std::setw(16) << Fraction("L2-Acc","L1-Acc") << " : "
-	<< std::left  << std::setw(16) << "Duty-Factor"
-	<< std::right << std::setw(16) << Duty() << std::endl
-	<< std::endl;
+  if( !GetFlag( kScalerSch ) ){
+    m_ost << std::endl  << std::setprecision(6) << std::fixed
+	  << std::left  << std::setw(16) << "Beam/TM"
+	  << std::right << std::setw(16) << Fraction("Beam", "TM") << " : "
+	  << std::left  << std::setw(16) << "Live/Real"
+	  << std::right << std::setw(16) << Fraction("Live-Time","Real-Time") << " : "
+	  << std::left  << std::setw(16) << "DAQ-Eff"
+	  << std::right << std::setw(16) << Fraction("L1-Acc","L1-Req") << std::endl
+	  << std::left  << std::setw(16) << "(BH2,K)/Beam"
+	  << std::right << std::setw(16) << Fraction("(BH2,K)", "Beam") << " : "
+	  << std::left  << std::setw(16) << "L2-Eff"
+	  << std::right << std::setw(16) << Fraction("L2-Acc","L1-Acc") << " : "
+	  << std::left  << std::setw(16) << "Duty-Factor"
+	  << std::right << std::setw(16) << Duty() << std::endl
+	  << std::endl;
+  }
 }
 
 //______________________________________________________________________________
@@ -403,7 +426,7 @@ ScalerAnalyzer::PrintScalerSheet( void )
   DrawOneLine( "Clock", SeparateComma( Get("10M-Clock") ),
 	       "#pi-Beam", SeparateComma( Get("pi-Beam") ),
 	       "KURAMA", "[T]" );
-  DrawOneLine( "IM", SeparateComma( Get("IM") ),
+  DrawOneLine( "LAC", SeparateComma( Get("LAC") ),
 	       "p-Beam", SeparateComma( Get("p-Beam") ),
 	       "Delay", "[s]" );
   DrawOneLine( "TM", SeparateComma( Get("TM") ),
@@ -432,7 +455,7 @@ ScalerAnalyzer::PrintScalerSheet( void )
   m_canvas->Print( scaler_sheet_pdf );
 
   const TString& print_command("lpr "+scaler_sheet_pdf);
-  gSystem->Exec( print_command );
+  //gSystem->Exec( print_command );
 }
 
 //______________________________________________________________________________

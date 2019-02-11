@@ -70,6 +70,7 @@ public:
     kSemiOnline,
     kScalerSheet,
     kScalerSch,
+    kScalerDaq,
     nFlag
   };
 

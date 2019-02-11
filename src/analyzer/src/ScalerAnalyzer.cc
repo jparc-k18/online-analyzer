@@ -31,7 +31,7 @@ namespace
   const UnpackerManager& gUnpacker = GUnpacker::get_instance();
   const std::vector<TString> sFlag =
     { "SeparateComma", "SpillBySpill", "SemiOnline", "ScalerSheet",
-      "ScalerSch" };
+      "ScalerSch", "ScalerDaq" };
 }
 
 //______________________________________________________________________________
@@ -331,39 +331,64 @@ ScalerAnalyzer::Print( Option_t* ) const
   TString end_mark = m_is_spill_end ? "Spill End" : "";
 
   Int_t event_number = gUnpacker.get_event_number();
-  m_ost << std::left  << std::setw(16) << "RUN"
-	<< std::right << std::setw(16) << SeparateComma( m_run_number ) << " : "
-	<< std::left  << std::setw(16) << "Event Number"
-	<< std::right << std::setw(16) << SeparateComma( event_number );
-  m_ost << " : "
-	<< std::left  << std::setw(16) << ""
-	<< std::right << std::setw(16) << end_mark
-	<< std::endl << std::endl;
-  for( Int_t i=0; i<MaxRow; ++i ){
-    m_ost << std::left  << std::setw(16) << m_info[kLeft][i].name
-	  << std::right << std::setw(16) << SeparateComma( m_info[kLeft][i].data )
-	  << " : "
-	  << std::left  << std::setw(16) << m_info[kCenter][i].name
-	  << std::right << std::setw(16) << SeparateComma( m_info[kCenter][i].data ) << " : "
-	  << std::left  << std::setw(16) << m_info[kRight][i].name
-	  << std::right << std::setw(16) << SeparateComma( m_info[kRight][i].data )
-	  <<std::endl;
-  }
-  if( !GetFlag( kScalerSch ) ){
+  if( GetFlag( kScalerDaq ) ){
+    m_ost << std::left  << std::setw(16) << "RUN"
+	  << std::right << std::setw(16) << SeparateComma( m_run_number ) << std::endl
+	  << std::left  << std::setw(16) << "Event Number"
+	  << std::right << std::setw(16) << SeparateComma( event_number ) << std::endl
+	  << std::left  << std::setw(16) << ""
+	  << std::right << std::setw(16) << end_mark << std::endl;
+    for( Int_t i=0; i<MaxRow; ++i ){
+      if( !m_info[kLeft][i].name.Contains("n/a") ){
+	m_ost << std::left  << std::setw(16) << m_info[kLeft][i].name
+	      << std::right << std::setw(16) << SeparateComma( m_info[kLeft][i].data )
+	      << std::endl;
+      }
+    }
     m_ost << std::endl  << std::setprecision(6) << std::fixed
-	  << std::left  << std::setw(16) << "Beam/TM"
-	  << std::right << std::setw(16) << Fraction("Beam", "TM") << " : "
 	  << std::left  << std::setw(16) << "Live/Real"
-	  << std::right << std::setw(16) << Fraction("Live-Time","Real-Time") << " : "
+	  << std::right << std::setw(16) << Fraction("Live-Time","Real-Time") << std::endl
 	  << std::left  << std::setw(16) << "DAQ-Eff"
 	  << std::right << std::setw(16) << Fraction("L1-Acc","L1-Req") << std::endl
-	  << std::left  << std::setw(16) << "(BH2,K)/Beam"
-	  << std::right << std::setw(16) << Fraction("(BH2,K)", "Beam") << " : "
 	  << std::left  << std::setw(16) << "L2-Eff"
-	  << std::right << std::setw(16) << Fraction("L2-Acc","L1-Acc") << " : "
+	  << std::right << std::setw(16) << Fraction("L2-Acc","L1-Acc") << std::endl
 	  << std::left  << std::setw(16) << "Duty-Factor"
-	  << std::right << std::setw(16) << Duty() << std::endl
-	  << std::endl;
+	  << std::right << std::setw(16) << Duty() << std::endl;
+  } else {
+    m_ost << std::left  << std::setw(16) << "RUN"
+	  << std::right << std::setw(16) << SeparateComma( m_run_number ) << " : "
+	  << std::left  << std::setw(16) << "Event Number"
+	  << std::right << std::setw(16) << SeparateComma( event_number );
+    m_ost << " : "
+	  << std::left  << std::setw(16) << ""
+	  << std::right << std::setw(16) << end_mark
+	  << std::endl << std::endl;
+    for( Int_t i=0; i<MaxRow; ++i ){
+      m_ost << std::left  << std::setw(16) << m_info[kLeft][i].name
+	    << std::right << std::setw(16) << SeparateComma( m_info[kLeft][i].data )
+	    << " : "
+	    << std::left  << std::setw(16) << m_info[kCenter][i].name
+	    << std::right << std::setw(16) << SeparateComma( m_info[kCenter][i].data ) << " : "
+	    << std::left  << std::setw(16) << m_info[kRight][i].name
+	    << std::right << std::setw(16) << SeparateComma( m_info[kRight][i].data )
+	    <<std::endl;
+    }
+    if( !GetFlag( kScalerSch ) ){
+      m_ost << std::endl  << std::setprecision(6) << std::fixed
+	    << std::left  << std::setw(16) << "Beam/TM"
+	    << std::right << std::setw(16) << Fraction("Beam", "TM") << " : "
+	    << std::left  << std::setw(16) << "Live/Real"
+	    << std::right << std::setw(16) << Fraction("Live-Time","Real-Time") << " : "
+	    << std::left  << std::setw(16) << "DAQ-Eff"
+	    << std::right << std::setw(16) << Fraction("L1-Acc","L1-Req") << std::endl
+	    << std::left  << std::setw(16) << "(BH2,K)/Beam"
+	    << std::right << std::setw(16) << Fraction("(BH2,K)", "Beam") << " : "
+	    << std::left  << std::setw(16) << "L2-Eff"
+	    << std::right << std::setw(16) << Fraction("L2-Acc","L1-Acc") << " : "
+	    << std::left  << std::setw(16) << "Duty-Factor"
+	    << std::right << std::setw(16) << Duty() << std::endl
+	    << std::endl;
+    }
   }
 }
 
@@ -455,7 +480,7 @@ ScalerAnalyzer::PrintScalerSheet( void )
   m_canvas->Print( scaler_sheet_pdf );
 
   const TString& print_command("lpr "+scaler_sheet_pdf);
-  //gSystem->Exec( print_command );
+  gSystem->Exec( print_command );
 }
 
 //______________________________________________________________________________

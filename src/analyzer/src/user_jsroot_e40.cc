@@ -228,13 +228,13 @@ process_event( void )
     run_number = gUnpacker.get_root()->get_run_number();
   }
 
-  // EventAnalyzer event;
-  // event.DecodeRawData();
-  // event.DecodeHodoAnalyzer();
-  // event.DecodeDCAnalyzer();
+  EventAnalyzer event;
+  event.DecodeRawData();
+  event.DecodeHodoAnalyzer();
+  event.DecodeDCAnalyzer();
 
   // const RawData*      const rawData = event.GetRawData();
-  // const HodoAnalyzer* const hodoAna = event.GetHodoAnalyzer();
+  const HodoAnalyzer* const hodoAna = event.GetHodoAnalyzer();
   // const DCAnalyzer*   const DCAna   = event.GetDCAnalyzer();
 
   // TriggerFlag ---------------------------------------------------
@@ -550,7 +550,7 @@ process_event( void )
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-  /*
+
   // BFT
   {
     // TDC gate range
@@ -572,41 +572,42 @@ process_event( void )
 
     int multiplicity  = 0; // includes both u and d planes.
     int cmultiplicity = 0; // includes both u and d planes.
-
-    Int_t nh = hodoAna->GetNHitsBFT();
-    for( Int_t i=0; i<nh; ++i ){
-      const FiberHit* const hit = hodoAna->GetHitBFT(i);
-      if( !hit ) continue;
-      Int_t plane = hit->PlaneId();
-      Int_t mhit  = hit->GetNumOfHit();
-      Int_t seg   = hit->SegmentId();
-      Int_t prev = 0;
-      for( Int_t m=0; m<mhit; ++m ){
-	Int_t leading  = hit->GetLeading(m);
-	Int_t tot      = hit->GetWidth(m);
-	hptr_array[bft_t_id +plane]->Fill( leading );
-	hptr_array[bft_tot_id +plane]->Fill(tot);
-	if( tdc_min < leading && leading < tdc_max ){
-	  ++multiplicity;
-	  hptr_array[bft_hit_id +plane]->Fill(seg);
-	}
-	if( prev == leading ) continue;
-	prev = leading;
-	if( tot==0 ) continue;
-	hptr_array[bft_ct_id +plane]->Fill(leading);
-	hptr_array[bft_ctot_id +plane]->Fill(tot);
-	hptr_array[bft_ct_2d_id +plane]->Fill(seg, leading);
-	hptr_array[bft_ctot_2d_id +plane]->Fill(seg, tot);
-	if( tdc_min < leading && leading < tdc_max ){
-	  ++cmultiplicity;
-	  hptr_array[bft_chit_id +plane]->Fill(seg);
+    for( Int_t l=0; l<NumOfPlaneBFT; ++l ){
+      Int_t nh = hodoAna->GetNHitsBFT(l);
+      enum { U, D };
+      for( Int_t i=0; i<nh; ++i ){
+	const FiberHit* const hit = hodoAna->GetHitBFT(l, i);
+	if( !hit ) continue;
+	Int_t mhit  = hit->GetNumOfHit();
+	Int_t seg   = hit->SegmentId();
+	Int_t prev = 0;
+	for( Int_t m=0; m<mhit; ++m ){
+	  Int_t leading  = hit->GetLeading(m);
+	  Int_t tot      = hit->GetWidth(m);
+	  hptr_array[bft_t_id +l]->Fill( leading );
+	  hptr_array[bft_tot_id +l]->Fill(tot);
+	  if( tdc_min < leading && leading < tdc_max ){
+	    ++multiplicity;
+	    hptr_array[bft_hit_id +l]->Fill(seg);
+	  }
+	  if( prev == leading ) continue;
+	  prev = leading;
+	  if( tot==0 ) continue;
+	  hptr_array[bft_ct_id +l]->Fill(leading);
+	  hptr_array[bft_ctot_id +l]->Fill(tot);
+	  hptr_array[bft_ct_2d_id +l]->Fill(seg, leading);
+	  hptr_array[bft_ctot_2d_id +l]->Fill(seg, tot);
+	  if( tdc_min < leading && leading < tdc_max ){
+	    ++cmultiplicity;
+	    hptr_array[bft_chit_id +l]->Fill(seg);
+	  }
 	}
       }
     }
     hptr_array[bft_mul_id]->Fill(multiplicity);
     hptr_array[bft_cmul_id]->Fill(cmultiplicity);
   }
-  */
+
   // BC3 -------------------------------------------------------------
   {
     // data type

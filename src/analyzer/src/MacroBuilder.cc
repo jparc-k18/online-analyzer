@@ -1991,7 +1991,10 @@ UpdateBcOutEfficiency( void )
   for( Int_t i=0, n=name.size(); i<n; ++i ){
     c1->cd(i+1);
     TH1 *h = (TH1*)gPad->FindObject(name[i]+"_wTDC");
-    if( !h ) continue;
+    if( !h ){
+      std::cerr << "#W no such TH1: " << name[i] << std::endl;
+      continue;
+    }
     Double_t zero = h->GetBinContent(1);
     Double_t all  = h->GetEntries();
     Double_t eff  = 1. - zero/all;
@@ -1999,8 +2002,7 @@ UpdateBcOutEfficiency( void )
     tex[i] = new TText;
     tex[i]->SetNDC();
     tex[i]->SetTextSize(0.130);
-    tex[i]->SetText(0.400,0.600,Form("eff. %.3f",
-				     eff));
+    tex[i]->SetText(0.400,0.600,Form("eff. %.3f", eff));
     tex[i]->Draw();
   }
 }
@@ -2011,7 +2013,7 @@ UpdateSdcInOutEfficiency( void )
 {
   static TCanvas *c1 = (TCanvas*)gROOT->FindObject("SdcInOutEfficiency");
   static std::vector<TString> name = {
-    "SDC1_Multi_v0", "SDC1_Multi_v1", "SDC1_Multi_x0", "SDC1_Multi_x1", "SDC1_Multi_u0", "SDC1_Multi_u1",
+    "SDC1_Multi_x0", "SDC1_Multi_x1", "SDC1_Multi_v0", "SDC1_Multi_v1", "SDC1_Multi_u0", "SDC1_Multi_u1",
     "SDC2_Multi_x0", "SDC2_Multi_x1", "SDC2_Multi_y0", "SDC2_Multi_y1",
     "SDC3_Multi_y0", "SDC3_Multi_y1", "SDC3_Multi_x0", "SDC3_Multi_x1"
   };
@@ -2023,7 +2025,10 @@ UpdateSdcInOutEfficiency( void )
     else
       c1->cd(2)->cd(i+1-NumOfLayersSDC1);
     TH1 *h = (TH1*)gPad->FindObject(name[i]+"_wTDC");
-    if( !h ) continue;
+    if( !h ){
+      std::cerr << "#W no such TH1: " << name[i] << std::endl;
+      continue;
+    }
     Double_t zero = h->GetBinContent(1);
     Double_t all  = h->GetEntries();
     Double_t eff  = 1. - zero/all;

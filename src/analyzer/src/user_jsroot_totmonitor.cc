@@ -209,7 +209,7 @@ process_event( void )
   // Spill Increment
   static Int_t spill = 0;
   static Int_t spill_inc = 0;
-  static const Int_t nspill = 10;
+  static const Int_t nspill = 50;
   {
     static const Int_t module_id  =  0;
     static const Int_t channel_id = 50;

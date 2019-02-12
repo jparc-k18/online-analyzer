@@ -85,7 +85,7 @@ process_begin( const std::vector<std::string>& argv )
   for( Int_t i=0; i<NumOfSegLAC; ++i ){
     Int_t ch = ( i != 2 ) ? 32 + i : 47;
     if( i > 15 ) ch = -1;
-    std::cout << i << " " << ch << std::endl;
+    // std::cout << i << " " << ch << std::endl;
     gScaler.Set( ScalerAnalyzer::kRight, i,
     		 ScalerInfo( Form("LAC-%02d", i + 1), 1, ch ) );
   }

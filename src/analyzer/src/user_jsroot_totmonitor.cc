@@ -8,6 +8,7 @@
 
 #include <TAxis.h>
 #include <TCanvas.h>
+#include <TF1.h>
 #include <TGFileBrowser.h>
 #include <TH1.h>
 #include <TH2.h>
@@ -92,7 +93,13 @@ namespace analyzer
     Double_t
     GetTOT( TH1* h )
     {
-      return h->GetBinCenter(h->GetMaximumBin());
+      TCanvas c;
+      c.cd();
+      TF1 f("f", "gaus", -10., 100.);
+      Double_t p = h->GetBinCenter(h->GetMaximumBin());
+      Double_t w = 10.;
+      h->Fit("f", "Q", "", p-w, p+w );
+      return f.GetParameter(1);
     }
   }
 

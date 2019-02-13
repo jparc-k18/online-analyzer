@@ -131,7 +131,7 @@ process_begin( const std::vector<std::string>& argv )
 
   // TOT Monitor
   {
-    leg_tot = new TLegend( legX, legY, legX+legW+0.2, legY+legH );
+    leg_tot = new TLegend( legX, legY, legX+legW+0.1, legY+legH+0.3 );
     leg_tot->SetTextSize(0.05);
     leg_tot->SetFillColor(0);
     leg_tot->SetBorderSize(4);
@@ -150,7 +150,7 @@ process_begin( const std::vector<std::string>& argv )
       g_tot[i]->SetPoint(0,0,0);
       leg_tot->AddEntry( g_tot[i], sTOT[i], "P" );
     }
-    leg_tot->SetNColumns(4);
+    leg_tot->SetNColumns(2);
     leg_tot->Draw();
   }
 
@@ -209,7 +209,7 @@ process_event( void )
   // Spill Increment
   static Int_t spill = 0;
   static Int_t spill_inc = 0;
-  static const Int_t nspill = 50;
+  static const Int_t nspill = 100;
   {
     static const Int_t module_id  =  0;
     static const Int_t channel_id = 50;
@@ -488,7 +488,7 @@ process_event( void )
 	// std::cout << sTOT[i] << " " << val_pre[i] << std::endl;
 	if( val_pre[i] > 200 ) val_pre[i] *= 0.05;
 	g_tot[i]->SetPoint(spill, spill, val_pre[i]);
-	g_tot[i]->GetYaxis()->SetRangeUser(0, 100);
+	g_tot[i]->GetYaxis()->SetRangeUser(30, 80);
 	g_tot[i]->GetXaxis()->SetLimits(spill-90, spill+10);
       }
       // Double_t kpi_ratio = beam_pre[kKbeam]/beam_pre[kPibeam];

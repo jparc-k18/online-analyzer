@@ -138,8 +138,9 @@ process_begin( const std::vector<std::string>& argv )
     gScaler.Set( c, r++, ScalerInfo( "PiID",           1, 59 ) );
     gScaler.Set( c, r++, ScalerInfo( "pi-Scat",        1, 60 ) );
     gScaler.Set( c, r++, ScalerInfo( "p-Scat",         1, 61 ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH1-SUM",        -1, -1 ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-SUM",        -1, -1 ) );
+    gScaler.Set( c, r++, ScalerInfo( "BH1-SUM",       -1, -1 ) );
+    gScaler.Set( c, r++, ScalerInfo( "BH2-SUM",       -1, -1 ) );
+    // gScaler.Set( c, r++, ScalerInfo( "SCH-SUM",       -1, -1 ) );
   }
 
   {

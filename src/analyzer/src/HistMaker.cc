@@ -4552,12 +4552,13 @@ TList* HistMaker::createMsT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kMsT, 0, kTDC, 0);
     for(Int_t seg=0; seg<NumOfSegTOF; ++seg){
       sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d", nameDetector, seg+1),
-			     50000, 0, 2000000,
+			     10000, 0, 400000,
 			     "TDC", ""));
     }
     top_dir->Add(sub_dir);
   }
 
+#if 0
   // HR-TDC (accept) ---------------------------------------------------------
   {
     TList *sub_dir = new TList;
@@ -4570,6 +4571,7 @@ TList* HistMaker::createMsT( Bool_t flag_ps )
     }
     top_dir->Add(sub_dir);
   }
+#endif
 
   // LR-TDC ---------------------------------------------------------
   {
@@ -4588,7 +4590,7 @@ TList* HistMaker::createMsT( Bool_t flag_ps )
   {
     Int_t target_id = getUniqueID(kMsT, 0, kTDC2D, 0);
     top_dir->Add(createTH2(++target_id, Form("%s_TOF_TDC_2D", nameDetector),
-			   NumOfSegTOF, 0, NumOfSegTOF, 50000, 0, 2000000,
+			   NumOfSegTOF, 0, NumOfSegTOF, 10000, 0, 400000,
 			   "Segment", ""));
   }
 

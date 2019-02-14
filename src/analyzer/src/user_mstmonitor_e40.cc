@@ -79,7 +79,7 @@ process_begin(const std::vector<std::string>& argv)
   // mst-tof ________________________________________
   const int mst_tof_id = gHist.getSequentialID( kMsT, 0, kTDC);
   for(int i = 0; i<n_ch_tof; ++i){
-    hptr_array[mst_tof_id + i]->Rebin(10);
+    hptr_array[mst_tof_id + i]->Rebin(5);
   }// for(i)
 
   return 0;

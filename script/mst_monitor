@@ -44,7 +44,7 @@ if [ ! -f $conf_file ]; then
 fi
 
 if [ $# = 0 ]; then
-    $exe_file $conf_file ${ebhost}:$port $result_dir $reference_no
+    $exe_file $conf_file ${ebhost}:$port $result_dir $reference_no $1
     exit
 fi
 

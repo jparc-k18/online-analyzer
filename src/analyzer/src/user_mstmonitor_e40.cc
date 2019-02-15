@@ -32,8 +32,20 @@ namespace analyzer
     const int n_ch_tof = 24;
     std::vector<TH1*> hptr_array;
 
+#if 0
     const int n_ref = 4;
-    const int ref_seg[n_ref] = {5, 13, 17, 21};
+    const int ref_seg[n_ref] = {
+      5, 13, 17, 21
+    };
+#endif
+
+    const int n_ref = 24;
+    const int ref_seg[n_ref] = {
+      1, 2, 3, 4, 5, 6, 7, 8,
+      9, 10, 11, 12, 13, 14, 15, 16,
+      17, 18, 19, 20, 21, 22, 23, 24
+    };
+
     TH1* ref_hist[n_ref];
     std::string out_pdf = "";
   }
@@ -91,6 +103,7 @@ process_end()
 {
   HistMaker& gHist = HistMaker::getInstance();
 
+#if 0
   const int tgt_seg_id[] =
     {
       gHist.getSequentialID(kMsT, 0, kTDC, ref_seg[0]),
@@ -99,7 +112,7 @@ process_end()
       gHist.getSequentialID(kMsT, 0, kTDC, ref_seg[3])
     };
 
-  TCanvas *c1 = new TCanvas("c1", "c1", 1200, 800);
+  TCanvas *c1 = new TCanvas("c1", "c1", 1200, 2400);
   c1->Divide(2,2);
   for(int i = 0; i<n_ref; ++i){
     c1->cd(i+1);
@@ -113,6 +126,31 @@ process_end()
   }// for(i)
 
   c1->Print(out_pdf.c_str());
+#endif
+
+  int n_canvas = 3;
+  int n_hist   = 8;
+  int base_id = gHist.getSequentialID(kMsT, 0, kTDC, 1);
+  for(int c = 0; c<n_canvas; ++c){
+    TCanvas *c1 = new TCanvas(Form("c%d",c+1), Form("c%d", c+1), 1200, 2400);
+    c1->Divide(2,4);
+    for(int i = 0; i<n_hist; ++i){
+      c1->cd(i+1);
+      double scale = hptr_array[base_id + n_hist*c + i]->GetEntries()/ref_hist[n_hist*c + i]->GetEntries();
+      ref_hist[n_hist*c + i]->GetXaxis()->SetRangeUser(180*1000, 220*1000);
+      ref_hist[n_hist*c + i]->SetLineColor(2);
+      ref_hist[n_hist*c + i]->Scale(scale);
+      ref_hist[n_hist*c + i]->Draw("HIST");
+
+      hptr_array[base_id + n_hist*c + i]->Draw("same");
+    }
+
+    std::string out_path = out_pdf;
+    if(c==0) out_path += "(";
+    if(c==2) out_path += ")";
+    c1->Print(out_path.c_str());
+  }
+
 
   return 0;
 }

@@ -336,7 +336,7 @@ void PsMaker::create(TString& name)
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     base_id = HistMaker::getUniqueID(kCFT, 0, kTDC2D ,1);
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
-    drawOneCanvas(id_list, par_list, false, false, "colz");
+    drawOneCanvas(id_list, par_list, false, true, "colz");
 
     // TOT
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
@@ -502,11 +502,11 @@ void PsMaker::create(TString& name)
     par_list[kXdiv] = 4; par_list[kYdiv] = 3;
     base_id = HistMaker::getUniqueID(kBGO, 0, kFADC);
     for(int i = 0; i<12; ++i){id_list.push_back(base_id + i);}
-    drawOneCanvas(id_list, par_list, false, false, "colz");
+    drawOneCanvas(id_list, par_list, false, true, "colz");
     // FADC  13-24
     par_list[kXdiv] = 4; par_list[kYdiv] = 3;
     for(int i = 0; i<12; ++i){id_list.push_back(base_id + i + 12);}
-    drawOneCanvas(id_list, par_list, false, false, "colz");
+    drawOneCanvas(id_list, par_list, false, true, "colz");
 
     // TDC  1-12
     par_list[kXdiv] = 4; par_list[kYdiv] = 3;
@@ -1762,11 +1762,6 @@ void PsMaker::drawOneCanvas(std::vector<int>& id_list,
   for(int i = 0; i<(int)id_list.size(); ++i){
     if(id_list[i]==-1) continue;
     cps_->cd(i + 1)->SetGrid();
-    if(flag_log){
-      // log scale flag
-      cps_->GetPad(i + 1)->SetLogy(1);
-    }
-
     TH1* h = GHist::get(id_list[i]);
     if(!h){
       std::cerr << "#E: " << MyName << MyFunc
@@ -1784,6 +1779,13 @@ void PsMaker::drawOneCanvas(std::vector<int>& id_list,
     // Rebin
     TString hclass = h->ClassName();
     TString hname  = Form("hclone_%d", id_list[i]);
+    if( flag_log ){
+      // log scale flag
+      if( hclass.Contains("TH1") )
+	gPad->SetLogy(1);
+      if( hclass.Contains("TH2") )
+	gPad->SetLogz(1);
+    }
     if( hclass.Contains("TH2") &&
 	h->GetNbinsX() * h->GetNbinsY() > 200000 ){
       if( gROOT->FindObject(hname) )

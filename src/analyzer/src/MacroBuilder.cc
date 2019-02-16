@@ -2015,7 +2015,7 @@ UpdateSdcInOutEfficiency( void )
 {
   static TCanvas *c1 = (TCanvas*)gROOT->FindObject("SdcInOutEfficiency");
   static std::vector<TString> name = {
-    "SDC1_Multi_x0", "SDC1_Multi_x1", "SDC1_Multi_v0", "SDC1_Multi_v1", "SDC1_Multi_u0", "SDC1_Multi_u1",
+    "SDC1_Multi_v0", "SDC1_Multi_v1", "SDC1_Multi_x0", "SDC1_Multi_x1", "SDC1_Multi_u0", "SDC1_Multi_u1",
     "SDC2_Multi_x0", "SDC2_Multi_x1", "SDC2_Multi_y0", "SDC2_Multi_y1",
     "SDC3_Multi_y0", "SDC3_Multi_y1", "SDC3_Multi_x0", "SDC3_Multi_x1"
   };

@@ -476,6 +476,23 @@ void PsMaker::create(TString& name)
     id_list.push_back(HistMaker::getUniqueID(kCFT, 0, kMulti, 20));
     drawOneCanvas(id_list, par_list, false, false);
 
+    // Cluster HighGain 2D
+    par_list[kXdiv] = 4; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kCFT, kCluster, kHighGain, 10);
+    for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id +i+1);}
+    drawOneCanvas(id_list, par_list, false, false, "colz");
+
+    // Cluster LowGain 2D
+    par_list[kXdiv] = 4; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kCFT, kCluster, kLowGain, 10);
+    for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id +i+1);}
+    drawOneCanvas(id_list, par_list, false, false, "colz");
+
+    // Cluster TDC 2D
+    par_list[kXdiv] = 4; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kCFT, kCluster, kTDC2D, 0);
+    for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id +i+1);}
+    drawOneCanvas(id_list, par_list, false, false, "colz");
   }
 
   // BGO ----------------------------------------------------------------

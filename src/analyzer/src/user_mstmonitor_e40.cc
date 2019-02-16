@@ -48,6 +48,9 @@ namespace analyzer
 
     TH1* ref_hist[n_ref];
     std::string out_pdf = "";
+
+    const double mst_tdc_min = 180*1000;
+    const double mst_tdc_max = 220*1000;
   }
 
 //____________________________________________________________________________
@@ -80,7 +83,7 @@ process_begin(const std::vector<std::string>& argv)
   new TFile(out_file.c_str(),"recreate");
 
   // pdf
-  out_pdf = result_dir + "/pdf/run" + runno + ".pdf";
+  out_pdf = result_dir + "/pdf/run" + runno + "_ref" + ref_runno + ".pdf";
 
   // HistMaker
   HistMaker& gHist = HistMaker::getInstance();
@@ -137,7 +140,7 @@ process_end()
     for(int i = 0; i<n_hist; ++i){
       c1->cd(i+1);
       double scale = hptr_array[base_id + n_hist*c + i]->GetEntries()/ref_hist[n_hist*c + i]->GetEntries();
-      ref_hist[n_hist*c + i]->GetXaxis()->SetRangeUser(180*1000, 220*1000);
+      ref_hist[n_hist*c + i]->GetXaxis()->SetRangeUser(mst_tdc_min, mst_tdc_max);
       ref_hist[n_hist*c + i]->SetLineColor(2);
       ref_hist[n_hist*c + i]->Scale(scale);
       ref_hist[n_hist*c + i]->Draw("HIST");
@@ -164,8 +167,8 @@ process_event()
 
   // trigger flag
   bool pipi_flag = false;
-  const int tdc_min = 900;
-  const int tdc_max = 1000;
+  const int tflag_tdc_min = 900;
+  const int tflag_tdc_max = 1000;
   {
     static const int k_device = gUnpacker.get_device_id("TFlag");
     static const int k_tdc    = gUnpacker.get_data_id("TFlag", "tdc");
@@ -173,7 +176,7 @@ process_event()
     int nhit = gUnpacker.get_entries( k_device, 0, trigger::kBeamPiPS, 0, k_tdc );
     for(int m = 0; m<nhit; ++m){
       int tdc = gUnpacker.get( k_device, 0, trigger::kBeamPiPS, 0, k_tdc, m );
-      if(tdc_min < tdc && tdc < tdc_max) pipi_flag = true;
+      if(tflag_tdc_min < tdc && tdc < tflag_tdc_max) pipi_flag = true;
     }// for(m)
   }
 
@@ -192,7 +195,7 @@ process_event()
       int nhit = gUnpacker.get_entries( k_device, k_tof, i, 0, k_tdc );
       for(int m = 0; m<nhit; ++m){
 	int tdc = gUnpacker.get( k_device, k_tof, i, 0, k_tdc, m );
-	hptr_array[mst_tof_id + i]->Fill(tdc);
+	if(mst_tdc_min < tdc && tdc < mst_tdc_max) hptr_array[mst_tof_id + i]->Fill(tdc);
       }// for(m)
     }// for(i)
   }

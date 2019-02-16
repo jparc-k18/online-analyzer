@@ -21,6 +21,7 @@ void dispBGO()
       if( !h ) continue;
       h->GetXaxis()->SetRangeUser( 80, 200 );
       h->Draw("colz");
+      gPad->SetLogz();
     }
     c->Update();
   }
@@ -37,6 +38,7 @@ void dispBGO()
       if( !h ) continue;
       h->GetXaxis()->SetRangeUser( 80, 200 );
       h->Draw("colz");
+      gPad->SetLogz();
     }
     c->Update();
   }

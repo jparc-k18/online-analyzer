@@ -5946,9 +5946,9 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
 			      "ADC [ch]", ""));
     }
 
-  // ADC HighGain Cut -------------------------------------------
-      target_id = getUniqueID(kCFT, 0, kHighGain, 20);
-      sub_name = "CHighGain";
+    // ADC HighGain Cut -------------------------------------------
+    target_id = getUniqueID(kCFT, 0, kHighGain, 20);
+    sub_name = "CHighGain";
     // Add to the top directory
     for(Int_t i=0; i<NumOfLayersCFT; ++i){
       const char* title = NULL;
@@ -5957,6 +5957,7 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
 			      4096, 0, 4096,
 			      "ADC [ch]", ""));
     }
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -6228,15 +6229,27 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
-  //cluster ADC-2D HighGain -----------------------------------------------
+  //cluster ADC HighGain -----------------------------------------------
   {
     TString strSubDir  = CONV_STRING(kCluster_hgadc);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    Int_t target_id = getUniqueID(kCFT, kCluster, kHighGain, 10);
-    const char* sub_name = "seg-MaxHG";
+    // ADC Cluster HighGain -------------------------------------------
+    Int_t target_id = getUniqueID(kCFT, kCluster, kHighGain, 0);
+    const char* sub_name = "ClusterHighGain";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      4096, 0, 4096,
+			      "ADC [ch]", ""));
+    }
+
+    target_id = getUniqueID(kCFT, kCluster, kHighGain, 10);
+    sub_name = "seg-MaxHG";
     // Add to the top directory
     for(Int_t i=0; i<NumOfPlaneCFT; ++i){
       const char* title = NULL;
@@ -6249,15 +6262,27 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
-  //cluster ADC-2D LowGain -----------------------------------------------
+  //cluster ADC LowGain -----------------------------------------------
   {
     TString strSubDir  = CONV_STRING(kCluster_lgadc);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    Int_t target_id = getUniqueID(kCFT, kCluster, kLowGain, 10);
-    const char* sub_name = "seg-MaxLG";
+    // ADC Cluster LowGain -------------------------------------------
+    Int_t target_id = getUniqueID(kCFT, kCluster, kLowGain, 0);
+    const char* sub_name = "ClusterLowGain";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      4096, 0, 4096,
+			      "ADC [ch]", ""));
+    }
+
+    target_id = getUniqueID(kCFT, kCluster, kLowGain, 10);
+    sub_name = "seg-MaxLG";
     // Add to the top directory
     for(Int_t i=0; i<NumOfPlaneCFT; ++i){
       const char* title = NULL;
@@ -6270,15 +6295,26 @@ TList* HistMaker::createCFT( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
-  //cluster TDC-2D -----------------------------------------------
+  //cluster TDC -----------------------------------------------
   {
     TString strSubDir  = CONV_STRING(kCluster_tdc);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    Int_t target_id = getUniqueID(kCFT, kCluster, kTDC2D, 0);
-    const char* sub_name = "seg-TDC maxseg";
+    Int_t target_id = getUniqueID(kCFT, kCluster, kTDC, 0);
+    const char* sub_name = "ClusterTDC";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfLayersCFT; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%s", nameDetector, sub_name, name_Layer[i] );
+      sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+			      1024, 0, 1024,
+			      "TDC [ch]", ""));
+    }
+
+    target_id = getUniqueID(kCFT, kCluster, kTDC2D, 0);
+    sub_name = "seg-TDC maxseg";
     // Add to the top directory
     for(Int_t i=0; i<NumOfPlaneCFT; ++i){
       const char* title = NULL;

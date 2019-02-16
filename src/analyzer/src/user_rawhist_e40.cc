@@ -1046,8 +1046,10 @@ process_event( void )
     // sequential id
     static const int sch_t_id    = gHist.getSequentialID(kSCH, 0, kTDC,      1);
     static const int sch_tot_id  = gHist.getSequentialID(kSCH, 0, kADC,      1);
-    static const int sch_t_all_id   = gHist.getSequentialID(kSCH, 0, kTDC, NumOfSegSCH+1);
-    static const int sch_tot_all_id = gHist.getSequentialID(kSCH, 0, kADC, NumOfSegSCH+1);
+    static const int sch_t_1to16_id    = gHist.getSequentialID(kSCH, 0, kTDC, kSCH_1to16_Offset);
+    static const int sch_t_17to64_id   = gHist.getSequentialID(kSCH, 0, kTDC, kSCH_17to64_Offset);
+    static const int sch_tot_1to16_id  = gHist.getSequentialID(kSCH, 0, kADC, kSCH_1to16_Offset);
+    static const int sch_tot_17to64_id = gHist.getSequentialID(kSCH, 0, kADC, kSCH_17to64_Offset);
     static const int sch_hit_id  = gHist.getSequentialID(kSCH, 0, kHitPat,   1);
     static const int sch_mul_id  = gHist.getSequentialID(kSCH, 0, kMulti,    1);
 
@@ -1064,9 +1066,11 @@ process_event( void )
 	int trailing = gUnpacker.get(k_device, 0, i, 0, k_trailing, m);
 	int tot      = tdc - trailing;
 	hptr_array[sch_t_id +i]->Fill(tdc);
-	hptr_array[sch_t_all_id]->Fill(tdc);
+	if(i < 16)  hptr_array[sch_t_1to16_id]->Fill(tdc);
+	if(i >= 16) hptr_array[sch_t_17to64_id]->Fill(tdc);
 	hptr_array[sch_tot_id +i]->Fill(tot);
-	hptr_array[sch_tot_all_id]->Fill(tot);
+	if(i < 16)  hptr_array[sch_tot_1to16_id]->Fill(tot);
+	if(i >= 16) hptr_array[sch_tot_17to64_id]->Fill(tot);
 	hptr_array[sch_t_2d_id]->Fill(i, tdc);
 	hptr_array[sch_tot_2d_id]->Fill(i, tot);
 	if( tdc_min<tdc && tdc<tdc_max ) flag_t = true;

@@ -27,7 +27,8 @@ data_dir=(
 )
 
 ##### result directory
-reference_no=6180
+reference_no=6180 # pi- 20M/spill (poor stat.)
+#reference_no=6226 # pi+  2M/spill
 result_dir=$HOME/MsTMonitor
 
 ##### configure file

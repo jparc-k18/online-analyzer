@@ -327,7 +327,7 @@ void PsMaker::create(TString& name)
     // TDC
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
-    flag_log   = GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
+    flag_log   = GuiPs::isOptOn(kLogyTDC);
     base_id = HistMaker::getUniqueID(kCFT, 0, kTDC, 1);
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
@@ -341,7 +341,7 @@ void PsMaker::create(TString& name)
     // TOT
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
-    flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
+    flag_log   = GuiPs::isOptOn(kLogyADC);
     base_id = HistMaker::getUniqueID(kCFT, 0, kADC, 1);
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
@@ -355,7 +355,7 @@ void PsMaker::create(TString& name)
     // CTOT
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
-    flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
+    flag_log   = GuiPs::isOptOn(kLogyADC);
     base_id = HistMaker::getUniqueID(kCFT, 0, kADC, 11);
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
@@ -369,7 +369,7 @@ void PsMaker::create(TString& name)
     // HighGain
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
-    flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
+    flag_log   = GuiPs::isOptOn(kLogyADC);
     base_id = HistMaker::getUniqueID(kCFT, 0, kHighGain, 1);
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
@@ -385,7 +385,7 @@ void PsMaker::create(TString& name)
     // LowGain
     par_list[kXdiv] = 4; par_list[kYdiv] = 2;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
-    flag_log   = GuiPs::isOptOn(kLogyADC)  | GuiPs::isOptOn(kExpDataSheet);
+    flag_log   = GuiPs::isOptOn(kLogyADC);
     base_id = HistMaker::getUniqueID(kCFT, 0, kLowGain, 1);
     for(int i = 0; i<NumOfLayersCFT; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
@@ -1018,10 +1018,14 @@ void PsMaker::create(TString& name)
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 
     // TDC/TOT 2D, HitPat and Multi
-    par_list[kXdiv] = 3; par_list[kYdiv] = 2;
-    base_id = HistMaker::getUniqueID(kSCH, 0, kTDC, NumOfSegSCH+1);
+    par_list[kXdiv] = 4; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kSCH, 0, kTDC, kSCH_1to16_Offset);
     id_list.push_back(base_id);
-    base_id = HistMaker::getUniqueID(kSCH, 0, kADC, NumOfSegSCH+1);
+    base_id = HistMaker::getUniqueID(kSCH, 0, kTDC, kSCH_17to64_Offset);
+    id_list.push_back(base_id);
+    base_id = HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_1to16_Offset);
+    id_list.push_back(base_id);
+    base_id = HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_17to64_Offset);
     id_list.push_back(base_id);
     base_id = HistMaker::getUniqueID(kSCH, 0, kHitPat);
     id_list.push_back(base_id);

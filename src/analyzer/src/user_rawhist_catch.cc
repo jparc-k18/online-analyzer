@@ -399,6 +399,10 @@ process_event( void )
     int cft_cmul_id    = gHist.getSequentialID(kCFT, 0, kMulti,  11);
     int cft_cmulbgo_id = gHist.getSequentialID(kCFT, 0, kMulti,  21);
 
+    int cft_cl_hgadc_id =gHist.getSequentialID(kCFT, kCluster, kHighGain, 1);
+    int cft_cl_lgadc_id =gHist.getSequentialID(kCFT, kCluster, kLowGain,  1);
+    int cft_cl_tdc_id   =gHist.getSequentialID(kCFT, kCluster, kTDC,      1);
+
     int cft_cl_hgadc2d_id =gHist.getSequentialID(kCFT, kCluster, kHighGain, 11);
     int cft_cl_lgadc2d_id =gHist.getSequentialID(kCFT, kCluster, kLowGain, 11);
     int cft_cl_tdc2d_id =gHist.getSequentialID(kCFT,kCluster, kTDC2D, 1);
@@ -548,6 +552,8 @@ process_event( void )
       int MADCHi  = cl->MaxAdcHi();
       int MADCLow = cl->MaxAdcLow();
       //std::cout<<"cluster="<<i<<" , Maxseg="<<Mseg<<" , MaxADC"<<MADCHi<<std::endl;
+      hptr_array[cft_cl_hgadc_id + p] ->Fill(MADCHi);
+      hptr_array[cft_cl_lgadc_id + p] ->Fill(MADCLow);
       hptr_array[cft_cl_hgadc2d_id + p] ->Fill(Mseg, MADCHi);
       hptr_array[cft_cl_lgadc2d_id + p] ->Fill(Mseg, MADCLow);
       int fmulti =hodoAna->GetNHitsCFT(p);
@@ -558,6 +564,7 @@ process_event( void )
 	  int Mhit =fhit ->GetNumOfHit();
 	  for(int k=0; k<Mhit; ++k){
 	    double Mtime =fhit->GetLeading(k);
+	    hptr_array[cft_cl_tdc_id + p] ->Fill(Mtime);
 	    hptr_array[cft_cl_tdc2d_id + p] ->Fill(Mseg, Mtime);
 	  }
 	}

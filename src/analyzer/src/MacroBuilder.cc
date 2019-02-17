@@ -8,6 +8,7 @@
 #include <TCanvas.h>
 #include <TH1.h>
 #include <TH2.h>
+#include <TLatex.h>
 #include <TMacro.h>
 #include <TString.h>
 #include <TText.h>
@@ -103,7 +104,7 @@ BH1ADC( void )
       TH1 *hh = GHist::get( HistMaker::getUniqueID(kBH1, 0, kADCwTDC, i+j*NumOfSegBH1+1) );
       if( !hh ) continue;
       hh->GetXaxis()->SetRangeUser(0,2000);
-      hh->SetLineColor(kRed);
+      hh->SetLineColor(kRed+1);
       hh->Draw("same");
     }
   }
@@ -189,7 +190,7 @@ BH2ADC( void )
       TH1 *hh = GHist::get( HistMaker::getUniqueID(kBH2, 0, kADCwTDC, i+j*NumOfSegBH2+1) );
       if( !hh ) continue;
       hh->GetXaxis()->SetRangeUser(0,2000);
-      hh->SetLineColor(kRed);
+      hh->SetLineColor(kRed+1);
       hh->Draw("same");
     }
   }
@@ -248,7 +249,7 @@ ACs( void )
     h->Draw();
     TH1 *hh = GHist::get( awt_id[i] );
     if( !hh ) continue;
-    hh->SetLineColor(kRed);
+    hh->SetLineColor(kRed+1);
     hh->Draw("same");
     c1->cd(i+1+n)->SetLogy();
     TH1 *hhh = GHist::get( tdc_id[i] );
@@ -522,7 +523,7 @@ TOFADC( void )
       TH1 *hh = GHist::get( HistMaker::getUniqueID(kTOF, 0, kADCwTDC, i+j*NumOfSegTOF+1) );
       if( !hh ) continue;
       hh->GetXaxis()->SetRangeUser(0,2000);
-      hh->SetLineColor(kRed);
+      hh->SetLineColor(kRed+1);
       hh->Draw("same");
     }
   }
@@ -641,7 +642,7 @@ MsTTDC( void )
       if( j==kU )
 	h->Draw();
       else {
-	h->SetLineColor(kRed);
+	h->SetLineColor(kRed+1);
 	h->Draw("same");
       }
     }
@@ -651,19 +652,33 @@ MsTTDC( void )
 
 //____________________________________________________________________________
 TCanvas*
-BC3TDC( void )
+BC3TDCTOT( void )
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
-  c1->Divide(3,2);
+  c1->Divide(4,3);
   for( Int_t i=0; i<NumOfLayersBC3; ++i ){
-    c1->cd(i+1);
-    TH1 *h = GHist::get( HistMaker::getUniqueID(kBC3, 0, kTDC, i+1) );
-    if( !h ) continue;
-    h->Draw();
-    TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC3, 0, kTDC, i+1+kTOTcutOffset) );
-    if( !hh ) continue;
-    hh->SetLineColor(kRed);
-    hh->Draw("same");
+    Int_t pad = i + 1;
+    c1->cd(pad);
+    { // TDC
+      TH1 *h = GHist::get( HistMaker::getUniqueID(kBC3, 0, kTDC, i+1) );
+      if( !h ) continue;
+      h->GetXaxis()->SetRangeUser(100, 700);
+      h->Draw();
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC3, 0, kTDC, i+1+kTOTcutOffset) );
+      if( !hh ) continue;
+      hh->SetLineColor(kRed+1);
+      hh->Draw("same");
+    }
+    c1->cd(pad+NumOfLayersBC3);
+    { // TOT
+      TH1 *h = GHist::get( HistMaker::getUniqueID(kBC3, 0, kADC, i+1) );
+      if( !h ) continue;
+      h->Draw();
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC3, 0, kADC, i+1+kTOTcutOffset) );
+      if( !hh ) continue;
+      hh->SetLineColor(kRed+1);
+      hh->Draw("same");
+    }
   }
   return c1;
 }
@@ -677,35 +692,54 @@ BC3HitMulti( void )
   for( Int_t i=0; i<NumOfLayersBC3; ++i ){
     c1->cd(i+1);
     TH1 *h = GHist::get( HistMaker::getUniqueID(kBC3, 0, kHitPat, i+1) );
+    TH1 *h_wtot = GHist::get( HistMaker::getUniqueID(kBC3, 0, kHitPat, i+1+kTOTcutOffset) );
     if( !h ) continue;
     h->Draw();
+    h_wtot->SetLineColor(kRed+1);
+    h_wtot->Draw("same");
     c1->cd(i+1+NumOfLayersBC3);
     TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC3, 0, kMulti, i+1) );
-    TH1 *hh_wt = GHist::get( HistMaker::getUniqueID(kBC3, 0, kMulti, i+1 + NumOfLayersBC3) );
+    TH1 *hh_wt = GHist::get( HistMaker::getUniqueID(kBC3, 0, kMulti, i+1
+						    + NumOfLayersBC3 + kTOTcutOffset) );
     if( !hh ) continue;
     if( !hh_wt ) continue;
-    hh->Draw();
-    hh_wt->SetLineColor(kRed);
-    hh_wt->Draw("same");
+    hh_wt->GetXaxis()->SetRangeUser(0, 20);
+    hh_wt->SetLineColor(kRed+1);
+    hh_wt->Draw();
+    hh->Draw("same");
   }
   return c1;
 }
 
 //____________________________________________________________________________
 TCanvas*
-BC4TDC( void )
+BC4TDCTOT( void )
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
-  c1->Divide(3,2);
+  c1->Divide(4,3);
   for( Int_t i=0; i<NumOfLayersBC4; ++i ){
-    c1->cd(i+1);
-    TH1 *h = GHist::get( HistMaker::getUniqueID(kBC4, 0, kTDC, i+1) );
-    if( !h ) continue;
-    h->Draw();
-    TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC4, 0, kTDC, i+1+kTOTcutOffset) );
-    if( !hh ) continue;
-    hh->SetLineColor(kRed);
-    hh->Draw("same");
+    Int_t pad = i + 1;
+    c1->cd(pad);
+    { // TDC
+      TH1 *h = GHist::get( HistMaker::getUniqueID(kBC4, 0, kTDC, i+1) );
+      if( !h ) continue;
+      h->GetXaxis()->SetRangeUser(100, 700);
+      h->Draw();
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC4, 0, kTDC, i+1+kTOTcutOffset) );
+      if( !hh ) continue;
+      hh->SetLineColor(kRed+1);
+      hh->Draw("same");
+    }
+    c1->cd(pad+NumOfLayersBC4);
+    { // TOT
+      TH1 *h = GHist::get( HistMaker::getUniqueID(kBC4, 0, kADC, i+1) );
+      if( !h ) continue;
+      h->Draw();
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC4, 0, kADC, i+1+kTOTcutOffset) );
+      if( !hh ) continue;
+      hh->SetLineColor(kRed+1);
+      hh->Draw("same");
+    }
   }
   return c1;
 }
@@ -719,35 +753,53 @@ BC4HitMulti( void )
   for( Int_t i=0; i<NumOfLayersBC4; ++i ){
     c1->cd(i+1);
     TH1 *h = GHist::get( HistMaker::getUniqueID(kBC4, 0, kHitPat, i+1) );
+    TH1 *h_wtot = GHist::get( HistMaker::getUniqueID(kBC4, 0, kHitPat, i+1+kTOTcutOffset) );
     if( !h ) continue;
     h->Draw();
+    h_wtot->SetLineColor(kRed+1);
+    h_wtot->Draw("same");
     c1->cd(i+1+NumOfLayersBC4);
     TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC4, 0, kMulti, i+1) );
-    TH1 *hh_wt = GHist::get( HistMaker::getUniqueID(kBC4, 0, kMulti, i+1 + NumOfLayersBC4) );
+    TH1 *hh_wt = GHist::get( HistMaker::getUniqueID(kBC4, 0, kMulti, i+1
+						    + NumOfLayersBC4 + kTOTcutOffset) );
     if( !hh ) continue;
     if( !hh_wt ) continue;
-    hh->Draw();
-    hh_wt->SetLineColor(kRed);
-    hh_wt->Draw("same");
+    hh->GetXaxis()->SetRangeUser(0, 20);
+    hh_wt->SetLineColor(kRed+1);
+    hh_wt->Draw();
+    hh->Draw("same");
   }
   return c1;
 }
 
 //____________________________________________________________________________
 TCanvas*
-SDC1TDC( void )
+SDC1TDCTOT( void )
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
-  c1->Divide(3,2);
+  c1->Divide(4, 3);
   for( Int_t i=0; i<NumOfLayersSDC1; ++i ){
     c1->cd(i+1);
-    TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kTDC, i+1) );
-    if( !h ) continue;
-    h->Draw();
-    TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kTDC, i+1+kTOTcutOffset) );
-    if( !hh ) continue;
-    hh->SetLineColor(kRed);
-    hh->Draw("same");
+    {
+      TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kTDC, i+1) );
+      if( !h ) continue;
+      h->GetXaxis()->SetRangeUser(100, 700);
+      h->Draw();
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kTDC, i+1+kTOTcutOffset) );
+      if( !hh ) continue;
+      hh->SetLineColor(kRed+1);
+      hh->Draw("same");
+    }
+    c1->cd(i+1+NumOfLayersSDC1);
+    {
+      TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kADC, i+1) );
+      if( !h ) continue;
+      h->Draw();
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kADC, i+1+kTOTcutOffset) );
+      if( !hh ) continue;
+      hh->SetLineColor(kRed+1);
+      hh->Draw("same");
+    }
   }
   return c1;
 }
@@ -761,16 +813,21 @@ SDC1HitMulti( void )
   for( Int_t i=0; i<NumOfLayersSDC1; ++i ){
     c1->cd(i+1);
     TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kHitPat, i+1) );
-    if( !h ) continue;
+    TH1 *h_wtot = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kHitPat, i+1+kTOTcutOffset) );
+    if( !h || !h_wtot ) continue;
     h->Draw();
+    h_wtot->SetLineColor(kRed+1);
+    h_wtot->Draw("same");
     c1->cd(i+1+NumOfLayersSDC1);
     TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kMulti, i+1) );
-    TH1 *hh_wt = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kMulti, i+1 + NumOfLayersSDC1) );
+    TH1 *hh_wt = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kMulti, i+1
+						    + NumOfLayersSDC1 + kTOTcutOffset) );
     if( !hh ) continue;
     if( !hh_wt ) continue;
-    hh->Draw();
-    hh_wt->SetLineColor(kRed);
+    hh_wt->GetXaxis()->SetRangeUser(0, 20);
+    hh_wt->SetLineColor(kRed+1);
     hh_wt->Draw();
+    hh->Draw("same");
   }
   return c1;
 }
@@ -803,7 +860,7 @@ SAC( void )
 	if( !h ) continue;
 	if( !h_wt ) continue;
 	h->Draw();
-	h_wt->SetLineColor(kRed);
+	h_wt->SetLineColor(kRed+1);
 	h_wt->Draw("same");
     }
   }
@@ -843,9 +900,9 @@ SDC2TDCTOT( void )
       TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kTDC, i+1) );
       if( !h ) continue;
       h->Draw();
-      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kTDC, i+1+kTOTcutOffset) );
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kTDC, i+11) );
       if( !hh ) continue;
-      hh->SetLineColor(kRed);
+      hh->SetLineColor(kRed+1);
       hh->Draw("same");
     }
   }
@@ -859,7 +916,7 @@ SDC2TDCTOT( void )
       h->Draw();
       TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kTDC2D, i + 11) );
       if( !hh ) continue;
-      hh->SetLineColor(kRed);
+      hh->SetLineColor(kRed+1);
       hh->Draw("same");
     }
   }
@@ -873,7 +930,7 @@ SDC2TDCTOT( void )
       h->Draw();
       TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kADC, i + 11) );
       if( !hh ) continue;
-      hh->SetLineColor(kRed);
+      hh->SetLineColor(kRed+1);
       hh->Draw("same");
     }
   }
@@ -896,7 +953,7 @@ SDC2HitMulti( void )
       h->Draw();
       TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kHitPat, i + 11) );
       if( !hh ) continue;
-      hh->SetLineColor(kRed);
+      hh->SetLineColor(kRed+1);
       hh->Draw("same");
     }
   }
@@ -907,11 +964,12 @@ SDC2HitMulti( void )
       c1->cd(2)->cd(i+1);
       TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kMulti, i+1) );
       if( !h ) continue;
-      h->Draw();
-      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kMulti, i + NumOfLayersSDC2 + 10) );
+      h->GetXaxis()->SetRangeUser(0, 20);
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kMulti, i+1 + NumOfLayersSDC2 + 10) );
       if( !hh ) continue;
-      hh->SetLineColor(kRed);
-      hh->Draw("same");
+      hh->SetLineColor(kRed+1);
+      hh->Draw();
+      h->Draw("same");
     }
   }
 
@@ -932,9 +990,9 @@ SDC3TDCTOT( void )
       TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kTDC, i+1) );
       if( !h ) continue;
       h->Draw();
-      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kTDC, i+1+kTOTcutOffset) );
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kTDC, i+11) );
       if( !hh ) continue;
-      hh->SetLineColor(kRed);
+      hh->SetLineColor(kRed+1);
       hh->Draw("same");
     }
   }
@@ -948,7 +1006,7 @@ SDC3TDCTOT( void )
       h->Draw();
       TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kTDC2D, i + 11) );
       if( !hh ) continue;
-      hh->SetLineColor(kRed);
+      hh->SetLineColor(kRed+1);
       hh->Draw("same");
     }
   }
@@ -962,7 +1020,7 @@ SDC3TDCTOT( void )
       h->Draw();
       TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kADC, i + 11) );
       if( !hh ) continue;
-      hh->SetLineColor(kRed);
+      hh->SetLineColor(kRed+1);
       hh->Draw("same");
     }
   }
@@ -982,10 +1040,10 @@ SDC3HitMulti( void )
       c1->cd(1)->cd(i+1);
       TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kHitPat, i+1) );
       if( !h ) continue;
-      h->Draw();
       TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kHitPat, i + 11) );
       if( !hh ) continue;
-      hh->SetLineColor(kRed);
+      hh->SetLineColor(kRed+1);
+      h->Draw();
       hh->Draw("same");
     }
   }
@@ -996,11 +1054,12 @@ SDC3HitMulti( void )
       c1->cd(2)->cd(i+1);
       TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kMulti, i+1) );
       if( !h ) continue;
-      h->Draw();
-      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kMulti, i + NumOfLayersSDC3 + 10) );
+      h->GetXaxis()->SetRangeUser(0, 20);
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kMulti, i+1 + NumOfLayersSDC3 + 10) );
       if( !hh ) continue;
-      hh->SetLineColor(kRed);
-      hh->Draw("same");
+      hh->SetLineColor(kRed+1);
+      hh->Draw();
+      h->Draw("same");
     }
   }
 
@@ -1421,7 +1480,7 @@ CFTHitPat( void )
     h->Draw();
     h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kHitPat, l+11));
     if(!h) continue;
-    h->SetLineColor(kRed);
+    h->SetLineColor(kRed+1);
     h->Draw("same");
   }
   return c1;
@@ -1441,7 +1500,7 @@ CFTMulti( void )
     h->Draw();
     h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kMulti, l+11));
     if(!h) continue;
-    h->SetLineColor(kRed);
+    h->SetLineColor(kRed+1);
     h->Draw("same");
   }
   return c1;
@@ -1568,7 +1627,7 @@ BGOADC( void )
     h->Draw();
     h = GHist::get( HistMaker::getUniqueID(kBGO, 0, kADCwTDC, i+1) );
     if(!h) continue;
-    h->SetLineColor(kRed);
+    h->SetLineColor(kRed+1);
     h->Draw("colz");
   }
   return c1;
@@ -1673,7 +1732,7 @@ PiIDHighGain( void )
     h->Draw();
     h = GHist::get(HistMaker::getUniqueID(kPiID, 0, kADCwTDC, i+1));
     if(!h) continue;
-    h->SetLineColor(kRed);
+    h->SetLineColor(kRed+1);
     h->Draw("same");
   }
   return c1;
@@ -1693,7 +1752,7 @@ PiIDLowGain( void )
     h->Draw();
     h = GHist::get(HistMaker::getUniqueID(kPiID, 0, kADCwTDC, i+1+NumOfSegPiID));
     if(!h) continue;
-    h->SetLineColor(kRed);
+    h->SetLineColor(kRed+1);
     h->Draw("same");
   }
   return c1;
@@ -1981,9 +2040,12 @@ BcOutEfficiency( void )
   for( Int_t i=0; i<NumOfLayersBC3; ++i ){
     for( Int_t j=0, n=id.size(); j<n; ++j ){
       c1->cd(i+1+j*NumOfLayersBC3);
-      TH1 *h = GHist::get(id[j]+i+1);
-      if( !h ) continue;
-      h->Draw("colz");
+      TH1 *h  = GHist::get(id[j]+i+1);
+      TH1 *hh = GHist::get(id[j]+i+1+kTOTcutOffset);
+      if( !h || !hh ) continue;
+      hh->GetXaxis()->SetRangeUser(0, 20);
+      hh->Draw();
+      h->Draw("same");
     }
   }
   return c1;
@@ -2006,23 +2068,32 @@ SdcInOutEfficiency( void )
   for( Int_t i=0; i<NumOfLayersSDC1; ++i ){
     c1->cd(1)->cd(i+1);
     TH1 *h = GHist::get(id[0]+i+1);
-    if( !h ) continue;
-    h->Draw();
+    TH1 *hh = GHist::get(id[0]+i+1+kTOTcutOffset);
+    if( !h || !hh ) continue;
+    hh->GetXaxis()->SetRangeUser(0, 20);
+    hh->Draw();
+    h->Draw("same");
   }
 
   c1->cd(2)->Divide(4,2);
   for( Int_t i=0; i<NumOfLayersSDC2; ++i ){
     c1->cd(2)->cd(i+1);
     TH1 *h = GHist::get(id[1]+i+1);
-    if( !h ) continue;
-    h->Draw();
+    TH1 *hh = GHist::get(id[1]+i+11);
+    if( !h || !hh ) continue;
+    hh->GetXaxis()->SetRangeUser(0, 20);
+    hh->Draw();
+    h->Draw("same");
   }
 
   for( Int_t i=0; i<NumOfLayersSDC3; ++i ){
     c1->cd(2)->cd(i+1+NumOfLayersSDC2);
     TH1 *h = GHist::get(id[2]+i+1);
-    if( !h ) continue;
-    h->Draw();
+    TH1 *hh = GHist::get(id[2]+i+11);
+    if( !h || !hh ) continue;
+    hh->GetXaxis()->SetRangeUser(0, 20);
+    hh->Draw();
+    h->Draw("same");
   }
 
   return c1;
@@ -2079,22 +2150,25 @@ UpdateBcOutEfficiency( void )
     "BC3_Multi_x0", "BC3_Multi_x1", "BC3_Multi_v0", "BC3_Multi_v1", "BC3_Multi_u0", "BC3_Multi_u1",
     "BC4_Multi_u0", "BC4_Multi_u1", "BC4_Multi_v0", "BC4_Multi_v1", "BC4_Multi_x0", "BC4_Multi_x1"
   };
-  static std::vector<TText*> tex(name.size());
+  static std::vector<TLatex*> tex(name.size());
   for( Int_t i=0, n=name.size(); i<n; ++i ){
     c1->cd(i+1);
-    TH1 *h = (TH1*)gPad->FindObject(name[i]+"_wTDC");
-    if( !h ){
-      std::cerr << "#W no such TH1: " << name[i] << std::endl;
+    TH1 *h1 = (TH1*)gPad->FindObject(name[i]+"_wTDC");
+    TString n2 = name[i]+"_wTDC";
+    TH1 *h2 = (TH1*)gPad->FindObject(n2.ReplaceAll("_Multi", "_CMulti"));
+    if( !h1 || !h2 )
       continue;
-    }
-    Double_t zero = h->GetBinContent(1);
-    Double_t all  = h->GetEntries();
-    Double_t eff  = 1. - zero/all;
+    Double_t zero1 = h1->GetBinContent(1);
+    Double_t all1  = h1->GetEntries();
+    Double_t eff1  = 1. - zero1/all1;
+    Double_t zero2 = h2->GetBinContent(1);
+    Double_t all2  = h2->GetEntries();
+    Double_t eff2  = 1. - zero2/all2;
     if( tex[i] ) delete tex[i];
-    tex[i] = new TText;
+    tex[i] = new TLatex;
     tex[i]->SetNDC();
-    tex[i]->SetTextSize(0.130);
-    tex[i]->SetText(0.400,0.600,Form("eff. %.3f", eff));
+    tex[i]->SetTextSize(0.150);
+    tex[i]->SetText(0.400,0.600,Form("eff. %.3f (#color[%d]{%.3f})", eff1, kRed+1, eff2));
     tex[i]->Draw();
   }
 }
@@ -2109,27 +2183,29 @@ UpdateSdcInOutEfficiency( void )
     "SDC2_Multi_x0", "SDC2_Multi_x1", "SDC2_Multi_y0", "SDC2_Multi_y1",
     "SDC3_Multi_y0", "SDC3_Multi_y1", "SDC3_Multi_x0", "SDC3_Multi_x1"
   };
-  static std::vector<TText*> tex(name.size());
+  static std::vector<TLatex*> tex(name.size());
 
   for( Int_t i=0, n=name.size(); i<n; ++i ){
     if( i<NumOfLayersSDC1 )
       c1->cd(1)->cd(i+1);
     else
       c1->cd(2)->cd(i+1-NumOfLayersSDC1);
-    TH1 *h = (TH1*)gPad->FindObject(name[i]+"_wTDC");
-    if( !h ){
-      std::cerr << "#W no such TH1: " << name[i] << std::endl;
+    TH1 *h1 = (TH1*)gPad->FindObject(name[i]+"_wTDC");
+    TString n2 = name[i]+"_wTDC";
+    TH1 *h2 = (TH1*)gPad->FindObject(n2.ReplaceAll("_Multi", "_CMulti"));
+    if( !h1 || !h2 )
       continue;
-    }
-    Double_t zero = h->GetBinContent(1);
-    Double_t all  = h->GetEntries();
-    Double_t eff  = 1. - zero/all;
+    Double_t zero1 = h1->GetBinContent(1);
+    Double_t all1  = h1->GetEntries();
+    Double_t eff1  = 1. - zero1/all1;
+    Double_t zero2 = h2->GetBinContent(1);
+    Double_t all2  = h2->GetEntries();
+    Double_t eff2  = 1. - zero2/all2;
     if( tex[i] ) delete tex[i];
-    tex[i] = new TText;
+    tex[i] = new TLatex;
     tex[i]->SetNDC();
-    tex[i]->SetTextSize(0.130);
-    tex[i]->SetText(0.300,0.600,Form("eff. %.3f",
-				     eff));
+    tex[i]->SetTextSize(0.150);
+    tex[i]->SetText(0.400,0.600,Form("eff. %.3f (#color[%d]{%.3f})", eff1, kRed+1, eff2));
     tex[i]->Draw();
   }
 }

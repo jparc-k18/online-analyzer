@@ -51,11 +51,11 @@ namespace http
   TCanvas* LAC( void );
   TCanvas* LC( void );
   TCanvas* MsTTDC( void );
-  TCanvas* BC3TDC( void );
+  TCanvas* BC3TDCTOT( void );
   TCanvas* BC3HitMulti( void );
-  TCanvas* BC4TDC( void );
+  TCanvas* BC4TDCTOT( void );
   TCanvas* BC4HitMulti( void );
-  TCanvas* SDC1TDC( void );
+  TCanvas* SDC1TDCTOT( void );
   TCanvas* SDC1HitMulti( void );
   TCanvas* SAC( void );
   TCanvas* SDC2TDCTOT( void );

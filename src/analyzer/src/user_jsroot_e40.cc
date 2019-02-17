@@ -208,6 +208,8 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::CFTEfficiency());
   gHttp.Register(http::Correlation());
   gHttp.Register(http::CorrelationFHT());
+  gHttp.Register(http::BFTSFTSCHTOT());
+  gHttp.Register(http::FHTTOT());
   gHttp.Register(http::DAQ());
 
   for( Int_t i=0, n=hptr_array.size(); i<n; ++i ){
@@ -2955,6 +2957,8 @@ process_event( void )
   http::UpdateBcOutEfficiency();
   http::UpdateSdcInOutEfficiency();
   http::UpdateCFTEfficiency();
+  // TOT
+  http::UpdateTOTPeakFitting();
 
   return 0;
 }

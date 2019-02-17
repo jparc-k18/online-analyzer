@@ -62,6 +62,10 @@ namespace http
   TCanvas* SDC2HitMulti( void );
   TCanvas* SDC3TDCTOT( void );
   TCanvas* SDC3HitMulti( void );
+  TCanvas* BcOutEfficiency( void );
+  TCanvas* SdcInOutEfficiency( void );
+  TCanvas* BFTSFTSCHTOT( void );
+  TCanvas* FHTTOT( void );
   TCanvas* DAQ( void );
 
   // E07
@@ -75,8 +79,6 @@ namespace http
   TCanvas* SSD1dETime( void );
   TCanvas* SSD2dETime( void );
   TCanvas* SSD12Chisqr( void );
-  TCanvas* BcOutEfficiency( void );
-  TCanvas* SdcInOutEfficiency( void );
   TCanvas* SSDEfficiency( void );
   TCanvas* EMC( void );
 
@@ -121,6 +123,7 @@ namespace http
   void     UpdateSdcInOutEfficiency( void );
   void     UpdateCFTEfficiency( void );
   void     UpdateSSDEfficiency( void );
+  void     UpdateTOTPeakFitting( void );
 }
 
 };

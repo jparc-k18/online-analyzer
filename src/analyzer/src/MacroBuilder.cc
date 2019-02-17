@@ -6,6 +6,7 @@
 #include <string>
 
 #include <TCanvas.h>
+#include <TF1.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TLatex.h>
@@ -1472,16 +1473,15 @@ CFTHitPat( void )
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
-  TH1 *h;
   for( Int_t l=0; l<NumOfLayersCFT; ++l ){
     c1->cd(l+1);
-    h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kHitPat, l+1));
-    if(!h) continue;
-    h->Draw();
-    h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kHitPat, l+11));
-    if(!h) continue;
-    h->SetLineColor(kRed+1);
-    h->Draw("same");
+    TH1 *h1 = GHist::get(HistMaker::getUniqueID(kCFT, 0, kHitPat, l+1));
+    if( !h1 ) continue;
+    h1->Draw();
+    TH1 *h2 = GHist::get(HistMaker::getUniqueID(kCFT, 0, kHitPat, l+11));
+    if( !h2 ) continue;
+    h2->SetLineColor(kRed+1);
+    h2->Draw("same");
   }
   return c1;
 }
@@ -1492,16 +1492,15 @@ CFTMulti( void )
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
-  TH1 *h;
   for( Int_t l=0; l<NumOfLayersCFT; ++l ){
     c1->cd(l+1);
-    h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kMulti, l+1));
-    if(!h) continue;
-    h->Draw();
-    h = GHist::get(HistMaker::getUniqueID(kCFT, 0, kMulti, l+11));
-    if(!h) continue;
-    h->SetLineColor(kRed+1);
-    h->Draw("same");
+    TH1 *h1 = GHist::get(HistMaker::getUniqueID(kCFT, 0, kMulti, l+1));
+    if(!h1) continue;
+    TH1 *h2 = GHist::get(HistMaker::getUniqueID(kCFT, 0, kMulti, l+11));
+    if(!h2) continue;
+    h2->SetLineColor(kRed+1);
+    h2->Draw();
+    h1->Draw("same");
   }
   return c1;
 }
@@ -2105,16 +2104,15 @@ CFTEfficiency( void )
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4,4);
-  TH1 *h;
   for( Int_t i=0; i<NumOfLayersCFT; ++i ){
     c1->cd(i+1);
-    h = GHist::get( HistMaker::getUniqueID(kCFT, 0, kMulti, i+11) );
-    if( !h ) continue;
-    h->Draw();
+    TH1 *h1 = GHist::get( HistMaker::getUniqueID(kCFT, 0, kMulti, i+11) );
+    if( !h1 ) continue;
+    h1->Draw();
     c1->cd(i+1+NumOfLayersCFT);
-    h = GHist::get( HistMaker::getUniqueID(kCFT, 0, kMulti, i+21) );
-    if( !h ) continue;
-    h->Draw();
+    TH1 *h2 = GHist::get( HistMaker::getUniqueID(kCFT, 0, kMulti, i+21) );
+    if( !h2 ) continue;
+    h2->Draw();
   }
   return c1;
 }
@@ -2137,6 +2135,58 @@ SSDEfficiency( void )
       if( !h ) continue;
       h->Draw("colz");
     }
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+BFTSFTSCHTOT( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4,2);
+  std::vector<Int_t> id = {
+    HistMaker::getUniqueID(kBFT, 0, kADC, 11),
+    HistMaker::getUniqueID(kBFT, 0, kADC, 12),
+    HistMaker::getUniqueID(kSFT, 0, kADC, 11),
+    HistMaker::getUniqueID(kSFT, 0, kADC, 12),
+    HistMaker::getUniqueID(kSFT, 0, kADC, 13),
+    HistMaker::getUniqueID(kSFT, 0, kADC, 14),
+    HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_1to16_Offset),
+    HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_17to64_Offset)
+  };
+  for( Int_t i=0, n=id.size(); i<n; ++i ){
+    c1->cd(i+1);
+    TH1 *h = GHist::get(id[i]);
+    if( !h ) continue;
+    h->GetXaxis()->SetRangeUser(-20, 100);
+    h->Draw();
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+FHTTOT( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4,2);
+  std::vector<Int_t> id = {
+    HistMaker::getUniqueID(kFHT1, 0, kADC, NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT1, 0, kADC, FHTOffset+NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT1, 1, kADC, NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT1, 1, kADC, FHTOffset+NumOfSegFHT1+1),
+    HistMaker::getUniqueID(kFHT2, 0, kADC, NumOfSegFHT2+1),
+    HistMaker::getUniqueID(kFHT2, 0, kADC, FHTOffset+NumOfSegFHT2+1),
+    HistMaker::getUniqueID(kFHT2, 1, kADC, NumOfSegFHT2+1),
+    HistMaker::getUniqueID(kFHT2, 1, kADC, FHTOffset+NumOfSegFHT2+1)
+  };
+  for( Int_t i=0, n=id.size(); i<n; ++i ){
+    c1->cd(i+1);
+    TH1 *h = GHist::get(id[i]);
+    if( !h ) continue;
+    h->GetXaxis()->SetRangeUser(-20, 100);
+    h->Draw();
   }
   return c1;
 }
@@ -2266,6 +2316,66 @@ UpdateSSDEfficiency( void )
     tex[i]->SetText(0.500,0.600,Form("eff. %.3f",
 				     eff));
     tex[i]->Draw();
+  }
+}
+
+//____________________________________________________________________________
+void
+UpdateTOTPeakFitting( void )
+{
+  {
+    static TCanvas *c1 = (TCanvas*)gROOT->FindObject("BFTSFTSCHTOT");
+    static std::vector<TString> name = {
+      "BFT_CTOT_U", "BFT_CTOT_D", "SFT_CTOT_U", "SFT_CTOT_V",
+      "SFT_CTOT_X", "SFT_CTOT_XP", "SCH_TOT (1-16ch)", "SCH_TOT (17-64ch)"
+    };
+    static std::vector<TText*> tex(name.size());
+    for( Int_t i=0, n=name.size(); i<n; ++i ){
+      c1->cd(i+1);
+      TH1 *h = (TH1*)gPad->FindObject(name[i]);
+      if( !h ) continue;
+      TF1 f("f", "gaus", 0., 100.);
+      Double_t p = h->GetBinCenter(h->GetMaximumBin());
+      Double_t w = 10.;
+      for( Int_t ifit=0; ifit<3; ++ifit ){
+	h->Fit("f", "Q", "", p-w, p+w );
+	p = f.GetParameter(1);
+	w = f.GetParameter(2) * 1.;
+      }
+      if( tex[i] ) delete tex[i];
+      tex[i] = new TText;
+      tex[i]->SetNDC();
+      tex[i]->SetTextSize(0.100);
+      tex[i]->SetText( 0.200, 0.750, Form("%.2f", p));
+      tex[i]->Draw();
+    }
+  }
+  {
+    static TCanvas *c1 = (TCanvas*)gROOT->FindObject("FHTTOT");
+    static std::vector<TString> name = {
+      "FHT1_UX1_TOT", "FHT1_DX1_TOT", "FHT1_UX2_TOT", "FHT1_DX2_TOT",
+      "FHT2_UX1_TOT", "FHT2_DX1_TOT", "FHT2_UX2_TOT", "FHT2_DX2_TOT"
+    };
+    static std::vector<TText*> tex(name.size());
+    for( Int_t i=0, n=name.size(); i<n; ++i ){
+      c1->cd(i+1);
+      TH1 *h = (TH1*)gPad->FindObject(name[i]);
+      if( !h ) continue;
+      TF1 f("f", "gaus", 0., 100.);
+      Double_t p = h->GetBinCenter(h->GetMaximumBin());
+      Double_t w = 10.;
+      for( Int_t ifit=0; ifit<3; ++ifit ){
+	h->Fit("f", "Q", "", p-w, p+w );
+	p = f.GetParameter(1);
+	w = f.GetParameter(2) * 1.;
+      }
+      if( tex[i] ) delete tex[i];
+      tex[i] = new TText;
+      tex[i]->SetNDC();
+      tex[i]->SetTextSize(0.100);
+      tex[i]->SetText( 0.200, 0.750, Form("%.2f", p));
+      tex[i]->Draw();
+    }
   }
 }
 

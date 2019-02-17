@@ -52,7 +52,10 @@ void dispFHT1( void )
     for( Int_t j=0, m=hid.at(i).size(); j<m; ++j ){
       c->cd(j+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( hid.at(i).at(j) );
-      if( h ) h->Draw("colz");
+      if( !h ) continue;
+      if( TString(h->GetTitle()).Contains("TOT") )
+	h->GetXaxis()->SetRangeUser(0., 100.);
+      h->Draw("colz");
     }
     c->Update();
   }

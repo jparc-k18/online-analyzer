@@ -30,6 +30,8 @@ void dispSCH()
     for(int i=0; i<8; i++){
       c->cd(i+1);//->SetGrid();
       TH1 *h = (TH1*)GHist::get( sch_id_c1[i] );
+      if( TString(h->GetTitle()).Contains("TOT") )
+	h->GetXaxis()->SetRangeUser(0., 100.);
       h->Draw("colz");
     }
     c->Update();

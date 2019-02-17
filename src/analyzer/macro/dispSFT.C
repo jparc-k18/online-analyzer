@@ -20,105 +20,105 @@ void dispSFT()
     int sft_id_c1[n_hist_c1] = {
       HistMaker::getUniqueID(kSFT, 0, kTDC,     1), // X
       HistMaker::getUniqueID(kSFT, 0, kTDC,     2), // X'
-      HistMaker::getUniqueID(kSFT, 0, kTDC,     3), // V 
-      HistMaker::getUniqueID(kSFT, 0, kTDC,     4), // U 
+      HistMaker::getUniqueID(kSFT, 0, kTDC,     3), // V
+      HistMaker::getUniqueID(kSFT, 0, kTDC,     4), // U
       HistMaker::getUniqueID(kSFT, 0, kTDC,    11), // X
       HistMaker::getUniqueID(kSFT, 0, kTDC,    12), // X'
-      HistMaker::getUniqueID(kSFT, 0, kTDC,    13), // V 
-      HistMaker::getUniqueID(kSFT, 0, kTDC,    14), // U 
+      HistMaker::getUniqueID(kSFT, 0, kTDC,    13), // V
+      HistMaker::getUniqueID(kSFT, 0, kTDC,    14), // U
     };
 
     int sft_id_c2[n_hist_c2] = {
       HistMaker::getUniqueID(kSFT, 0, kADC,     1), // X
       HistMaker::getUniqueID(kSFT, 0, kADC,     2), // X'
-      HistMaker::getUniqueID(kSFT, 0, kADC,     3), // V 
-      HistMaker::getUniqueID(kSFT, 0, kADC,     4), // U 
+      HistMaker::getUniqueID(kSFT, 0, kADC,     3), // V
+      HistMaker::getUniqueID(kSFT, 0, kADC,     4), // U
       HistMaker::getUniqueID(kSFT, 0, kADC,    11), // X
       HistMaker::getUniqueID(kSFT, 0, kADC,    12), // X'
-      HistMaker::getUniqueID(kSFT, 0, kADC,    13), // V 
-      HistMaker::getUniqueID(kSFT, 0, kADC,    14), // U 
+      HistMaker::getUniqueID(kSFT, 0, kADC,    13), // V
+      HistMaker::getUniqueID(kSFT, 0, kADC,    14), // U
     };
 
     int sft_id_c3[n_hist_c3] = {
       HistMaker::getUniqueID(kSFT, 0, kHitPat,  1), // X
       HistMaker::getUniqueID(kSFT, 0, kHitPat,  2), // X'
-      HistMaker::getUniqueID(kSFT, 0, kHitPat,  3), // V 
-      HistMaker::getUniqueID(kSFT, 0, kHitPat,  4), // U 
+      HistMaker::getUniqueID(kSFT, 0, kHitPat,  3), // V
+      HistMaker::getUniqueID(kSFT, 0, kHitPat,  4), // U
       HistMaker::getUniqueID(kSFT, 0, kHitPat, 11), // X
       HistMaker::getUniqueID(kSFT, 0, kHitPat, 12), // X'
-      HistMaker::getUniqueID(kSFT, 0, kHitPat, 13), // V 
-      HistMaker::getUniqueID(kSFT, 0, kHitPat, 14), // U 
+      HistMaker::getUniqueID(kSFT, 0, kHitPat, 13), // V
+      HistMaker::getUniqueID(kSFT, 0, kHitPat, 14), // U
     };
 
     int sft_id_c4[n_hist_c4] = {
       HistMaker::getUniqueID(kSFT, 0, kMulti,   1), // X
       HistMaker::getUniqueID(kSFT, 0, kMulti,   2), // V
-      HistMaker::getUniqueID(kSFT, 0, kMulti,   3), // U 
+      HistMaker::getUniqueID(kSFT, 0, kMulti,   3), // U
       HistMaker::getUniqueID(kSFT, 0, kMulti,  11), // X
       HistMaker::getUniqueID(kSFT, 0, kMulti,  12), // V
       HistMaker::getUniqueID(kSFT, 0, kMulti,  13), // U
-    };                                             
-                                                  
+    };
+
     int sft_id_c5[n_hist_c5] = {
       HistMaker::getUniqueID(kSFT, 0, kTDC2D,   1), // X
       HistMaker::getUniqueID(kSFT, 0, kTDC2D,   2), // X'
-      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   3), // V 
-      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   4), // U 
+      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   3), // V
+      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   4), // U
       HistMaker::getUniqueID(kSFT, 0, kADC2D,   1), // X
       HistMaker::getUniqueID(kSFT, 0, kADC2D,   2), // X'
-      HistMaker::getUniqueID(kSFT, 0, kADC2D,   3), // V 
-      HistMaker::getUniqueID(kSFT, 0, kADC2D,   4), // U 
+      HistMaker::getUniqueID(kSFT, 0, kADC2D,   3), // V
+      HistMaker::getUniqueID(kSFT, 0, kADC2D,   4), // U
     };
 
 //    int sft_id_c1[n_hist_c1] = {
-//      HistMaker::getUniqueID(kSFT, 0, kTDC,     3), // V 
-//      HistMaker::getUniqueID(kSFT, 0, kTDC,     4), // U 
+//      HistMaker::getUniqueID(kSFT, 0, kTDC,     3), // V
+//      HistMaker::getUniqueID(kSFT, 0, kTDC,     4), // U
 //      HistMaker::getUniqueID(kSFT, 0, kTDC,     1), // X
 //      HistMaker::getUniqueID(kSFT, 0, kTDC,     2), // X'
-//      HistMaker::getUniqueID(kSFT, 0, kTDC,    13), // V 
-//      HistMaker::getUniqueID(kSFT, 0, kTDC,    14), // U 
+//      HistMaker::getUniqueID(kSFT, 0, kTDC,    13), // V
+//      HistMaker::getUniqueID(kSFT, 0, kTDC,    14), // U
 //      HistMaker::getUniqueID(kSFT, 0, kTDC,    11), // X
 //      HistMaker::getUniqueID(kSFT, 0, kTDC,    12), // X'
 //    };
 //
 //    int sft_id_c2[n_hist_c2] = {
-//      HistMaker::getUniqueID(kSFT, 0, kADC,     3), // V 
-//      HistMaker::getUniqueID(kSFT, 0, kADC,     4), // U 
+//      HistMaker::getUniqueID(kSFT, 0, kADC,     3), // V
+//      HistMaker::getUniqueID(kSFT, 0, kADC,     4), // U
 //      HistMaker::getUniqueID(kSFT, 0, kADC,     1), // X
 //      HistMaker::getUniqueID(kSFT, 0, kADC,     2), // X'
-//      HistMaker::getUniqueID(kSFT, 0, kADC,    13), // V 
-//      HistMaker::getUniqueID(kSFT, 0, kADC,    14), // U 
+//      HistMaker::getUniqueID(kSFT, 0, kADC,    13), // V
+//      HistMaker::getUniqueID(kSFT, 0, kADC,    14), // U
 //      HistMaker::getUniqueID(kSFT, 0, kADC,    11), // X
 //      HistMaker::getUniqueID(kSFT, 0, kADC,    12), // X'
 //    };
 //
 //    int sft_id_c3[n_hist_c3] = {
-//      HistMaker::getUniqueID(kSFT, 0, kHitPat,  3), // V 
-//      HistMaker::getUniqueID(kSFT, 0, kHitPat,  4), // U 
+//      HistMaker::getUniqueID(kSFT, 0, kHitPat,  3), // V
+//      HistMaker::getUniqueID(kSFT, 0, kHitPat,  4), // U
 //      HistMaker::getUniqueID(kSFT, 0, kHitPat,  1), // X
 //      HistMaker::getUniqueID(kSFT, 0, kHitPat,  2), // X'
-//      HistMaker::getUniqueID(kSFT, 0, kHitPat, 13), // V 
-//      HistMaker::getUniqueID(kSFT, 0, kHitPat, 14), // U 
+//      HistMaker::getUniqueID(kSFT, 0, kHitPat, 13), // V
+//      HistMaker::getUniqueID(kSFT, 0, kHitPat, 14), // U
 //      HistMaker::getUniqueID(kSFT, 0, kHitPat, 11), // X
 //      HistMaker::getUniqueID(kSFT, 0, kHitPat, 12), // X'
 //    };
 //
 //    int sft_id_c4[n_hist_c4] = {
 //      HistMaker::getUniqueID(kSFT, 0, kMulti,   2), // V
-//      HistMaker::getUniqueID(kSFT, 0, kMulti,   3), // U 
+//      HistMaker::getUniqueID(kSFT, 0, kMulti,   3), // U
 //      HistMaker::getUniqueID(kSFT, 0, kMulti,   1), // X
 //      HistMaker::getUniqueID(kSFT, 0, kMulti,  12), // V
 //      HistMaker::getUniqueID(kSFT, 0, kMulti,  13), // U
 //      HistMaker::getUniqueID(kSFT, 0, kMulti,  11), // X
-//    };                                             
-//                                                  
+//    };
+//
 //    int sft_id_c5[n_hist_c5] = {
-//      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   3), // V 
-//      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   4), // U 
+//      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   3), // V
+//      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   4), // U
 //      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   1), // X
 //      HistMaker::getUniqueID(kSFT, 0, kTDC2D,   2), // X'
-//      HistMaker::getUniqueID(kSFT, 0, kADC2D,   3), // V 
-//      HistMaker::getUniqueID(kSFT, 0, kADC2D,   4), // U 
+//      HistMaker::getUniqueID(kSFT, 0, kADC2D,   3), // V
+//      HistMaker::getUniqueID(kSFT, 0, kADC2D,   4), // U
 //      HistMaker::getUniqueID(kSFT, 0, kADC2D,   1), // X
 //      HistMaker::getUniqueID(kSFT, 0, kADC2D,   2), // X'
 //    };
@@ -143,6 +143,8 @@ void dispSFT()
       for(int i=0; i<n_hist_c2; i++){
 	c->cd(i+1);//->SetGrid();
 	TH1 *h = (TH1*)GHist::get(sft_id_c2[i]);
+	if( TString(h->GetTitle()).Contains("TOT") )
+	  h->GetXaxis()->SetRangeUser(0., 110.);
 	h->Draw();
       }
       c->Update();

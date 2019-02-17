@@ -139,7 +139,8 @@ process_end()
     c1->Divide(2,4);
     for(int i = 0; i<n_hist; ++i){
       c1->cd(i+1);
-      double scale = hptr_array[base_id + n_hist*c + i]->GetEntries()/ref_hist[n_hist*c + i]->GetEntries();
+      //      double scale = hptr_array[base_id + n_hist*c + i]->GetEntries()/ref_hist[n_hist*c + i]->GetEntries();
+      double scale = hptr_array[base_id + n_hist*c + i]->GetMaximum()/ref_hist[n_hist*c + i]->GetMaximum();
       ref_hist[n_hist*c + i]->GetXaxis()->SetRangeUser(mst_tdc_min, mst_tdc_max);
       ref_hist[n_hist*c + i]->SetLineColor(2);
       ref_hist[n_hist*c + i]->Scale(scale);

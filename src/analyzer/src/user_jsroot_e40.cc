@@ -2490,7 +2490,7 @@ process_event( void )
 	  continue;
 	if( ped == 0 )
 	  ped = fadc;
-	hptr_array[bgo_fa_id + seg]->Fill( i+1, fadc);
+	hptr_array[bgo_fa_id + seg]->Fill( i+1, fadc );
 	de += ped - fadc;
       }
       hptr_array[bgo_a_id + seg]->Fill( de );

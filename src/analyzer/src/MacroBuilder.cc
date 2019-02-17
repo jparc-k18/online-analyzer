@@ -1628,7 +1628,7 @@ BGOADC( void )
     h = GHist::get( HistMaker::getUniqueID(kBGO, 0, kADCwTDC, i+1) );
     if(!h) continue;
     h->SetLineColor(kRed+1);
-    h->Draw("colz");
+    h->Draw("same");
   }
   return c1;
 }

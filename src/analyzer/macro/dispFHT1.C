@@ -56,6 +56,14 @@ void dispFHT1( void )
       if( TString(h->GetTitle()).Contains("TOT") )
 	h->GetXaxis()->SetRangeUser(0., 100.);
       h->Draw("colz");
+
+      if( TString(h->GetTitle()).Contains("TOT") ) {
+	double peak = h->GetMaximum();
+	TLine *l = new TLine(60, 0, 60, peak);
+	l->SetLineColor(kRed);
+	l->Draw("same");
+      }
+
     }
     c->Update();
   }

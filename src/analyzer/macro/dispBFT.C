@@ -49,9 +49,16 @@ void dispBFT()
       for(int i=0; i<n_hist_c1; i++){
 	c->cd(i+1);//->SetGrid(2,2);
 	TH1 *h = (TH1*)GHist::get(bft_id_c1[i]);
-	if( TString(h->GetTitle()).Contains("TOT") )
+	if( TString(h->GetTitle()).Contains("TOT") ) {
 	  h->GetXaxis()->SetRangeUser(0., 100.);
+	}
 	h->Draw();
+	if( TString(h->GetTitle()).Contains("TOT") ) {
+	  double peak = h->GetMaximum();
+	  TLine *l = new TLine(42, 0, 42, peak);
+	  l->SetLineColor(kRed);
+	  l->Draw("same");
+	}
       }
       c->Update();
     }

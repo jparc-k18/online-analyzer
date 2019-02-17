@@ -27,8 +27,10 @@ data_dir=(
 )
 
 ##### result directory
-reference_no=6180 # pi- 20M/spill (poor stat.)
+#reference_no=6180 # pi- 20M/spill (poor stat.)
 #reference_no=6226 # pi+  2M/spill
+#reference_no=6247 # pi+  20/spill
+reference_no=6263 # pi-  20M/spill
 result_dir=$HOME/MsTMonitor
 
 ##### configure file
@@ -45,7 +47,8 @@ if [ ! -f $conf_file ]; then
 fi
 
 if [ $# = 0 ]; then
-    $exe_file $conf_file ${ebhost}:$port $result_dir $reference_no $1
+    echo "#E: This script doesn't support online mode."
+#    $exe_file $conf_file ${ebhost}:$port $result_dir $reference_no $1
     exit
 fi
 
@@ -56,8 +59,14 @@ do
 	continue
     fi
     if [ $# = 1 ]; then
-	$exe_file $conf_file $data_file $result_dir $reference_no $1
-#	lpr $result_dir/pdf/run$1.pdf
+	mods=`stat -c %a $data_file`
+	mod=`echo $mods | cut -d' ' -f1`
+	if [ $mod = "444" ]; then
+	    $exe_file $conf_file $data_file $result_dir $reference_no $1
+	    echo "hoge"
+	else
+	    echo "#E: Data file is not completely synchronized."
+	fi
 	exit
     else
 	echo "#D Usage: $(basename $0) [run number]"

@@ -660,7 +660,7 @@ BC3TDC( void )
     TH1 *h = GHist::get( HistMaker::getUniqueID(kBC3, 0, kTDC, i+1) );
     if( !h ) continue;
     h->Draw();
-    TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC3, 0, kTDC2D, i+1) );
+    TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC3, 0, kTDC, i+1+kTOTcutOffset) );
     if( !hh ) continue;
     hh->SetLineColor(kRed);
     hh->Draw("same");
@@ -702,7 +702,7 @@ BC4TDC( void )
     TH1 *h = GHist::get( HistMaker::getUniqueID(kBC4, 0, kTDC, i+1) );
     if( !h ) continue;
     h->Draw();
-    TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC4, 0, kTDC2D, i+1) );
+    TH1 *hh = GHist::get( HistMaker::getUniqueID(kBC4, 0, kTDC, i+1+kTOTcutOffset) );
     if( !hh ) continue;
     hh->SetLineColor(kRed);
     hh->Draw("same");
@@ -744,7 +744,7 @@ SDC1TDC( void )
     TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kTDC, i+1) );
     if( !h ) continue;
     h->Draw();
-    TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kTDC2D, i+1) );
+    TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC1, 0, kTDC, i+1+kTOTcutOffset) );
     if( !hh ) continue;
     hh->SetLineColor(kRed);
     hh->Draw("same");
@@ -843,7 +843,7 @@ SDC2TDCTOT( void )
       TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kTDC, i+1) );
       if( !h ) continue;
       h->Draw();
-      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kTDC, i + 11) );
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC2, 0, kTDC, i+1+kTOTcutOffset) );
       if( !hh ) continue;
       hh->SetLineColor(kRed);
       hh->Draw("same");
@@ -932,7 +932,7 @@ SDC3TDCTOT( void )
       TH1 *h = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kTDC, i+1) );
       if( !h ) continue;
       h->Draw();
-      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kTDC, i + 11) );
+      TH1 *hh = GHist::get( HistMaker::getUniqueID(kSDC3, 0, kTDC, i+1+kTOTcutOffset) );
       if( !hh ) continue;
       hh->SetLineColor(kRed);
       hh->Draw("same");
@@ -1443,6 +1443,96 @@ CFTMulti( void )
     if(!h) continue;
     h->SetLineColor(kRed);
     h->Draw("same");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTClusterHighGain( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, kCluster, kHighGain, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTClusterHighGain2D( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, kCluster, kHighGain, l+11));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTClusterLowGain( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, kCluster, kLowGain, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTClusterLowGain2D( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, kCluster, kLowGain, l+11));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTClusterTDC( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, kCluster, kTDC, l+1));
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+CFTClusterTDC2D( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t l=0; l<NumOfLayersCFT; ++l ){
+    c1->cd(l+1);
+    TH1 *h = GHist::get(HistMaker::getUniqueID(kCFT, kCluster, kTDC2D, l+1));
+    if(!h) continue;
+    h->Draw("colz");
   }
   return c1;
 }

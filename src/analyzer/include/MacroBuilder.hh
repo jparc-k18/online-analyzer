@@ -102,6 +102,12 @@ namespace http
   TCanvas* CFTHitPat( void );
   TCanvas* CFTMulti( void );
   TCanvas* CFTEfficiency( void );
+  TCanvas* CFTClusterHighGain( void );
+  TCanvas* CFTClusterHighGain2D( void );
+  TCanvas* CFTClusterLowGain( void );
+  TCanvas* CFTClusterLowGain2D( void );
+  TCanvas* CFTClusterTDC( void );
+  TCanvas* CFTClusterTDC2D( void );
   TCanvas* BGOFADC( void );
   TCanvas* BGOADC( void );
   TCanvas* BGOTDC( void );

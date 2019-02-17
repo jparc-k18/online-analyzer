@@ -97,8 +97,14 @@ namespace analyzer
       c.cd();
       TF1 f("f", "gaus", -10., 100.);
       Double_t p = h->GetBinCenter(h->GetMaximumBin());
+      if( p < 30. ) p = 60.;
       Double_t w = 10.;
       h->Fit("f", "Q", "", p-w, p+w );
+      for( Int_t ifit=0; ifit<3; ++ifit ){
+	h->Fit("f", "Q", "", p-w, p+w );
+	p = f.GetParameter(1);
+	w = f.GetParameter(2) * 1.;
+      }
       return f.GetParameter(1);
     }
   }

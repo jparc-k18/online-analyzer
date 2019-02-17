@@ -1741,8 +1741,8 @@ process_event( void )
     static const int lcmul_id = gHist.getSequentialID(kLC, 0, kMulti);
 
     // TDC gate range
-    static const int tdc_min = gUser.GetParameter("LAC_TDC", 0);
-    static const int tdc_max = gUser.GetParameter("LAC_TDC", 1);
+    static const int tdc_min = gUser.GetParameter("LC_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("LC_TDC", 1);
 
     int lct_id   = gHist.getSequentialID(kLC, 0, kTDC);
     int multiplicity = 0;

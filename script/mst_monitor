@@ -27,12 +27,11 @@ data_dir=(
 )
 
 ##### result directory
-#reference_no=6180 # pi- 20M/spill (poor stat.)
-#reference_no=6226 # pi+  2M/spill
-#reference_no=6247 # pi+  20/spill
-#reference_no=6263 # pi-  20M/spill
-#reference_no=6296 # pi-  20M/spill
-reference_no=6316 # pi-  20M/spill
+reference_no=0
+while read LINE || [ - "$LINE" ]; do
+    reference_no=$LINE
+    break
+done < $HOME/MsTMonitor/ref_runno.txt
 result_dir=$HOME/MsTMonitor
 
 ##### configure file

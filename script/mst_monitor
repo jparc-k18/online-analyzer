@@ -31,7 +31,8 @@ data_dir=(
 #reference_no=6226 # pi+  2M/spill
 #reference_no=6247 # pi+  20/spill
 #reference_no=6263 # pi-  20M/spill
-reference_no=6296 # pi-  20M/spill
+#reference_no=6296 # pi-  20M/spill
+reference_no=6316 # pi-  20M/spill
 result_dir=$HOME/MsTMonitor
 
 ##### configure file

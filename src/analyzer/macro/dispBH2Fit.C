@@ -30,7 +30,7 @@ void dispBH2Fit()
       fit.SetLineColor(kRed);
       // draw TDC_FPGA
       c1->cd( ++icanvas1 );
-      gPad->SetLogy();
+      //      gPad->SetLogy();
       h = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, ud+1) );
       h1 = h;
       if( h1 ){

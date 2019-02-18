@@ -49,7 +49,7 @@ void dispBH2()
       TH1 *h  = NULL;
       // draw TDC_FPGA
       c3->cd( ++icanvas3 );
-      gPad->SetLogy();
+      //      gPad->SetLogy();
       h = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, ud+1) );
       if( h ){
 	//h->GetXaxis()->SetRangeUser(0,2000);
@@ -94,7 +94,7 @@ void dispBH2()
       TH1 *h  = NULL;
       // draw TDC_FPGA
       c4->cd( ++icanvas4 );
-      gPad->SetLogy();
+      //      gPad->SetLogy();
       h = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, ud+1) );
       if( h ){
 	//h->GetXaxis()->SetRangeUser(0,2000);

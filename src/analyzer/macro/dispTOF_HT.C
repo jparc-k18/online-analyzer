@@ -9,6 +9,11 @@ void dispTOF_HT()
   Updater::setUpdating(true);
   // ----------------------------------
 
+  // TDC gate range
+  const UserParamMan& gUser = UserParamMan::GetInstance();
+  static const unsigned int tdc_min = gUser.GetParameter("TOFHT_TDC", 0);
+  static const unsigned int tdc_max = gUser.GetParameter("TOFHT_TDC", 1);
+
   // draw TDC-HT TDC
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
@@ -18,7 +23,9 @@ void dispTOF_HT()
     for( int i=0; i<NumOfSegHtTOF; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( tdc_id + i );
-      if( h ) h->Draw();
+      if( !h ) continue;
+      h->GetXaxis()->SetRangeUser(tdc_min-100, tdc_max+100);
+      h->Draw();
     }
     c->Update();
   }

@@ -155,7 +155,7 @@ void dispSFT()
 	  l->Draw("same");
 	} else 	if( TString(h->GetTitle()).Contains("TOT_X")) {
 	  double peak = h->GetMaximum();
-	  TLine *l = new TLine(70, 0, 67.5, peak);
+	  TLine *l = new TLine(67.5, 0, 67.5, peak);
 	  l->SetLineColor(kRed);
 	  l->Draw("same");
 	}

@@ -56,6 +56,20 @@ void dispFHT1( void )
       if( TString(h->GetTitle()).Contains("TOT") )
 	h->GetXaxis()->SetRangeUser(0., 100.);
       h->Draw("colz");
+
+      if( TString(h->GetTitle()).Contains("TOT") && TString(h->GetTitle()).Contains("UX")) {
+	double peak = h->GetMaximum();
+	TLine *l = new TLine(58, 0, 58, peak);
+	l->SetLineColor(kRed);
+	l->Draw("same");
+      } else if( TString(h->GetTitle()).Contains("TOT") && TString(h->GetTitle()).Contains("DX")) {
+	double peak = h->GetMaximum();
+	TLine *l = new TLine(60, 0, 60, peak);
+	l->SetLineColor(kRed);
+	l->Draw("same");
+      }
+
+
     }
     c->Update();
   }

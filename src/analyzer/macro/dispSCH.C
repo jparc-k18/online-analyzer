@@ -33,6 +33,19 @@ void dispSCH()
       if( TString(h->GetTitle()).Contains("TOT") )
 	h->GetXaxis()->SetRangeUser(0., 100.);
       h->Draw("colz");
+
+      if( TString(h->GetTitle()).Contains("TOT") && TString(h->GetTitle()).Contains("16")) {
+	double peak = h->GetMaximum();
+	TLine *l = new TLine(42, 0, 42, peak);
+	l->SetLineColor(kRed);
+	l->Draw("same");
+      } else if( TString(h->GetTitle()).Contains("TOT") && TString(h->GetTitle()).Contains("17")) {
+	double peak = h->GetMaximum();
+	TLine *l = new TLine(54, 0, 54, peak);
+	l->SetLineColor(kRed);
+	l->Draw("same");
+      }
+
     }
     c->Update();
   }

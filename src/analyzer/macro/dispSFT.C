@@ -146,6 +146,20 @@ void dispSFT()
 	if( TString(h->GetTitle()).Contains("TOT") )
 	  h->GetXaxis()->SetRangeUser(0., 110.);
 	h->Draw();
+
+	if( TString(h->GetTitle()).Contains("TOT_U") ||
+	    TString(h->GetTitle()).Contains("TOT_V")) {
+	  double peak = h->GetMaximum();
+	  TLine *l = new TLine(65, 0, 65, peak);
+	  l->SetLineColor(kRed);
+	  l->Draw("same");
+	} else 	if( TString(h->GetTitle()).Contains("TOT_X")) {
+	  double peak = h->GetMaximum();
+	  TLine *l = new TLine(67.5, 0, 67.5, peak);
+	  l->SetLineColor(kRed);
+	  l->Draw("same");
+	}
+
       }
       c->Update();
     }

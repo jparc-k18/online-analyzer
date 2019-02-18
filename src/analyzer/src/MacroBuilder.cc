@@ -120,7 +120,7 @@ BH1TDC( void )
   c1->Divide(6,4);
   for( Int_t i=0; i<NumOfSegBH1; ++i ){
     for( Int_t j=0; j<kUorD; ++j ){
-      c1->cd(i+1+j*(NumOfSegBH1+1))->SetLogy();
+      c1->cd(i+1+j*(NumOfSegBH1+1));//->SetLogy();
       TH1 *h = GHist::get( HistMaker::getUniqueID(kBH1, 0, kTDC, i+j*NumOfSegBH1+1) );
       if( !h ) continue;
       h->Draw();
@@ -206,11 +206,28 @@ BH2TDC( void )
   c1->Divide(4,4);
   for( Int_t i=0; i<NumOfSegBH2; ++i ){
     for( Int_t j=0; j<kUorD; ++j ){
-      c1->cd(i+1+j*(NumOfSegBH2))->SetLogy();
+      c1->cd(i+1+j*(NumOfSegBH2));//->SetLogy();
       TH1 *h = GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, i+j*NumOfSegBH2+1) );
       if( !h ) continue;
+      h->GetXaxis()->SetRangeUser(250000, 500000);
       h->Draw();
     }
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+T0( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t i=0; i<NumOfSegBH2; ++i ){
+    c1->cd(i+1);//->SetLogy();
+    TH1 *h = GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, i+NumOfSegBH2+1) );
+    if( !h ) continue;
+    h->GetXaxis()->SetRangeUser(350000, 360000);
+    h->Draw();
   }
   return c1;
 }
@@ -539,7 +556,7 @@ TOFTDC( void )
   c1->Divide(8,6);
   for( Int_t i=0; i<NumOfSegTOF; ++i ){
     for( Int_t j=0; j<kUorD; ++j ){
-      c1->cd(i+1+j*NumOfSegTOF)->SetLogy();
+      c1->cd(i+1+j*NumOfSegTOF);//->SetLogy();
       TH1 *h = GHist::get( HistMaker::getUniqueID(kTOF, 0, kTDC, i+j*NumOfSegTOF+1) );
       if( !h ) continue;
       h->Draw();
@@ -630,23 +647,36 @@ TriggerFlag( void )
 TCanvas*
 MsTTDC( void )
 {
-  Int_t id = HistMaker::getUniqueID(kMsT, 0, kTDC);
-
   TCanvas *c1 = new TCanvas(__func__, __func__);
-  c1->Divide(6,4);
+  c1->Divide(6, 4);
   for( Int_t i=0; i<NumOfSegTOF; ++i ){
-    for( Int_t j=0; j<kUorD; ++j ){
-      c1->cd(i+1)->SetLogy();
-      TH1 *h = GHist::get(id+i+j*NumOfSegTOF);
-      if( !h ) continue;
-      h->GetXaxis()->SetRangeUser(0,2000);
-      if( j==kU )
-	h->Draw();
-      else {
-	h->SetLineColor(kRed+1);
-	h->Draw("same");
-      }
-    }
+    c1->cd(i+1);//->SetLogy();
+    TH1 *h = GHist::get( HistMaker::getUniqueID(kMsT, 0, kTDC, i+1) );
+    if( !h ) continue;
+    // h->GetXaxis()->SetRangeUser(0,2000);
+    h->Draw();
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
+MsTHitPat( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(2, 2);
+  std::vector<Int_t> id = {
+    HistMaker::getUniqueID(kTOF, 0, kHitPat, 1),
+    HistMaker::getUniqueID(kSCH, 0, kHitPat, 1),
+    HistMaker::getUniqueID(kMsT, 0, kHitPat, 0),
+    HistMaker::getUniqueID(kMsT, 0, kHitPat, 1)
+  };
+  for( Int_t i=0, n=id.size(); i<n; ++i ){
+    c1->cd(i+1);//->SetLogy();
+    TH1 *h = GHist::get( id.at(i) );
+    if( !h ) continue;
+    // h->GetXaxis()->SetRangeUser(0,2000);
+    h->Draw();
   }
   return c1;
 }
@@ -855,14 +885,14 @@ SAC( void )
       HistMaker::getUniqueID(kSAC, 0, kADCwTDC, 4)
     };
     for( Int_t i=0, n=id.size(); i<n; ++i ){
-	c1->cd(1)->cd(i+1)->SetLogy();
-	TH1 *h = GHist::get(id[i]);
-	TH1 *h_wt = GHist::get(id_wt[i]);
-	if( !h ) continue;
-	if( !h_wt ) continue;
-	h->Draw();
-	h_wt->SetLineColor(kRed+1);
-	h_wt->Draw("same");
+      c1->cd(1)->cd(i+1)->SetLogy();
+      TH1 *h = GHist::get(id[i]);
+      TH1 *h_wt = GHist::get(id_wt[i]);
+      if( !h ) continue;
+      if( !h_wt ) continue;
+      h->Draw();
+      h_wt->SetLineColor(kRed+1);
+      h_wt->Draw("same");
     }
   }
 
@@ -876,11 +906,11 @@ SAC( void )
     };
 
     for( Int_t i=0, n=id.size(); i<n; ++i ){
-	c1->cd(2)->cd(i+1)->SetLogy();
-	TH1 *h = GHist::get(id[i]);
-	if( !h ) continue;
-	h->GetXaxis()->SetRangeUser(0,1500);
-	h->Draw();
+      c1->cd(2)->cd(i+1);//->SetLogy();
+      TH1 *h = GHist::get(id[i]);
+      if( !h ) continue;
+      h->GetXaxis()->SetRangeUser(0,1500);
+      h->Draw();
     }
   }
 
@@ -2200,7 +2230,7 @@ UpdateBcOutEfficiency( void )
     "BC3_Multi_x0", "BC3_Multi_x1", "BC3_Multi_v0", "BC3_Multi_v1", "BC3_Multi_u0", "BC3_Multi_u1",
     "BC4_Multi_u0", "BC4_Multi_u1", "BC4_Multi_v0", "BC4_Multi_v1", "BC4_Multi_x0", "BC4_Multi_x1"
   };
-  static std::vector<TLatex*> tex(name.size());
+  static std::vector<TLatex*> tex(name.size()*2);
   for( Int_t i=0, n=name.size(); i<n; ++i ){
     c1->cd(i+1);
     TH1 *h1 = (TH1*)gPad->FindObject(name[i]+"_wTDC");
@@ -2214,12 +2244,17 @@ UpdateBcOutEfficiency( void )
     Double_t zero2 = h2->GetBinContent(1);
     Double_t all2  = h2->GetEntries();
     Double_t eff2  = 1. - zero2/all2;
-    if( tex[i] ) delete tex[i];
-    tex[i] = new TLatex;
-    tex[i]->SetNDC();
-    tex[i]->SetTextSize(0.150);
-    tex[i]->SetText(0.400,0.600,Form("eff. %.3f (#color[%d]{%.3f})", eff1, kRed+1, eff2));
-    tex[i]->Draw();
+    if( tex[2*i] ) delete tex[2*i];
+    if( tex[2*i+1] ) delete tex[2*i+1];
+    tex[2*i] = new TLatex;
+    tex[2*i]->SetNDC();
+    tex[2*i]->SetTextAlign(32);
+    tex[2*i]->SetTextSize(0.150);
+    tex[2*i+1] = dynamic_cast<TLatex*>(tex[2*i]->Clone());
+    tex[2*i]->SetText(0.770,0.600,Form("eff. %.3f", eff1));
+    tex[2*i+1]->SetText(0.770,0.500,Form("#color[%d]{%.3f}", kRed+1, eff2));
+    tex[2*i]->Draw();
+    tex[2*i+1]->Draw();
   }
 }
 
@@ -2233,7 +2268,7 @@ UpdateSdcInOutEfficiency( void )
     "SDC2_Multi_x0", "SDC2_Multi_x1", "SDC2_Multi_y0", "SDC2_Multi_y1",
     "SDC3_Multi_y0", "SDC3_Multi_y1", "SDC3_Multi_x0", "SDC3_Multi_x1"
   };
-  static std::vector<TLatex*> tex(name.size());
+  static std::vector<TLatex*> tex(name.size()*2);
 
   for( Int_t i=0, n=name.size(); i<n; ++i ){
     if( i<NumOfLayersSDC1 )
@@ -2251,12 +2286,17 @@ UpdateSdcInOutEfficiency( void )
     Double_t zero2 = h2->GetBinContent(1);
     Double_t all2  = h2->GetEntries();
     Double_t eff2  = 1. - zero2/all2;
-    if( tex[i] ) delete tex[i];
-    tex[i] = new TLatex;
-    tex[i]->SetNDC();
-    tex[i]->SetTextSize(0.150);
-    tex[i]->SetText(0.400,0.600,Form("eff. %.3f (#color[%d]{%.3f})", eff1, kRed+1, eff2));
-    tex[i]->Draw();
+    if( tex[2*i] ) delete tex[2*i];
+    if( tex[2*i+1] ) delete tex[2*i+1];
+    tex[2*i] = new TLatex;
+    tex[2*i]->SetNDC();
+    tex[2*i]->SetTextAlign(32);
+    tex[2*i]->SetTextSize(0.150);
+    tex[2*i+1] = dynamic_cast<TLatex*>(tex[2*i]->Clone());
+    tex[2*i]->SetText(0.770,0.600,Form("eff. %.3f", eff1));
+    tex[2*i+1]->SetText(0.770,0.500,Form("#color[%d]{%.3f}", kRed+1, eff2));
+    tex[2*i]->Draw();
+    tex[2*i+1]->Draw();
   }
 }
 
@@ -2316,6 +2356,39 @@ UpdateSSDEfficiency( void )
     tex[i]->SetText(0.500,0.600,Form("eff. %.3f",
 				     eff));
     tex[i]->Draw();
+  }
+}
+
+//____________________________________________________________________________
+void
+UpdateT0PeakFitting( void )
+{
+  {
+    static TCanvas *c1 = (TCanvas*)gROOT->FindObject("T0");
+    static std::vector<TText*> tex(NumOfSegBH2*2);
+    for( Int_t i=0; i<NumOfSegBH2; ++i ){
+      c1->cd(i+1);
+      TH1 *h = (TH1*)gPad->FindObject( Form("BH2_TDC_%dD", i+1) );
+      if( !h ) continue;
+      TF1 f("f", "gaus", 350000., 360000.);
+      Double_t p = h->GetBinCenter(h->GetMaximumBin());
+      Double_t w = 500.;
+      for( Int_t ifit=0; ifit<3; ++ifit ){
+	h->Fit("f", "Q", "", p-2*w, p+2*w );
+	p = f.GetParameter(1);
+	w = f.GetParameter(2);
+      }
+      if( tex[2*i] ) delete tex[2*i];
+      if( tex[2*i+1] ) delete tex[2*i+1];
+      tex[2*i] = new TLatex;
+      tex[2*i]->SetNDC();
+      tex[2*i]->SetTextSize(0.100);
+      tex[2*i+1] = dynamic_cast<TLatex*>(tex[2*i]->Clone());
+      tex[2*i]->SetText( 0.200, 0.750, Form("%.0f", p));
+      tex[2*i+1]->SetText( 0.200, 0.650, Form("%.0f", w));
+      tex[2*i]->Draw();
+      tex[2*i+1]->Draw();
+    }
   }
 }
 

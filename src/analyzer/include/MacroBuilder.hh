@@ -51,6 +51,7 @@ namespace http
   TCanvas* LAC( void );
   TCanvas* LC( void );
   TCanvas* MsTTDC( void );
+  TCanvas* MsTHitPat( void );
   TCanvas* BC3TDCTOT( void );
   TCanvas* BC3HitMulti( void );
   TCanvas* BC4TDCTOT( void );
@@ -62,6 +63,7 @@ namespace http
   TCanvas* SDC2HitMulti( void );
   TCanvas* SDC3TDCTOT( void );
   TCanvas* SDC3HitMulti( void );
+  TCanvas* T0( void );
   TCanvas* BcOutEfficiency( void );
   TCanvas* SdcInOutEfficiency( void );
   TCanvas* BFTSFTSCHTOT( void );
@@ -123,6 +125,7 @@ namespace http
   void     UpdateSdcInOutEfficiency( void );
   void     UpdateCFTEfficiency( void );
   void     UpdateSSDEfficiency( void );
+  void     UpdateT0PeakFitting( void );
   void     UpdateTOTPeakFitting( void );
 }
 

@@ -149,6 +149,7 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::BC4HitMulti());
   gHttp.Register(http::BH2ADC());
   gHttp.Register(http::BH2TDC());
+  gHttp.Register(http::T0());
   gHttp.Register(http::SFTTDCTOT());
   gHttp.Register(http::SFTHitMulti());
   gHttp.Register(http::SFT2D());
@@ -2956,11 +2957,10 @@ process_event( void )
 
   // Update
   if( gUnpacker.get_counter()%100 == 0 ){
-    // Efficiency
     http::UpdateBcOutEfficiency();
     http::UpdateSdcInOutEfficiency();
     http::UpdateCFTEfficiency();
-    // TOT
+    http::UpdateT0PeakFitting();
     http::UpdateTOTPeakFitting();
   }
 

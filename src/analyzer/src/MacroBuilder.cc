@@ -218,6 +218,22 @@ BH2TDC( void )
 
 //____________________________________________________________________________
 TCanvas*
+T0( void )
+{
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  for( Int_t i=0; i<NumOfSegBH2; ++i ){
+    c1->cd(i+1);//->SetLogy();
+    TH1 *h = GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, i+NumOfSegBH2+1) );
+    if( !h ) continue;
+    h->GetXaxis()->SetRangeUser(350000, 360000);
+    h->Draw();
+  }
+  return c1;
+}
+
+//____________________________________________________________________________
+TCanvas*
 ACs( void )
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
@@ -2340,6 +2356,39 @@ UpdateSSDEfficiency( void )
     tex[i]->SetText(0.500,0.600,Form("eff. %.3f",
 				     eff));
     tex[i]->Draw();
+  }
+}
+
+//____________________________________________________________________________
+void
+UpdateT0PeakFitting( void )
+{
+  {
+    static TCanvas *c1 = (TCanvas*)gROOT->FindObject("T0");
+    static std::vector<TText*> tex(NumOfSegBH2*2);
+    for( Int_t i=0; i<NumOfSegBH2; ++i ){
+      c1->cd(i+1);
+      TH1 *h = (TH1*)gPad->FindObject( Form("BH2_TDC_%dD", i+1) );
+      if( !h ) continue;
+      TF1 f("f", "gaus", 350000., 360000.);
+      Double_t p = h->GetBinCenter(h->GetMaximumBin());
+      Double_t w = 500.;
+      for( Int_t ifit=0; ifit<3; ++ifit ){
+	h->Fit("f", "Q", "", p-2*w, p+2*w );
+	p = f.GetParameter(1);
+	w = f.GetParameter(2);
+      }
+      if( tex[2*i] ) delete tex[2*i];
+      if( tex[2*i+1] ) delete tex[2*i+1];
+      tex[2*i] = new TLatex;
+      tex[2*i]->SetNDC();
+      tex[2*i]->SetTextSize(0.100);
+      tex[2*i+1] = dynamic_cast<TLatex*>(tex[2*i]->Clone());
+      tex[2*i]->SetText( 0.200, 0.750, Form("%.0f", p));
+      tex[2*i+1]->SetText( 0.200, 0.650, Form("%.0f", w));
+      tex[2*i]->Draw();
+      tex[2*i+1]->Draw();
+    }
   }
 }
 

@@ -2214,7 +2214,7 @@ UpdateBcOutEfficiency( void )
     "BC3_Multi_x0", "BC3_Multi_x1", "BC3_Multi_v0", "BC3_Multi_v1", "BC3_Multi_u0", "BC3_Multi_u1",
     "BC4_Multi_u0", "BC4_Multi_u1", "BC4_Multi_v0", "BC4_Multi_v1", "BC4_Multi_x0", "BC4_Multi_x1"
   };
-  static std::vector<TLatex*> tex(name.size());
+  static std::vector<TLatex*> tex(name.size()*2);
   for( Int_t i=0, n=name.size(); i<n; ++i ){
     c1->cd(i+1);
     TH1 *h1 = (TH1*)gPad->FindObject(name[i]+"_wTDC");
@@ -2228,12 +2228,17 @@ UpdateBcOutEfficiency( void )
     Double_t zero2 = h2->GetBinContent(1);
     Double_t all2  = h2->GetEntries();
     Double_t eff2  = 1. - zero2/all2;
-    if( tex[i] ) delete tex[i];
-    tex[i] = new TLatex;
-    tex[i]->SetNDC();
-    tex[i]->SetTextSize(0.150);
-    tex[i]->SetText(0.400,0.600,Form("eff. %.3f (#color[%d]{%.3f})", eff1, kRed+1, eff2));
-    tex[i]->Draw();
+    if( tex[2*i] ) delete tex[2*i];
+    if( tex[2*i+1] ) delete tex[2*i+1];
+    tex[2*i] = new TLatex;
+    tex[2*i]->SetNDC();
+    tex[2*i]->SetTextAlign(32);
+    tex[2*i]->SetTextSize(0.150);
+    tex[2*i+1] = dynamic_cast<TLatex*>(tex[2*i]->Clone());
+    tex[2*i]->SetText(0.770,0.600,Form("eff. %.3f", eff1));
+    tex[2*i+1]->SetText(0.770,0.500,Form("#color[%d]{%.3f}", kRed+1, eff2));
+    tex[2*i]->Draw();
+    tex[2*i+1]->Draw();
   }
 }
 
@@ -2247,7 +2252,7 @@ UpdateSdcInOutEfficiency( void )
     "SDC2_Multi_x0", "SDC2_Multi_x1", "SDC2_Multi_y0", "SDC2_Multi_y1",
     "SDC3_Multi_y0", "SDC3_Multi_y1", "SDC3_Multi_x0", "SDC3_Multi_x1"
   };
-  static std::vector<TLatex*> tex(name.size());
+  static std::vector<TLatex*> tex(name.size()*2);
 
   for( Int_t i=0, n=name.size(); i<n; ++i ){
     if( i<NumOfLayersSDC1 )
@@ -2265,12 +2270,17 @@ UpdateSdcInOutEfficiency( void )
     Double_t zero2 = h2->GetBinContent(1);
     Double_t all2  = h2->GetEntries();
     Double_t eff2  = 1. - zero2/all2;
-    if( tex[i] ) delete tex[i];
-    tex[i] = new TLatex;
-    tex[i]->SetNDC();
-    tex[i]->SetTextSize(0.150);
-    tex[i]->SetText(0.400,0.600,Form("eff. %.3f (#color[%d]{%.3f})", eff1, kRed+1, eff2));
-    tex[i]->Draw();
+    if( tex[2*i] ) delete tex[2*i];
+    if( tex[2*i+1] ) delete tex[2*i+1];
+    tex[2*i] = new TLatex;
+    tex[2*i]->SetNDC();
+    tex[2*i]->SetTextAlign(32);
+    tex[2*i]->SetTextSize(0.150);
+    tex[2*i+1] = dynamic_cast<TLatex*>(tex[2*i]->Clone());
+    tex[2*i]->SetText(0.770,0.600,Form("eff. %.3f", eff1));
+    tex[2*i+1]->SetText(0.770,0.500,Form("#color[%d]{%.3f}", kRed+1, eff2));
+    tex[2*i]->Draw();
+    tex[2*i+1]->Draw();
   }
 }
 

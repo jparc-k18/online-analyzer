@@ -51,6 +51,7 @@ namespace http
   TCanvas* LAC( void );
   TCanvas* LC( void );
   TCanvas* MsTTDC( void );
+  TCanvas* MsTHitPat( void );
   TCanvas* BC3TDCTOT( void );
   TCanvas* BC3HitMulti( void );
   TCanvas* BC4TDCTOT( void );

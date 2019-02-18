@@ -501,7 +501,7 @@ process_event( void )
 	// std::cout << sTOT[i] << " " << val_pre[i] << std::endl;
 	if( val_pre[i] > 200 ) val_pre[i] *= 0.05;
 	g_tot[i]->SetPoint(spill, spill, val_pre[i]);
-	g_tot[i]->GetYaxis()->SetRangeUser(30, 80);
+	g_tot[i]->GetYaxis()->SetRangeUser(35, 75);
 	g_tot[i]->GetXaxis()->SetLimits(spill-90, spill+10);
       }
       // Double_t kpi_ratio = beam_pre[kKbeam]/beam_pre[kPibeam];

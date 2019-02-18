@@ -161,7 +161,6 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::FHT1TDC());
   gHttp.Register(http::FHT1TOT());
   gHttp.Register(http::FHT1HitMulti());
-  // gHttp.Register(http::MsTTDC());
   gHttp.Register(http::SDC2TDCTOT());
   gHttp.Register(http::SDC2HitMulti());
   gHttp.Register(http::SDC3TDCTOT());
@@ -176,6 +175,8 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::LC());
   gHttp.Register(http::TriggerFlag());
   gHttp.Register(http::HitPattern());
+  gHttp.Register(http::MsTTDC());
+  gHttp.Register(http::MsTHitPat());
   gHttp.Register(http::CFTTDC());
   gHttp.Register(http::CFTTDC2D());
   gHttp.Register(http::CFTTOT());
@@ -2953,12 +2954,15 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
-  // Efficiency
-  http::UpdateBcOutEfficiency();
-  http::UpdateSdcInOutEfficiency();
-  http::UpdateCFTEfficiency();
-  // TOT
-  http::UpdateTOTPeakFitting();
+  // Update
+  if( gUnpacker.get_counter()%100 == 0 ){
+    // Efficiency
+    http::UpdateBcOutEfficiency();
+    http::UpdateSdcInOutEfficiency();
+    http::UpdateCFTEfficiency();
+    // TOT
+    http::UpdateTOTPeakFitting();
+  }
 
   return 0;
 }

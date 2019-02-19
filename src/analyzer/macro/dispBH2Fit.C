@@ -45,7 +45,7 @@ void dispBH2Fit()
         double mean = fit.GetParameter(1);
 //        double xpos  = h1->GetXaxis()->GetBinCenter(h1->GetMaximumBin());
         double xpos  = tdc_min+1000;
-        double ypos  = h1->GetMaximum()*1.1;
+        double ypos  = h1->GetMaximum()*0.7;
         TLatex *text = new TLatex(xpos, ypos, Form("Mean. %.2f", mean));
         text->SetTextSize(0.08);
         text->Draw("same");

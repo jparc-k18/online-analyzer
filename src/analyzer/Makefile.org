@@ -123,6 +123,12 @@ my_tgt_scaler_e07	:= $(bin_dir)/scaler_e07
 my_obj_scaler_e40	:= $(core_obj) user_scaler_e40.o
 my_tgt_scaler_e40	:= $(bin_dir)/scaler_e40
 
+my_obj_scaler_sch	:= $(core_obj) user_scaler_sch.o
+my_tgt_scaler_sch	:= $(bin_dir)/scaler_sch
+
+my_obj_scaler_daq	:= $(core_obj) user_scaler_daq.o
+my_tgt_scaler_daq	:= $(bin_dir)/scaler_daq
+
 my_obj_hbjscaler	:= $(core_obj) user_hbjscaler_ana.o
 my_tgt_hbjscaler	:= $(bin_dir)/HBJscalerAna
 
@@ -143,6 +149,8 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_beamprofile_e03) \
 	$(my_tgt_beamprofile_e40) \
 	$(my_tgt_scaler_e40) \
+	$(my_tgt_scaler_sch) \
+	$(my_tgt_scaler_daq) \
 	$(my_tgt_jsroot_e40) \
 	$(my_tgt_vme01debug) \
 	$(my_tgt_mstmonitor_e40) \
@@ -361,6 +369,18 @@ my_obj_scaler_e40	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e40))
 my_lib_scaler_e40	:= libmyscaler_e40.so
 $(eval $(call make-lib,$(my_lib_scaler_e40),$(my_obj_scaler_e40)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_e40),$(my_lib_scaler_e40)))
+
+#_______________________________________________________________________________
+my_obj_scaler_sch	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_sch))
+my_lib_scaler_sch	:= libmyscaler_sch.so
+$(eval $(call make-lib,$(my_lib_scaler_sch),$(my_obj_scaler_sch)))
+$(eval $(call make-nogui-target,$(my_tgt_scaler_sch),$(my_lib_scaler_sch)))
+
+#_______________________________________________________________________________
+my_obj_scaler_daq	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_daq))
+my_lib_scaler_daq	:= libmyscaler_daq.so
+$(eval $(call make-lib,$(my_lib_scaler_daq),$(my_obj_scaler_daq)))
+$(eval $(call make-nogui-target,$(my_tgt_scaler_daq),$(my_lib_scaler_daq)))
 
 #_______________________________________________________________________________
 my_obj_hbjscaler	:= $(addprefix $(my_dir)/src/,$(my_obj_hbjscaler))

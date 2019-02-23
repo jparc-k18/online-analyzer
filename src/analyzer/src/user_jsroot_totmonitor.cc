@@ -268,8 +268,8 @@ process_event( void )
       static const int k_dplane   = gUnpacker.get_plane_id("BFT", "downstream");
       static const int k_leading  = gUnpacker.get_data_id("BFT", "leading");
       static const int k_trailing = gUnpacker.get_data_id("BFT", "trailing");
-      static const int tdc_min    = gUser.GetParameter("BFT_TDC", 0);
-      static const int tdc_max    = gUser.GetParameter("BFT_TDC", 1);
+      // static const int tdc_min    = gUser.GetParameter("BFT_TDC", 0);
+      // static const int tdc_max    = gUser.GetParameter("BFT_TDC", 1);
 
       int tdc_prev = 0;
       for(int i = 0; i<NumOfSegBFT; ++i){
@@ -283,10 +283,9 @@ process_event( void )
 	  int tot = tdc - tdc_t;
 	  if(tdc_prev==tdc) continue;
 	  tdc_prev = tdc;
-	  if(tot==0) continue;
-	  if(tdc_min < tdc && tdc < tdc_max){
-	    hptr_array[bft_ctotu_id]->Fill(tot);
-	  }
+	  if(tot<=0) continue;
+	  // if(tdc_min < tdc && tdc < tdc_max)
+	  hptr_array[bft_ctotu_id]->Fill(tot);
 	}
 	// d plane
 	tdc_prev = 0;
@@ -296,10 +295,9 @@ process_event( void )
 	  int tot = tdc - tdc_t;
 	  if(tdc_prev==tdc) continue;
 	  tdc_prev = tdc;
-	  if(tot==0) continue;
-	  if(tdc_min < tdc && tdc < tdc_max){
-	    hptr_array[bft_ctotd_id]->Fill(tot);
-	  }
+	  if(tot<=0) continue;
+	  // if(tdc_min < tdc && tdc < tdc_max)
+	  hptr_array[bft_ctotd_id]->Fill(tot);
 	}
       }
     }
@@ -309,8 +307,8 @@ process_event( void )
       static const int k_device   = gUnpacker.get_device_id("SFT");
       static const int k_leading  = gUnpacker.get_data_id("SFT", "leading");
       static const int k_trailing = gUnpacker.get_data_id("SFT", "trailing");
-      static const int tdc_min    = gUser.GetParameter("SFT_TDC", 0);
-      static const int tdc_max    = gUser.GetParameter("SFT_TDC", 1);
+      // static const int tdc_min    = gUser.GetParameter("SFT_TDC", 0);
+      // static const int tdc_max    = gUser.GetParameter("SFT_TDC", 1);
 
       for(int l=0; l<NumOfPlaneSFT; ++l){
 	int tdc_prev = 0;
@@ -331,9 +329,9 @@ process_event( void )
 	      int tot = tdc - tdc_t;
 	      if(tdc_prev==tdc) continue;
 	      tdc_prev = tdc;
-	      if(tot==0) continue;
-	      if(tdc_min < tdc && tdc < tdc_max)
-		hptr_array[sft_ctot_id+l]->Fill(tot);
+	      if(tot<=0) continue;
+	      //if(tdc_min < tdc && tdc < tdc_max)
+	      hptr_array[sft_ctot_id+l]->Fill(tot);
 	    }
 	  }
 	}
@@ -344,20 +342,20 @@ process_event( void )
       static const int k_device   = gUnpacker.get_device_id("SCH");
       static const int k_leading  = gUnpacker.get_data_id("SCH", "leading");
       static const int k_trailing = gUnpacker.get_data_id("SCH", "trailing");
-      static const int tdc_min = gUser.GetParameter("SCH_TDC", 0);
-      static const int tdc_max = gUser.GetParameter("SCH_TDC", 1);
+      // static const int tdc_min = gUser.GetParameter("SCH_TDC", 0);
+      // static const int tdc_max = gUser.GetParameter("SCH_TDC", 1);
       for( int i=0; i<NumOfSegSCH; ++i ){
 	int nhit = gUnpacker.get_entries(k_device, 0, i, 0, k_leading);
 	for(int m = 0; m<nhit; ++m){
 	  int tdc      = gUnpacker.get(k_device, 0, i, 0, k_leading,  m);
 	  int trailing = gUnpacker.get(k_device, 0, i, 0, k_trailing, m);
 	  int tot      = tdc - trailing;
-	  if( tdc_min<tdc && tdc<tdc_max ){
-	    if( i < 16 )
-	      hptr_array[sch_tot_id]->Fill(tot);
-	    else
-	      hptr_array[sch_tot_id+1]->Fill(tot);
-	  }
+	  //if( tdc_min<tdc && tdc<tdc_max ){
+	  if( i < 16 )
+	    hptr_array[sch_tot_id]->Fill(tot);
+	  else
+	    hptr_array[sch_tot_id+1]->Fill(tot);
+	  //}
 	}
       }
     }
@@ -366,8 +364,8 @@ process_event( void )
       static const int k_device   = gUnpacker.get_device_id("FHT1");
       static const int k_leading  = gUnpacker.get_data_id("FHT1", "leading");
       static const int k_trailing = gUnpacker.get_data_id("FHT1", "trailing");
-      static const int tdc_min    = gUser.GetParameter("FHT1_TDC", 0);
-      static const int tdc_max    = gUser.GetParameter("FHT1_TDC", 1);
+      // static const int tdc_min    = gUser.GetParameter("FHT1_TDC", 0);
+      // static const int tdc_max    = gUser.GetParameter("FHT1_TDC", 1);
       for( int l=0; l<NumOfLayersFHT; ++l ){
 	for( int ud=0; ud<NumOfUDStructureFHT; ++ud ){
 	  for( int seg=0; seg<NumOfSegFHT1; ++seg ){
@@ -383,7 +381,8 @@ process_event( void )
 	      if( nhit_l == nhit_t ){
 		int tdc = vtdc[m];
 		int tot = tdc - trailing;
-		if( tdc_min<tdc && tdc<tdc_max && tot > 0 )
+		// if( tdc_min<tdc && tdc<tdc_max )
+		if( tot > 0 )
 		  hptr_array[fht1_tot_id[l*2+ud]]->Fill(tot);
 	      }
 	    }
@@ -396,8 +395,8 @@ process_event( void )
       static const int k_device   = gUnpacker.get_device_id("FHT2");
       static const int k_leading  = gUnpacker.get_data_id("FHT2", "leading");
       static const int k_trailing = gUnpacker.get_data_id("FHT2", "trailing");
-      static const int tdc_min    = gUser.GetParameter("FHT2_TDC", 0);
-      static const int tdc_max    = gUser.GetParameter("FHT2_TDC", 1);
+      // static const int tdc_min    = gUser.GetParameter("FHT2_TDC", 0);
+      // static const int tdc_max    = gUser.GetParameter("FHT2_TDC", 1);
       for( int l=0; l<NumOfLayersFHT; ++l ){
 	for( int ud=0; ud<NumOfUDStructureFHT; ++ud ){
 	  for( int seg=0; seg<NumOfSegFHT2; ++seg ){
@@ -413,7 +412,8 @@ process_event( void )
 	      if( nhit_l == nhit_t ){
 		int tdc = vtdc[m];
 		int tot = tdc - trailing;
-		if( tdc_min<tdc && tdc<tdc_max && tot > 0 )
+		// if( tdc_min<tdc && tdc<tdc_max )
+		if( tot > 0 )
 		  hptr_array[fht2_tot_id[l*2+ud]]->Fill(tot);
 	      }
 	    }

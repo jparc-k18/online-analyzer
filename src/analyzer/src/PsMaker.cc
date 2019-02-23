@@ -1606,9 +1606,9 @@ void PsMaker::create(TString& name)
 
     // TDC
     par_list[kXdiv] = 4; par_list[kYdiv] = 3;
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 2048;
+    par_list[kXrange_min] = 180000; par_list[kXrange_max] = 210000;
     flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
-    flag_log   = GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
+    flag_log   = false;//GuiPs::isOptOn(kLogyTDC)  | GuiPs::isOptOn(kExpDataSheet);
 
     // TDC U
     index = 0;

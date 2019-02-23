@@ -58,13 +58,15 @@ ScalerAnalyzer::~ScalerAnalyzer( void )
 
 //______________________________________________________________________________
 void
-ScalerAnalyzer::Clear( Option_t* )
+ScalerAnalyzer::Clear( Option_t* opt )
 {
   for( Int_t i=0; i<MaxColumn; ++i ){
     for( Int_t j=0; j<MaxRow; ++j ){
-      if( !m_info[i][j].name.EqualTo("Spill") ){
-	m_info[i][j].data = 0;
+      if( !TString(opt).EqualTo("all") &&
+	  m_info[i][j].name.EqualTo("Spill") ){
+	continue;
       }
+      m_info[i][j].data = 0;
     }
   }
 }
@@ -79,7 +81,7 @@ ScalerAnalyzer::Decode( void )
   //////////////////// Run Number
   if( m_run_number != gUnpacker.get_root()->get_run_number() ){
     m_run_number = gUnpacker.get_root()->get_run_number();
-    Clear();
+    Clear("all");
   }
 
   //////////////////// Trigger Flag

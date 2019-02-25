@@ -517,6 +517,7 @@ process_event( void )
   }
 
   // DAQ Monitor
+  static Int_t    spill_pre = 0;
   {
     enum eVal { kL1Req, kL1Acc, kL2Acc, kRealTime, kLiveTime, nVal };
 
@@ -524,17 +525,22 @@ process_event( void )
     static const Int_t channel_id[nVal] = { 55, 56, 62, 53, 54 };
     static Double_t val[nVal]     = {};
     static Double_t val_pre[nVal] = {};
-
+    static Double_t val_sum[nVal] = {};
     for(Int_t i=0; i<nVal; ++i){
       Int_t hit = gUnpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
       if( hit==0 ) continue;
       val[i] = (Double_t)gUnpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
     }
+    if( spill_inc != spill_pre ){
+      for( Int_t i=0; i<nVal; ++i ){
+	val_sum[i] += val_pre[i];
+      }
+    }
     if( spill_inc == nspill ){
-      Double_t daq_eff = val_pre[kL1Acc]/val_pre[kL1Req];
-      Double_t l2_eff  = val_pre[kL2Acc]/val_pre[kL1Acc];
-      Double_t real    = val_pre[kRealTime];
-      Double_t live    = val_pre[kLiveTime];
+      Double_t daq_eff = val_sum[kL1Acc]/val_sum[kL1Req];
+      Double_t l2_eff  = val_sum[kL2Acc]/val_sum[kL1Acc];
+      Double_t real    = val_sum[kRealTime];
+      Double_t live    = val_sum[kLiveTime];
       Double_t duty    = daq_eff/(1.-daq_eff)*(real/live-1.);
       if( TMath::IsNaN(daq_eff) )
 	daq_eff = 1.;
@@ -548,6 +554,13 @@ process_event( void )
       g_daq[kL2Eff]->SetPoint(spill, spill, l2_eff);
       g_daq[kDuty]->SetPoint(spill, spill, duty);
       leg_daq->SetHeader( Form("  DAQ Eff. : %.3lf", daq_eff));
+      for( Int_t i=0; i<nVal; ++i ){
+#if 0
+	std::cout << std::setw(2) << i << " " << std::setw(10) << val_pre[i] << " "
+		  << std::setw(10) << (Double_t)(val_sum[i])/spill_inc << std::endl;
+#endif
+	val_sum[i] = 0;
+      }
     }
     for( Int_t i=0; i<nVal; ++i ){
       val_pre[i] = val[i];
@@ -558,6 +571,7 @@ process_event( void )
     spill++;
     spill_inc = 0;
   }
+  spill_pre = spill_inc;
   return 0;
 }
 

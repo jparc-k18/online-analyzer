@@ -1258,6 +1258,7 @@ FHT1HitMulti( void )
     c1->cd(i+1);
     TH1* h = GHist::get( hid.at(i) );
     if( !h ) continue;
+    if( i > 3 ) h->GetXaxis()->SetRangeUser(0, 20);
     h->Draw("colz");
   }
   return c1;
@@ -1342,6 +1343,7 @@ FHT2HitMulti( void )
     c1->cd(i+1);
     TH1* h = GHist::get( hid.at(i) );
     if( !h ) continue;
+    if( i > 3 ) h->GetXaxis()->SetRangeUser(0, 20);
     h->Draw("colz");
   }
   return c1;

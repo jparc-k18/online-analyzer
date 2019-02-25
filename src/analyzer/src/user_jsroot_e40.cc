@@ -415,9 +415,9 @@ process_event( void )
     // TOF
     for(int seg=0; seg<NumOfSegTOF; ++seg){
       int nhit = gUnpacker.get_entries(k_device, k_tof, seg, k_ch, k_tdc);
-      for(int m = 0; m<nhit; ++m){
+      if( nhit > 0 )
 	hptr_array[tofhit_id]->Fill(seg);
-
+      for(int m = 0; m<nhit; ++m){
 	unsigned int tdc = gUnpacker.get(k_device, k_tof, seg, k_ch, k_tdc, m);
 	if(tdc!=0){
 	  hptr_array[toft_id + seg]->Fill(tdc);
@@ -429,14 +429,17 @@ process_event( void )
     // SCH
     for(int seg=0; seg<NumOfSegSCH; ++seg){
       int nhit = gUnpacker.get_entries(k_device, k_sch, seg, k_ch, k_tdc);
-      if(nhit!=0){
-	hptr_array[schhit_id]->Fill(seg);
-      }
+      int cnhit = 0;
       for(int m = 0; m<nhit; ++m){
 	unsigned int tdc = gUnpacker.get(k_device, k_sch, seg, k_ch, k_tdc, m);
 	if(tdc!=0){
 	  hptr_array[scht_id + seg]->Fill(tdc);
+	  if(26<tdc && tdc<32)
+	    cnhit++;
 	}
+      }
+      if(cnhit!=0){
+	hptr_array[schhit_id]->Fill(seg);
       }
     }// SCH
 

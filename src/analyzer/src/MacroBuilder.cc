@@ -10,6 +10,7 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TLatex.h>
+#include <TLine.h>
 #include <TMacro.h>
 #include <TString.h>
 #include <TText.h>
@@ -2404,6 +2405,11 @@ UpdateTOTPeakFitting( void )
       "BFT_CTOT_U", "BFT_CTOT_D", "SFT_CTOT_U", "SFT_CTOT_V",
       "SFT_CTOT_X", "SFT_CTOT_XP", "SCH_TOT (1-16ch)", "SCH_TOT (17-64ch)"
     };
+    static std::vector<Double_t> optval = {
+      40.0, 40.0, 65.0, 65.0,
+      67.5, 67.5, 42.0, 54.0
+    };
+    static std::vector<TLine*> line(name.size());
     static std::vector<TText*> tex(name.size());
     for( Int_t i=0, n=name.size(); i<n; ++i ){
       c1->cd(i+1);
@@ -2423,6 +2429,9 @@ UpdateTOTPeakFitting( void )
       tex[i]->SetTextSize(0.100);
       tex[i]->SetText( 0.200, 0.750, Form("%.2f", p));
       tex[i]->Draw();
+      if( line[i] ) delete line[i];
+      line[i] = new TLine(optval[i], 0., optval[i], h->GetMaximum());
+      line[i]->Draw();
     }
   }
   {
@@ -2431,6 +2440,11 @@ UpdateTOTPeakFitting( void )
       "FHT1_UX1_TOT", "FHT1_DX1_TOT", "FHT1_UX2_TOT", "FHT1_DX2_TOT",
       "FHT2_UX1_TOT", "FHT2_DX1_TOT", "FHT2_UX2_TOT", "FHT2_DX2_TOT"
     };
+    static std::vector<Double_t> optval = {
+      58.0, 60.0, 58.0, 60.0,
+      60.0, 60.0, 60.0, 60.0
+    };
+    static std::vector<TLine*> line(name.size());
     static std::vector<TText*> tex(name.size());
     for( Int_t i=0, n=name.size(); i<n; ++i ){
       c1->cd(i+1);
@@ -2451,6 +2465,9 @@ UpdateTOTPeakFitting( void )
       tex[i]->SetTextSize(0.100);
       tex[i]->SetText( 0.200, 0.750, Form("%.2f", p));
       tex[i]->Draw();
+      if( line[i] ) delete line[i];
+      line[i] = new TLine(optval[i], 0., optval[i], h->GetMaximum());
+      line[i]->Draw();
     }
   }
 }

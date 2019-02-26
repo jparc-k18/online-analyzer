@@ -58,8 +58,9 @@ process_end( void )
 int
 process_event( void )
 {
-  int node_id = gUnpacker.get_fe_id( target.at(0) );
-//  gUnpacker.dump_data_fe(node_id, 0xff010000);
+  // int node_id = gUnpacker.get_fe_id( target.at(0) );
+  // gUnpacker.dump_data_fe(node_id, 0xff010000);
+
   /*
     int node_id = gUnpacker.get_fe_id("k18eb"); // Event builder
     std::cout << g_unpacker.get_node_header(node_id, DAQNode::k_magic) << std::dec << std::endl;

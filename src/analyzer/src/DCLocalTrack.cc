@@ -715,14 +715,14 @@ bool DCLocalTrack::DoFitUV()
 
 
   // initial z
-  double iniZ[n];
+  //  double iniZ[n];
   //  double delta_z[n];
   //  double delta_dz[n];
   //  double sum_dz=0;
   //  double c_dz=0;
   //  double delta_n=0;
   int Layer[n];
-  double rrr[n];
+  // double rrr[n];
   double phi;
 
   for(int jj=0; jj<static_cast<int>(n); ++jj ){
@@ -741,7 +741,7 @@ bool DCLocalTrack::DoFitUV()
       return false;
     }
 
-    iniZ[jj] = CalculateZpos(phi, ini_hitp);
+    // iniZ[jj] = CalculateZpos(phi, ini_hitp);
     m_phi_ini[(int)Layer[jj]] = phi;
 
   }
@@ -791,7 +791,7 @@ bool DCLocalTrack::DoFitUV()
 
       double ss = geomMan.GetResolution( l_geo );
       z.push_back( z1 ); xy.push_back( xy1 ); s.push_back(ss);
-      rrr[i] = r;
+      // rrr[i] = r;
 
 #if 0
     std::cout << std::setw(10) << "layer = " << lnum
@@ -1517,31 +1517,30 @@ bool DCLocalTrack::GetCrossPointR(double r, double *phi, int layer)
   int llayer[8];
   for (int i=0; i<8; i++){llayer[i] = -1;}
 
-  bool flagZeroCross = false;
-  bool flagZone1 = false;
-  bool flagZone4 = false;
+  // bool flagZeroCross = false;
+  // bool flagZone1 = false;
+  // bool flagZone4 = false;
   for (int i=0; i<nPhiHit; i++) {
-    double phiVal = m_hit_array[i]->GetPositionPhi();
     llayer[i] = m_hit_array[i]->GetLayer();
-    if (phiVal>=0 && phiVal<=90){
-      flagZone1 = true;
-    }else if (phiVal>=270 && phiVal<=360){
-      flagZone4 = true;
-    }
+    // double phiVal = m_hit_array[i]->GetPositionPhi();
+    // if (phiVal>=0 && phiVal<=90){
+    //   flagZone1 = true;
+    // }else if (phiVal>=270 && phiVal<=360){
+    //   flagZone4 = true;
+    // }
   }
 
-  if (flagZone1 || flagZone4){
-    flagZeroCross = true;
-  }
+  // if (flagZone1 || flagZone4){
+  //   flagZeroCross = true;
+  // }
 
-  double phi__[4] = {-100,-100,-100,-100};
+  // double phi__[4] = {-100,-100,-100,-100};
 
   double meanPhi1=0, meanPhi2=0.;// 1:layer0~7, 2:layer8~15
   double n1=0., n2=0.;
   for (int i=0; i<nPhiHit; i++) {
     double phiVal = m_hit_array[i]->GetPositionPhi();
-
-    phi__[i]=phiVal;
+    // phi__[i]=phiVal;
     //std::cout << i << ":" <<phiVal << std::endl;
     if(llayer[i]<8 && phi){meanPhi1 += phiVal;n1+=1.;}
     else{meanPhi2 += phiVal;n2+=1.;}

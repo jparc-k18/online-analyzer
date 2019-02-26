@@ -1112,12 +1112,12 @@ namespace track
 	( track->GetWire(IdTOF_UX)==track->GetWire(IdTOF_UY) ) ||
 	( track->GetWire(IdTOF_DX)==track->GetWire(IdTOF_DY) );
 
-      int Track[20]={0};
-      int layer;
-      for( int i=0; i<(track->GetNHit()); ++i){
-	layer=track->GetHit(i)->GetLayer();
-	Track[layer]=1;
-      }
+      // int Track[20]={0};
+      // int layer;
+      // for( int i=0; i<(track->GetNHit()); ++i){
+      // 	layer=track->GetHit(i)->GetLayer();
+      // 	Track[layer]=1;
+      // }
 
       //      bool FHT =
       //	( Track[80]==1 && Track[82]==1 ) || ( Track[81]==1 && Track[83]==1 ) ||

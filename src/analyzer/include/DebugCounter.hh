@@ -21,7 +21,7 @@ namespace debug
   {
   public:
     static ObjectCounter& GetInstance( void );
-    ~ObjectCounter( void );
+    virtual ~ObjectCounter( void );
 
   private:
     ObjectCounter( void );

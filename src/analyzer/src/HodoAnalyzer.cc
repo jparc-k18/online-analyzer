@@ -1229,21 +1229,21 @@ HodoAnalyzer::MakeUpClustersCFT( const FiberHitContainer& cont,
       double cmtA    = (double)HitA->GetCTime(mhitA);
       int    CurrentPair = HitA->PairId();
 
-      bool fl_Hit[MaxSizeCl];
+      // bool fl_Hit[MaxSizeCl];
       bool fl_ClCand[MaxSizeCl];
       double cmt[MaxSizeCl];
-      int seg_[MaxSizeCl];
-      double peLow[MaxSizeCl];
+      // int seg_[MaxSizeCl];
+      // double peLow[MaxSizeCl];
       FiberHit* Hit[MaxSizeCl];
 
       for(int ic=0;ic<MaxSizeCl-1;ic++){
 
 	// Next Hit Search
 	int    NofHit = cont.at(seg+1+ic)->GetNumOfHit();
-	fl_Hit[ic] = false;
+	// fl_Hit[ic] = false;
 	Hit[ic] = cont.at(seg+1+ic);
 	cmt[ic]    = -1;
-	seg_[ic]   =  Hit[ic]->PairId();
+	// seg_[ic]   =  Hit[ic]->PairId();
 	for(int mhit = 0; mhit<NofHit; ++mhit){
 
 	  if(cont.at(seg+1+ic)->Joined(mhit)){continue;}
@@ -1252,7 +1252,7 @@ HodoAnalyzer::MakeUpClustersCFT( const FiberHitContainer& cont,
 
 	  if(std::abs(cmt[ic]-cmtA)<maxTimeDif && adcLow>=0){
 	    cluster->push_back(new FLHit(Hit[ic], mhit));
-	    fl_Hit[ic] = true;
+	    // fl_Hit[ic] = true;
 	    break;
 	  }
 	}

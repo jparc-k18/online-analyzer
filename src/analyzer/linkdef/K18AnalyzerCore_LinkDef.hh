@@ -7,7 +7,7 @@
 #pragma link C++ nestedclass;
 #pragma link C++ nestedtypedef;
 #pragma link C++ namespace hddaq;
-#pragma link C++ namespace hddaq::gui;
+// #pragma link C++ namespace hddaq::gui;
 #pragma link C++ namespace hddaq::unpacker;
 #pragma link C++ namespace analyzer;
 #pragma link C++ enum DetectorType;
@@ -36,8 +36,8 @@
 #pragma link C++ class KuramaFieldMap+;
 #pragma link C++ class KuramaTrack+;
 #pragma link C++ class RawData+;
-#pragma link C++ class RungeKutta+;
-#pragma link C++ class SsdCluster+;
+// #pragma link C++ class RungeKutta+;
+// #pragma link C++ class SsdCluster+;
 #pragma link C++ class TrackHit+;
 
 #pragma link C++ class ConfMan+;

@@ -18,7 +18,7 @@ class BH2Filter
 public:
   static BH2Filter&         GetInstance( void );
   static const std::string& ClassName( void );
-  ~BH2Filter( void );
+  virtual ~BH2Filter( void );
 
 private:
   BH2Filter( void );

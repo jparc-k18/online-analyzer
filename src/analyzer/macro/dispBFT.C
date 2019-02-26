@@ -55,7 +55,7 @@ void dispBFT()
 	h->Draw();
 	if( TString(h->GetTitle()).Contains("TOT") ) {
 	  double peak = h->GetMaximum();
-	  TLine *l = new TLine(40, 0, 40, peak);
+	  TLine *l = new TLine(41, 0, 41, peak);
 	  l->SetLineColor(kRed);
 	  l->Draw("same");
 	}

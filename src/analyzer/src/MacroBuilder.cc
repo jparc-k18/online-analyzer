@@ -2406,7 +2406,7 @@ UpdateTOTPeakFitting( void )
       "SFT_CTOT_X", "SFT_CTOT_XP", "SCH_TOT (1-16ch)", "SCH_TOT (17-64ch)"
     };
     static std::vector<Double_t> optval = {
-      40.0, 40.0, 65.0, 65.0,
+      41.0, 41.0, 65.0, 65.0,
       67.5, 67.5, 42.0, 54.0
     };
     static std::vector<TLine*> line(name.size());
@@ -2419,7 +2419,11 @@ UpdateTOTPeakFitting( void )
       Double_t p = h->GetBinCenter(h->GetMaximumBin());
       Double_t w = 10.;
       for( Int_t ifit=0; ifit<3; ++ifit ){
-	h->Fit("f", "Q", "", p-w, p+w );
+	Double_t fmin = p - w;
+	Double_t fmax = p + w;
+	if( name[i].Contains("SFT_CTOT") && ifit>0 )
+	  fmin = p - w*0.75;
+	h->Fit("f", "Q", "", fmin, fmax);
 	p = f.GetParameter(1);
 	w = f.GetParameter(2) * 1.;
       }

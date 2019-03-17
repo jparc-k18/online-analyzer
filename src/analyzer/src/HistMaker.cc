@@ -4630,6 +4630,42 @@ TList* HistMaker::createMsT( Bool_t flag_ps )
 }
 
 // -------------------------------------------------------------------------
+// createMsT_T0
+// -------------------------------------------------------------------------
+TList* HistMaker::createMsT_T0( Bool_t flag_ps )
+{
+  // Determine the detector name
+  TString strDet = CONV_STRING(kMsT_T0);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
+
+  // Declaration of the directory
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // HR-TDC ---------------------------------------------------------
+  {
+    TList *sub_dir = new TList;
+    sub_dir->SetName("MsT_T0_TOF_TDC");
+    Int_t target_id = getUniqueID(kMsT_T0, 0, kTDC, 0);
+    for(Int_t seg=0; seg<NumOfSegTOF; ++seg){
+      sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d", nameDetector, seg+1),
+			     10000, 0, 400000,
+			     "TDC", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
 // createMtx3D
 // -------------------------------------------------------------------------
 TList* HistMaker::createMtx3D( Bool_t flag_ps )
@@ -5024,7 +5060,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
     // Event builder infomation
     Int_t target_id = getUniqueID(kDAQ, kEB, kHitPat, 0);
     top_dir->Add(createTH1(target_id + 1, "Data size EB", // 1 origin
-			   5000, 0, 10000,
+			   50000, 0, 100000,
 			   "Data size [words]", ""));
 
     // Node information

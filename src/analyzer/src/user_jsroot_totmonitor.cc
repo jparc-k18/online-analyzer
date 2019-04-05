@@ -37,6 +37,7 @@
 #include "DCGeomMan.hh"
 #include "DCTdcCalibMan.hh"
 #include "HistMaker.hh"
+#include "HodoParamMan.hh"
 #include "Updater.hh"
 #include "UserParamMan.hh"
 
@@ -77,10 +78,19 @@ namespace analyzer
 		 };
     TString sDAQ[nDAQ] = { "DAQ-Eff", "L2-Eff", "Duty" };
 
+    // Double_t t0base[NumOfSegBH2] = {
+    //   // SigmaP
+    //   353400, 356300, 353800, 352000, 353200, 354100, 354600, 354900
+    //   // SigmaM
+    //   // 353800, 356700, 354200, 351300, 353500, 354300, 354800, 355200
+    // };
+
     TGraph  *g_tot[nTOT];
     TGraph  *g_daq[nDAQ];
+    TGraph  *g_t0[NumOfSegBH2];
     TLegend *leg_tot;
     TLegend *leg_daq;
+    TLegend *leg_t0;
     Color_t  col_tot[] = { kGreen, kGreen+1,
 			   kBlue, kBlue+1, kBlue+2, kBlue+3,
 			   kRed, kRed+1,
@@ -89,10 +99,15 @@ namespace analyzer
 			   kCyan, kCyan+1, kCyan+2, kCyan+3,
 			   kCyan+4, kCyan+5, kCyan+6, kCyan+7 };
     Color_t  col_daq[nDAQ] = { kRed, kOrange+1, kBlue };
+    Color_t  col_t0[NumOfSegBH2] = { kBlack, kRed+1, kGreen+1, kBlue+1,
+				     kMagenta+1, kCyan+1, kOrange+1,
+				     kSpring+1 };
 
     Double_t
     GetTOT( TH1* h )
     {
+      if( !h || h->GetEntries()<10 )
+	return 0.;
       TCanvas c;
       c.cd();
       TF1 f("f", "gaus", -10., 100.);
@@ -107,6 +122,25 @@ namespace analyzer
       }
       return f.GetParameter(1);
     }
+
+    Double_t
+    GetT0( TH1* h )
+    {
+      if( !h || h->GetEntries()<10 )
+	return 0.;
+      TCanvas c;
+      c.cd();
+      TF1 f("f", "gaus", 350000., 360000.);
+      Double_t p = h->GetBinCenter(h->GetMaximumBin());
+      Double_t w = 500.;
+      h->Fit("f", "Q", "", p-w, p+w );
+      for( Int_t ifit=0; ifit<3; ++ifit ){
+	h->Fit("f", "Q", "", p-2*w, p+2*w );
+	p = f.GetParameter(1);
+	w = f.GetParameter(2);
+      }
+      return f.GetParameter(1);
+    }
   }
 
 //____________________________________________________________________________
@@ -118,15 +152,19 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
   gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
   gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
+  gConfMan.InitializeParameter<HodoParamMan>("HDPRM");
   gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
 
-  TCanvas *c = new TCanvas("tot_monitor","tot_monitor");
-  c->Divide( 1, 2 );
+  std::vector<TCanvas*> carray;
+  carray.push_back( new TCanvas("t0_monitor", "t0_monitor") );
+  carray.push_back( new TCanvas("tot_monitor", "tot_monitor") );
+  carray.push_back( new TCanvas("daq_monitor", "daq_monitor") );
 
   gHttp.SetPort(9091);
   gHttp.Open();
+  gHttp.Register(gHist.createBH2());
   gHttp.Register(gHist.createBFT());
   gHttp.Register(gHist.createSFT());
   gHttp.Register(gHist.createSCH());
@@ -135,12 +173,38 @@ process_begin( const std::vector<std::string>& argv )
 #if CFT
   gHttp.Register(gHist.createCFT());
 #endif
-  gHttp.Register(c);
+  for( auto&& c : carray )
+    gHttp.Register(c);
 
   Double_t legX = 0.13;
   Double_t legY = 0.13;
   Double_t legW = 0.14;
   Double_t legH = 0.26;
+
+  // T0 Monitor
+  {
+    leg_t0 = new TLegend( legX, legY, legX+legW, legY+legH+0.3 );
+    leg_t0->SetTextSize(0.05);
+    leg_t0->SetFillColor(0);
+    leg_t0->SetBorderSize(4);
+    for( Int_t i=0; i<NumOfSegBH2; ++i ){
+      carray[0]->cd()->SetGrid();
+      g_t0[i] = new TGraph();
+      g_t0[i]->SetTitle("T0 Monitor");
+      g_t0[i]->SetName( Form("BH2-%d", i+1) );
+      g_t0[i]->SetMarkerStyle(8);
+      g_t0[i]->SetMarkerSize(1.5);
+      g_t0[i]->SetMarkerColor(col_t0[i]);
+      g_t0[i]->SetLineWidth(3);
+      g_t0[i]->SetLineColor(col_t0[i]);
+      if(i==0) g_t0[i]->Draw("AL");
+      else     g_t0[i]->Draw("L");
+      g_t0[i]->SetPoint(0,0,0);
+      leg_t0->AddEntry( g_t0[i], Form("BH2-%d", i+1), "P" );
+    }
+    leg_t0->SetNColumns(2);
+    leg_t0->Draw();
+  }
 
   // TOT Monitor
   {
@@ -149,7 +213,7 @@ process_begin( const std::vector<std::string>& argv )
     leg_tot->SetFillColor(0);
     leg_tot->SetBorderSize(4);
     for( Int_t i=0; i<nTOT; ++i ){
-      c->cd(1)->SetGrid();
+      carray[1]->cd()->SetGrid();
       g_tot[i] = new TGraph();
       g_tot[i]->SetTitle("TOT Monitor");
       g_tot[i]->SetName( sTOT[i] );
@@ -176,7 +240,7 @@ process_begin( const std::vector<std::string>& argv )
     leg_daq->SetFillColor(0);
     leg_daq->SetBorderSize(4);
     for( Int_t i=0; i<nDAQ; ++i ){
-      c->cd(2)->SetGrid();
+      carray[2]->cd()->SetGrid();
       g_daq[i] = new TGraph();
       g_daq[i]->SetTitle("DAQ Monitor");
       g_daq[i]->SetMarkerStyle(8);
@@ -235,6 +299,39 @@ process_event( void )
       if( clock<clock_pre ) spill_inc++;
     }
     clock_pre = clock;
+  }
+
+  // T0 Monitor
+  {
+    static const int k_device = gUnpacker.get_device_id("BH2");
+    static const int k_d      = 1; // down
+    static const int k_tdc    = gUnpacker.get_data_id("BH2", "fpga_leading");
+    // static const unsigned int tdc_min = gUser.GetParameter("BH2_TDC_FPGA", 0);
+    // static const unsigned int tdc_max = gUser.GetParameter("BH2_TDC_FPGA", 1);
+    int bh2t_id   = gHist.getSequentialID(kBH2, 0, kTDC, NumOfSegBH2+1);
+    for(int seg=0; seg<NumOfSegBH2; ++seg){
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+      for(int m = 0; m<nhit; ++m){
+	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
+	if( tdc!=0 )
+	  hptr_array[bh2t_id + seg]->Fill(tdc);
+      }
+    }
+    if( spill_inc == nspill ){
+      static Double_t val[NumOfSegBH2]     = {};
+      static Double_t val_pre[NumOfSegBH2] = {};
+      static HodoParamMan& hodoMan = HodoParamMan::GetInstance();
+      for(Int_t i=0; i<NumOfSegBH2; ++i){
+	val[i] = GetT0( hptr_array[bh2t_id + i] );
+	Double_t t;
+	hodoMan.GetTime(2, 0, i, 1, val_pre[i], t);
+	std::cout << i << " " << val_pre[i] << " " << t << std::endl;
+	g_t0[i]->SetPoint(spill, spill, t*1e3);
+	g_t0[i]->GetYaxis()->SetRangeUser(-1000, 1000);
+	g_t0[i]->GetXaxis()->SetLimits(spill-90, spill+10);
+      }
+      for(Int_t i=0; i<NumOfSegBH2; ++i) val_pre[i] = val[i];
+    }
   }
 
   // TOT Monitor

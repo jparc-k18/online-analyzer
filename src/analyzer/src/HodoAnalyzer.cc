@@ -401,7 +401,7 @@ HodoAnalyzer::DecodeBFTHits( RawData* rawData )
       }
       else{
 	delete hp;
-	hp = NULL;
+	hp = nullptr;
       }
     }
 
@@ -457,7 +457,7 @@ HodoAnalyzer::DecodeSFTHits( RawData* rawData )
       }
       else{
 	delete hp;
-	hp = NULL;
+	hp = nullptr;
       }
 
     }
@@ -535,7 +535,7 @@ HodoAnalyzer::DecodeCFTHits( RawData* rawData )
       }
       else{
 	delete hp;
-	hp = NULL;
+	hp = nullptr;
       }
     }
 
@@ -693,7 +693,7 @@ HodoAnalyzer::DecodeFHT1Hits( RawData* rawData )
 	}
 	else{
 	  delete hp;
-	  hp = NULL;
+	  hp = nullptr;
 	}
       }
 
@@ -746,7 +746,7 @@ HodoAnalyzer::DecodeFHT2Hits( RawData* rawData )
 	}
 	else{
 	  delete hp;
-	  hp = NULL;
+	  hp = nullptr;
 	}
       }
 
@@ -1071,7 +1071,7 @@ HodoAnalyzer::MakeUpClusters( const FiberHitContainer& cont,
 	  ClusterCont.push_back(cluster);
 	}else{
 	  delete cluster;
-	  cluster = NULL;
+	  cluster = nullptr;
 	}
 	continue;
       }
@@ -1109,7 +1109,7 @@ HodoAnalyzer::MakeUpClusters( const FiberHitContainer& cont,
 	  ClusterCont.push_back(cluster);
 	}else{
 	  delete cluster;
-	  cluster = NULL;
+	  cluster = nullptr;
 	}
 	continue;
       }
@@ -1148,7 +1148,7 @@ HodoAnalyzer::MakeUpClusters( const FiberHitContainer& cont,
 	  ClusterCont.push_back(cluster);
 	}else{
 	  delete cluster;
-	  cluster = NULL;
+	  cluster = nullptr;
 	}
 	continue;
       }
@@ -1177,7 +1177,7 @@ HodoAnalyzer::MakeUpClusters( const FiberHitContainer& cont,
 	ClusterCont.push_back(cluster);
       }else{
 	delete cluster;
-	cluster = NULL;
+	cluster = nullptr;
       }
     }
   }
@@ -1220,7 +1220,7 @@ HodoAnalyzer::MakeUpClustersCFT( const FiberHitContainer& cont,
 	  continue;
 	}else{
 	  //delete cluster;
-	  //cluster = NULL;
+	  //cluster = nullptr;
 	}
 	//continue;
       }
@@ -1271,7 +1271,7 @@ HodoAnalyzer::MakeUpClustersCFT( const FiberHitContainer& cont,
 	    break;
 	  }else{
 	    //delete cluster;
-	    //cluster = NULL;
+	    //cluster = nullptr;
 	  }
 	  //continue;
 	}else{}
@@ -1799,7 +1799,7 @@ HodoAnalyzer::GetTime0BH2Cluster()
   static const double MinMt = gUser.GetParameter("MtBH2", 0);
   static const double MaxMt = gUser.GetParameter("MtBH2", 1);
 
-  BH2Cluster* time0_cluster = NULL;
+  BH2Cluster* time0_cluster = nullptr;
   double min_mt = -9999;
   for(const auto& cluster : m_BH2ClCont){
     double mt = cluster->MeanTime();
@@ -1833,7 +1833,7 @@ HodoAnalyzer::GetBtof0BH1Cluster(double time0)
   static const double MinBtof = gUser.GetParameter("BTOF",  0);
   static const double MaxBtof = gUser.GetParameter("BTOF",  1);
 
-  HodoCluster* time0_cluster = NULL;
+  HodoCluster* time0_cluster = nullptr;
   double min_btof            = -9999;
   for(const auto& cluster : m_BH1ClCont){
     double cmt  = cluster->CMeanTime();

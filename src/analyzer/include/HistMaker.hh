@@ -16,7 +16,7 @@ enum DetectorType {
   kDetectorZero,
   // Detector unique ID in the beam line
   kBH1, kBFT, kBC3, kBC4, kBH2,kBH2MT,
-  kMsT, kMtx3D,
+  kMsT, kMsT_T0, kMtx3D,
   // Detector unique ID in the KURAMA system
   kCFT,kBGO,kPiID,kSFT, kSDC1, kSAC, kSCH, kFHT1,
   kSDC2, kSDC3, kFHT2, kTOF,kTOF_HT, kLAC, kLC,
@@ -154,6 +154,7 @@ public:
   TList* createLAC( Bool_t flag_ps=true );
   TList* createLC( Bool_t flag_ps=true );
   TList* createMsT( Bool_t flag_ps=true );
+  TList* createMsT_T0( Bool_t flag_ps=true );
   TList* createMtx3D( Bool_t flag_ps=false );
   TList* createTriggerFlag( Bool_t flag_ps=true );
   TList* createCorrelation( Bool_t flag_ps=true );

@@ -29,6 +29,8 @@ private:
   std::vector<TH1*>      m_th1_list;
 
 public:
+  void CreateItem( TString name, TString desc );
+  void Hide( TString dir );
   void Open( void );
   void Register( TObject *obj );
   void Register( TList *list, TList *parent=0 );
@@ -36,6 +38,7 @@ public:
   void Register( TString dir, TString command );
   void ResetAll( void );
   void SetPort( Int_t port ){ m_port = port; }
+  void SetItemField( TString dir, TString key, TString val );
 
   ClassDef(HttpServer,0);
 };

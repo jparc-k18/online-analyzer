@@ -87,6 +87,9 @@ my_tgt_jsroot_e07	:= $(bin_dir)/jsroot_e07
 my_obj_jsroot_e40	:= $(core_obj) user_jsroot_e40.o
 my_tgt_jsroot_e40	:= $(bin_dir)/jsroot_e40
 
+my_obj_jsroot_scaler	:= $(core_obj) user_jsroot_scaler.o
+my_tgt_jsroot_scaler	:= $(bin_dir)/jsroot_scaler
+
 my_obj_emc_position	:= $(core_obj) user_emc_position.o
 my_tgt_emc_position	:= $(bin_dir)/emc_position
 
@@ -156,6 +159,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_scaler_sch) \
 	$(my_tgt_scaler_daq) \
 	$(my_tgt_jsroot_e40) \
+	$(my_tgt_jsroot_scaler) \
 	$(my_tgt_vme01debug) \
 	$(my_tgt_mstmonitor_e40) \
 	$(my_tgt_mstmonitorjs_e40) \
@@ -295,6 +299,14 @@ my_obj_jsroot_e40	:= $(my_obj_jsroot_e40)
 my_lib_jsroot_e40	:= libmyjsroot_e40.so
 $(eval $(call make-lib,$(my_lib_jsroot_e40),$(my_obj_jsroot_e40)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_e40),$(my_lib_jsroot_e40)))
+#
+#
+#_______________________________________________________________________________
+my_obj_jsroot_scaler	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_scaler))
+my_obj_jsroot_scaler	:= $(my_obj_jsroot_scaler)
+my_lib_jsroot_scaler	:= libmyjsroot_scaler.so
+$(eval $(call make-lib,$(my_lib_jsroot_scaler),$(my_obj_jsroot_scaler)))
+$(eval $(call make-nogui-target,$(my_tgt_jsroot_scaler),$(my_lib_jsroot_scaler)))
 #
 #_______________________________________________________________________________
 my_obj_emc_position := $(addprefix $(my_dir)/src/,$(my_obj_emc_position))

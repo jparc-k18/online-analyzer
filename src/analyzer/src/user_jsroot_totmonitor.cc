@@ -76,6 +76,8 @@ namespace analyzer
 		 "CFT-UV3", "CFT-PHI3", "CFT-UV4", "CFT-PHI4"
 #endif
 		 };
+    Double_t vTOT[nTOT] = { 41.0, 41.0, 65.0, 65.0, 67.5, 67.5, 42.0, 54.0,
+			    58.0, 60.0, 58.0, 60.0, 60.0, 60.0, 60.0, 60.0 };
     TString sDAQ[nDAQ] = { "DAQ-Eff", "L2-Eff", "Duty" };
 
     // Double_t t0base[NumOfSegBH2] = {
@@ -597,8 +599,8 @@ process_event( void )
       for(Int_t i=0; i<nTOT; ++i){
 	// std::cout << sTOT[i] << " " << val_pre[i] << std::endl;
 	if( val_pre[i] > 200 ) val_pre[i] *= 0.05;
-	g_tot[i]->SetPoint(spill, spill, val_pre[i]);
-	g_tot[i]->GetYaxis()->SetRangeUser(35, 75);
+	g_tot[i]->SetPoint(spill, spill, val_pre[i] - vTOT[i]);
+	g_tot[i]->GetYaxis()->SetRangeUser(-6, 6);
 	g_tot[i]->GetXaxis()->SetLimits(spill-90, spill+10);
       }
       // Double_t kpi_ratio = beam_pre[kKbeam]/beam_pre[kPibeam];

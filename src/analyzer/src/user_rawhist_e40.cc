@@ -128,6 +128,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createBFT());
   tab_hist->Add(gHist.createBC3());
   tab_hist->Add(gHist.createBC4());
+  tab_hist->Add(gHist.createBAC());
   tab_hist->Add(gHist.createBH2());
   tab_hist->Add(gHist.createSFT());
   tab_hist->Add(gHist.createSDC1());
@@ -2171,6 +2172,64 @@ process_event( void )
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
+
+  // BAC -----------------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("BAC");
+    static const int k_adc    = gUnpacker.get_data_id("BAC","adc");
+    static const int k_tdc    = gUnpacker.get_data_id("BAC","tdc");
+
+    // sequential id
+    static const int baca_id   = gHist.getSequentialID(kBAC, 0, kADC,     1);
+    static const int bact_id   = gHist.getSequentialID(kBAC, 0, kTDC,     1);
+    static const int bacawt_id = gHist.getSequentialID(kBAC, 0, kADCwTDC, 1);
+    static const int bach_id   = gHist.getSequentialID(kBAC, 0, kHitPat,  1);
+    static const int bacm_id   = gHist.getSequentialID(kBAC, 0, kMulti,   1);
+
+    // TDC gate range
+    static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
+    static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
+
+    int multiplicity = 0;
+    for(int seg = 0; seg<NumOfSegBAC; ++seg){
+      // ADC
+      int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      if( nhit_a!=0 ){
+	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	hptr_array[baca_id + seg]->Fill( adc );
+      }
+      // TDC
+      int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      bool flag_t = false;
+
+      for(int m = 0; m<nhit_t; ++m){
+	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+	hptr_array[bact_id + seg]->Fill( tdc );
+
+	if(tdc_min < tdc && tdc < tdc_max){
+	  flag_t = true;
+	}// tdc range is ok
+      }// for(m)
+
+      if( flag_t ){
+	// ADC w/TDC
+	if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
+	  int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	  hptr_array[bacawt_id + seg]->Fill( adc );
+	}
+	hptr_array[bach_id]->Fill(seg);
+	++multiplicity;
+      }// flag is OK
+    }
+
+    hptr_array[bacm_id]->Fill( multiplicity );
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }//BAC
 
   // SAC -----------------------------------------------------------
   {

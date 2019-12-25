@@ -1502,7 +1502,8 @@ TList* HistMaker::createBAC( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s", name_acs[i], nameSubDir);
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
-			     0x1000, 0, 0x1000,
+			     50000, 0, 2000000,
+			     //			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));
     }
     top_dir->Add(sub_dir);

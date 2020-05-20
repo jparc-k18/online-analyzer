@@ -22,6 +22,8 @@ enum DetectorType {
   kSDC2, kSDC3, kFHT2, kTOF,kTOF_HT, kLAC, kLC,
   // VMEEASIROC unique ID
   kVMEEASIROC,
+  // For E42 test in k tune
+  kBH2_E42, kBH2_E42MT, kWC, kWCMT, kT1, kT1MT, kT2, kT2MT,
   // Old detectors E07
   kBAC, kFBH,
   kSSDT, kSSD1, kSSD2,
@@ -161,6 +163,12 @@ public:
   TList* createCorrelation_catch( Bool_t flag_ps=true );
   TList* createDAQ( Bool_t flag_ps=true );
   TList* createDCEff( Bool_t flag_ps=true );
+
+  // E42 test in K tune
+  TList* createBH2_E42( Bool_t flag_ps=true );
+  TList* createWC( Bool_t flag_ps=true );
+  TList* createT1( Bool_t flag_ps=true );
+  TList* createT2( Bool_t flag_ps=true );
 
   // Old functions E07
   TList* createBAC( Bool_t flag_ps=true );

@@ -13,25 +13,33 @@
 // Counters ___________________________________________________________
 const int DetIdBH1      =  1;
 const int DetIdBH2      =  2;
-const int DetIdBAC    = 3;
+const int DetIdBAC      =  3; // K tuning
+const int DetIdBH2_E42  =  4; // E42 test
 const int DetIdSCH      =  7;
 const int DetIdTOF      =  8;
 const int DetIdSAC      =  9;
 const int DetIdLC       = 10;
 const int DetIdHtTOF    = 11; // high threshold TOF
-const int DetIdLAC     =  12;
-const int NumOfSegBH1   = 11;
-const int NumOfSegBH2   =  8;
-const int NumOfSegBAC   =  2;
-const int NumOfSegFBH  =  16;
-const int NumOfSegSCH   = 64;
-const int NumOfSegTOF   = 24;
-const int NumOfSegSAC   = 4;
-const int NumOfRoomsSAC=   4;
-const int NumOfSegLAC  =  30;
-const int NumOfSegLC    = 28;
-const int NumOfSegHtTOF = 16;
+const int DetIdLAC      = 12;
+const int DetIdWC       = 13; // E42 test
+const int DetIdT1       = 14; // E42 test
+const int DetIdT2       = 15; // E42 test
+const int NumOfSegBH1     = 11;
+const int NumOfSegBH2     =  8;
+const int NumOfSegBAC     =  2; // K tuning
+const int NumOfSegBH2_E42 = 15; // E42 test
+const int NumOfSegFBH     = 16;
+const int NumOfSegSCH     = 64;
+const int NumOfSegTOF     = 24;
+const int NumOfSegSAC     =  4;
+const int NumOfRoomsSAC   =  4;
+const int NumOfSegLAC     = 30;
+const int NumOfSegLC      = 28;
+const int NumOfSegHtTOF   = 16;
 const int NumOfSegClusteredFBH = 31;
+const int NumOfSegWC      =  1; // E42 test
+const int NumOfSegT1      =  1; // E42 test
+const int NumOfSegT2      =  1; // E42 test
 
 // Misc _______________________________________________________________
 const int DetIdTrig       = 21;

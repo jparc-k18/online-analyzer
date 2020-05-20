@@ -86,7 +86,7 @@ process_begin( const std::vector<std::string>& argv )
   hddaq::gui::Controller& gCon = hddaq::gui::Controller::getInstance();
   TGFileBrowser *tab_hist  = gCon.makeFileBrowser("Hist");
   TGFileBrowser *tab_macro = gCon.makeFileBrowser("Macro");
-  TGFileBrowser *tab_e40   = gCon.makeFileBrowser("E40");
+  TGFileBrowser *tab_misc   = gCon.makeFileBrowser("Misc");
 
   // Add macros to the Macro tab
   //tab_macro->Add(hoge());
@@ -128,8 +128,6 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createBFT());
   tab_hist->Add(gHist.createBC3());
   tab_hist->Add(gHist.createBC4());
-  tab_hist->Add(gHist.createBAC());
-  tab_hist->Add(gHist.createBH2_E42());
   tab_hist->Add(gHist.createBH2());
   tab_hist->Add(gHist.createSFT());
   tab_hist->Add(gHist.createSDC1());
@@ -149,21 +147,23 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createDAQ());
   tab_hist->Add(gHist.createTimeStamp(false));
   tab_hist->Add(gHist.createDCEff());
-  tab_hist->Add(gHist.createWC());
-  tab_hist->Add(gHist.createT1());
-  tab_hist->Add(gHist.createT2());
 
-  //e40 tab
+  //misc tab
   int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
-  tab_e40->Add(gHist.createTH1(btof_id, "BTOF",
+  tab_misc->Add(gHist.createTH1(btof_id, "BTOF",
                                300, -10, 5,
                                "BTOF [ns]", ""
                                ));
 
-  tab_e40->Add(gHist.createTH1(btof_id + 1, "BH1-6_BH2-4",
+  tab_misc->Add(gHist.createTH1(btof_id + 1, "BH1-6_BH2-4",
                                400, 400, 600,
                                "[ch]", ""
                                ));
+  tab_misc->Add(gHist.createBAC());
+  tab_misc->Add(gHist.createBH2_E42());
+  tab_misc->Add(gHist.createWC());
+  // tab_misc->Add(gHist.createT1());
+  // tab_misc->Add(gHist.createT2());
   // Matrix pattern
   // Mtx2D
   {
@@ -1978,219 +1978,219 @@ process_event( void )
 #endif
   }
 
-  // T1 for E42 test-----------------------------------------------------------
-  {
-    // data type
-    static const int k_device = gUnpacker.get_device_id("T1");
-    static const int k_u      = 0; // up
-    static const int k_d      = 1; // down
-    static const int k_adc    = gUnpacker.get_data_id("T1", "adc");
-    //    static const int k_tdc    = gUnpacker.get_data_id("T1", "fpga_leading");
-    //    static const int k_mt     = gUnpacker.get_data_id("T1", "fpga_meantime");
+//   // T1 for E42 test-----------------------------------------------------------
+//   {
+//     // data type
+//     static const int k_device = gUnpacker.get_device_id("T1");
+//     static const int k_u      = 0; // up
+//     static const int k_d      = 1; // down
+//     static const int k_adc    = gUnpacker.get_data_id("T1", "adc");
+//     //    static const int k_tdc    = gUnpacker.get_data_id("T1", "fpga_leading");
+//     //    static const int k_mt     = gUnpacker.get_data_id("T1", "fpga_meantime");
 
-    // TDC gate range
-    //    static const unsigned int tdc_min = gUser.GetParameter("T1_TDC_FPGA", 0);
-    //    static const unsigned int tdc_max = gUser.GetParameter("T1_TDC_FPGA", 1);
-
-
-    // UP
-    int t1a_id   = gHist.getSequentialID(kT1, 0, kADC);
-    //    int t1t_id   = gHist.getSequentialID(kT1, 0, kTDC);
-    //    int t1awt_id = gHist.getSequentialID(kT1, 0, kADCwTDC);    // UP
-
-    for(int seg=0; seg<NumOfSegT1; ++seg){
-      // ADC
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
-      if(nhit != 0){
-	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-	hptr_array[t1a_id + seg]->Fill(adc);
-      }
-      // TDC
-      //      nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-      // for(int m = 0; m<nhit; ++m){
-      // 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
-      // 	if(tdc!=0){
-      // 	  hptr_array[t1t_id + seg]->Fill(tdc);
-      // 	  // ADC w/TDC_FPGA
-      // 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
-      // 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-      // 	    hptr_array[t1awt_id + seg]->Fill(adc);
-      // 	  }
-      // 	}
-      // }
-
-    }
+//     // TDC gate range
+//     //    static const unsigned int tdc_min = gUser.GetParameter("T1_TDC_FPGA", 0);
+//     //    static const unsigned int tdc_max = gUser.GetParameter("T1_TDC_FPGA", 1);
 
 
-    // DOWN
-    t1a_id   = gHist.getSequentialID(kT1, 0, kADC,     NumOfSegT1+1);
-    for(int seg=0; seg<NumOfSegT1; ++seg){
-      // ADC
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
-      if(nhit != 0){
-	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-	hptr_array[t1a_id + seg]->Fill(adc);
-      }
+//     // UP
+//     int t1a_id   = gHist.getSequentialID(kT1, 0, kADC);
+//     //    int t1t_id   = gHist.getSequentialID(kT1, 0, kTDC);
+//     //    int t1awt_id = gHist.getSequentialID(kT1, 0, kADCwTDC);    // UP
 
-      // TDC
-      // nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
-      // for(int m = 0; m<nhit; ++m){
-      // 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
-      // 	if( tdc!=0 ){
-      // 	  hptr_array[t1t_id + seg]->Fill(tdc);
-      // 	  // ADC w/TDC_FPGA
-      // 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
-      // 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-      // 	    hptr_array[t1awt_id + seg]->Fill( adc );
-      // 	  }
-      // 	}
-      // }
+//     for(int seg=0; seg<NumOfSegT1; ++seg){
+//       // ADC
+//       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
+//       if(nhit != 0){
+// 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+// 	hptr_array[t1a_id + seg]->Fill(adc);
+//       }
+//       // TDC
+//       //      nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+//       // for(int m = 0; m<nhit; ++m){
+//       // 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
+//       // 	if(tdc!=0){
+//       // 	  hptr_array[t1t_id + seg]->Fill(tdc);
+//       // 	  // ADC w/TDC_FPGA
+//       // 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
+//       // 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+//       // 	    hptr_array[t1awt_id + seg]->Fill(adc);
+//       // 	  }
+//       // 	}
+//       // }
 
-    }
-    // Hit pattern &&  Multiplicity
-    // static const int t1hit_id = gHist.getSequentialID(kT1, 0, kHitPat);
-    // static const int t1mul_id = gHist.getSequentialID(kT1, 0, kMulti);
-    // int multiplicity = 0;
-    // for(int seg=0; seg<NumOfSegT1; ++seg){
-    //   int nhit_u = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-    //   int nhit_d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
-    //   // AND
-    //   if( nhit_u!=0 && nhit_d!=0 ){
-    // 	unsigned int tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-    // 	unsigned int tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
-    // 	// TDC AND
-    // 	if( tdc_u!=0 && tdc_d!=0 ){
-    // 	  hptr_array[t1hit_id]->Fill( seg );
-    // 	  ++multiplicity;
-    // 	}
-    //   }
-    // }
-
-    //    hptr_array[t1mul_id]->Fill(multiplicity);
-
-    // Mean Timer
-    // t1t_id   = gHist.getSequentialID(kT1, 0, kT1MT, 1);
-    // for(int seg=0; seg<NumOfSegT1; ++seg){
-    //   int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_mt);
-    //   for(int m = 0; m<nhit; ++m){
-    // 	unsigned int mt = gUnpacker.get(k_device, 0, seg, k_u, k_mt, m);
-    // 	if(mt!=0){
-    // 	  hptr_array[t1t_id + seg]->Fill(mt);
-    // 	}
-    //   }
-    //}
+//     }
 
 
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }
+//     // DOWN
+//     t1a_id   = gHist.getSequentialID(kT1, 0, kADC,     NumOfSegT1+1);
+//     for(int seg=0; seg<NumOfSegT1; ++seg){
+//       // ADC
+//       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
+//       if(nhit != 0){
+// 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+// 	hptr_array[t1a_id + seg]->Fill(adc);
+//       }
 
-  // T2 for E42 test-----------------------------------------------------------
-  {
-    // data type
-    static const int k_device = gUnpacker.get_device_id("T2");
-    static const int k_u      = 0; // up
-    static const int k_d      = 1; // down
-    static const int k_adc    = gUnpacker.get_data_id("T2", "adc");
-    //    static const int k_tdc    = gUnpacker.get_data_id("T2", "fpga_leading");
-    //    static const int k_mt     = gUnpacker.get_data_id("T2", "fpga_meantime");
+//       // TDC
+//       // nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+//       // for(int m = 0; m<nhit; ++m){
+//       // 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
+//       // 	if( tdc!=0 ){
+//       // 	  hptr_array[t1t_id + seg]->Fill(tdc);
+//       // 	  // ADC w/TDC_FPGA
+//       // 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
+//       // 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+//       // 	    hptr_array[t1awt_id + seg]->Fill( adc );
+//       // 	  }
+//       // 	}
+//       // }
 
-    // TDC gate range
-    //    static const unsigned int tdc_min = gUser.GetParameter("T2_TDC_FPGA", 0);
-    //    static const unsigned int tdc_max = gUser.GetParameter("T2_TDC_FPGA", 1);
+//     }
+//     // Hit pattern &&  Multiplicity
+//     // static const int t1hit_id = gHist.getSequentialID(kT1, 0, kHitPat);
+//     // static const int t1mul_id = gHist.getSequentialID(kT1, 0, kMulti);
+//     // int multiplicity = 0;
+//     // for(int seg=0; seg<NumOfSegT1; ++seg){
+//     //   int nhit_u = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+//     //   int nhit_d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+//     //   // AND
+//     //   if( nhit_u!=0 && nhit_d!=0 ){
+//     // 	unsigned int tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
+//     // 	unsigned int tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
+//     // 	// TDC AND
+//     // 	if( tdc_u!=0 && tdc_d!=0 ){
+//     // 	  hptr_array[t1hit_id]->Fill( seg );
+//     // 	  ++multiplicity;
+//     // 	}
+//     //   }
+//     // }
 
-    // UP
-    int t2a_id   = gHist.getSequentialID(kT2, 0, kADC);
-    //    int t2t_id   = gHist.getSequentialID(kT2, 0, kTDC);
-    //    int t2awt_id = gHist.getSequentialID(kT2, 0, kADCwTDC);    // UP
+//     //    hptr_array[t1mul_id]->Fill(multiplicity);
 
-    for(int seg=0; seg<NumOfSegT2; ++seg){
-      // ADC
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
-      if(nhit != 0){
-	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-	hptr_array[t2a_id + seg]->Fill(adc);
-      }
-      // TDC
-      //      nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-      // for(int m = 0; m<nhit; ++m){
-      // 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
-      // 	if(tdc!=0){
-      // 	  hptr_array[t2t_id + seg]->Fill(tdc);
-      // 	  // ADC w/TDC_FPGA
-      // 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
-      // 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-      // 	    hptr_array[t2awt_id + seg]->Fill(adc);
-      // 	  }
-      // 	}
-      // }
-    }
+//     // Mean Timer
+//     // t1t_id   = gHist.getSequentialID(kT1, 0, kT1MT, 1);
+//     // for(int seg=0; seg<NumOfSegT1; ++seg){
+//     //   int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_mt);
+//     //   for(int m = 0; m<nhit; ++m){
+//     // 	unsigned int mt = gUnpacker.get(k_device, 0, seg, k_u, k_mt, m);
+//     // 	if(mt!=0){
+//     // 	  hptr_array[t1t_id + seg]->Fill(mt);
+//     // 	}
+//     //   }
+//     //}
 
-    // DOWN
-    t2a_id   = gHist.getSequentialID(kT2, 0, kADC,     NumOfSegT2+1);
-    for(int seg=0; seg<NumOfSegT2; ++seg){
-      // ADC
-      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
-      if(nhit != 0){
-	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-	hptr_array[t2a_id + seg]->Fill(adc);
-      }
 
-      // TDC
-      // nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
-      // for(int m = 0; m<nhit; ++m){
-      // 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
-      // 	if( tdc!=0 ){
-      // 	  hptr_array[t2t_id + seg]->Fill(tdc);
-      // 	  // ADC w/TDC_FPGA
-      // 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
-      // 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-      // 	    hptr_array[t2awt_id + seg]->Fill( adc );
-      // 	  }
-      // 	}
-      // }
-    }
+// #if 0
+//     // Debug, dump data relating this detector
+//     gUnpacker.dump_data_device(k_device);
+// #endif
+//   }
 
-    // Hit pattern &&  Multiplicity
-    // static const int t2hit_id = gHist.getSequentialID(kT2, 0, kHitPat);
-    // static const int t2mul_id = gHist.getSequentialID(kT2, 0, kMulti);
-    // int multiplicity = 0;
-    // for(int seg=0; seg<NumOfSegT2; ++seg){
-    //   int nhit_u = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-    //   int nhit_d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
-    //   // AND
-    //   if( nhit_u!=0 && nhit_d!=0 ){
-    // 	unsigned int tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-    // 	unsigned int tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
-    // 	// TDC AND
-    // 	if( tdc_u!=0 && tdc_d!=0 ){
-    // 	  hptr_array[t2hit_id]->Fill( seg );
-    // 	  ++multiplicity;
-    // 	}
-    //   }
-    // }
+//   // T2 for E42 test-----------------------------------------------------------
+//   {
+//     // data type
+//     static const int k_device = gUnpacker.get_device_id("T2");
+//     static const int k_u      = 0; // up
+//     static const int k_d      = 1; // down
+//     static const int k_adc    = gUnpacker.get_data_id("T2", "adc");
+//     //    static const int k_tdc    = gUnpacker.get_data_id("T2", "fpga_leading");
+//     //    static const int k_mt     = gUnpacker.get_data_id("T2", "fpga_meantime");
 
-    //    hptr_array[t2mul_id]->Fill(multiplicity);
+//     // TDC gate range
+//     //    static const unsigned int tdc_min = gUser.GetParameter("T2_TDC_FPGA", 0);
+//     //    static const unsigned int tdc_max = gUser.GetParameter("T2_TDC_FPGA", 1);
 
-    // Mean Timer
-    // t2t_id   = gHist.getSequentialID(kT2, 0, kT2MT, 1);
-    // for(int seg=0; seg<NumOfSegT2; ++seg){
-    //   int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_mt);
-    //   for(int m = 0; m<nhit; ++m){
-    // 	unsigned int mt = gUnpacker.get(k_device, 0, seg, k_u, k_mt, m);
-    // 	if(mt!=0){
-    // 	  hptr_array[t2t_id + seg]->Fill(mt);
-    // 	}
-    //   }
-    //}
+//     // UP
+//     int t2a_id   = gHist.getSequentialID(kT2, 0, kADC);
+//     //    int t2t_id   = gHist.getSequentialID(kT2, 0, kTDC);
+//     //    int t2awt_id = gHist.getSequentialID(kT2, 0, kADCwTDC);    // UP
 
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }
+//     for(int seg=0; seg<NumOfSegT2; ++seg){
+//       // ADC
+//       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
+//       if(nhit != 0){
+// 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+// 	hptr_array[t2a_id + seg]->Fill(adc);
+//       }
+//       // TDC
+//       //      nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+//       // for(int m = 0; m<nhit; ++m){
+//       // 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
+//       // 	if(tdc!=0){
+//       // 	  hptr_array[t2t_id + seg]->Fill(tdc);
+//       // 	  // ADC w/TDC_FPGA
+//       // 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
+//       // 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+//       // 	    hptr_array[t2awt_id + seg]->Fill(adc);
+//       // 	  }
+//       // 	}
+//       // }
+//     }
+
+//     // DOWN
+//     t2a_id   = gHist.getSequentialID(kT2, 0, kADC,     NumOfSegT2+1);
+//     for(int seg=0; seg<NumOfSegT2; ++seg){
+//       // ADC
+//       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
+//       if(nhit != 0){
+// 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+// 	hptr_array[t2a_id + seg]->Fill(adc);
+//       }
+
+//       // TDC
+//       // nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+//       // for(int m = 0; m<nhit; ++m){
+//       // 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
+//       // 	if( tdc!=0 ){
+//       // 	  hptr_array[t2t_id + seg]->Fill(tdc);
+//       // 	  // ADC w/TDC_FPGA
+//       // 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
+//       // 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+//       // 	    hptr_array[t2awt_id + seg]->Fill( adc );
+//       // 	  }
+//       // 	}
+//       // }
+//     }
+
+//     // Hit pattern &&  Multiplicity
+//     // static const int t2hit_id = gHist.getSequentialID(kT2, 0, kHitPat);
+//     // static const int t2mul_id = gHist.getSequentialID(kT2, 0, kMulti);
+//     // int multiplicity = 0;
+//     // for(int seg=0; seg<NumOfSegT2; ++seg){
+//     //   int nhit_u = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+//     //   int nhit_d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+//     //   // AND
+//     //   if( nhit_u!=0 && nhit_d!=0 ){
+//     // 	unsigned int tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
+//     // 	unsigned int tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
+//     // 	// TDC AND
+//     // 	if( tdc_u!=0 && tdc_d!=0 ){
+//     // 	  hptr_array[t2hit_id]->Fill( seg );
+//     // 	  ++multiplicity;
+//     // 	}
+//     //   }
+//     // }
+
+//     //    hptr_array[t2mul_id]->Fill(multiplicity);
+
+//     // Mean Timer
+//     // t2t_id   = gHist.getSequentialID(kT2, 0, kT2MT, 1);
+//     // for(int seg=0; seg<NumOfSegT2; ++seg){
+//     //   int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_mt);
+//     //   for(int m = 0; m<nhit; ++m){
+//     // 	unsigned int mt = gUnpacker.get(k_device, 0, seg, k_u, k_mt, m);
+//     // 	if(mt!=0){
+//     // 	  hptr_array[t2t_id + seg]->Fill(mt);
+//     // 	}
+//     //   }
+//     //}
+
+// #if 0
+//     // Debug, dump data relating this detector
+//     gUnpacker.dump_data_device(k_device);
+// #endif
+//   }
 
   // Correlation (2D histograms) -------------------------------------
   {

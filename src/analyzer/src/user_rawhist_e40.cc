@@ -1930,7 +1930,6 @@ process_event( void )
       for(int m = 0; m<nhit; ++m){
       	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
       	if( tdc!=0 ){
-	  std::cout << seg << " " << tdc << std::endl;
       	  hptr_array[wct_id + seg]->Fill(tdc);
       	  // ADC w/TDC_FPGA
       	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){

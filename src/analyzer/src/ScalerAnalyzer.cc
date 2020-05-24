@@ -155,7 +155,8 @@ ScalerAnalyzer::Decode( void )
     if( Has("BH2-SUM") ){
       static std::pair<Int_t,Int_t> p = Find("BH2-SUM");
       m_info[p.first][p.second].data = 0;
-      for( Int_t i=0; i<NumOfSegBH2; ++i ){
+      static const Int_t n = GetFlag( kScalerE42 ) ? NumOfSegBH2_E42 : NumOfSegBH2;
+      for( Int_t i=0; i<n; ++i ){
 	m_info[p.first][p.second].data += Get( Form("BH2-%02d", i+1) );
       }
     }

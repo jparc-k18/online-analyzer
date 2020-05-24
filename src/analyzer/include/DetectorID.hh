@@ -37,7 +37,7 @@ const int NumOfSegLAC     = 30;
 const int NumOfSegLC      = 28;
 const int NumOfSegHtTOF   = 16;
 const int NumOfSegClusteredFBH = 31;
-const int NumOfSegWC      =  1; // E42 test
+const int NumOfSegWC      =  2; // E42 test
 const int NumOfSegT1      =  1; // E42 test
 const int NumOfSegT2      =  1; // E42 test
 

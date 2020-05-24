@@ -87,17 +87,11 @@ my_tgt_jsroot_e07	:= $(bin_dir)/jsroot_e07
 my_obj_jsroot_e40	:= $(core_obj) user_jsroot_e40.o
 my_tgt_jsroot_e40	:= $(bin_dir)/jsroot_e40
 
-my_obj_jsroot_scaler	:= $(core_obj) user_jsroot_scaler.o
-my_tgt_jsroot_scaler	:= $(bin_dir)/jsroot_scaler
-
 my_obj_emc_position	:= $(core_obj) user_emc_position.o
 my_tgt_emc_position	:= $(bin_dir)/emc_position
 
 my_obj_beammonitor	:= $(core_obj) user_beammonitor.o
 my_tgt_beammonitor	:= $(bin_dir)/beammonitor
-
-my_obj_totmonitor	:= $(core_obj) user_jsroot_totmonitor.o
-my_tgt_totmonitor	:= $(bin_dir)/jsroot_totmonitor
 
 my_obj_beamprofile_e13  := $(core_obj) user_beamprofile_e13.o
 my_tgt_beamprofile_e13  := $(bin_dir)/beamprofile_e13
@@ -129,6 +123,9 @@ my_tgt_scaler_e07	:= $(bin_dir)/scaler_e07
 my_obj_scaler_e40	:= $(core_obj) user_scaler_e40.o
 my_tgt_scaler_e40	:= $(bin_dir)/scaler_e40
 
+my_obj_scaler_e42	:= $(core_obj) user_scaler_e42.o
+my_tgt_scaler_e42	:= $(bin_dir)/scaler_e42
+
 my_obj_scaler_sch	:= $(core_obj) user_scaler_sch.o
 my_tgt_scaler_sch	:= $(bin_dir)/scaler_sch
 
@@ -151,15 +148,14 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_rawhist_catch) \
 	$(my_tgt_rawhist_vmeeasiroc) \
 	$(my_tgt_beammonitor) \
-	$(my_tgt_totmonitor) \
 	$(my_tgt_beamprofile_e07) \
 	$(my_tgt_beamprofile_e03) \
 	$(my_tgt_beamprofile_e40) \
 	$(my_tgt_scaler_e40) \
+	$(my_tgt_scaler_e42) \
 	$(my_tgt_scaler_sch) \
 	$(my_tgt_scaler_daq) \
 	$(my_tgt_jsroot_e40) \
-	$(my_tgt_jsroot_scaler) \
 	$(my_tgt_vme01debug) \
 	$(my_tgt_mstmonitor_e40) \
 	$(my_tgt_mstmonitorjs_e40) \
@@ -300,14 +296,6 @@ my_lib_jsroot_e40	:= libmyjsroot_e40.so
 $(eval $(call make-lib,$(my_lib_jsroot_e40),$(my_obj_jsroot_e40)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_e40),$(my_lib_jsroot_e40)))
 #
-#
-#_______________________________________________________________________________
-my_obj_jsroot_scaler	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_scaler))
-my_obj_jsroot_scaler	:= $(my_obj_jsroot_scaler)
-my_lib_jsroot_scaler	:= libmyjsroot_scaler.so
-$(eval $(call make-lib,$(my_lib_jsroot_scaler),$(my_obj_jsroot_scaler)))
-$(eval $(call make-nogui-target,$(my_tgt_jsroot_scaler),$(my_lib_jsroot_scaler)))
-#
 #_______________________________________________________________________________
 my_obj_emc_position := $(addprefix $(my_dir)/src/,$(my_obj_emc_position))
 my_obj_emc_position := $(my_obj_emc_position)
@@ -320,12 +308,6 @@ my_obj_beammonitor := $(addprefix $(my_dir)/src/,$(my_obj_beammonitor))
 my_lib_beammonitor := libmybeammonitor.so
 $(eval $(call make-lib,$(my_lib_beammonitor),$(my_obj_beammonitor)))
 $(eval $(call make-gui-target,$(my_tgt_beammonitor),$(my_lib_beammonitor)))
-
-#_______________________________________________________________________________
-my_obj_totmonitor := $(addprefix $(my_dir)/src/,$(my_obj_totmonitor))
-my_lib_totmonitor := libmytotmonitor.so
-$(eval $(call make-lib,$(my_lib_totmonitor),$(my_obj_totmonitor)))
-$(eval $(call make-nogui-target,$(my_tgt_totmonitor),$(my_lib_totmonitor)))
 
 #_______________________________________________________________________________
 my_obj_beamprofile_e13	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e13))
@@ -391,6 +373,12 @@ my_obj_scaler_e40	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e40))
 my_lib_scaler_e40	:= libmyscaler_e40.so
 $(eval $(call make-lib,$(my_lib_scaler_e40),$(my_obj_scaler_e40)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_e40),$(my_lib_scaler_e40)))
+
+#_______________________________________________________________________________
+my_obj_scaler_e42	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e42))
+my_lib_scaler_e42	:= libmyscaler_e42.so
+$(eval $(call make-lib,$(my_lib_scaler_e42),$(my_obj_scaler_e42)))
+$(eval $(call make-nogui-target,$(my_tgt_scaler_e42),$(my_lib_scaler_e42)))
 
 #_______________________________________________________________________________
 my_obj_scaler_sch	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_sch))

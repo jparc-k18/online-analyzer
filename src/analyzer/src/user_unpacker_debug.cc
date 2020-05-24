@@ -26,8 +26,8 @@ namespace analyzer
     //std::vector<std::string> target = { "hul01", "hul03" };
     //std::vector<std::string> target = { "vme01" };
     std::vector<std::string> target = {
-      "Veasiroc96", "Veasiroc97", "Veasiroc98", "Veasiroc99",
-      "Veasiroc100", "Veasiroc101", "Veasiroc102"
+      // "vme09"
+      "hul05hrt"
     };
   }
 
@@ -59,7 +59,8 @@ int
 process_event( void )
 {
   // int node_id = gUnpacker.get_fe_id( target.at(0) );
-  // gUnpacker.dump_data_fe(node_id, 0xff010000);
+  // int node_id = gUnpacker.get_fe_id( "hul04scr" );
+  // gUnpacker.dump_data_fe(node_id);
 
   /*
     int node_id = gUnpacker.get_fe_id("k18eb"); // Event builder

@@ -71,6 +71,7 @@ public:
     kScalerSheet,
     kScalerSch,
     kScalerDaq,
+    kScalerE42,
     nFlag
   };
 

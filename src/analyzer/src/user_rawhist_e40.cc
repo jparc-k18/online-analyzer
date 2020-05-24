@@ -162,6 +162,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_misc->Add(gHist.createBAC());
   tab_misc->Add(gHist.createBH2_E42());
   tab_misc->Add(gHist.createWC());
+  tab_misc->Add(macro::Get("dispBH2_E42"));
   // tab_misc->Add(gHist.createT1());
   // tab_misc->Add(gHist.createT2());
   // Matrix pattern

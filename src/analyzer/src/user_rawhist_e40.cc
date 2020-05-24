@@ -1880,18 +1880,17 @@ process_event( void )
     static const int k_u      = 0; // up
     static const int k_d      = 1; // down
     static const int k_adc    = gUnpacker.get_data_id("WC", "adc");
-    //    static const int k_tdc    = gUnpacker.get_data_id("WC", "fpga_leading");
-    //    static const int k_mt     = gUnpacker.get_data_id("WC", "fpga_meantime");
+    static const int k_tdc    = gUnpacker.get_data_id("WC", "tdc");
+    // static const int k_mt     = gUnpacker.get_data_id("WC", "fpga_meantime");
 
     // TDC gate range
-    //    static const unsigned int tdc_min = gUser.GetParameter("WC_TDC_FPGA", 0);
-    //    static const unsigned int tdc_max = gUser.GetParameter("WC_TDC_FPGA", 1);
-
+    static const unsigned int tdc_min = gUser.GetParameter("WC_TDC_FPGA", 0);
+    static const unsigned int tdc_max = gUser.GetParameter("WC_TDC_FPGA", 1);
 
     // UP
     int wca_id   = gHist.getSequentialID(kWC, 0, kADC);
-    //    int wct_id   = gHist.getSequentialID(kWC, 0, kTDC);
-    //    int wcawt_id = gHist.getSequentialID(kWC, 0, kADCwTDC);    // UP
+    int wct_id   = gHist.getSequentialID(kWC, 0, kTDC);
+    int wcawt_id = gHist.getSequentialID(kWC, 0, kADCwTDC);    // UP
 
     for(int seg=0; seg<NumOfSegWC; ++seg){
       // ADC
@@ -1902,22 +1901,23 @@ process_event( void )
       }
 
       // TDC
-      //      nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-      // for(int m = 0; m<nhit; ++m){
-      // 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
-      // 	if(tdc!=0){
-      // 	  hptr_array[wct_id + seg]->Fill(tdc);
-      // 	  // ADC w/TDC_FPGA
-      // 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
-      // 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-      // 	    hptr_array[wcawt_id + seg]->Fill(adc);
-      // 	  }
-      // 	}
-      // }
+      nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      for(int m = 0; m<nhit; ++m){
+      	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
+      	if(tdc!=0){
+      	  hptr_array[wct_id + seg]->Fill(tdc);
+      	  // ADC w/TDC_FPGA
+      	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
+      	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+      	    hptr_array[wcawt_id + seg]->Fill(adc);
+      	  }
+      	}
+      }
     }
 
     // DOWN
     wca_id   = gHist.getSequentialID(kWC, 0, kADC,     NumOfSegWC+1);
+    wct_id   = gHist.getSequentialID(kWC, 0, kTDC,     NumOfSegWC+1);
     for(int seg=0; seg<NumOfSegWC; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
@@ -1926,19 +1926,19 @@ process_event( void )
 	hptr_array[wca_id + seg]->Fill(adc);
       }
       // TDC
-      // nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
-      // for(int m = 0; m<nhit; ++m){
-      // 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
-      // 	if( tdc!=0 ){
-      // 	  hptr_array[wct_id + seg]->Fill(tdc);
-      // 	  // ADC w/TDC_FPGA
-      // 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
-      // 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-      // 	    hptr_array[wcawt_id + seg]->Fill( adc );
-      // 	  }
-      // 	}
-      // }
-
+      nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+      for(int m = 0; m<nhit; ++m){
+      	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
+      	if( tdc!=0 ){
+	  std::cout << seg << " " << tdc << std::endl;
+      	  hptr_array[wct_id + seg]->Fill(tdc);
+      	  // ADC w/TDC_FPGA
+      	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
+      	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+      	    hptr_array[wcawt_id + seg]->Fill( adc );
+      	  }
+      	}
+      }
     }
     // Hit pattern &&  Multiplicity
     // static const int wchit_id = gHist.getSequentialID(kWC, 0, kHitPat);

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# type screen >/dev/null 2>&1 || echo "screen must be installed" && exit
-
 . $(dirname $(readlink -f $0))/setebhost
 program=jsroot_beammonitor
 
@@ -35,13 +33,17 @@ fi
 # fi
 
 #_______________________________________________________________________________
-pid=$(pgrep -fo "$server $conf $data")
-if [ ! -z $pid ]; then
-    echo "http_server is already running ($pid)"
-    exit 1
-fi
-#_______________________________________________________________________________
 # screen -AmdS K18OnlineServer \
 #     sh -c ". $thisroot_sh && while true; do $server $conf $data; done"
-screen -AmdS K18OnlineServerBeamMonitor \
-    sh -c "while true; do $server $conf $data; done"
+# screen -AmdS K18OnlineServerBeamMonitor \
+#     sh -c "while true; do $server $conf $data; done"
+name=jsroot_beammonitor
+session=`tmux ls | grep $name`
+if [ -z "$session" ]; then
+    echo "create new session $name"
+    tmux new-session -d -s $name \
+	"while true; do $server $conf $data 2>/dev/null; done"
+else
+    echo "reattach session $name"
+    tmux a -t $name
+fi

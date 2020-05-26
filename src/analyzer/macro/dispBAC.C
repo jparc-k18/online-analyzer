@@ -1,41 +1,49 @@
-// Updater belongs to the namespace hddaq::gui
+// -*- C++ -*-
+
+#include"DetectorID.hh"
+
 using namespace hddaq::gui;
 
-void dispBAC()
+//_____________________________________________________________________________
+void
+dispBAC( void )
 {
-  // You must write these lines for the thread safe
-  // ----------------------------------
-  if(Updater::isUpdating()){return;}
-  Updater::setUpdating(true);
-  // ----------------------------------
+  if( Updater::isUpdating() )
+    return;
+  Updater::setUpdating( true );
 
-  const int n_seg_ac = 4;
-  
-  // draw BAC ADC & TDC
-  TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
-  c->Clear();
-  c->Divide(2,2);
-  int idac[n_seg_ac] = {
-    HistMaker::getUniqueID(kBAC,  0, kADC, 1),
-    HistMaker::getUniqueID(kBAC,  0, kADC, 2),
-    HistMaker::getUniqueID(kBAC,  0, kTDC, 1),
-    HistMaker::getUniqueID(kBAC,  0, kTDC, 2)
+  auto c1 = dynamic_cast<TCanvas*>( gROOT->FindObject( "c1" ) );
+  c1->Clear();
+  c1->Divide( 2, 2 );
+  Int_t id[NumOfSegBAC*3] = {
+    HistMaker::getUniqueID( kBAC,  0, kADC,     1 ),
+    HistMaker::getUniqueID( kBAC,  0, kADC,     2 ),
+    HistMaker::getUniqueID( kBAC,  0, kADCwTDC, 1 ),
+    HistMaker::getUniqueID( kBAC,  0, kADCwTDC, 2 ),
+    HistMaker::getUniqueID( kBAC,  0, kTDC,     1 ),
+    HistMaker::getUniqueID( kBAC,  0, kTDC,     2 )
   };
+  TH1 *h = nullptr;
 
-  for(int i = 0; i<n_seg_ac; ++i){
-    c->cd(i+1);
-    gPad->SetLogy();
-    TH1 *h = (TH1*)GHist::get(idac[i]);
-    h->GetXaxis()->SetRangeUser(0,4000);
+  for( Int_t i=0; i<NumOfSegBAC; ++i ){
+    // ADC
+    c1->cd( i+1 )->SetLogy();
+    h = dynamic_cast<TH1*>( GHist::get( id[i] ) );
+    h->GetXaxis()->SetRangeUser( 0, 0x1000 );
+    h->Draw();
+    // ADCwTDC
+    h = dynamic_cast<TH1*>( GHist::get( id[i+NumOfSegBAC] ) );
+    h->SetLineColor( kRed );
+    h->Draw( "same" );
+    // TDC
+    c1->cd( i+NumOfSegBAC+1 )->SetLogy();
+    h = dynamic_cast<TH1*>( GHist::get( id[i+NumOfSegBAC*2] ) );
+    h->GetXaxis()->SetRangeUser( 0, 2000000 );
     h->Draw();
   }
 
-  c->Update();
+  c1->Update();
+  c1->cd(0);
 
-  c->cd(0);
-
-  // You must write these lines for the thread safe
-  // ----------------------------------
-  Updater::setUpdating(false);
-  // ----------------------------------
+  Updater::setUpdating( false );
 }

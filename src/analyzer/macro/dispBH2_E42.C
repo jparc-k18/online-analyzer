@@ -35,12 +35,12 @@ void dispBH2_E42()
       gPad->SetLogy();
       h = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2_E42, 0, kADC, ud+1) );
       if( h ){
-	h->GetXaxis()->SetRangeUser(0,2000);
+	h->GetXaxis()->SetRangeUser(0,0x1000);
 	h->Draw();
       }
       hh = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2_E42, 0, kADCwTDC, ud+1) );
       if( hh ){
-	hh->GetXaxis()->SetRangeUser(0,2000);
+	hh->GetXaxis()->SetRangeUser(0,0x1000);
 	hh->SetLineColor( kRed );
 	hh->Draw("same");
       }
@@ -80,12 +80,12 @@ void dispBH2_E42()
       gPad->SetLogy();
       h = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2_E42, 0, kADC, ud+1) );
       if( h ){
-	h->GetXaxis()->SetRangeUser(0,2000);
+	h->GetXaxis()->SetRangeUser(0,0x1000);
 	h->Draw();
       }
       hh = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2_E42, 0, kADCwTDC, ud+1) );
       if( hh ){
-	hh->GetXaxis()->SetRangeUser(0,2000);
+	hh->GetXaxis()->SetRangeUser(0,0x1000);
 	hh->SetLineColor( kRed );
 	hh->Draw("same");
       }

@@ -1053,6 +1053,10 @@ process_event( void )
     static const unsigned int tdc_min = gUser.GetParameter("BH2_E42_TDC_FPGA", 0);
     static const unsigned int tdc_max = gUser.GetParameter("BH2_E42_TDC_FPGA", 1);
 
+    int adc_dummy[15] = {0};
+    int tdc_dummy[15] = {0};
+
+
     // UP
     int bh2e42a_id   = gHist.getSequentialID(kBH2_E42, 0, kADC);
     int bh2e42t_id   = gHist.getSequentialID(kBH2_E42, 0, kTDC);
@@ -1063,6 +1067,17 @@ process_event( void )
       if(nhit != 0){
 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
 	hptr_array[bh2e42a_id + seg]->Fill(adc);
+
+
+	int nhit_t = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+	for(int m = 0; m<nhit_t; ++m){
+	  unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
+
+      	  // ADC w/TDC_FPGA
+      	  if( tdc_min<tdc && tdc<tdc_max){
+      	    hptr_array[bh2e42awt_id + seg]->Fill(adc);
+      	  }
+      	}
       }
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
@@ -1070,14 +1085,33 @@ process_event( void )
       	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
       	if(tdc!=0){
       	  hptr_array[bh2e42t_id + seg]->Fill(tdc);
-      	  // ADC w/TDC_FPGA
-      	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
-      	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-      	    hptr_array[bh2e42awt_id + seg]->Fill(adc);
-      	  }
       	}
       }
     }
+
+
+      //for(int seg=0; seg<NumOfSegBH2_E42; ++seg){
+      // // ADC
+      // int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
+      // if(nhit != 0){
+      // 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+      // 	hptr_array[bh2e42a_id + seg]->Fill(adc);
+      // }
+      // // TDC
+      // nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      // for(int m = 0; m<nhit; ++m){
+      // 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
+      // 	if(tdc!=0){
+      // 	  hptr_array[bh2e42t_id + seg]->Fill(tdc);
+      // 	  // ADC w/TDC_FPGA
+      // 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
+      // 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+      // 	    hptr_array[bh2e42awt_id + seg]->Fill(adc);
+      // 	  }
+      // 	}
+      // }
+
+
 
     // DOWN
     bh2e42a_id   = gHist.getSequentialID(kBH2_E42, 0, kADC,     NumOfSegBH2_E42+1);
@@ -1089,21 +1123,61 @@ process_event( void )
       if(nhit != 0){
 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
 	hptr_array[bh2e42a_id + seg]->Fill(adc);
+
+	if(adc>400){
+	  ++adc_dummy[seg];
+	}
+
+
+	// ADC w/TDC_FPGA
+	int nhit_t = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+	for(int m = 0; m<nhit_t; ++m){
+	  unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
+	  // ADC w/TDC_FPGA
+	  if(tdc_min<tdc && tdc<tdc_max){
+	    ++tdc_dummy[seg];
+	  }
+
+	  if( tdc_min<tdc && tdc<tdc_max){
+	    hptr_array[bh2e42awt_id + seg]->Fill( adc );
+       	  }
+       	}
       }
-      // TDC
+      //      std::cout<<"a["<<seg<<"]="<<adc_dummy[seg]<<", t["<<seg<<"]="<<tdc_dummy[seg]<<std::endl;
+
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
       for(int m = 0; m<nhit; ++m){
-      	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
-      	if( tdc!=0 ){
-      	  hptr_array[bh2e42t_id + seg]->Fill(tdc);
-      	  // ADC w/TDC_FPGA
-      	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
-      	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-      	    hptr_array[bh2e42awt_id + seg]->Fill( adc );
-      	  }
-      	}
+       	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
+       	if( tdc!=0 ){
+       	  hptr_array[bh2e42t_id + seg]->Fill(tdc);
+	}
       }
     }
+
+
+
+    // for(int seg=0; seg<NumOfSegBH2_E42; ++seg){
+    //   // ADC
+    //   int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
+    //   if(nhit != 0){
+    // 	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+    // 	hptr_array[bh2e42a_id + seg]->Fill(adc);
+    //   }
+    //   // TDC
+    //   nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+    //   for(int m = 0; m<nhit; ++m){
+    //   	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
+    //   	if( tdc!=0 ){
+    //   	  hptr_array[bh2e42t_id + seg]->Fill(tdc);
+    //   	  // ADC w/TDC_FPGA
+    //   	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
+    //   	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+    //   	    hptr_array[bh2e42awt_id + seg]->Fill( adc );
+    //   	  }
+    //   	}
+    //   }
+    // }
+
 
     // Hit pattern &&  Multiplicity
     static const int bh2e42hit_id = gHist.getSequentialID(kBH2_E42, 0, kHitPat);

@@ -18,13 +18,7 @@ bin_dir=$ana_dir/bin
 exe_file=$bin_dir/raw_hist_catch
 
 ##### data directory
-#data_dir=$ana_dir/data
-data_dir=(
-    /hdd1
-    /hdd2
-    /hdd3
-    /hdd4
-)
+data_dir=$ana_dir/data
 
 ##### configure file
 conf_file=/param/conf/analyzer_catch.conf
@@ -46,7 +40,7 @@ fi
 
 for d in ${data_dir[@]}
 do
-    data_file=`find $d/ -name "run$1.dat*" 2>/dev/null`
+    data_file=`find -L $d/ -name "run$1.dat*" 2>/dev/null`
     if [ -z "$data_file" ]; then
 	continue
     fi

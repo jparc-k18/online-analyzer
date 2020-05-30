@@ -264,6 +264,12 @@ process_event( void )
   if( count%50 != 0 && !gScaler.IsSpillEnd() )
   // if( !gScaler.IsSpillEnd() )
     return 0;
+
+  if ( gUnpacker.is_good() ){
+    ss << "Tag cheker is running" << "</div>";
+    gHttp.SetItemField("/Tag", "value", ss.str().c_str());
+  }
+
   ss.str("");
   ss << "<div style='color: white; background-color: black;"
      << "width: 100%; height: 100%;'>";

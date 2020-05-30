@@ -10,7 +10,7 @@ void dispBcOutFF( void )
   // ----------------------------------
 
   const int n_hist = 5;
-    
+
   // XY position
   for( int i=0; i<n_hist; ++i ){
     TCanvas *c = (TCanvas*)gROOT->FindObject( Form("c%d", i+1 ) );
@@ -40,9 +40,20 @@ void dispBcOutFF( void )
       // h_y->GetXaxis()->SetRangeUser(-200,200);
       h_xy->Draw("colz");
     }
-
     c->Update();
   }
+  TCanvas *c = (TCanvas*)gROOT->FindObject("c6");
+  c->Clear();
+  int hxu_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 16);
+  TH1 *h_xu = (TH1*)GHist::get( hxu_id );
+  if( h_xu ){
+    h_xu->GetXaxis()->SetRangeUser(-150,150);
+    h_xu->GetYaxis()->SetRangeUser(-0.1,0.1);
+    h_xu->GetYaxis()->CenterTitle();
+    h_xu->Draw("colz");
+  }
+  c->Update();
+
 
   // You must write these lines for the thread safe
   // ----------------------------------

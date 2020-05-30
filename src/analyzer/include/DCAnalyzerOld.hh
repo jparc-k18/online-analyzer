@@ -50,6 +50,8 @@ public:
   double GetResidualSdcOut( int plane );
   double GetU( void ){ return dXdZ; }
   double GetV( void ){ return dYdZ; }
+  double GetX0( void ){ return X0; }
+  double GetY0( void ){ return Y0; }
   std::vector<int > GetTdc( int plane );
   std::vector<int > GetHitWire( int plane );
   void FullTrackSearch( void );

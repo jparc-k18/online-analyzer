@@ -21,6 +21,8 @@ void dispBeamProfile_e42()
   const Double_t ff[] = { -600., -300., 0, 300., 600. };
   Double_t   rms[2][n_hist];
   Double_t sigma[2][n_hist];
+  Double_t   mean[2][n_hist];
+  Double_t mean_fit[2][n_hist];
 
   // XY position (dispRMS)
   {
@@ -34,6 +36,7 @@ void dispBeamProfile_e42()
 	TH1 *h = (TH1*)GHist::get(base_id +i +xy*n_hist)->Clone();
 	h->GetXaxis()->SetRangeUser(-200,200);
 	rms[xy][i] = h->GetRMS();
+	mean[xy][i] = h->GetMean();
 	h->Draw();
 	tex.DrawLatex(xpos, ypos, Form("%.2lf", rms[xy][i]));
       }
@@ -58,6 +61,7 @@ void dispBeamProfile_e42()
 	Double_t max = 0.;
 	h->Fit("f", "Q", "", max-fit_width[xy], max+fit_width[xy]);
 	sigma[xy][i] = f->GetParameter("Sigma");
+	mean_fit[xy][i] = f->GetParameter("Mean");
 	h->Draw();
 	tex.DrawLatex(xpos, ypos, Form("%.2lf", sigma[xy][i]));
       }
@@ -65,9 +69,62 @@ void dispBeamProfile_e42()
     c->Update();
   }
 
-  // X(RMS)%FFpos & X(sigma)%FFpos
+  // X(Mean)%FFpos & X(Mean_fit)%FFpos
   {
     TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c3"));
+    c->Clear();
+    c->Divide(2,2);
+    {
+      c->cd(1)->SetGrid();
+      TGraph *gr = new TGraph(n_hist, ff, mean[0] );
+      gr->SetTitle("BeamProfile X (Mean)");
+      gr->GetXaxis()->SetTitle("FF+[mm]");
+      gr->GetYaxis()->SetTitle("[mm]  ");
+      gr->GetYaxis()->SetTitleOffset(1.2);
+      gr->SetMarkerStyle(8);
+      gr->SetMarkerSize(3);
+      gr->SetMarkerColor(kRed);
+      gr->Draw("AP");
+      c->cd(2)->SetGrid();
+      TGraph *gs = new TGraph(n_hist, ff, mean_fit[0] );
+      gs->SetTitle("BeamProfile X (Mean_fit)");
+      gs->GetXaxis()->SetTitle("FF+[mm]");
+      gs->GetYaxis()->SetTitle("[mm]  ");
+      gs->GetYaxis()->SetTitleOffset(1.2);
+      gs->SetMarkerStyle(8);
+      gs->SetMarkerSize(3);
+      gs->SetMarkerColor(kBlue);
+      gs->Draw("AP");
+    }
+    {
+      c->cd(3)->SetGrid();
+      TGraph *gr = new TGraph(n_hist, ff, mean[1] );
+      gr->SetTitle("BeamProfile Y (Mean)");
+      gr->GetXaxis()->SetTitle("FF+[mm]");
+      gr->GetYaxis()->SetTitle("[mm]  ");
+      gr->GetYaxis()->SetTitleOffset(1.2);
+      gr->SetMarkerStyle(8);
+      gr->SetMarkerSize(3);
+      gr->SetMarkerColor(kRed);
+      gr->Draw("AP");
+      c->cd(4)->SetGrid();
+      TGraph *gs = new TGraph(n_hist, ff, mean_fit[1] );
+      gs->SetTitle("BeamProfile Y (Mean_fit)");
+      gs->GetXaxis()->SetTitle("FF+[mm]");
+      gs->GetYaxis()->SetTitle("[mm]  ");
+      gs->GetYaxis()->SetTitleOffset(1.2);
+      gs->SetMarkerStyle(8);
+      gs->SetMarkerSize(3);
+      gs->SetMarkerColor(kBlue);
+      gs->Draw("AP");
+    }
+    c->Update();
+  }
+
+
+  // X(RMS)%FFpos & X(sigma)%FFpos
+  {
+    TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c4"));
     c->Clear();
     c->Divide(2,2);
     {

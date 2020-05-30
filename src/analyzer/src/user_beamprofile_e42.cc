@@ -107,21 +107,10 @@ process_begin(const std::vector<std::string>& argv)
 				   "x position [mm]", "y position [mm]"));
     }
     tab_hist->Add(sub_dir);
-  }
 
-  //SSD1
-  {
-    TList *sub_dir = new TList;
-    const char* nameSubDir = "SSD1";
-    sub_dir->SetName(nameSubDir);
-    int unique_id = gHist.getUniqueID(kMisc, 0, kHitPat2D);
-    const char* nameLayer[] = { "Y0", "X0", "Y1", "X1" };
-    for(int l=0; l<NumOfLayersSSD1; ++l){
-      char* title = Form("%s_HitPos_%s", nameSubDir, nameLayer[l]);
-      sub_dir->Add(gHist.createTH1(unique_id++, title,
-				   200,-100,100,
-				   "Position [mm]", ""));
-    }
+    sub_dir->Add(gHist.createTH2(unique_id++, "XU",
+				 400,-200,200, 2000,-1,1,
+				 "x0 [mm]", "u"));
     tab_hist->Add(sub_dir);
   }
 
@@ -163,6 +152,7 @@ process_event()
       static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat);
       static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist+1);
       static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
+      static const int xu_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*3+1);
 
       for(int i = 0; i<NHist; ++i){
 	double xpos = BcOutAna.GetPosX(dist_FF+FF_plus[i]);
@@ -171,6 +161,9 @@ process_event()
 	hptr_array[ypos_id+i]->Fill(ypos);
 	hptr_array[xypos_id+i]->Fill(xpos, ypos);
       }
+      double x0 = BcOutAna.GetX0();
+      double u0 = BcOutAna.GetU();
+      hptr_array[xu_id]->Fill(x0, u0);
     }
   }
 
@@ -178,61 +171,6 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
-  ////////// SSD1
-  {
-    // data type
-    static const int k_device = gUnpacker.get_device_id("SSD1");
-    static const int k_adc    = gUnpacker.get_data_id("SSD1","adc");
-    static const int k_flag   = gUnpacker.get_data_id("SSD1","flag");
-    // sequential id
-    static const int hit_id = gHist.getSequentialID(kMisc, 0, kHitPat2D);
-
-    bool chit_flag[NumOfLayersSSD1][NumOfSegSSD1];
-
-    for(int l=0; l<NumOfLayersSSD1; ++l){
-      for(int seg=0; seg<NumOfSegSSD1; ++seg){
-	chit_flag[l][seg] = false;
-	// ADC
-	int nhit_a = gUnpacker.get_entries(k_device, l, seg, 0, k_adc);
-	if( nhit_a==0 ) continue;
-	if( nhit_a != NumOfSamplesSSD ){
-	  std::cerr << "#W SSD1 layer:" << l << " seg:" << seg
-		    << " the number of samples is wrong : "
-		    << nhit_a << "/" << NumOfSamplesSSD << std::endl;
-	  continue;
-	}
-	int  adc[nhit_a];
-	bool slope[nhit_a-1];
-	int  peak_height   = -1;
-	int  peak_position = -1;
-	for(int m=0; m<nhit_a; ++m){
-	  adc[m] = gUnpacker.get(k_device, l, seg, 0, k_adc, m);
-	  adc[m] -= adc[0];
-	  if( m>0 )
-	    slope[m] = adc[m]>adc[m-1];
-	  if( adc[m]>peak_height ){
-	    peak_height   = adc[m];
-	    peak_position = m;
-	  }
-	}
-	// Zero Suppression Flag
-	int  nhit_flag = gUnpacker.get_entries(k_device, l, seg, 0, k_flag);
-	bool  hit_flag = false;
-	if(nhit_flag != 0){
-	  int flag = gUnpacker.get(k_device, l, seg, 0, k_flag);
-	  if(flag==1) hit_flag = true;
-	}
-	chit_flag[l][seg] = hit_flag &&
-	  slope[0] &&
-	  slope[1] && slope[2] && !slope[4] && !slope[5] && !slope[6];
-	  //&& ( peak_height > 350 );
-	if( peak_height>=0 && peak_position>=1 && chit_flag[l][seg] ){
-	  double wpos = gGeom.CalcWirePosition( l+7, seg+1 );
-	  hptr_array[hit_id +l]->Fill( wpos );
-	}
-      }//for(seg)
-    }//for(l)
-  }
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;

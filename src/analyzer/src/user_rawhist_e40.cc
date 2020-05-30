@@ -165,6 +165,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_misc->Add(macro::Get("dispBAC"));
   tab_misc->Add(macro::Get("dispBH2_E42"));
   tab_misc->Add(macro::Get("dispWC"));
+  tab_misc->Add(macro::Get("fitWC"));
   // tab_misc->Add(gHist.createT1());
   // tab_misc->Add(gHist.createT2());
   // Matrix pattern
@@ -1994,6 +1995,8 @@ process_event( void )
     // DOWN
     wca_id   = gHist.getSequentialID(kWC, 0, kADC,     NumOfSegWC+1);
     wct_id   = gHist.getSequentialID(kWC, 0, kTDC,     NumOfSegWC+1);
+    wcawt_id = gHist.getSequentialID(kWC, 0, kADCwTDC, NumOfSegWC+1);
+
     for(int seg=0; seg<NumOfSegWC; ++seg){
       // ADC
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);

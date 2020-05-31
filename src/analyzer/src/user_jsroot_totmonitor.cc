@@ -164,7 +164,7 @@ process_begin( const std::vector<std::string>& argv )
   carray.push_back( new TCanvas("tot_monitor", "tot_monitor") );
   carray.push_back( new TCanvas("daq_monitor", "daq_monitor") );
 
-  gHttp.SetPort(9091);
+  gHttp.SetPort(9098);
   gHttp.Open();
   gHttp.Register(gHist.createBH2());
   gHttp.Register(gHist.createBFT());
@@ -190,7 +190,9 @@ process_begin( const std::vector<std::string>& argv )
     leg_t0->SetFillColor(0);
     leg_t0->SetBorderSize(4);
     for( Int_t i=0; i<NumOfSegBH2; ++i ){
-      carray[0]->cd()->SetGrid();
+      carray[0]->cd();
+      gPad->SetGrid();
+      gPad->SetTicky(2);
       g_t0[i] = new TGraph();
       g_t0[i]->SetTitle("T0 Monitor");
       g_t0[i]->SetName( Form("BH2-%d", i+1) );
@@ -215,7 +217,9 @@ process_begin( const std::vector<std::string>& argv )
     leg_tot->SetFillColor(0);
     leg_tot->SetBorderSize(4);
     for( Int_t i=0; i<nTOT; ++i ){
-      carray[1]->cd()->SetGrid();
+      carray[1]->cd();
+      gPad->SetGrid();
+      gPad->SetTicky(2);
       g_tot[i] = new TGraph();
       g_tot[i]->SetTitle("TOT Monitor");
       g_tot[i]->SetName( sTOT[i] );
@@ -242,7 +246,9 @@ process_begin( const std::vector<std::string>& argv )
     leg_daq->SetFillColor(0);
     leg_daq->SetBorderSize(4);
     for( Int_t i=0; i<nDAQ; ++i ){
-      carray[2]->cd()->SetGrid();
+      carray[2]->cd();
+      gPad->SetGrid();
+      gPad->SetTicky(2);
       g_daq[i] = new TGraph();
       g_daq[i]->SetTitle("DAQ Monitor");
       g_daq[i]->SetMarkerStyle(8);

@@ -93,6 +93,9 @@ my_tgt_jsroot_scaler	:= $(bin_dir)/jsroot_scaler
 my_obj_jsroot_beammonitor	:= $(core_obj) user_jsroot_beammonitor.o
 my_tgt_jsroot_beammonitor	:= $(bin_dir)/jsroot_beammonitor
 
+my_obj_jsroot_totmonitor	:= $(core_obj) user_jsroot_totmonitor.o
+my_tgt_jsroot_totmonitor	:= $(bin_dir)/jsroot_totmonitor
+
 my_obj_emc_position	:= $(core_obj) user_emc_position.o
 my_tgt_emc_position	:= $(bin_dir)/emc_position
 
@@ -164,6 +167,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_jsroot_e40) \
 	$(my_tgt_jsroot_scaler) \
 	$(my_tgt_jsroot_beammonitor) \
+	$(my_tgt_jsroot_totmonitor) \
 	$(my_tgt_vme01debug) \
 	$(my_tgt_mstmonitor_e40) \
 	$(my_tgt_mstmonitorjs_e40) \
@@ -317,6 +321,13 @@ my_obj_jsroot_beammonitor	:= $(my_obj_jsroot_beammonitor)
 my_lib_jsroot_beammonitor	:= libmyjsroot_beammonitor.so
 $(eval $(call make-lib,$(my_lib_jsroot_beammonitor),$(my_obj_jsroot_beammonitor)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_beammonitor),$(my_lib_jsroot_beammonitor)))
+#
+#_______________________________________________________________________________
+my_obj_jsroot_totmonitor	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_totmonitor))
+my_obj_jsroot_totmonitor	:= $(my_obj_jsroot_totmonitor)
+my_lib_jsroot_totmonitor	:= libmyjsroot_totmonitor.so
+$(eval $(call make-lib,$(my_lib_jsroot_totmonitor),$(my_obj_jsroot_totmonitor)))
+$(eval $(call make-nogui-target,$(my_tgt_jsroot_totmonitor),$(my_lib_jsroot_totmonitor)))
 #
 #_______________________________________________________________________________
 my_obj_emc_position := $(addprefix $(my_dir)/src/,$(my_obj_emc_position))

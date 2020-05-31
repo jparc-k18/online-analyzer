@@ -164,7 +164,7 @@ process_begin( const std::vector<std::string>& argv )
   carray.push_back( new TCanvas("tot_monitor", "tot_monitor") );
   carray.push_back( new TCanvas("daq_monitor", "daq_monitor") );
 
-  gHttp.SetPort(9098);
+  gHttp.SetPort(9091);
   gHttp.Open();
   gHttp.Register(gHist.createBH2());
   gHttp.Register(gHist.createBFT());

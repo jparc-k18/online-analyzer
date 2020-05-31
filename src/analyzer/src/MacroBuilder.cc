@@ -654,7 +654,7 @@ MsTTDC( void )
     c1->cd(i+1);//->SetLogy();
     TH1 *h = GHist::get( HistMaker::getUniqueID(kMsT, 0, kTDC, i+1) );
     if( !h ) continue;
-    // h->GetXaxis()->SetRangeUser(0,2000);
+    h->GetXaxis()->SetRangeUser(140000, 280000);
     h->Draw();
   }
   return c1;

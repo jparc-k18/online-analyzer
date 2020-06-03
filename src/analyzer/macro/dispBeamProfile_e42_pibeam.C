@@ -1,7 +1,7 @@
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
-void dispBeamProfile_e42()
+void dispBeamProfile_e42_pibeam()
 {
   // You must write these lines for the thread safe
   // ----------------------------------
@@ -13,7 +13,7 @@ void dispBeamProfile_e42()
   const Int_t n_hist = 5;
   const Int_t NumHist=(3*n_hist+1);//X, Y, XY, U
   //  const Int trig =1; //0: unbias, 1: K-beam, 2: pi-beam
-  const Int_t trig =0; //0: unbias, 1: K-beam, 2: pi-beam
+  const Int_t trig =2; //0: unbias, 1: K-beam, 2: pi-beam
 
 
   TLatex tex;

@@ -87,6 +87,8 @@ namespace analyzer
     tab_macro->Add(macro::Get("split32"));
     tab_macro->Add(macro::Get("split33"));
     tab_macro->Add(macro::Get("dispBeamProfile_e42"));
+    tab_macro->Add(macro::Get("dispBeamProfile_e42_Kbeam"));
+    tab_macro->Add(macro::Get("dispBeamProfile_e42_pibeam"));
     tab_macro->Add(macro::Get("dispBcOutFF"));
     //  tab_macro->Add(macro::Get("dispSSD1Profile"));
 

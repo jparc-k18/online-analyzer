@@ -108,6 +108,75 @@ void dispBH2_E42()
     c4->cd(0);
   }
 
+
+  {
+    TCanvas *c5 = (TCanvas*)gROOT->FindObject("c5");
+    TCanvas *c6 = (TCanvas*)gROOT->FindObject("c6");
+    c5->Clear();
+    c5->Divide(2,2);
+    c6->Clear();
+    c6->Divide(2,2);
+    int icanvas5 = 0;
+    int icanvas6 = 0;
+    for( int itr=0; itr<3; ++itr ){
+      TH1 *h1  = NULL;
+      TH1 *h2 = NULL;
+      TH1 *h3 = NULL;
+      // draw Hitpat
+      c5->cd( ++icanvas5 );
+      //      gPad->SetLogy();
+      //unbias (raw hitpat)
+      h1 = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2_E42, 0, kHitPat, itr*3+1))->Clone();
+      if( h1 ){
+	h1->Draw();
+      }
+      //cor hitpat
+      h2 = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2_E42, 0, kHitPat, itr*3+2))->Clone();
+      if( h2 ){
+	h2->SetLineColor( kRed );
+	h2->Draw("same");
+      }
+      //Max hitpat
+      h3 = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2_E42, 0, kHitPat, itr*3+3))->Clone();
+      if( h3 ){
+	h3->SetLineColor( kGreen );
+	h3->Draw("same");
+      }
+    }
+
+    for( int itr=0; itr<3; ++itr ){
+      TH1 *h1  = NULL;
+      TH1 *h2 = NULL;
+      // draw Multiplicity
+      c6->cd( ++icanvas6 );
+      //      gPad->SetLogy();
+      //unbias (raw multi)
+      h1 = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2_E42, 0, kMulti, itr*2+1))->Clone();
+      h2 = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2_E42, 0, kMulti, itr*2+2))->Clone();
+      if( h1 ){
+	h1->GetYaxis()->SetRangeUser(0, 1.2*h2->GetMaximum());
+	h1->Draw();
+      }
+      //cor multi
+
+      if( h2 ){
+	h2->SetLineColor( kRed );
+	h2->Draw("same");
+      }
+    }
+
+
+
+
+    c5->Update();
+    c5->cd(0);
+    c6->Update();
+    c6->cd(0);
+  }
+
+
+
+
   // You must write these lines for the thread safe
   // ----------------------------------
   Updater::setUpdating(false);

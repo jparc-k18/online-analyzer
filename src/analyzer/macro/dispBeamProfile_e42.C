@@ -9,7 +9,13 @@ void dispBeamProfile_e42()
   Updater::setUpdating(true);
   // ----------------------------------
 
+
   const Int_t n_hist = 5;
+  const Int_t NumHist=(3*n_hist+1);//X, Y, XY, U
+  //  const Int trig =1; //0: unbias, 1: K-beam, 2: pi-beam
+  const Int_t trig =1; //0: unbias, 1: K-beam, 2: pi-beam
+
+
   TLatex tex;
   tex.SetNDC();
   tex.SetTextSize(0.14);
@@ -29,11 +35,13 @@ void dispBeamProfile_e42()
     TCanvas *c = dynamic_cast<TCanvas*>(gROOT->FindObject("c1"));
     c->Clear();
     c->Divide(5,2);
+
     Int_t base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat);
+
     for( Int_t xy=0; xy<2; ++xy ){
       for(Int_t i=0; i<n_hist; i++){
 	c->cd(i+1+xy*n_hist);
-	TH1 *h = (TH1*)GHist::get(base_id +i +xy*n_hist)->Clone();
+	TH1 *h = (TH1*)GHist::get(base_id +i +xy*n_hist + (NumHist*trig))->Clone();
 	h->GetXaxis()->SetRangeUser(-200,200);
 	rms[xy][i] = h->GetRMS();
 	mean[xy][i] = h->GetMean();
@@ -55,7 +63,7 @@ void dispBeamProfile_e42()
     for( Int_t xy=0; xy<2; ++xy ){
       for( Int_t i=0; i<n_hist; ++i ){
 	c->cd(i+1+xy*n_hist);
-	TH1 *h = (TH1*)GHist::get(base_id +i +xy*n_hist)->Clone();
+	TH1 *h = (TH1*)GHist::get(base_id +i +xy*n_hist + (NumHist*trig))->Clone();
 	h->GetXaxis()->SetRangeUser(-200,200);
 	// Double_t max = h->GetBinCenter(h->GetMaximumBin());
 	Double_t max = 0.;

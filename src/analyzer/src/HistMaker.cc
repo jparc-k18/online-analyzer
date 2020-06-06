@@ -1483,22 +1483,67 @@ TList* HistMaker::createBH2_E42( Bool_t flag_ps )
 
   // Hit parttern -----------------------------------------------
   {
-    const char* title = "BH2_E42_hit_pattern";
+
+    TString strSubDir  = CONV_STRING(kHitPat);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
     Int_t target_id = getUniqueID(kBH2_E42, 0, kHitPat, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-			   NumOfSegBH2_E42, 0, NumOfSegBH2_E42,
-			   "Segment", ""));
+    TString Trig_flag[3] = {"No flag", "K-Beam", "pi-Beam"};
+    TString Hitpat_flag[3] = {"Unbias", "Corrected", "MaxADC"};
+    const char* Tf_name = NULL;
+    const char* Hp_name = NULL;
+
+    for(Int_t i = 0; i<3; ++i){//Trig flag
+      for(Int_t j = 0; j<3; ++j){//hitpat
+	const char* title = NULL;
+	Int_t ID = i*3+j+1; // 1 origin
+	Tf_name = Trig_flag[i].Data();
+	Hp_name = Hitpat_flag[j].Data();
+
+	title = Form("%s_%s_%s)", nameSubDir, Tf_name, Hp_name);
+
+
+	sub_dir->Add(createTH1(target_id + ID, title, // 1 origin
+			       NumOfSegBH2_E42, 0, NumOfSegBH2_E42,
+			       "Segment", ""));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
   }
 
   // Multiplicity -----------------------------------------------
   {
-    const char* title = "BH2_E42_multiplicity";
+    TString strSubDir  = CONV_STRING(kMulti);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
     Int_t target_id = getUniqueID(kBH2_E42, 0, kMulti, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-			   NumOfSegBH2_E42+1, 0, NumOfSegBH2_E42+1,
-			   "Multiplicity", ""));
+    TString Trig_flag[3] = {"No flag", "K-Beam", "pi-Beam"};
+    TString Hitpat_flag[2] = {"Unbias", "Corrected"};
+    const char* Tf_name = NULL;
+    const char* Hp_name = NULL;
+
+    for(Int_t i = 0; i<3; ++i){//Trig flag
+      for(Int_t j = 0; j<2; ++j){//Multi
+	const char* title = NULL;
+	Int_t ID = i*2+j+1; // 1 origin
+	Tf_name = Trig_flag[i].Data();
+	Hp_name = Hitpat_flag[j].Data();
+
+	title = Form("%s_%s_%s)", nameSubDir, Tf_name, Hp_name);
+
+
+	sub_dir->Add(createTH1(target_id + ID, title, // 1 origin
+			       NumOfSegBH2_E42, 0, NumOfSegBH2_E42,
+			       "Multiplicity", ""));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
   }
 
   return top_dir;

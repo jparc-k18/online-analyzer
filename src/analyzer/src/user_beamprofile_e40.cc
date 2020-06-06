@@ -37,6 +37,7 @@
 
 #define BH2FILTER 1
 
+
 namespace analyzer
 {
   using namespace hddaq::unpacker;

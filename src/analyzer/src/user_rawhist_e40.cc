@@ -1186,6 +1186,32 @@ process_event( void )
     static const int bh2e42hit_id = gHist.getSequentialID(kBH2_E42, 0, kHitPat);
     static const int bh2e42mul_id = gHist.getSequentialID(kBH2_E42, 0, kMulti);
     int multiplicity = 0;
+    int cor_multiplicity = 0;
+    unsigned int max_adc1 =0;
+    unsigned int max_adc2 =0;
+    int max_seg = -1;
+
+    bool K_beam_flag = false;
+    bool pi_beam_flag = false;
+    {
+      static const int k_device = gUnpacker.get_device_id("TFlag");
+      static const int k_tdc    = gUnpacker.get_data_id("TFlag", "tdc");
+
+      int nhit_K = gUnpacker.get_entries( k_device, 0, trigger::kBeamTOFPS, 0, k_tdc );
+      int nhit_pi = gUnpacker.get_entries( k_device, 0, trigger::kBeamPiPS, 0, k_tdc );
+      for(int m = 0; m<nhit_K; ++m){
+	int tdc = gUnpacker.get( k_device, 0, trigger::kBeamTOFPS, 0, k_tdc, m );
+	//if(tflag_tdc_min < tdc && tdc < tflag_tdc_max) pipi_flag = true;
+	if(tdc!=0) K_beam_flag = true;
+      }
+      for(int m = 0; m<nhit_pi; ++m){
+	int tdc = gUnpacker.get( k_device, 0, trigger::kBeamPiPS, 0, k_tdc, m );
+	//if(tflag_tdc_min < tdc && tdc < tflag_tdc_max) pipi_flag = true;
+	if(tdc!=0) pi_beam_flag = true;
+      }
+    }
+
+
     for(int seg=0; seg<NumOfSegBH2_E42; ++seg){
       int nhit_u = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       int nhit_d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
@@ -1193,15 +1219,108 @@ process_event( void )
       if( nhit_u!=0 && nhit_d!=0 ){
     	unsigned int tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
     	unsigned int tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
+	unsigned int adc_u = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+    	unsigned int adc_d = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+	int cor_seg = seg;
     	// TDC AND
     	if( tdc_u!=0 && tdc_d!=0 ){
-    	  hptr_array[bh2e42hit_id]->Fill( seg );
     	  ++multiplicity;
-    	}
+	  ++cor_multiplicity;
+	  max_adc1 = adc_u + adc_d;
+	  if(max_adc1>max_adc2){
+	    max_adc2 = max_adc1;
+	    max_seg = seg;
+	  }
+
+	  //Raw hit pat
+	  hptr_array[bh2e42hit_id]->Fill( seg );
+	  if(K_beam_flag)hptr_array[bh2e42hit_id+3]->Fill( seg );
+	  if(pi_beam_flag)hptr_array[bh2e42hit_id+6]->Fill( seg );
+	  //Correction for BH2 hitpat
+	  if(seg <= NumOfSegBH2 - 2){
+	    int nhit_u1 = gUnpacker.get_entries(k_device, 0, seg+1, k_u, k_tdc);
+	    int nhit_d1 = gUnpacker.get_entries(k_device, 0, seg+1, k_d, k_tdc);
+	    unsigned int tdc_u1=0, tdc_d1=0, tdc_u2=0, tdc_d2=0;
+	    unsigned int adc_u1=0, adc_d1=0, adc_u2=0, adc_d2=0;
+	    if (nhit_u1!=0 && nhit_d1!=0){
+	      tdc_u1 = gUnpacker.get(k_device, 0, seg+1, k_u, k_tdc);
+	      tdc_d1 = gUnpacker.get(k_device, 0, seg+1, k_d, k_tdc);
+	      adc_u1 = gUnpacker.get(k_device, 0, seg+1, k_u, k_adc);
+	      adc_d1 = gUnpacker.get(k_device, 0, seg+1, k_d, k_adc);
+	      if( tdc_u1!=0 && tdc_d1!=0){
+		//raw hitpat
+		hptr_array[bh2e42hit_id]->Fill( seg+1 );
+		if(K_beam_flag)hptr_array[bh2e42hit_id+3]->Fill( seg+1 );
+		if(pi_beam_flag)hptr_array[bh2e42hit_id+6]->Fill( seg+1 );
+
+		++multiplicity;
+		if(adc_u1 + adc_d1 > max_adc1){
+		  cor_seg = seg + 1;
+		  max_adc1 = adc_u1 + adc_d1;
+		}
+	      }
+	    }
+	    if(seg==NumOfSegBH2 - 2){
+	      hptr_array[bh2e42hit_id+1]->Fill( cor_seg );
+	      if(K_beam_flag)hptr_array[bh2e42hit_id+4]->Fill( cor_seg );
+	      if(pi_beam_flag)hptr_array[bh2e42hit_id+7]->Fill( cor_seg );
+
+	      if(max_adc1>max_adc2){
+		max_adc2 = max_adc1;
+		max_seg = cor_seg;
+	      }
+	      ++seg;
+	      continue;
+	    }
+	    int nhit_u2 = gUnpacker.get_entries(k_device, 0, seg+2, k_u, k_tdc);
+	    int nhit_d2 = gUnpacker.get_entries(k_device, 0, seg+2, k_d, k_tdc);
+	    if (nhit_u2!=0 && nhit_d2!=0){
+	      tdc_u2 = gUnpacker.get(k_device, 0, seg+2, k_u, k_tdc);
+	      tdc_d2 = gUnpacker.get(k_device, 0, seg+2, k_d, k_tdc);
+	      adc_u2 = gUnpacker.get(k_device, 0, seg+2, k_u, k_adc);
+	      adc_d2 = gUnpacker.get(k_device, 0, seg+2, k_d, k_adc);
+	      if( tdc_u2!=0 && tdc_d2!=0 ){
+		//raw hitpat
+		hptr_array[bh2e42hit_id]->Fill( seg+2 );
+		if(K_beam_flag)hptr_array[bh2e42hit_id+3]->Fill( seg+2 );
+		if(pi_beam_flag)hptr_array[bh2e42hit_id+6]->Fill( seg+2 );
+
+		++multiplicity;
+		if(adc_u2 + adc_d2 > max_adc1){
+		  cor_seg = seg + 2;
+		  max_adc1 = adc_u2 + adc_d2;
+		}
+	      }
+	    }
+	    if(max_adc1>max_adc2){
+	      max_adc2 = max_adc1;
+	      max_seg = cor_seg;
+	    }
+	    seg = seg + 2;
+	  }
+	  hptr_array[bh2e42hit_id+1]->Fill( cor_seg );//Fill Cor Hitseg
+	  if(K_beam_flag)hptr_array[bh2e42hit_id+4]->Fill( cor_seg );
+	  if(pi_beam_flag)hptr_array[bh2e42hit_id+7]->Fill( cor_seg );
+	}
       }
     }
 
+    hptr_array[bh2e42hit_id+2]->Fill( max_seg );//Fill MaxHitSeg
+    if(K_beam_flag)hptr_array[bh2e42hit_id+5]->Fill( max_seg );
+    if(pi_beam_flag)hptr_array[bh2e42hit_id+8]->Fill( max_seg );
+
+
     hptr_array[bh2e42mul_id]->Fill(multiplicity);
+    hptr_array[bh2e42mul_id+1]->Fill(cor_multiplicity);
+    if(K_beam_flag){
+      hptr_array[bh2e42mul_id+2]->Fill(multiplicity);
+      hptr_array[bh2e42mul_id+3]->Fill(cor_multiplicity);
+    }
+    if(pi_beam_flag){
+      hptr_array[bh2e42mul_id+4]->Fill(multiplicity);
+      hptr_array[bh2e42mul_id+5]->Fill(cor_multiplicity);
+    }
+
 
     // Mean Timer
     bh2e42t_id   = gHist.getSequentialID(kBH2_E42, 0, kBH2_E42MT, 1);

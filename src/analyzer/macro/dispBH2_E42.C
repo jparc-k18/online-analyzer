@@ -123,7 +123,10 @@ void dispBH2_E42()
       TH1 *h2 = NULL;
       TH1 *h3 = NULL;
       // draw Hitpat
+
       c5->cd( ++icanvas5 );
+      if(itr==2)
+      c5->cd( icanvas5+1 );
       //      gPad->SetLogy();
       //unbias (raw hitpat)
       h1 = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2_E42, 0, kHitPat, itr*3+1))->Clone();
@@ -149,6 +152,8 @@ void dispBH2_E42()
       TH1 *h2 = NULL;
       // draw Multiplicity
       c6->cd( ++icanvas6 );
+      if(itr==2)
+	c6->cd( icanvas6+1 );
       //      gPad->SetLogy();
       //unbias (raw multi)
       h1 = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2_E42, 0, kMulti, itr*2+1))->Clone();

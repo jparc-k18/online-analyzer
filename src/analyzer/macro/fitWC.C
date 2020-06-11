@@ -41,10 +41,13 @@ fitWC( void )
 	h1->GetXaxis()->SetRangeUser( 0, 0x1000 );
 	Double_t rms = h1->GetRMS();
 	Double_t max = h1->GetBinCenter(h1->GetMaximumBin());
-	if(max>200.)
-	  h1->Fit("f", "Q", "", max - 3.*rms, max + 3.*rms);
-	else
-	  h1->Fit("f", "L", "", 200., 2000.);
+	// if(max>200.)
+	//   h1->Fit("f", "Q", "", max - 3.*rms, max + 3.*rms);
+	// else
+	//   h1->Fit("f", "L", "", 0., 2000.);
+
+	h1->Fit("f", "L", "", 100., 1000.);
+
 	Double_t mean = f->GetParameter("Mean");
 	Double_t sigma = f->GetParameter("Sigma");
 	h1->Draw( );

@@ -192,15 +192,15 @@ namespace analyzer
       static const int k_device = gUnpacker.get_device_id("TFlag");
       static const int k_tdc    = gUnpacker.get_data_id("TFlag", "tdc");
 
-      int nhit_K = gUnpacker.get_entries( k_device, 0, trigger::kBeamTOFPS, 0, k_tdc );
-      int nhit_pi = gUnpacker.get_entries( k_device, 0, trigger::kBeamPiPS, 0, k_tdc );
+      int nhit_K = gUnpacker.get_entries( k_device, 0, trigger::kBeamTOF, 0, k_tdc );
+      int nhit_pi = gUnpacker.get_entries( k_device, 0, trigger::kBeamPi, 0, k_tdc );
       for(int m = 0; m<nhit_K; ++m){
-	int tdc = gUnpacker.get( k_device, 0, trigger::kBeamTOFPS, 0, k_tdc, m );
+	int tdc = gUnpacker.get( k_device, 0, trigger::kBeamTOF, 0, k_tdc, m );
 	//if(tflag_tdc_min < tdc && tdc < tflag_tdc_max) pipi_flag = true;
 	if(tdc!=0) trig_flag[1] = true;//K- beam trigger
       }
       for(int m = 0; m<nhit_pi; ++m){
-	int tdc = gUnpacker.get( k_device, 0, trigger::kBeamPiPS, 0, k_tdc, m );
+	int tdc = gUnpacker.get( k_device, 0, trigger::kBeamPi, 0, k_tdc, m );
 	//if(tflag_tdc_min < tdc && tdc < tflag_tdc_max) pipi_flag = true;
 	if(tdc!=0) trig_flag[2] = true;//pi- beam trigger
       }

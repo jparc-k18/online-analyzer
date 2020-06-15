@@ -123,9 +123,7 @@ TH1* HistMaker::createTH1( Int_t unique_id, const TString& title,
   return h;
 }
 
-// -------------------------------------------------------------------------
-// CreateTH2
-// -------------------------------------------------------------------------
+//_____________________________________________________________________________
 TH2* HistMaker::createTH2( Int_t unique_id, const TString& title,
 			   Int_t nbinx, Int_t xmin, Int_t xmax,
 			   Int_t nbiny, Int_t ymin, Int_t ymax,
@@ -158,6 +156,38 @@ TH2* HistMaker::createTH2( Int_t unique_id, const TString& title,
     //    return h;
   }
 
+  h->GetXaxis()->SetTitle(xtitle);
+  h->GetYaxis()->SetTitle(ytitle);
+  return h;
+}
+
+//_____________________________________________________________________________
+TH2* HistMaker::createTH2( Int_t unique_id, const TString& title,
+			   Int_t nbinx, Double_t xmin, Double_t xmax,
+			   Int_t nbiny, Double_t ymin, Double_t ymax,
+			   const TString& xtitle, const TString& ytitle )
+{
+  Int_t sequential_id = current_hist_id_++;
+  TypeRetInsert ret =
+    idmap_seq_from_unique_.insert( std::make_pair(unique_id, sequential_id ) );
+  idmap_seq_from_name_.insert( std::make_pair(title, sequential_id ) );
+  idmap_unique_from_seq_.insert( std::make_pair(sequential_id, unique_id ) );
+  if( !ret.second ){
+    std::cerr << "#E " << FUNC_NAME
+	      << " The unique id overlaps with other id"
+	      << std::endl;
+    std::cerr << " " << unique_id << " " << title << std::endl;
+    std::exit(-1);
+  }
+
+  TH2 *h = GHist::D2( unique_id, title,
+		      nbinx, xmin, xmax, nbiny, ymin, ymax );
+  if(!h){
+    std::cerr << "#E " << FUNC_NAME << " Fail to create TH2" << std::endl
+	      << " " << unique_id << " " << title << std::endl;
+    std::exit(-1);
+    //    return h;
+  }
   h->GetXaxis()->SetTitle(xtitle);
   h->GetYaxis()->SetTitle(ytitle);
   return h;
@@ -2142,7 +2172,7 @@ TList* HistMaker::createSSD1( Bool_t flag_ps )
     for(Int_t l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
-			     NumOfSegSSD1/4, 0, NumOfSegSSD1, 200, 0., 40000.,
+			     NumOfSegSSD1/4, 0, NumOfSegSSD1, 200, 0, 40000,
 			     "Segment", "DeltaE  "));
     }
     top_dir->Add(sub_dir);
@@ -2173,7 +2203,7 @@ TList* HistMaker::createSSD1( Bool_t flag_ps )
     for(Int_t l=0; l<NumOfLayersSSD1; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
-			     NumOfSegSSD1/4, 0, NumOfSegSSD1, 200., 0, 200.,
+			     NumOfSegSSD1/4, 0, NumOfSegSSD1, 200, 0, 200,
 			     "Segment", "Peak Time [ns] "));
     }
     top_dir->Add(sub_dir);
@@ -2318,7 +2348,7 @@ TList* HistMaker::createSSD2( Bool_t flag_ps )
     for(Int_t l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
-			     NumOfSegSSD2/4, 0, NumOfSegSSD2, 200, 0., 40000.,
+			     NumOfSegSSD2/4, 0, NumOfSegSSD2, 200, 0, 40000,
 			     "Segment", "DeltaE  "));
     }
     top_dir->Add(sub_dir);
@@ -2349,7 +2379,7 @@ TList* HistMaker::createSSD2( Bool_t flag_ps )
     for(Int_t l=0; l<NumOfLayersSSD2; ++l){
       sub_dir->Add(createTH2(++target_id,
 			     Form("%s_%s_%s", nameDetector, nameSubDir, nameLayer[l]),
-			     NumOfSegSSD2/4, 0, NumOfSegSSD2, 200., 0, 200.,
+			     NumOfSegSSD2/4, 0, NumOfSegSSD2, 200, 0, 200,
 			     "Segment", "Peak Time [ns] "));
     }
     top_dir->Add(sub_dir);
@@ -5501,6 +5531,81 @@ TList* HistMaker::createCorrelation_catch( Bool_t flag_ps )
 			   "BGO seg", "PiID seg"));
  }
 
+  return top_dir;
+}
+
+//_____________________________________________________________________________
+TList*
+HistMaker::createBeamProfile( Bool_t flag_ps )
+{
+  auto top_dir = new TList;
+  const char* top_name = "BcOut";
+  top_dir->SetName(top_name);
+  for( Int_t ip=0; ip<NParticleType; ++ip ){
+    auto sub_dir = new TList;
+    sub_dir->SetName(ParticleName[ip]);
+    int unique_id = getUniqueID(kMisc, ip, kHitPat);
+    // Profile X
+    for(int i = 0; i<NProfile; ++i){
+      char* title = Form("%s FF %d X (%s)", top_name, (int)Profiles[i],
+			 ParticleName[ip].Data());
+      sub_dir->Add(createTH1(unique_id++, title,
+			     400,-200,200,
+			     "x position [mm]", ""));
+    }
+    // Profile X (Fit)
+    for(int i = 0; i<NProfile; ++i){
+      char* title = Form("%s FF %d X Fit (%s)", top_name, (int)Profiles[i],
+			 ParticleName[ip].Data());
+      sub_dir->Add(createTH1(unique_id++, title,
+			     400,-200,200,
+			     "x position [mm]", ""));
+    }
+    // Profile Y
+    for(int i = 0; i<NProfile; ++i){
+      char* title = Form("%s FF %d Y (%s)", top_name, (int)Profiles[i],
+			 ParticleName[ip].Data());
+      sub_dir->Add(createTH1(unique_id++, title,
+			     200,-100,100,
+			     "y position [mm]", ""));
+    }
+    // Profile Y (Fit)
+    for(int i = 0; i<NProfile; ++i){
+      char* title = Form("%s FF %d Y Fit (%s)", top_name, (int)Profiles[i],
+			 ParticleName[ip].Data());
+      sub_dir->Add(createTH1(unique_id++, title,
+			     200,-100,100,
+			     "y position [mm]", ""));
+    }
+    // Profile XY
+    for(int i = 0; i<NProfile; ++i){
+      char* title = Form("%s FF %d Y%%X (%s)", top_name, (int)Profiles[i],
+			 ParticleName[ip].Data());
+      sub_dir->Add(createTH2(unique_id++, title,
+			     100, -200, 200, 100, -100, 100,
+			     "x position [mm]", "y position [mm]"));
+    }
+    sub_dir->Add(createTH2(unique_id++, Form("BcOut FF 0 U%%X (%s)",
+					     ParticleName[ip].Data()),
+			   100, -200., 200., 100, -0.2, 0.2,
+			   "x position [mm]", "u0"));
+    sub_dir->Add(createTH2(unique_id++, Form("BcOut FF 0 V%%Y (%s)",
+					     ParticleName[ip].Data()),
+			   100, -100., 100., 100, -0.2, 0.2,
+			   "y0 [mm]", "v0"));
+    sub_dir->Add( createTH2( getUniqueID(kMisc, ip, kHitPat2D, 1),
+			     Form("BcOut_BH2 (%s)", ParticleName[ip].Data()),
+			     400, -200, 200,
+			     NumOfSegBH2+1, 0, NumOfSegBH2+1,
+			     "x position [mm]", "Segment" ) );
+    sub_dir->Add( createTH1( getUniqueID(kMisc, ip, kMulti, 1),
+			     Form("BcOut_NTracks (%s)", ParticleName[ip].Data()),
+			     10, 0., 10. ) );
+    sub_dir->Add( createTH1( getUniqueID(kMisc, ip, kChisqr, 1),
+			     Form("BcOut_Chisqr (%s)", ParticleName[ip].Data()),
+			     100, 0., 20. ) );
+    top_dir->Add(sub_dir);
+  }
   return top_dir;
 }
 

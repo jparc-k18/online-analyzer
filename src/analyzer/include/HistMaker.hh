@@ -80,6 +80,17 @@ enum DataType{
   factorDataType = 1000
 };
 
+enum ParticleType {
+  kKaon, kPion, kAll, NParticleType
+};
+
+static const TString ParticleName[NParticleType] =
+  { "Kaon", "Pion", "All" };
+
+const double FFfromVO = 1200.;
+enum EProfile { FFm600, FFm300, FF0, FFp300, FFp600, NProfile };
+const Double_t Profiles[] = { -600, -300, 0, 300, 600 };
+
 const int kTOTcutOffset      = 20;
 const int kSCH_1to16_Offset  = 64+1;
 const int kSCH_17to64_Offset = 64+2;
@@ -130,6 +141,10 @@ public:
 		    Int_t nbinx, Int_t xmin, Int_t xmax,
 		    Int_t nbiny, Int_t ymin, Int_t ymax,
 		    const TString& xtitle="", const TString& ytitle="" );
+  TH2*   createTH2( Int_t unique_id, const TString& title,
+		    Int_t nbinx, Double_t xmin, Double_t xmax,
+		    Int_t nbiny, Double_t ymin, Double_t ymax,
+		    const TString& xtitle="", const TString& ytitle="" );
 
   TString MakeDetectorName( const TString& name );
 
@@ -163,6 +178,9 @@ public:
   TList* createCorrelation_catch( Bool_t flag_ps=true );
   TList* createDAQ( Bool_t flag_ps=true );
   TList* createDCEff( Bool_t flag_ps=true );
+
+  // Beam Profile
+  TList* createBeamProfile( Bool_t flag_ps=true );
 
   // E42 test in K tune
   TList* createBH2_E42( Bool_t flag_ps=true );

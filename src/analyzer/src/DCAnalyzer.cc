@@ -283,10 +283,14 @@ DCAnalyzer::DecodeBcOutHits( RawData *rawData )
     for( int i=0; i<nh; ++i ){
       DCRawHit *rhit  = RHitCont[i];
       DCHit    *hit   = new DCHit( rhit->PlaneId()+PlOffsBc, rhit->WireId() );
-      int       nhtdc = rhit->GetTdcSize();
+      int       nhtdc      = rhit->GetTdcSize();
+      int       nhtrailing = rhit->GetTrailingSize();
       if(!hit) continue;
       for( int j=0; j<nhtdc; ++j ){
 	hit->SetTdcVal( rhit->GetTdc(j) );
+      }
+      for( int j=0; j<nhtrailing; ++j ){
+	hit->SetTdcTrailing( rhit->GetTrailing(j) );
       }
 
       if( hit->CalcDCObservables() )
@@ -1771,6 +1775,24 @@ DCAnalyzer::ChiSqrCut( DCLocalTrackContainer& TrackCont,
   TrackCont.resize( ValidCand.size() );
   std::copy( ValidCand.begin(), ValidCand.end(), TrackCont.begin() );
   ValidCand.clear();
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::TotCutBC3(double min_tot)
+{
+  for(int i = 0; i<NumOfLayersBC3; ++i){
+    TotCut(m_BcOutHC[i + 1], min_tot, false);
+  }
+}
+
+//______________________________________________________________________________
+void
+DCAnalyzer::TotCutBC4(double min_tot)
+{
+  for(int i = 0; i<NumOfLayersBC4; ++i){
+    TotCut(m_BcOutHC[i + NumOfLayersBC3 + 1], min_tot, false);
+  }
 }
 
 //______________________________________________________________________________

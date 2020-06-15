@@ -180,7 +180,7 @@ $1:: \
  $(subst dict,include,$(subst _Dict.cc,.hh,$1)) \
  $(subst dict,linkdef,$(subst _Dict.cc,_LinkDef.hh,$1))
 	$(QUIET) $(ECHO) "$(blue)==== Generating dictionary $$@ $(default_color): $$^";
-	$(rootcint) -f $$@ -c -p $$^;
+	$(rootcint) -f $$@ $$^;
 	$(QUIET) if [ -f $(subst .cc,_rdict.pcm,$1) ]; then \
 	$(CP) $(subst .cc,_rdict.pcm,$1) $(lib_dir); fi
 endef

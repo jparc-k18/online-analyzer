@@ -995,7 +995,7 @@ namespace track
     DeleteDuplicatedTracks( trackCont );
     //    CalcTracks( trackCont );
 
-    return status < 0? status : trackCont.size();
+    return status < 0 ? status : trackCont.size();
   }
 
   //______________________________________________________________________________

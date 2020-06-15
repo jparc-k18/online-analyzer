@@ -455,27 +455,31 @@ RawData::DecodeHits( void )
   for(int plane=0; plane<NumOfLayersBcOut; ++plane ){
     if( plane<NumOfLayersBc ){
       for(int wire=0; wire<MaxWireBC3; ++wire){
-	int nhit = gUnpacker.get_entries( DetIdBC3, plane, 0, wire, 0 );
+	for(int lt = 0; lt<2; ++lt){
+	  int nhit = gUnpacker.get_entries( DetIdBC3, plane, 0, wire, lt );
 #if OscillationCut
-	if( nhit>MaxMultiHitDC ) continue;
+	  if( nhit>MaxMultiHitDC ) continue;
 #endif
-	for(int i=0; i<nhit; i++ ){
-	  int data = gUnpacker.get( DetIdBC3, plane, 0, wire, 0, i);
-	  if( data<MinBC3_TDC || MaxBC3_TDC<data ) continue;
-	  AddDCRawHit( m_BcOutRawHC[plane+1], plane+PlMinBcOut, wire+1, data );
+	  for(int i=0; i<nhit; i++ ){
+	    int data = gUnpacker.get( DetIdBC3, plane, 0, wire, lt, i);
+	    if( data<MinBC3_TDC || MaxBC3_TDC<data ) continue;
+	    AddDCRawHit( m_BcOutRawHC[plane+1], plane+PlMinBcOut, wire+1, data, lt );
+	  }
 	}
       }
     }
     else{
       for(int wire=0; wire<MaxWireBC4; ++wire){
-	int nhit = gUnpacker.get_entries( DetIdBC4, plane-NumOfLayersBc, 0, wire, 0 );
+	for(int lt = 0; lt<2; ++lt){
+	  int nhit = gUnpacker.get_entries( DetIdBC4, plane-NumOfLayersBc, 0, wire, lt );
 #if OscillationCut
-	if( nhit>MaxMultiHitDC ) continue;
+	  if( nhit>MaxMultiHitDC ) continue;
 #endif
-	for(int i=0; i<nhit; i++ ){
-	  int data =  gUnpacker.get( DetIdBC4, plane-NumOfLayersBc, 0, wire, 0, i );
-	  if( data<MinBC4_TDC || MaxBC4_TDC<data ) continue;
-	  AddDCRawHit( m_BcOutRawHC[plane+1], plane+PlMinBcOut, wire+1, data );
+	  for(int i=0; i<nhit; i++ ){
+	    int data =  gUnpacker.get( DetIdBC4, plane-NumOfLayersBc, 0, wire, lt, i );
+	    if( data<MinBC4_TDC || MaxBC4_TDC<data ) continue;
+	    AddDCRawHit( m_BcOutRawHC[plane+1], plane+PlMinBcOut, wire+1, data, lt );
+	  }
 	}
       }
     }

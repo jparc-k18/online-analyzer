@@ -160,7 +160,7 @@ process_begin( const std::vector<std::string>& argv )
 #if !BH2FILTER
     sub_dir->Add( gHist.createTH2( gHist.getUniqueID(kMisc, 2, kHitPat2D, 1),
     				   "BcOut_BH2_RAW",
-    				   400,-200,200, NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
+    				   400,-200,200, NumOfSegBH2+1, 0, NumOfSegBH2+1,
     				   "x position [mm]", "Segment" ) );
     sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kMulti, 1),
     				   "BcOut_NTracks_RAW", 10, 0., 10. ) );
@@ -169,7 +169,7 @@ process_begin( const std::vector<std::string>& argv )
 #endif
     sub_dir->Add( gHist.createTH2( gHist.getUniqueID(kMisc, 2, kHitPat2D, 2),
     				   "BcOut_BH2",
-    				   400,-200,200, NumOfSegBH2+1, 0., (Double_t)NumOfSegBH2+1.,
+    				   400,-200,200, NumOfSegBH2+1, 0, NumOfSegBH2+1,
     				   "x position [mm]", "Segment" ) );
     sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kMulti, 2),
     				   "BcOut_NTracks", 10, 0., 10. ) );

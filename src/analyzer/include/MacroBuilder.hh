@@ -3,6 +3,8 @@
 #ifndef MACRO_BUILDER_HH
 #define MACRO_BUILDER_HH
 
+#include "HistMaker.hh"
+
 class TCanvas;
 class TObject;
 class TString;
@@ -70,6 +72,13 @@ namespace http
   TCanvas* FHTTOT( void );
   TCanvas* DAQ( void );
 
+  // BeamProfile
+  TCanvas* BeamProfileX( ParticleType p );
+  TCanvas* BeamProfileY( ParticleType p );
+  TCanvas* BeamProfileXY( ParticleType p );
+  TCanvas* BeamProfileFF( void );
+  TCanvas* BeamEnvelope( ParticleType p );
+
   // E07
   TCanvas* HitPatternE07( void );
   TCanvas* SSD1ADCTDC( void );
@@ -127,6 +136,7 @@ namespace http
   void     UpdateSSDEfficiency( void );
   void     UpdateT0PeakFitting( void );
   void     UpdateTOTPeakFitting( void );
+  void     UpdateBeamProfile( ParticleType p );
 }
 
 };

@@ -9,13 +9,17 @@
 
 #include <TString.h>
 
+#include "std_ostream.hh"
 #include "DetectorID.hh"
 
 class TCanvas;
+struct ScalerInfo;
 
-typedef Long64_t Scaler;
+typedef Long64_t                               Scaler;
+typedef std::vector< std::vector<ScalerInfo> > ScalerList;
+typedef std::pair<Int_t, Int_t>                Channel;
 
-//______________________________________________________________________________
+//_____________________________________________________________________________
 struct ScalerInfo
 {
   TString name;
@@ -35,15 +39,15 @@ struct ScalerInfo
 
   inline void Print( void ) const
   {
-    std::cout << std::setw(8)  << name
-	      << std::setw(2)  << module_id
-	      << std::setw(2)  << channel
-	      << std::setw(2)  << flag_disp
-	      << std::setw(10) << data << std::endl;
+    hddaq::cout << std::setw(8)  << name
+		<< std::setw(2)  << module_id
+		<< std::setw(2)  << channel
+		<< std::setw(2)  << flag_disp
+		<< std::setw(10) << data << std::endl;
   }
 };
 
-//______________________________________________________________________________
+//_____________________________________________________________________________
 class ScalerAnalyzer
 {
 public:
@@ -69,6 +73,7 @@ public:
     kSpillBySpill,
     kSemiOnline,
     kScalerSheet,
+    kScalerText,
     kScalerSch,
     kScalerDaq,
     kScalerE42,
@@ -77,8 +82,6 @@ public:
 
 private:
   enum eScaler { kScaler1, kScaler2, kScaler3, nScaler };
-
-  typedef std::vector< std::vector<ScalerInfo> > ScalerList;
 
   std::ostream&       m_ost;
   ScalerList          m_info;
@@ -89,30 +92,35 @@ private:
   TCanvas*            m_canvas;
 
 public:
-  void                   Clear( Option_t* option="" );
-  Bool_t                 Decode( void );
-  Double_t               Duty( void ) const;
-  std::pair<Int_t,Int_t> Find( const TString& name ) const;
-  Bool_t                 FlagDisp( Int_t i, Int_t j ) const { return m_info.at(i).at(j).flag_disp; }
-  Double_t               Fraction( const TString& num, const TString& den ) const;
-  Scaler                 Get( Int_t i, Int_t j ) const { return m_info.at(i).at(j).data; }
-  Scaler                 Get( const TString& name ) const;
-  Bool_t                 GetFlag( Int_t i ) const { return m_flag[i]; }
-  Int_t                  GetRunNumber( void ) const { return m_run_number; }
-  ScalerInfo             GetScalerInfo( Int_t i, Int_t j ) const { return m_info.at(i).at(j); }
-  TString                GetScalerName( Int_t i, Int_t j ) const { return m_info.at(i).at(j).name; }
-  Bool_t                 Has( const TString& key ) const;
-  Bool_t                 IsSpillEnd( void ) const { return m_is_spill_end; }
-  Int_t                  ModuleId( Int_t i, Int_t j ) const { return m_info.at(i).at(j).module_id; }
-  void                   Print( Option_t* option="" ) const;
-  void                   PrintFlags( void ) const;
-  void                   PrintScalerSheet( void );
-  TString                SeparateComma( Scaler number ) const;
-  void                   Set( Int_t i, Int_t j, const ScalerInfo& info );
-  void                   SetFlag( Int_t i, Bool_t flag=true ) { m_flag.at(i) = flag; }
-  void                   SetRunNumber( Int_t n ) { m_run_number = n; }
-  void                   SetSpillEnd( Bool_t flag=true ) { m_is_spill_end = flag; }
-  Bool_t                 SpillIncrement( void ) const { return m_spill_increment; }
+  void       Clear( Option_t* option="" );
+  Bool_t     Decode( void );
+  Double_t   Duty( void ) const;
+  Channel    Find( const TString& name ) const;
+  Bool_t     FlagDisp( Int_t i, Int_t j ) const
+             { return m_info.at(i).at(j).flag_disp; }
+  Double_t   Fraction( const TString& num, const TString& den ) const;
+  Scaler     Get( Int_t i, Int_t j ) const { return m_info.at(i).at(j).data; }
+  Scaler     Get( const TString& name ) const;
+  Bool_t     GetFlag( Int_t i ) const { return m_flag[i]; }
+  Int_t      GetRunNumber( void ) const { return m_run_number; }
+  ScalerInfo GetScalerInfo( Int_t i, Int_t j ) const
+             { return m_info.at(i).at(j); }
+  TString    GetScalerName( Int_t i, Int_t j ) const
+             { return m_info.at(i).at(j).name; }
+  Bool_t     Has( const TString& key ) const;
+  Bool_t     IsSpillEnd( void ) const { return m_is_spill_end; }
+  Bool_t     MakeScalerText( void ) const;
+  Int_t      ModuleId( Int_t i, Int_t j ) const
+             { return m_info.at(i).at(j).module_id; }
+  void       Print( Option_t* option="" ) const;
+  void       PrintFlags( void ) const;
+  void       PrintScalerSheet( void );
+  TString    SeparateComma( Scaler number ) const;
+  void       Set( Int_t i, Int_t j, const ScalerInfo& info );
+  void       SetFlag( Int_t i, Bool_t flag=true ) { m_flag.at(i) = flag; }
+  void       SetRunNumber( Int_t n ) { m_run_number = n; }
+  void       SetSpillEnd( Bool_t flag=true ) { m_is_spill_end = flag; }
+  Bool_t     SpillIncrement( void ) const { return m_spill_increment; }
 
 private:
   void DrawOneBox( Double_t x, Double_t y,

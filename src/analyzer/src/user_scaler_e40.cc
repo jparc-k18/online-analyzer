@@ -23,7 +23,6 @@
 namespace analyzer
 {
   using namespace hddaq::unpacker;
-  using namespace hddaq;
 
   namespace
   {
@@ -207,7 +206,7 @@ process_event( void )
   static Bool_t en_disp     = false;
 
   if( gScaler.GetFlag( ScalerAnalyzer::kScalerSheet ) && event_count==0 )
-    std::cout << "waiting spill end " << std::flush;
+    hddaq::cout << "waiting spill end " << std::flush;
 
   ++event_count;
 
@@ -225,7 +224,7 @@ process_event( void )
   if( gScaler.GetFlag( ScalerAnalyzer::kScalerSheet ) &&
       !gScaler.IsSpillEnd() ){
     if( event_count%100==0 )
-      std::cout << "." << std::flush;
+      hddaq::cout << "." << std::flush;
     return 0;
   }
 
@@ -236,9 +235,9 @@ process_event( void )
 
   if( gScaler.IsSpillEnd() &&
       gScaler.GetFlag( ScalerAnalyzer::kScalerSheet ) ){
-    std::cout << "found spill end "
-    	      << gScaler.Get("Spill") << "/" << nspill_scaler_sheet
-	      << std::endl;
+    hddaq::cout << "found spill end "
+		<< gScaler.Get("Spill") << "/" << nspill_scaler_sheet
+		<< std::endl;
 
     if( gScaler.Get("Spill") == nspill_scaler_sheet ){
       gScaler.PrintScalerSheet();
@@ -246,11 +245,11 @@ process_event( void )
     }
 
     if( gScaler.Get("Spill") > nspill_scaler_sheet ){
-      std::cout << "something is wrong!" << std::endl;
+      hddaq::cout << "something is wrong!" << std::endl;
       return -1;
     }
 
-    std::cout << "waiting spill end " << std::flush;
+    hddaq::cout << "waiting spill end " << std::flush;
   }
 
   return 0;

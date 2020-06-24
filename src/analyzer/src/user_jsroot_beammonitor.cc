@@ -50,14 +50,14 @@ namespace analyzer
 
   enum eBeam { kBeam, kPibeam, kPbeam, nBeam };
   enum eDAQ  { kDAQEff, kL2Eff, kDuty, nDAQ };
-  TString sBeam[nBeam] = { "Beam", "pi-Beam", "p-Beam" };
+  TString sBeam[nBeam] = { "K-Beam", "pi-Beam", "Beam" };
   TString sDAQ[nDAQ] = { "DAQ-Eff", "L2-Eff", "Duty" };
 
   TGraph  *g_beam[nBeam];
   TGraph  *g_daq[nDAQ];
   TLegend *leg_beam;
   TLegend *leg_daq;
-  Color_t  col_beam[nBeam] = { kGreen, kBlue, kRed };
+  Color_t  col_beam[nBeam] = { kGreen, kBlue, kBlack };
   Color_t  col_daq[nDAQ]   = { kRed, kOrange+1, kBlue };
 
 //____________________________________________________________________________
@@ -149,10 +149,10 @@ process_end()
 Int_t
 process_event( void )
 {
-  static UnpackerManager& g_unpacker = GUnpacker::get_instance();
-  // static Int_t run_number = g_unpacker.get_root()->get_run_number();
+  static UnpackerManager& gUnpacker = GUnpacker::get_instance();
+  // static Int_t run_number = gUnpacker.get_root()->get_run_number();
 
-  static const Int_t scaler_id = g_unpacker.get_device_id("Scaler");
+  static const Int_t scaler_id = gUnpacker.get_device_id("Scaler");
 
   // Spill Increment
   static Int_t spill = 0;
@@ -163,9 +163,9 @@ process_event( void )
 
     static Int_t clock     = 0;
     static Int_t clock_pre = 0;
-    Int_t hit = g_unpacker.get_entries( scaler_id, module_id, 0, channel_id, 0 );
+    Int_t hit = gUnpacker.get_entries( scaler_id, module_id, 0, channel_id, 0 );
     if(hit>0){
-      clock = g_unpacker.get( scaler_id, module_id, 0, channel_id, 0 );
+      clock = gUnpacker.get( scaler_id, module_id, 0, channel_id, 0 );
       if( clock<clock_pre ) spill_inc = true;
     }
     clock_pre = clock;
@@ -173,28 +173,30 @@ process_event( void )
 
   // Beam Monitor
   {
-    static const Int_t module_id[nBeam]  = {  0, 0, 0 };
-    static const Int_t channel_id[nBeam] = {  0, 1, 2 };
+    static const Int_t module_id[nBeam]  = {  0,  0, 0 };
+    static const Int_t channel_id[nBeam] = { 34, 36, 0 };
+    // static const Int_t module_id[nBeam]  = {  0, 0, 0 };
+    // static const Int_t channel_id[nBeam] = {  0, 1, 2 };
 
     static Double_t beam[nBeam]     = {};
     static Double_t beam_pre[nBeam] = {};
 
     for(Int_t i=0; i<nBeam; ++i){
-      Int_t hit = g_unpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
+      Int_t hit = gUnpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
       if(hit==0) continue;
-      beam[i] = g_unpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
+      beam[i] = gUnpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
     }
     if( spill_inc ){
       for(Int_t i=0; i<nBeam; ++i){
 	g_beam[i]->SetPoint(spill, spill, beam_pre[i]);
-	g_beam[i]->GetYaxis()->SetRangeUser(0, 2.e7);
+	g_beam[i]->GetYaxis()->SetRangeUser(0, 1.2e6);
 	g_beam[i]->GetXaxis()->SetLimits(spill-90, spill+10);
       }
       // Double_t kpi_ratio = beam_pre[kKbeam]/beam_pre[kPibeam];
       // leg_beam->SetHeader(Form("  K/pi : %.3lf", kpi_ratio));
-      Double_t intensity = beam_pre[kBeam];
-      leg_beam->SetHeader( Form("  Rate : %.3lf M",
-				intensity * 1.e-6 ) );
+      Double_t kpi = beam_pre[kBeam]/beam_pre[kPibeam];
+      leg_beam->SetHeader( Form("  K/pi Ratio : %5.3lf",
+				kpi ) );
     }
     for(Int_t i=0; i<nBeam; ++i) beam_pre[i] = beam[i];
   }
@@ -209,9 +211,9 @@ process_event( void )
     static Double_t val_pre[nVal] = {};
 
     for(Int_t i=0; i<nVal; ++i){
-      Int_t hit = g_unpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
+      Int_t hit = gUnpacker.get_entries( scaler_id, module_id[i], 0, channel_id[i], 0 );
       if( hit==0 ) continue;
-      val[i] = (Double_t)g_unpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
+      val[i] = (Double_t)gUnpacker.get( scaler_id, module_id[i], 0, channel_id[i], 0 );
     }
     if( spill_inc ){
       Double_t daq_eff = val_pre[kL1Acc]/val_pre[kL1Req];

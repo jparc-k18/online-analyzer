@@ -37,7 +37,7 @@ fi
 #     sh -c ". $thisroot_sh && while true; do $server $conf $data; done"
 # screen -AmdS K18OnlineServer \
 #     sh -c "while true; do $server $conf $data 2>/dev/null; done"
-name=jsroot
+name=jsroot_e40
 session=`tmux ls | grep $name`
 if [ -z "$session" ]; then
     echo "create new session $name"

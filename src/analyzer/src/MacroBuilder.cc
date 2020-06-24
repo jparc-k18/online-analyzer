@@ -2517,6 +2517,7 @@ UpdateTOTPeakFitting( void )
       if( !h ) continue;
       TF1 f("f", "gaus", 0., 100.);
       Double_t p = h->GetBinCenter(h->GetMaximumBin());
+      if( p < 30. ) p = 60.;
       Double_t w = 10.;
       for( Int_t ifit=0; ifit<3; ++ifit ){
 	Double_t fmin = p - w;

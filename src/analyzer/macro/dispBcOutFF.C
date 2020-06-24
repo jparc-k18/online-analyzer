@@ -53,7 +53,7 @@ void dispBcOutFF( void )
     TH1 *h_xu = (TH1*)GHist::get( hxu_id );
     if( h_xu ){
       h_xu->GetXaxis()->SetRangeUser(-150,150);
-      h_xu->GetYaxis()->SetRangeUser(-0.1,0.1);
+      h_xu->GetYaxis()->SetRangeUser(-0.4,0.4);
       h_xu->GetYaxis()->CenterTitle();
       h_xu->Draw("colz");
     }

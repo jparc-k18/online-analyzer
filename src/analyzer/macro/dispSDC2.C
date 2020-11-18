@@ -18,7 +18,7 @@ void dispSDC2( void )
     c->Clear();
     c->Divide(2,2);
     int base_id = HistMaker::getUniqueID(kSDC2, 0, kTDC);
-    int base_id_ctot = HistMaker::getUniqueID(kSDC2, 0, kTDC, 11);
+    int base_id_ctot = HistMaker::getUniqueID(kSDC2, 0, kTDC, 1+kTOTcutOffset);
     for( int i=0; i<n_layer; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get(base_id + i);;
@@ -37,7 +37,7 @@ void dispSDC2( void )
     c->Clear();
     c->Divide(2,2);
     int base_id = HistMaker::getUniqueID(kSDC2, 0, kTDC2D);
-    int base_id_ctot = HistMaker::getUniqueID(kSDC2, 0, kTDC2D, 11);
+    int base_id_ctot = HistMaker::getUniqueID(kSDC2, 0, kTDC2D, 1+kTOTcutOffset);
     for( int i=0; i<n_layer; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get(base_id + i);;
@@ -57,7 +57,7 @@ void dispSDC2( void )
     c->Clear();
     c->Divide(2,2);
     int base_id = HistMaker::getUniqueID(kSDC2, 0, kADC);
-    int base_id_ctot = HistMaker::getUniqueID(kSDC2, 0, kADC, 11);
+    int base_id_ctot = HistMaker::getUniqueID(kSDC2, 0, kADC, 1+kTOTcutOffset);
     for( int i=0; i<n_layer; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get(base_id + i);;
@@ -77,7 +77,7 @@ void dispSDC2( void )
     c->Clear();
     c->Divide(2,2);
     int base_id = HistMaker::getUniqueID(kSDC2, 0, kHitPat);
-    int base_id_ctot = HistMaker::getUniqueID(kSDC2, 0, kHitPat, 11);
+    int base_id_ctot = HistMaker::getUniqueID(kSDC2, 0, kHitPat, 1+kTOTcutOffset);
     for( int i=0; i<n_layer; ++i ){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get(base_id + i);
@@ -101,7 +101,7 @@ void dispSDC2( void )
       c->cd(i+1);
       TH1 *h_wot = (TH1*)GHist::get(base_id + i);//->Clone();
 //      TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer);//->Clone();
-      TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer + 10);//->Clone();
+      TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer + kTOTcutOffset);//->Clone();
       if( !h_wot || !h_wt ) continue;
       h_wt->SetLineColor(2);
 //      h_wt->Draw();

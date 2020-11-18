@@ -1086,177 +1086,16 @@ EventDisplay::ConstructSdcIn( void )
 Bool_t
 EventDisplay::ConstructSdcOut( void )
 {
-  const Double_t wireLSDC2  = 1152.0;
-  const Double_t wireLSDC3Y = 1920.0;
-  const Double_t wireLSDC3X = 1280.0;
-
-  // SDC2 X1
-  {
-    const Int_t lid = gGeom.GetDetectorId("SDC2-X1");
-    Double_t Rmin = 0.0;
-    Double_t Rmax = 0.01;
-    Double_t L    = wireLSDC2/2.;
-    Double_t Matrix[NumOfMaxrixElements] = {};
-    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
-		   gGeom.GetRotAngle1( lid ),
-		   gGeom.GetRotAngle2( lid ),
-		   Matrix );
-    new TRotMatrix( "rotX1", "rotX1", Matrix );
-    new TTUBE( "SDC2X1Tube", "SDC2X1Tube", "void", Rmin, Rmax, L );
-    for( Int_t wire=1; wire<= NumOfWireSDC2; ++wire ){
-      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
-      ThreeVector wireLocalPos( localPos, 0., 0. );
-      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
-      m_SDC2x1_node.push_back( new TNode( Form( "SDC2x1_Node_%d", wire ),
-					  Form( "SDC2x1_Node_%d", wire ),
-					  "SDC2X1Tube",
-					  wireGlobalPos.x(),
-					  wireGlobalPos.y(),
-					  wireGlobalPos.z(),
-					  "rotX1", "void" ) );
-    }
-  }
-
-  // SDC2 X2
-  {
-    const Int_t lid = gGeom.GetDetectorId("SDC2-X2");
-    Double_t Rmin = 0.0;
-    Double_t Rmax = 0.01;
-    Double_t L    = wireLSDC2/2.;
-    Double_t Matrix[NumOfMaxrixElements] = {};
-    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
-		   gGeom.GetRotAngle1( lid ),
-		   gGeom.GetRotAngle2( lid ),
-		   Matrix );
-    new TRotMatrix( "rotX2", "rotX2", Matrix );
-    new TTUBE( "SDC2X2Tube", "SDC2X2Tube", "void", Rmin, Rmax, L );
-    for( Int_t wire=1; wire<= NumOfWireSDC2; ++wire ){
-      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
-      ThreeVector wireLocalPos( localPos, 0., 0. );
-      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
-      m_SDC2x2_node.push_back( new TNode( Form( "SDC2x2_Node_%d", wire ),
-					  Form( "SDC2x2_Node_%d", wire ),
-					  "SDC2X2Tube",
-					  wireGlobalPos.x(),
-					  wireGlobalPos.y(),
-					  wireGlobalPos.z(),
-					  "rotX2", "void" ) );
-    }
-  }
-
-  // SDC2 Y1
-  {
-    const Int_t lid = gGeom.GetDetectorId("SDC2-Y1");
-    Double_t Rmin = 0.0;
-    Double_t Rmax = 0.01;
-    Double_t L    = wireLSDC2/2.;
-    Double_t Matrix[NumOfMaxrixElements] = {};
-    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
-		   gGeom.GetRotAngle1( lid ),
-		   gGeom.GetRotAngle2( lid ),
-		   Matrix );
-    new TRotMatrix( "rotY1", "rotY1", Matrix );
-    new TTUBE( "SDC2Y1Tube", "SDC2Y1Tube", "void", Rmin, Rmax, L );
-    for( Int_t wire=1; wire<= NumOfWireSDC2; ++wire ){
-      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
-      ThreeVector wireLocalPos( localPos, 0., 0. );
-      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
-      m_SDC2y1_node.push_back( new TNode( Form( "SDC2y1_Node_%d", wire ),
-					  Form( "SDC2y1_Node_%d", wire ),
-					  "SDC2Y1Tube",
-					  wireGlobalPos.x(),
-					  wireGlobalPos.y(),
-					  wireGlobalPos.z(),
-					  "rotY1", "void" ) );
-    }
-  }
-
-  // SDC2 Y2
-  {
-    const Int_t lid = gGeom.GetDetectorId("SDC2-Y2");
-    Double_t Rmin = 0.0;
-    Double_t Rmax = 0.01;
-    Double_t L    = wireLSDC2/2.;
-    Double_t Matrix[NumOfMaxrixElements] = {};
-    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
-		   gGeom.GetRotAngle1( lid ),
-		   gGeom.GetRotAngle2( lid ),
-		   Matrix );
-    new TRotMatrix( "rotY2", "rotY2", Matrix );
-    new TTUBE( "SDC2Y2Tube", "SDC2Y2Tube", "void", Rmin, Rmax, L );
-    for( Int_t wire=1; wire<= NumOfWireSDC2; ++wire ){
-      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
-      ThreeVector wireLocalPos( localPos, 0., 0. );
-      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
-      m_SDC2y2_node.push_back( new TNode( Form( "SDC2y2_Node_%d", wire ),
-					  Form( "SDC2y2_Node_%d", wire ),
-					  "SDC2Y2Tube",
-					  wireGlobalPos.x(),
-					  wireGlobalPos.y(),
-					  wireGlobalPos.z(),
-					  "rotY2", "void" ) );
-    }
-  }
-
-  // SDC3 Y1
-  {
-    const Int_t lid = gGeom.GetDetectorId("SDC3-Y1");
-    Double_t Rmin = 0.0;
-    Double_t Rmax = 0.01;
-    Double_t L    = wireLSDC3Y/2.;
-    Double_t Matrix[NumOfMaxrixElements] = {};
-    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
-		   gGeom.GetRotAngle1( lid ),
-		   gGeom.GetRotAngle2( lid ), Matrix );
-    new TRotMatrix( "rotY1", "rotY1", Matrix );
-    new TTUBE( "SDC3Y1Tube", "SDC3Y1Tube", "void", Rmin, Rmax, L );
-    for( Int_t wire=1; wire<= NumOfWireSDC3Y; ++wire ){
-      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
-      ThreeVector wireLocalPos( localPos, 0., 0. );
-      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
-      m_SDC3y1_node.push_back( new TNode( Form( "SDC3y1_Node_%d", wire ),
-					  Form( "SDC3y1_Node_%d", wire ),
-					  "SDC3Y1Tube",
-					  wireGlobalPos.x(),
-					  wireGlobalPos.y(),
-					  wireGlobalPos.z(),
-					  "rotY1", "void" ) );
-    }
-  }
-
-  // SDC3 Y2
-  {
-    const Int_t lid = gGeom.GetDetectorId("SDC3-Y2");
-    Double_t Rmin = 0.0;
-    Double_t Rmax = 0.01;
-    Double_t L    = wireLSDC3Y/2.;
-    Double_t Matrix[NumOfMaxrixElements] = {};
-    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
-		   gGeom.GetRotAngle1( lid ),
-		   gGeom.GetRotAngle2( lid ),
-		   Matrix );
-    new TRotMatrix( "rotY2", "rotY2", Matrix );
-    new TTUBE( "SDC3Y2Tube", "SDC3Y2Tube", "void", Rmin, Rmax, L );
-    for( Int_t wire=1; wire<= NumOfWireSDC3Y; ++wire ){
-      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
-      ThreeVector wireLocalPos( localPos, 0., 0. );
-      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
-      m_SDC3y2_node.push_back( new TNode( Form( "SDC3y2_Node_%d", wire ),
-					  Form( "SDC3y2_Node_%d", wire ),
-					  "SDC3Y2Tube",
-					  wireGlobalPos.x(),
-					  wireGlobalPos.y(),
-					  wireGlobalPos.z(),
-					  "rotY2", "void" ) );
-    }
-  }
+  const Double_t wireLSDC3  = 1152.0;
+  const Double_t wireLSDC4Y = 1920.0;
+  const Double_t wireLSDC4X = 1280.0;
 
   // SDC3 X1
   {
     const Int_t lid = gGeom.GetDetectorId("SDC3-X1");
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
-    Double_t L    = wireLSDC3X/2.;
+    Double_t L    = wireLSDC3/2.;
     Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
@@ -1264,7 +1103,7 @@ EventDisplay::ConstructSdcOut( void )
 		   Matrix );
     new TRotMatrix( "rotX1", "rotX1", Matrix );
     new TTUBE( "SDC3X1Tube", "SDC3X1Tube", "void", Rmin, Rmax, L );
-    for( Int_t wire=1; wire<= NumOfWireSDC3X; ++wire ){
+    for( Int_t wire=1; wire<= NumOfWireSDC3; ++wire ){
       Double_t localPos = gGeom.CalcWirePosition( lid, wire );
       ThreeVector wireLocalPos( localPos, 0., 0. );
       ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
@@ -1283,7 +1122,7 @@ EventDisplay::ConstructSdcOut( void )
     const Int_t lid = gGeom.GetDetectorId("SDC3-X2");
     Double_t Rmin = 0.0;
     Double_t Rmax = 0.01;
-    Double_t L    = wireLSDC3X/2.;
+    Double_t L    = wireLSDC3/2.;
     Double_t Matrix[NumOfMaxrixElements] = {};
     CalcRotMatrix( gGeom.GetTiltAngle( lid ),
 		   gGeom.GetRotAngle1( lid ),
@@ -1291,13 +1130,174 @@ EventDisplay::ConstructSdcOut( void )
 		   Matrix );
     new TRotMatrix( "rotX2", "rotX2", Matrix );
     new TTUBE( "SDC3X2Tube", "SDC3X2Tube", "void", Rmin, Rmax, L );
-    for( Int_t wire=1; wire<= NumOfWireSDC3X; ++wire ){
+    for( Int_t wire=1; wire<= NumOfWireSDC3; ++wire ){
       Double_t localPos = gGeom.CalcWirePosition( lid, wire );
       ThreeVector wireLocalPos( localPos, 0., 0. );
       ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
       m_SDC3x2_node.push_back( new TNode( Form( "SDC3x2_Node_%d", wire ),
 					  Form( "SDC3x2_Node_%d", wire ),
 					  "SDC3X2Tube",
+					  wireGlobalPos.x(),
+					  wireGlobalPos.y(),
+					  wireGlobalPos.z(),
+					  "rotX2", "void" ) );
+    }
+  }
+
+  // SDC3 Y1
+  {
+    const Int_t lid = gGeom.GetDetectorId("SDC3-Y1");
+    Double_t Rmin = 0.0;
+    Double_t Rmax = 0.01;
+    Double_t L    = wireLSDC3/2.;
+    Double_t Matrix[NumOfMaxrixElements] = {};
+    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
+		   gGeom.GetRotAngle1( lid ),
+		   gGeom.GetRotAngle2( lid ),
+		   Matrix );
+    new TRotMatrix( "rotY1", "rotY1", Matrix );
+    new TTUBE( "SDC3Y1Tube", "SDC3Y1Tube", "void", Rmin, Rmax, L );
+    for( Int_t wire=1; wire<= NumOfWireSDC3; ++wire ){
+      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
+      ThreeVector wireLocalPos( localPos, 0., 0. );
+      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
+      m_SDC3y1_node.push_back( new TNode( Form( "SDC3y1_Node_%d", wire ),
+					  Form( "SDC3y1_Node_%d", wire ),
+					  "SDC3Y1Tube",
+					  wireGlobalPos.x(),
+					  wireGlobalPos.y(),
+					  wireGlobalPos.z(),
+					  "rotY1", "void" ) );
+    }
+  }
+
+  // SDC3 Y2
+  {
+    const Int_t lid = gGeom.GetDetectorId("SDC3-Y2");
+    Double_t Rmin = 0.0;
+    Double_t Rmax = 0.01;
+    Double_t L    = wireLSDC3/2.;
+    Double_t Matrix[NumOfMaxrixElements] = {};
+    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
+		   gGeom.GetRotAngle1( lid ),
+		   gGeom.GetRotAngle2( lid ),
+		   Matrix );
+    new TRotMatrix( "rotY2", "rotY2", Matrix );
+    new TTUBE( "SDC3Y2Tube", "SDC3Y2Tube", "void", Rmin, Rmax, L );
+    for( Int_t wire=1; wire<= NumOfWireSDC3; ++wire ){
+      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
+      ThreeVector wireLocalPos( localPos, 0., 0. );
+      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
+      m_SDC3y2_node.push_back( new TNode( Form( "SDC3y2_Node_%d", wire ),
+					  Form( "SDC3y2_Node_%d", wire ),
+					  "SDC3Y2Tube",
+					  wireGlobalPos.x(),
+					  wireGlobalPos.y(),
+					  wireGlobalPos.z(),
+					  "rotY2", "void" ) );
+    }
+  }
+
+  // SDC4 Y1
+  {
+    const Int_t lid = gGeom.GetDetectorId("SDC4-Y1");
+    Double_t Rmin = 0.0;
+    Double_t Rmax = 0.01;
+    Double_t L    = wireLSDC4Y/2.;
+    Double_t Matrix[NumOfMaxrixElements] = {};
+    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
+		   gGeom.GetRotAngle1( lid ),
+		   gGeom.GetRotAngle2( lid ), Matrix );
+    new TRotMatrix( "rotY1", "rotY1", Matrix );
+    new TTUBE( "SDC4Y1Tube", "SDC4Y1Tube", "void", Rmin, Rmax, L );
+    for( Int_t wire=1; wire<= NumOfWireSDC4Y; ++wire ){
+      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
+      ThreeVector wireLocalPos( localPos, 0., 0. );
+      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
+      m_SDC4y1_node.push_back( new TNode( Form( "SDC4y1_Node_%d", wire ),
+					  Form( "SDC4y1_Node_%d", wire ),
+					  "SDC4Y1Tube",
+					  wireGlobalPos.x(),
+					  wireGlobalPos.y(),
+					  wireGlobalPos.z(),
+					  "rotY1", "void" ) );
+    }
+  }
+
+  // SDC4 Y2
+  {
+    const Int_t lid = gGeom.GetDetectorId("SDC4-Y2");
+    Double_t Rmin = 0.0;
+    Double_t Rmax = 0.01;
+    Double_t L    = wireLSDC4Y/2.;
+    Double_t Matrix[NumOfMaxrixElements] = {};
+    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
+		   gGeom.GetRotAngle1( lid ),
+		   gGeom.GetRotAngle2( lid ),
+		   Matrix );
+    new TRotMatrix( "rotY2", "rotY2", Matrix );
+    new TTUBE( "SDC4Y2Tube", "SDC4Y2Tube", "void", Rmin, Rmax, L );
+    for( Int_t wire=1; wire<= NumOfWireSDC4Y; ++wire ){
+      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
+      ThreeVector wireLocalPos( localPos, 0., 0. );
+      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
+      m_SDC4y2_node.push_back( new TNode( Form( "SDC4y2_Node_%d", wire ),
+					  Form( "SDC4y2_Node_%d", wire ),
+					  "SDC4Y2Tube",
+					  wireGlobalPos.x(),
+					  wireGlobalPos.y(),
+					  wireGlobalPos.z(),
+					  "rotY2", "void" ) );
+    }
+  }
+
+  // SDC4 X1
+  {
+    const Int_t lid = gGeom.GetDetectorId("SDC4-X1");
+    Double_t Rmin = 0.0;
+    Double_t Rmax = 0.01;
+    Double_t L    = wireLSDC4X/2.;
+    Double_t Matrix[NumOfMaxrixElements] = {};
+    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
+		   gGeom.GetRotAngle1( lid ),
+		   gGeom.GetRotAngle2( lid ),
+		   Matrix );
+    new TRotMatrix( "rotX1", "rotX1", Matrix );
+    new TTUBE( "SDC4X1Tube", "SDC4X1Tube", "void", Rmin, Rmax, L );
+    for( Int_t wire=1; wire<= NumOfWireSDC4X; ++wire ){
+      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
+      ThreeVector wireLocalPos( localPos, 0., 0. );
+      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
+      m_SDC4x1_node.push_back( new TNode( Form( "SDC4x1_Node_%d", wire ),
+					  Form( "SDC4x1_Node_%d", wire ),
+					  "SDC4X1Tube",
+					  wireGlobalPos.x(),
+					  wireGlobalPos.y(),
+					  wireGlobalPos.z(),
+					  "rotX1", "void" ) );
+    }
+  }
+
+  // SDC4 X2
+  {
+    const Int_t lid = gGeom.GetDetectorId("SDC4-X2");
+    Double_t Rmin = 0.0;
+    Double_t Rmax = 0.01;
+    Double_t L    = wireLSDC4X/2.;
+    Double_t Matrix[NumOfMaxrixElements] = {};
+    CalcRotMatrix( gGeom.GetTiltAngle( lid ),
+		   gGeom.GetRotAngle1( lid ),
+		   gGeom.GetRotAngle2( lid ),
+		   Matrix );
+    new TRotMatrix( "rotX2", "rotX2", Matrix );
+    new TTUBE( "SDC4X2Tube", "SDC4X2Tube", "void", Rmin, Rmax, L );
+    for( Int_t wire=1; wire<= NumOfWireSDC4X; ++wire ){
+      Double_t localPos = gGeom.CalcWirePosition( lid, wire );
+      ThreeVector wireLocalPos( localPos, 0., 0. );
+      ThreeVector wireGlobalPos = gGeom.Local2GlobalPos( lid, wireLocalPos );
+      m_SDC4x2_node.push_back( new TNode( Form( "SDC4x2_Node_%d", wire ),
+					  Form( "SDC4x2_Node_%d", wire ),
+					  "SDC4X2Tube",
 					  wireGlobalPos.x(),
 					  wireGlobalPos.y(),
 					  wireGlobalPos.z(),
@@ -1617,14 +1617,14 @@ EventDisplay::DrawHitWire( Int_t lid, Int_t hit_wire, Bool_t range_check, Bool_t
 	Form( "SDC1u2_Node_%d", hit_wire ) };
 
   const TString sdcout_node_name[NumOfLayersSdcOut]
-    = { Form( "SDC2x1_Node_%d", hit_wire ),
-	Form( "SDC2x2_Node_%d", hit_wire ),
-	Form( "SDC2y1_Node_%d", hit_wire ),
-	Form( "SDC2y2_Node_%d", hit_wire ),
+    = { Form( "SDC3x1_Node_%d", hit_wire ),
+	Form( "SDC3x2_Node_%d", hit_wire ),
 	Form( "SDC3y1_Node_%d", hit_wire ),
 	Form( "SDC3y2_Node_%d", hit_wire ),
-	Form( "SDC3x1_Node_%d", hit_wire ),
-	Form( "SDC3x2_Node_%d", hit_wire ) };
+	Form( "SDC4y1_Node_%d", hit_wire ),
+	Form( "SDC4y2_Node_%d", hit_wire ),
+	Form( "SDC4x1_Node_%d", hit_wire ),
+	Form( "SDC4x2_Node_%d", hit_wire ) };
 
   switch ( lid ) {
 
@@ -1647,21 +1647,21 @@ EventDisplay::DrawHitWire( Int_t lid, Int_t hit_wire, Bool_t range_check, Bool_t
     node_name = sdcin_node_name[lid-1];
     break;
 
-    // SDC2
+    // SDC3
   case 31: case 32: case 33: case 34:
-    if( hit_wire>NumOfWireSDC2 ) return;
+    if( hit_wire>NumOfWireSDC3 ) return;
     node_name = sdcout_node_name[lid-31];
     break;
 
-    // SDC3Y
+    // SDC4Y
   case 35: case 36:
-    if( hit_wire>NumOfWireSDC3Y ) return;
+    if( hit_wire>NumOfWireSDC4Y ) return;
     node_name = sdcout_node_name[lid-31];
     break;
 
-    // SDC3X
+    // SDC4X
   case 37: case 38:
-    if( hit_wire>NumOfWireSDC3X ) return;
+    if( hit_wire>NumOfWireSDC4X ) return;
     node_name = sdcout_node_name[lid-31];
     break;
 
@@ -2427,14 +2427,14 @@ EventDisplay::ResetVisibility( void )
   ResetVisibility( m_SDC1x2_node );
   ResetVisibility( m_SDC1u1_node );
   ResetVisibility( m_SDC1u2_node );
-  ResetVisibility( m_SDC2x1_node );
-  ResetVisibility( m_SDC2x2_node );
-  ResetVisibility( m_SDC2y1_node );
-  ResetVisibility( m_SDC2y2_node );
-  ResetVisibility( m_SDC3y1_node );
-  ResetVisibility( m_SDC3y2_node );
   ResetVisibility( m_SDC3x1_node );
   ResetVisibility( m_SDC3x2_node );
+  ResetVisibility( m_SDC3y1_node );
+  ResetVisibility( m_SDC3y2_node );
+  ResetVisibility( m_SDC4y1_node );
+  ResetVisibility( m_SDC4y2_node );
+  ResetVisibility( m_SDC4x1_node );
+  ResetVisibility( m_SDC4x2_node );
   ResetVisibility( m_BH2seg_node, kWhite );
   ResetVisibility( m_FBHseg_node );
   ResetVisibility( m_SCHseg_node );

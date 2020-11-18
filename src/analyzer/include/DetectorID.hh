@@ -13,33 +13,26 @@
 // Counters ___________________________________________________________
 const int DetIdBH1      =  1;
 const int DetIdBH2      =  2;
-const int DetIdBAC      =  3; // K tuning
-const int DetIdBH2_E42  =  4; // E42 test
+const int DetIdBAC      =  3;
+const int DetIdBH2_E42  =  4; //E42
+const int DetIdPVAC     =  5;
+const int DetIdFAC      =  6;
 const int DetIdSCH      =  7;
 const int DetIdTOF      =  8;
-const int DetIdSAC      =  9;
-const int DetIdLC       = 10;
-const int DetIdHtTOF    = 11; // high threshold TOF
 const int DetIdLAC      = 12;
-const int DetIdWC       = 13; // E42 test
-const int DetIdT1       = 14; // E42 test
-const int DetIdT2       = 15; // E42 test
+const int DetIdWC       = 13; // E42
 const int NumOfSegBH1     = 11;
+//const int NumOfSegBH2     =  5;
 const int NumOfSegBH2     =  8;
-const int NumOfSegBAC     =  2; // K tuning
-const int NumOfSegBH2_E42 = 15; // E42 test
-const int NumOfSegFBH     = 16;
+const int NumOfSegBAC     =  2;
+const int NumOfSegBH2_E42 = 15; // E42
+const int NumOfSegPVAC    =  1;
+const int NumOfSegFAC     =  1;
 const int NumOfSegSCH     = 64;
 const int NumOfSegTOF     = 24;
-const int NumOfSegSAC     =  4;
-const int NumOfRoomsSAC   =  4;
 const int NumOfSegLAC     = 30;
-const int NumOfSegLC      = 28;
-const int NumOfSegHtTOF   = 16;
-const int NumOfSegClusteredFBH = 31;
-const int NumOfSegWC      =  2; // E42 test
-const int NumOfSegT1      =  1; // E42 test
-const int NumOfSegT2      =  1; // E42 test
+const int NumOfSegWC      =  2; // E42
+
 
 // Misc _______________________________________________________________
 const int DetIdTrig       = 21;
@@ -67,13 +60,8 @@ const int DetIdBC4  = 104;
 const int DetIdSDC1 = 105;
 const int DetIdSDC2 = 106;
 const int DetIdSDC3 = 107;
+const int DetIdSDC4 = 108;
 const int DetIdBFT  = 110;
-const int DetIdSFT  = 111;
-const int DetIdCFT  = 113;
-const int DetIdBGO  = 114;
-const int DetIdPiID = 115;
-const int DetIdFHT1 = 131;
-const int DetIdFHT2 = 132;
 const int DetIdBcOut  = 20;
 const Int_t DetIdSdcIn  = 30;
 const Int_t DetIdSdcOut = 40;
@@ -84,128 +72,60 @@ const int PlMinBcOut       =  13;
 const int PlMaxBcOut       =  24;
 const int PlMinSdcIn       =   1;
 const int PlMaxSdcIn       =   9;
-const int PlMinFHT1        =  80;
-const int PlMaxFHT1        =  83;
-const int PlMinFHT2        =  84;
-const int PlMaxFHT2        =  87;
 const int PlMinSdcOut      =  31;
 const int PlMaxSdcOut      =  38;
 const int PlOffsBc         = 100;
 const int PlOffsSdcIn      =   0;
-const int PlOffsSft        =   6;
 const int PlOffsSdcOut     =  30;
-const int PlOffsVP         =  20;
-const int PlOffsFbt        =  80;
 
 const int NumOfLayersBc     = 6;
 const int NumOfLayersBC3    =  6;
 const int NumOfDimBC3       =  3;
 const int NumOfLayersBC4    =  6;
 const int NumOfDimBC4       =  3;
-const int NumOfLayersSFT    = 3;
-const int NumOfLayersCFT    =  8;
 const int NumOfLayersSDC1   = 6;
 const int NumOfDimSDC1      =  3;
 const int NumOfLayersSDC2   = 4;
 const int NumOfDimSDC2      =  2;
 const int NumOfLayersSDC3   = 4;
 const int NumOfDimSDC3      =  2;
+const int NumOfLayersSDC4   = 4;
+const int NumOfDimSDC4      =  2;
 const int NumOfWireBC3      = 64;
 const int NumOfWireBC4      = 64;
 const int NumOfWireSDC1     = 64;
-const int NumOfWireSDC2     = 128;
-const int NumOfWireSDC3X    = 96;
-const int NumOfWireSDC3Y    = 64;
+const int NumOfWireSDC2X     = 70;
+const int NumOfWireSDC2Y     = 40;
+const int NumOfWireSDC3     = 128;
+const int NumOfWireSDC4X    = 96;
+const int NumOfWireSDC4Y    = 64;
 const double MaxDriftLengthBC3  =  1.5;
 const double MaxDriftLengthBC4  =  1.5;
 const double MaxDriftLengthSDC1 =  3.0;
-const double MaxDriftLengthSDC2 =  4.5;
-const double MaxDriftLengthSDC3 = 10.0;
+const double MaxDriftLengthSDC2 =  1.0;
+const double MaxDriftLengthSDC3 =  4.5;
+const double MaxDriftLengthSDC4 = 10.0;
 const double MaxDriftTimeBC3    =  80.0;
 const double MaxDriftTimeBC4    =  80.0;
 const double MaxDriftTimeSDC1   = 120.0;
 const double MaxDriftTimeSDC2   = 120.0;
 const double MaxDriftTimeSDC3   = 260.0;
-const int NumOfLayersFHT1   = 2;
-const int NumOfLayersFHT2   = 2;
 const int NumOfLayersBcIn   = PlMaxBcIn   - PlMinBcIn   + 1;
 const int NumOfLayersBcOut  = PlMaxBcOut  - PlMinBcOut  + 1;
 const int NumOfLayersSdcIn  = PlMaxSdcIn  - PlMinSdcIn  + 1;
-//const int NumOfLayersFHT    = PlMaxFHT2   - PlMinFHT1   + 1;
-const int NumOfLayersFHT    = 2;
-//const int NumOfLayersSdcOut = PlMaxSdcOut - PlMinSdcOut + 1; w/o FHT
-const int NumOfLayersSdcOut = PlMaxSdcOut - PlMinSdcOut + 1 + (PlMaxFHT2 - PlMinFHT1 + 1); // including FHT
-const int NumOfLayersVP     = 5;
+const int NumOfLayersSdcOut = PlMaxSdcOut - PlMinSdcOut + 1;
 
 const int MaxWireBC3      =  64;
 const int MaxWireBC4      =  64;
 
 const int MaxWireSDC1     =  64;
-const int MaxWireSDC2     = 128;
-const int MaxWireSDC3X    =  96;
-const int MaxWireSDC3Y    =  64;
-
-const int MaxSegFHT1      =  48;
-const int MaxSegFHT2      =  64;
-const int NumOfSegFHT1          = 48;
-const int NumOfSegFHT2          = 64;
+const int MaxWireSDC2     = 220;
+const int MaxWireSDC3     = 128;
+const int MaxWireSDC4X    =  96;
+const int MaxWireSDC4Y    =  64;
 
 const int NumOfPlaneBFT   =   2;
 const int NumOfSegBFT     = 160;
-// SFT X layer has U D plane.
-// SFT UV layers have only U plnane.
-// enum SFT_PLANE{ SFT_X1, SFT_X2, SFT_V, SFT_U };
-enum SFT_PLANE{ SFT_U, SFT_V, SFT_X1, SFT_X2 };
-const int NumOfPlaneSFT   =   4;
-const int NumOfSegSFT_X   = 256;
-const int NumOfSegSFT_UV  = 320;
-const int NumOfSegSFT[NumOfPlaneSFT] = { NumOfSegSFT_UV,
-					   NumOfSegSFT_UV,
-					   NumOfSegSFT_X,
-					   NumOfSegSFT_X };
-const int NumOfSegCSFT    = 48;
-
-// CFT
-const int NumOfPlaneCFT   =   8;
-enum CFT_PLANE{CFT_U1, CFT_PHI1, CFT_V2, CFT_PHI2, CFT_U3, CFT_PHI3, CFT_V4, CFT_PHI4};
-enum CFT_PLANE_{CFT_UV1, CFT_PHI1_, CFT_UV2, CFT_PHI2_, CFT_UV3, CFT_PHI3_, CFT_UV4, CFT_PHI4_};
-const int NumOfSegCFT_UV1   = 426;
-const int NumOfSegCFT_PHI1  = 584;
-const int NumOfSegCFT_UV2   = 472;
-const int NumOfSegCFT_PHI2  = 692;
-const int NumOfSegCFT_UV3   = 510;
-const int NumOfSegCFT_PHI3  = 800;
-const int NumOfSegCFT_UV4   = 538;
-const int NumOfSegCFT_PHI4  = 910;
-const int NumOfSegCFT[NumOfPlaneCFT]  = {426,584,472,692,510,800,538,910};
-
-// BGO
-const double BGO_X = 30.;
-const double BGO_Y = 25.;
-const double BGO_Z = 400.;
-const int    NumOfBGOUnit = 8;
-const int    NumOfBGOInOneUnit = 2;//pair unit
-const double RadiusOfBGOSurface = 100.;
-const int    NumOfBGOInOneUnit2 = 1;//single unit
-const double RadiusOfBGOSurface2 = 120.;
-const int NumOfSegBGO = NumOfBGOUnit*(NumOfBGOInOneUnit+NumOfBGOInOneUnit2);//24
-const int NumOfSegBGO_T=   4;
-
-// PiID counter
-const int NumOfSegPiID =  32;
-
-const int NumOfPiIDUnit = 8;
-const int NumOfPiIDInOneUnit = 3;
-const double PiID_X = 30.;
-const double PiID_Y = 10.;
-const double PiID_Z = 400.;
-const double RadiusOfPiIDSurface = 164.;
-
-const int    NumOfPiIDInOneUnit2 = 1;//single unit
-const double PiID2_X = 40.;
-const double PiID2_Y = 10.;
-const double PiID2_Z = 400.;
-const double RadiusOfPiID2Surface = 180.;
 
 // HulRm -----------------------------------------------
 const int NumOfHulRm   = 4;
@@ -237,10 +157,6 @@ const int NumOfScaler  = 2;
 const int DetIdVEASIROC         = 116;
 const int NumOfLayersVMEEASIROC = 95;
 const int NumOfSegVMEEASIROC    = 64;
-
-// Tracker const
-const int FHTOffset             = 200;
-const int NumOfUDStructureFHT   = 2;
 
 // Trigger Flag
 namespace trigger
@@ -364,14 +280,105 @@ namespace DetHtTOF
  };
 
 // Old Detectors
+//E42 test in E40 beamtime
+const int DetIdT1       = 14; // E42
+const int DetIdT2       = 15; // E42
+const int NumOfSegT1      =  1; // E42
+const int NumOfSegT2      =  1; // E42
+
+//E40 Detectors
+const int DetIdSAC      =  9;
+const int DetIdLC       = 10;
+const int DetIdHtTOF    = 11; // high threshold TOF
+const int NumOfSegHtTOF   = 16;
+const int NumOfSegClusteredFBH = 31;
+const int NumOfRoomsSAC   =  4;
+const int NumOfSegLC      = 28;
+const int NumOfSegSAC     =  4;
+const int NumOfSegFBH     = 16;
+const int DetIdSFT  = 111;
+const int DetIdCFT  = 113;
+const int DetIdBGO  = 114;
+const int DetIdPiID = 115;
+const int DetIdFHT1 = 131;
+const int DetIdFHT2 = 132;
+const int PlMinFHT1        =  80;
+const int PlMaxFHT1        =  83;
+const int PlMinFHT2        =  84;
+const int PlMaxFHT2        =  87;
+const int PlOffsVP         =  20;
+const int PlOffsSft        =   6;
+const int PlOffsFbt        =  80;
+const int NumOfLayersSFT    = 3;
+const int NumOfLayersCFT    =  8;
+const int NumOfLayersFHT1   = 2;
+const int NumOfLayersFHT2   = 2;
+//const int NumOfLayersFHT    = PlMaxFHT2   - PlMinFHT1   + 1;
+const int NumOfLayersFHT    = 2;
+//const int NumOfLayersSdcOut = PlMaxSdcOut - PlMinSdcOut + 1 + (PlMaxFHT2 - PlMinFHT1 + 1); // including FHT
+const int NumOfLayersVP     = 5;
+const int MaxSegFHT1      =  48;
+const int MaxSegFHT2      =  64;
+const int NumOfSegFHT1          = 48;
+const int NumOfSegFHT2          = 64;
+// SFT X layer has U D plane.
+// SFT UV layers have only U plnane.
+// enum SFT_PLANE{ SFT_X1, SFT_X2, SFT_V, SFT_U };
+//SFT
+enum SFT_PLANE{ SFT_U, SFT_V, SFT_X1, SFT_X2 };
+const int NumOfPlaneSFT   =   4;
+const int NumOfSegSFT_X   = 256;
+const int NumOfSegSFT_UV  = 320;
+const int NumOfSegSFT[NumOfPlaneSFT] = { NumOfSegSFT_UV,
+					   NumOfSegSFT_UV,
+					   NumOfSegSFT_X,
+					   NumOfSegSFT_X };
+const int NumOfSegCSFT    = 48;
+// CFT
+const int NumOfPlaneCFT   =   8;
+enum CFT_PLANE{CFT_U1, CFT_PHI1, CFT_V2, CFT_PHI2, CFT_U3, CFT_PHI3, CFT_V4, CFT_PHI4};
+enum CFT_PLANE_{CFT_UV1, CFT_PHI1_, CFT_UV2, CFT_PHI2_, CFT_UV3, CFT_PHI3_, CFT_UV4, CFT_PHI4_};
+const int NumOfSegCFT_UV1   = 426;
+const int NumOfSegCFT_PHI1  = 584;
+const int NumOfSegCFT_UV2   = 472;
+const int NumOfSegCFT_PHI2  = 692;
+const int NumOfSegCFT_UV3   = 510;
+const int NumOfSegCFT_PHI3  = 800;
+const int NumOfSegCFT_UV4   = 538;
+const int NumOfSegCFT_PHI4  = 910;
+const int NumOfSegCFT[NumOfPlaneCFT]  = {426,584,472,692,510,800,538,910};
+// BGO
+const double BGO_X = 30.;
+const double BGO_Y = 25.;
+const double BGO_Z = 400.;
+const int    NumOfBGOUnit = 8;
+const int    NumOfBGOInOneUnit = 2;//pair unit
+const double RadiusOfBGOSurface = 100.;
+const int    NumOfBGOInOneUnit2 = 1;//single unit
+const double RadiusOfBGOSurface2 = 120.;
+const int NumOfSegBGO = NumOfBGOUnit*(NumOfBGOInOneUnit+NumOfBGOInOneUnit2);//24
+const int NumOfSegBGO_T=   4;
+// PiID counter
+const int NumOfSegPiID =  32;
+const int NumOfPiIDUnit = 8;
+const int NumOfPiIDInOneUnit = 3;
+const double PiID_X = 30.;
+const double PiID_Y = 10.;
+const double PiID_Z = 400.;
+const double RadiusOfPiIDSurface = 164.;
+const int    NumOfPiIDInOneUnit2 = 1;//single unit
+const double PiID2_X = 40.;
+const double PiID2_Y = 10.;
+const double PiID2_Z = 400.;
+const double RadiusOfPiID2Surface = 180.;
+// Tracker const
+const int FHTOffset             = 200;
+const int NumOfUDStructureFHT   = 2;
+
 // E07 Detectors
 const int DetIdFBH  =  4;
-const int DetIdPVAC =  5;
-const int DetIdFAC  =  6;
 const int DetIdEMC      = 23;
 const int DetIdSSDT     = 24;
-const int NumOfSegPVAC =  1;
-const int NumOfSegFAC  =  1;
 const int NumOfSegEMC      =  1;
 const int NumOfSegSSDT     = 16;
 const int DetIdSSD1 = 121;
@@ -435,7 +442,7 @@ const int NumOfSegSP0    = 5;
 
 const int DetIdBC1   = 101;
 const int DetIdBC2   = 102;
-const int DetIdSDC4  = 108;
+//const int DetIdSDC4  = 108;
 const int DetIdK6BDC = 109;
 const int DetIdHDC   = 113;
 const int DetIdSSD0  = 120;
@@ -445,15 +452,15 @@ const int DetIdBcIn   = 10;
 const int NumOfLayersBC1  =  6;
 const int NumOfLayersBC2  =  6;
 const int NumOfLayersHDC  =  4;
-const int NumOfLayersSDC4 =  6;
+//const int NumOfLayersSDC4 =  6;
 
 const int NumOfWireBC1    =  256;
 const int NumOfWireBC2    =  256;
 const int NumOfWireHDC    =  112;
 const int NumOfWireSDC3x  =  108;
-const int NumOfWireSDC4x  =  108;
+//const int NumOfWireSDC4x  =  108;
 const int NumOfWireSDC3uv =  120;
-const int NumOfWireSDC4uv =  120;
+//const int NumOfWireSDC4uv =  120;
 const int NumOfSegSSD0    = 1536;
 
 #endif

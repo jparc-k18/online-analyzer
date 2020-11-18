@@ -1,7 +1,7 @@
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
-void dispSDC4()
+void dispSDC4( void )
 {
   // You must write these lines for the thread safe
   // ----------------------------------
@@ -9,52 +9,108 @@ void dispSDC4()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  int n_layer = 6;
+  gStyle->SetOptStat(1111110);
+  int n_layer = 4;
 
   // draw TDC
-  TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
-  c->Clear();
-  c->Divide(3,2);
-  int base_id = HistMaker::getUniqueID(kSDC4, 0, kTDC);
-  for(int i = 0; i<n_layer; ++i){
-    c->cd(i+1);
-    TH1 *h = (TH1*)GHist::get(base_id + i);
-    h->GetXaxis()->SetRangeUser(700,1600);
-    h->Draw();
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
+    c->Clear();
+    c->Divide(2,2);
+    int base_id = HistMaker::getUniqueID(kSDC4, 0, kTDC);
+    int base_id_ctot = HistMaker::getUniqueID(kSDC4, 0, kTDC, 11);
+    for( int i=0; i<n_layer; ++i ){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get(base_id + i);
+      if( !h ) continue;
+      // h->GetXaxis()->SetRangeUser(700,1600);
+      h->Draw();
+      TH1 *hh = (TH1*)GHist::get( base_id_ctot + i );
+      if( !hh ) continue;
+      hh->SetLineColor( kRed );
+      hh->Draw("same");
+    }
+    c->Update();
   }
 
-  c->Update();
+  // draw TDC1st
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
+    c->Clear();
+    c->Divide(2,2);
+    int base_id = HistMaker::getUniqueID(kSDC4, 0, kTDC2D);
+    int base_id_ctot = HistMaker::getUniqueID(kSDC4, 0, kTDC2D, 11);
+    for( int i=0; i<n_layer; ++i ){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get(base_id + i);;
+      if( !h ) continue;
+      // h->GetXaxis()->SetRangeUser(700,1600);
+      h->Draw();
+      TH1 *hh = (TH1*)GHist::get( base_id_ctot + i );
+      if( !hh ) continue;
+      hh->SetLineColor( kRed );
+      hh->Draw("same");
+    }
+    c->Update();
+  }
+
+  // draw TOT
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
+    c->Clear();
+    c->Divide(2,2);
+    int base_id = HistMaker::getUniqueID(kSDC4, 0, kADC);
+    int base_id_ctot = HistMaker::getUniqueID(kSDC4, 0, kADC, 11);
+    for( int i=0; i<n_layer; ++i ){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get(base_id + i);;
+      if( !h ) continue;
+      // h->GetXaxis()->SetRangeUser(700,1600);
+      h->Draw();
+      TH1 *hh = (TH1*)GHist::get( base_id_ctot + i );
+      if( !hh ) continue;
+      hh->SetLineColor( kRed );
+      hh->Draw("same");
+    }
+    c->Update();
+  }
 
   // draw HitPat
-  c = (TCanvas*)gROOT->FindObject("c2");
-  c->Clear();
-  c->Divide(3,2);
-  int base_id = HistMaker::getUniqueID(kSDC4, 0, kHitPat);
-  for(int i = 0; i<n_layer; ++i){
-    c->cd(i+1);
-    GHist::get(base_id + i)->Draw();
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
+    c->Clear();
+    c->Divide(2,2);
+    int base_id = HistMaker::getUniqueID(kSDC4, 0, kHitPat);
+    int base_id_ctot = HistMaker::getUniqueID(kSDC4, 0, kHitPat, 11);
+    for( int i=0; i<n_layer; ++i ){
+      c->cd(i+1);
+      TH1 *h = GHist::get(base_id + i);
+      if( h ) h->Draw();
+      TH1 *hh = (TH1*)GHist::get(base_id_ctot + i);
+      if( !hh ) continue;
+      hh->SetLineColor( kRed );
+      hh->Draw("same");
+    }
+    c->Update();
   }
-
-  c->Update();
 
   // draw Multi
-  c = (TCanvas*)gROOT->FindObject("c3");
-  c->Clear();
-  c->Divide(3,2);
-  int base_id = HistMaker::getUniqueID(kSDC4, 0, kMulti);
-  for(int i = 0; i<n_layer; ++i){
-    c->cd(i+1);
-    TH1 *h_wot = (TH1*)GHist::get(base_id + i)->Clone();
-    TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer)->Clone();
-    h_wot->SetMaximum(h_wt->GetMaximum()*1.1);
-    h_wot->Draw();
-    h_wt->SetLineColor(2);
-    h_wt->Draw("same");
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
+    c->Clear();
+    c->Divide(2,2);
+    int base_id = HistMaker::getUniqueID(kSDC4, 0, kMulti);
+    for( int i=0; i<n_layer; ++i ){
+      c->cd(i+1);
+      TH1 *h_wt  = (TH1*)GHist::get(base_id + i + n_layer + 10);//->Clone();
+      TH1 *h_wot = (TH1*)GHist::get(base_id + i);//->Clone();
+      h_wot->SetMaximum(h_wt->GetMaximum()*1.1);
+      h_wt->SetLineColor(2);
+      h_wt->Draw();
+      h_wot->Draw("same");
+    }
+    c->Update();
   }
-
-  c->Update();
-
-  c->cd(0);
 
   // You must write these lines for the thread safe
   // ----------------------------------

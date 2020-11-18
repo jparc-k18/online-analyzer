@@ -15,23 +15,23 @@
 enum DetectorType {
   kDetectorZero,
   // Detector unique ID in the beam line
-  kBH1, kBFT, kBC3, kBC4, kBH2,kBH2MT,
+  kBH1, kBFT, kBC3, kBC4, kBH2, kBAC, kBH2MT,
   kMsT, kMsT_T0, kMtx3D,
   // Detector unique ID in the KURAMA system
-  kCFT,kBGO,kPiID,kSFT, kSDC1, kSAC, kSCH, kFHT1,
-  kSDC2, kSDC3, kFHT2, kTOF,kTOF_HT, kLAC, kLC,
+  kPVAC, kFAC, kSDC1, kSDC2, kSCH,
+  kSDC3, kSDC4, kTOF, kLAC,
   // VMEEASIROC unique ID
   kVMEEASIROC,
-  // For E42 test in k tune
+  // E42
   kBH2_E42, kBH2_E42MT, kWC, kWCMT, kT1, kT1MT, kT2, kT2MT,
   // Old detectors E07
-  kBAC, kFBH,
-  kSSDT, kSSD1, kSSD2,
-  kPVAC, kFAC, kEMC,
+  kFBH, kSSDT, kSSD1, kSSD2, kEMC,
+  // Old detectors E40
+  kCFT,kBGO,kPiID,kSFT,kFHT1,kFHT2,kLC,kSAC,kTOF_HT,
   // Old detectors
   kBMW, kBAC_SAC, kSFV_SAC3, kGe, kPWO, kSP0,
   kBH2_E07, kBAC_E07, kSSD0, kSAC1, kKFAC,
-  kKIC, kHDC, kSDC4, kTOFMT,
+  kKIC, kHDC, kTOFMT,
   // Others
   kTriggerFlag, kDAQ, kCorrelation,
   kCorrelation_catch, kMisc,
@@ -154,22 +154,17 @@ public:
   TList* createBC3( Bool_t flag_ps=true );
   TList* createBC4( Bool_t flag_ps=true );
   TList* createBH2( Bool_t flag_ps=true );
-  TList* createSFT( Bool_t flag_ps=true );
+  TList* createBAC( Bool_t flag_ps=true );
+  TList* createFAC( Bool_t flag_ps=true );
+  TList* createPVAC( Bool_t flag_ps=true );
   TList* createVMEEASIROC( Bool_t flag_ps=true );
-  TList* createCFT( Bool_t flag_ps=true );
-  TList* createBGO( Bool_t flag_ps=true );
-  TList* createPiID( Bool_t flag_ps=true );
   TList* createSDC1( Bool_t flag_ps=true );
-  TList* createSAC( Bool_t flag_ps=true );
-  TList* createSCH( Bool_t flag_ps=true );
-  TList* createFHT1( Bool_t flag_ps=true );
   TList* createSDC2( Bool_t flag_ps=true );
+  TList* createSCH( Bool_t flag_ps=true );
   TList* createSDC3( Bool_t flag_ps=true );
-  TList* createFHT2( Bool_t flag_ps=true );
+  TList* createSDC4( Bool_t flag_ps=true );
   TList* createTOF( Bool_t flag_ps=true );
-  TList* createTOF_HT( Bool_t flag_ps=true );
   TList* createLAC( Bool_t flag_ps=true );
-  TList* createLC( Bool_t flag_ps=true );
   TList* createMsT( Bool_t flag_ps=true );
   TList* createMsT_T0( Bool_t flag_ps=true );
   TList* createMtx3D( Bool_t flag_ps=false );
@@ -182,20 +177,28 @@ public:
   // Beam Profile
   TList* createBeamProfile( Bool_t flag_ps=true );
 
-  // E42 test in K tune
+  // Old functions E40
+  TList* createSFT( Bool_t flag_ps=true );
+  TList* createCFT( Bool_t flag_ps=true );
+  TList* createBGO( Bool_t flag_ps=true );
+  TList* createPiID( Bool_t flag_ps=true );
+  TList* createSAC( Bool_t flag_ps=true );
+  TList* createFHT1( Bool_t flag_ps=true );
+  TList* createFHT2( Bool_t flag_ps=true );
+  TList* createTOF_HT( Bool_t flag_ps=true );
+  TList* createLC( Bool_t flag_ps=true );
+
+  // E42
   TList* createBH2_E42( Bool_t flag_ps=true );
   TList* createWC( Bool_t flag_ps=true );
   TList* createT1( Bool_t flag_ps=true );
   TList* createT2( Bool_t flag_ps=true );
 
   // Old functions E07
-  TList* createBAC( Bool_t flag_ps=true );
   TList* createFBH( Bool_t flag_ps=true );
   TList* createSSDT( Bool_t flag_ps=true );
   TList* createSSD1( Bool_t flag_ps=true );
   TList* createSSD2( Bool_t flag_ps=true );
-  TList* createPVAC( Bool_t flag_ps=true );
-  TList* createFAC( Bool_t flag_ps=true );
   TList* createEMC( Bool_t flag_ps=true );
   // Old functions
   TList* createBMW( Bool_t flag_ps=true );
@@ -211,7 +214,7 @@ public:
   TList* createKIC( Bool_t flag_ps=true );
   TList* createHDC( Bool_t flag_ps=true );
   TList* createSP0( Bool_t flag_ps=true );
-  TList* createSDC4( Bool_t flag_ps=true );
+  //  TList* createSDC4( Bool_t flag_ps=true );
   TList* createTOFMT( Bool_t flag_ps=true );
   TList* createTriggerFlag_E07( Bool_t flag_ps=true );
   TList* createPWO_E05( Bool_t flag_ps=true );

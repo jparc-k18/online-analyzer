@@ -1063,7 +1063,7 @@ void PsMaker::create(TString& name)
 //    drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 //  }
 
-  // SDC1 ----------------------------------------------------------------
+   // SDC1 ----------------------------------------------------------------
   if(name == CONV_STRING(kSDC1)){
     // For all
     int base_id = 0;
@@ -1084,6 +1084,36 @@ void PsMaker::create(TString& name)
     // SDC1 Multi
     base_id = HistMaker::getUniqueID(kSDC1, 0, kMulti);
     for(int i = 0; i<NumOfLayersSDC1; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, false, false);
+  }
+
+  // SDC2 ----------------------------------------------------------------
+  if(name == CONV_STRING(kSDC2)){
+    // For all
+    int base_id = 0;
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
+
+    // SDC2 TDC
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 1000;
+    base_id = HistMaker::getUniqueID(kSDC2, 0, kTDC);
+    for(int i = 0; i<NumOfLayersSDC2; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, flag_xaxis, false);
+
+    // SDC2 TOT
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 500;
+    base_id = HistMaker::getUniqueID(kSDC2, 0, kADC);
+    for(int i = 0; i<NumOfLayersSDC2; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, flag_xaxis, false);
+
+    // SDC2 HitPat
+    base_id = HistMaker::getUniqueID(kSDC2, 0, kHitPat);
+    for(int i = 0; i<NumOfLayersSDC2; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, false, false);
+
+    // SDC2 Multi
+    base_id = HistMaker::getUniqueID(kSDC2, 0, kMulti);
+    for(int i = 0; i<NumOfLayersSDC2; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, false, false);
   }
 
@@ -1112,45 +1142,6 @@ void PsMaker::create(TString& name)
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
   }
 
-  // SDC2 ----------------------------------------------------------------
-  if(name == CONV_STRING(kSDC2)){
-    // For all
-    int base_id = 0;
-    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
-    flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
-
-    // SDC2 TDC
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 1500;
-    base_id = HistMaker::getUniqueID(kSDC2, 0, kTDC);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){id_list.push_back(base_id + i);}
-    drawOneCanvas(id_list, par_list, flag_xaxis, false);
-
-    // SDC2 TOT
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 500;
-    base_id = HistMaker::getUniqueID(kSDC2, 0, kADC);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){id_list.push_back(base_id + i);}
-    drawOneCanvas(id_list, par_list, flag_xaxis, false);
-
-    // SDC2 HitPat
-    base_id = HistMaker::getUniqueID(kSDC2, 0, kHitPat);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){id_list.push_back(base_id + i);}
-    drawOneCanvas(id_list, par_list, false, false);
-
-    // SDC2 CHitPat
-    base_id = HistMaker::getUniqueID(kSDC2, 0, kHitPat, 11);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){id_list.push_back(base_id + i);}
-    drawOneCanvas(id_list, par_list, false, false);
-
-    // SDC2 SelfCorr
-    base_id = HistMaker::getUniqueID(kSDC2,  kSelfCorr, 0,1);
-    for(int i = 0; i<NumOfDimSDC2; ++i){id_list.push_back(base_id + i);}
-    drawOneCanvas(id_list, par_list, false, false, "colz");
-
-    // SDC2 Multi
-    base_id = HistMaker::getUniqueID(kSDC2, 0, kMulti);
-    for(int i = 0; i<NumOfLayersSDC2; ++i){id_list.push_back(base_id + i);}
-    drawOneCanvas(id_list, par_list, false, false);
-  }
 
 //  // HDC ----------------------------------------------------------------
 //  if(name == CONV_STRING(kHDC)){
@@ -1258,7 +1249,49 @@ void PsMaker::create(TString& name)
     drawOneCanvas(id_list, par_list, false, false);
   }
 
-  // SDC4 ----------------------------------------------------------------
+    // SDC4 ----------------------------------------------------------------
+  if(name == CONV_STRING(kSDC4)){
+    // For all
+    int base_id = 0;
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    flag_xaxis = GuiPs::isOptOn(kFixXaxis) | GuiPs::isOptOn(kExpDataSheet);
+
+    // SDC4 TDC
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 1500;
+    base_id = HistMaker::getUniqueID(kSDC4, 0, kTDC);
+    for(int i = 0; i<NumOfLayersSDC4; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, flag_xaxis, false);
+
+    // SDC4 TOT
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 500;
+    base_id = HistMaker::getUniqueID(kSDC4, 0, kADC);
+    for(int i = 0; i<NumOfLayersSDC4; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, flag_xaxis, false);
+
+    // SDC4 HitPat
+    base_id = HistMaker::getUniqueID(kSDC4, 0, kHitPat);
+    for(int i = 0; i<NumOfLayersSDC4; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, false, false);
+
+    // SDC4 CHitPat
+    base_id = HistMaker::getUniqueID(kSDC4, 0, kHitPat, 11);
+    for(int i = 0; i<NumOfLayersSDC4; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, false, false);
+
+    // SDC4 SelfCorr
+    base_id = HistMaker::getUniqueID(kSDC4, kSelfCorr, 0, 1);
+    for(int i = 0; i<NumOfDimSDC4; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, false, false, "colz");
+
+    // SDC4 Multi
+    base_id = HistMaker::getUniqueID(kSDC4, 0, kMulti);
+    for(int i = 0; i<NumOfLayersSDC4; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, false, false);
+  }
+
+
+
+  /*  // SDC4 ----------------------------------------------------------------
   if(name == CONV_STRING(kSDC4)){
     // For all
     int base_id = 0;
@@ -1280,7 +1313,7 @@ void PsMaker::create(TString& name)
     base_id = HistMaker::getUniqueID(kSDC4, 0, kMulti);
     for(int i = 0; i<NumOfLayersSDC4; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, false, false);
-  }
+    }   */
 
   // FHT1 ----------------------------------------------------------------
   if(name == "FHT1"){
@@ -1935,16 +1968,6 @@ void PsMaker::drawDCEff( void )
       text.SetTextSize( 0.08 );
       text.DrawLatex( xpos, ypos, Form("plane eff. %.2f", eff ) );
     }
-    cps_->Update();
-    cps_->cd();
-    clearOneCanvas( x*y );
-  }
-
-  // SdcOut
-  {
-    ps_->NewPage();
-    int x = 4; int y = 2;
-    cps_->Divide( x, y );
     int sdc2_id = HistMaker::getUniqueID( kSDC2, 0, kMulti );
     for( int i=0; i<NumOfLayersSDC2; ++i ){
       cps_->cd( i+1 );
@@ -1965,14 +1988,44 @@ void PsMaker::drawDCEff( void )
       text.SetTextSize( 0.08 );
       text.DrawLatex( xpos, ypos, Form("plane eff. %.2f", eff ) );
     }
+    cps_->Update();
+    cps_->cd();
+    clearOneCanvas( x*y );
+  }
+
+  // SdcOut
+  {
+    ps_->NewPage();
+    int x = 4; int y = 2;
+    cps_->Divide( x, y );
     int sdc3_id = HistMaker::getUniqueID( kSDC3, 0, kMulti );
     for( int i=0; i<NumOfLayersSDC3; ++i ){
-      cps_->cd( i+1+NumOfLayersSDC2 );
+      cps_->cd( i+1 );
       TH1* h = GHist::get( sdc3_id+i+NumOfLayersSDC3 );
       if( !h ){
 	std::cerr << "#E: " << MyName << MyFunc
 		  << "Pointer is NULL\n"
 		  << " Unique ID: " << sdc3_id+i+NumOfLayersSDC3 << std::endl;
+	return;
+      }
+      h->SetLineColor(1);
+      h->Draw();
+      double nof0   = h->GetBinContent(1);
+      double nofall = h->GetEntries();
+      double eff    = 1. - nof0/nofall;
+      double xpos   = 0.35;
+      double ypos   = 0.5;
+      text.SetTextSize( 0.08 );
+      text.DrawLatex( xpos, ypos, Form("plane eff. %.2f", eff ) );
+    }
+    int sdc4_id = HistMaker::getUniqueID( kSDC4, 0, kMulti );
+    for( int i=0; i<NumOfLayersSDC4; ++i ){
+      cps_->cd( i+1+NumOfLayersSDC3 );
+      TH1* h = GHist::get( sdc4_id+i+NumOfLayersSDC4 );
+      if( !h ){
+	std::cerr << "#E: " << MyName << MyFunc
+		  << "Pointer is NULL\n"
+		  << " Unique ID: " << sdc4_id+i+NumOfLayersSDC4 << std::endl;
 	return;
       }
       h->SetLineColor(1);

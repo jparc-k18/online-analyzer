@@ -32,26 +32,12 @@ namespace http
   TCanvas* BH2ADC( void );
   TCanvas* BH2TDC( void );
   TCanvas* ACs( void );
-  TCanvas* FBHTDC( void );
-  TCanvas* FBHTOT( void );
-  TCanvas* FBHHitMulti( void );
-  TCanvas* FHT1TDC( void );
-  TCanvas* FHT1TOT( void );
-  TCanvas* FHT1HitMulti( void );
-  TCanvas* FHT2TDC( void );
-  TCanvas* FHT2TOT( void );
-  TCanvas* FHT2HitMulti( void );
-  TCanvas* SFTTDCTOT( void );
-  TCanvas* SFTHitMulti( void );
-  TCanvas* SFT2D( void );
   TCanvas* SCHTDC( void );
   TCanvas* SCHTOT( void );
   TCanvas* SCHHitMulti( void );
   TCanvas* TOFADC( void );
   TCanvas* TOFTDC( void );
-  TCanvas* TOF_HT( void );
   TCanvas* LAC( void );
-  TCanvas* LC( void );
   TCanvas* MsTTDC( void );
   TCanvas* MsTHitPat( void );
   TCanvas* BC3TDCTOT( void );
@@ -60,16 +46,16 @@ namespace http
   TCanvas* BC4HitMulti( void );
   TCanvas* SDC1TDCTOT( void );
   TCanvas* SDC1HitMulti( void );
-  TCanvas* SAC( void );
   TCanvas* SDC2TDCTOT( void );
   TCanvas* SDC2HitMulti( void );
   TCanvas* SDC3TDCTOT( void );
   TCanvas* SDC3HitMulti( void );
+  TCanvas* SDC4TDCTOT( void );
+  TCanvas* SDC4HitMulti( void );
   TCanvas* T0( void );
   TCanvas* BcOutEfficiency( void );
   TCanvas* SdcInOutEfficiency( void );
   TCanvas* BFTSFTSCHTOT( void );
-  TCanvas* FHTTOT( void );
   TCanvas* DAQ( void );
 
   // BeamProfile
@@ -92,8 +78,24 @@ namespace http
   TCanvas* SSD12Chisqr( void );
   TCanvas* SSDEfficiency( void );
   TCanvas* EMC( void );
+  TCanvas* FBHTDC( void );
+  TCanvas* FBHTOT( void );
+  TCanvas* FBHHitMulti( void );
 
   // E40
+  TCanvas* FHTTOT( void );
+  TCanvas* SAC( void );
+  TCanvas* LC( void );
+  TCanvas* TOF_HT( void );
+  TCanvas* FHT1TDC( void );
+  TCanvas* FHT1TOT( void );
+  TCanvas* FHT1HitMulti( void );
+  TCanvas* FHT2TDC( void );
+  TCanvas* FHT2TOT( void );
+  TCanvas* FHT2HitMulti( void );
+  TCanvas* SFTTDCTOT( void );
+  TCanvas* SFTHitMulti( void );
+  TCanvas* SFT2D( void );
   TCanvas* HitPatternE40( void );
   TCanvas* SFT( void );
   TCanvas* FHT1TDC( void );

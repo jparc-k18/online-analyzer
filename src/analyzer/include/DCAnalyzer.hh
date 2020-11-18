@@ -157,12 +157,12 @@ public:
 
   void TotCutBC3( double min_tot );
   void TotCutBC4( double min_tot );
-  void TotCutSDC2( double min_tot );
   void TotCutSDC3( double min_tot );
+  void TotCutSDC4( double min_tot );
 
   void DriftTimeCutBC34( double min_dt, double max_dt);
-  void DriftTimeCutSDC2( double min_dt, double max_dt);
   void DriftTimeCutSDC3( double min_dt, double max_dt);
+  void DriftTimeCutSDC4( double min_dt, double max_dt);
 
   int GetNTracksK18U2D( void ) const { return m_K18U2DTC.size(); }
   int GetNTracksK18D2U( void ) const { return m_K18D2UTC.size(); }

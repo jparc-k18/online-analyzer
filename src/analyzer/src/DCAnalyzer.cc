@@ -1797,19 +1797,19 @@ DCAnalyzer::TotCutBC4(double min_tot)
 
 //______________________________________________________________________________
 void
-DCAnalyzer::TotCutSDC2(double min_tot)
+DCAnalyzer::TotCutSDC3(double min_tot)
 {
-  for(int i = 0; i<NumOfLayersSDC2; ++i){
+  for(int i = 0; i<NumOfLayersSDC3; ++i){
     TotCut(m_SdcOutHC[i + 1], min_tot, false);
   }// for(i)
 }
 
 //______________________________________________________________________________
 void
-DCAnalyzer::TotCutSDC3(double min_tot)
+DCAnalyzer::TotCutSDC4(double min_tot)
 {
-  for(int i = 0; i<NumOfLayersSDC3; ++i){
-    TotCut(m_SdcOutHC[i + NumOfLayersSDC2 +1], min_tot, false);
+  for(int i = 0; i<NumOfLayersSDC4; ++i){
+    TotCut(m_SdcOutHC[i + NumOfLayersSDC3 +1], min_tot, false);
   }// for(i)
 }
 
@@ -1848,19 +1848,19 @@ DCAnalyzer::DriftTimeCutBC34(double min_dt, double max_dt)
 
 //______________________________________________________________________________
 void
-DCAnalyzer::DriftTimeCutSDC2(double min_dt, double max_dt)
+DCAnalyzer::DriftTimeCutSDC3(double min_dt, double max_dt)
 {
-  for(int i = 0; i<NumOfLayersSDC2; ++i){
+  for(int i = 0; i<NumOfLayersSDC3; ++i){
     DriftTimeCut(m_SdcOutHC[i + 1], min_dt, max_dt, true);
   }// for(i)
 }
 
 //______________________________________________________________________________
 void
-DCAnalyzer::DriftTimeCutSDC3(double min_dt, double max_dt)
+DCAnalyzer::DriftTimeCutSDC4(double min_dt, double max_dt)
 {
-  for(int i = 0; i<NumOfLayersSDC3; ++i){
-    DriftTimeCut(m_SdcOutHC[i + NumOfLayersSDC2 + 1], min_dt, max_dt, true);
+  for(int i = 0; i<NumOfLayersSDC4; ++i){
+    DriftTimeCut(m_SdcOutHC[i + NumOfLayersSDC3 + 1], min_dt, max_dt, true);
   }// for(i)
 }
 

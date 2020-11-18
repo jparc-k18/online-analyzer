@@ -97,10 +97,14 @@ private:
   std::vector<TNode*>        m_SDC2x2_node;
   std::vector<TNode*>        m_SDC2y1_node;
   std::vector<TNode*>        m_SDC2y2_node;
-  std::vector<TNode*>        m_SDC3y1_node;
-  std::vector<TNode*>        m_SDC3y2_node;
   std::vector<TNode*>        m_SDC3x1_node;
   std::vector<TNode*>        m_SDC3x2_node;
+  std::vector<TNode*>        m_SDC3y1_node;
+  std::vector<TNode*>        m_SDC3y2_node;
+  std::vector<TNode*>        m_SDC4y1_node;
+  std::vector<TNode*>        m_SDC4y2_node;
+  std::vector<TNode*>        m_SDC4x1_node;
+  std::vector<TNode*>        m_SDC4x2_node;
   std::vector<TNode*>        m_SSD1y1_node;
   TNode                     *m_FBHwall_node;
   std::vector<TNode*>        m_FBHseg_node;

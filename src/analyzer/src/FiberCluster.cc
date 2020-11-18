@@ -10,6 +10,8 @@
 #include <string>
 #include <limits>
 
+#include <TMath.h>
+
 #include <std_ostream.hh>
 
 #include "DebugCounter.hh"
@@ -113,7 +115,7 @@ FiberCluster::calc( void )
   double max_dELow      = 0.;
 
   for( int i=0; i<m_cluster_size; ++i ){
-    if(reject_nan && isnan(m_hit_container.at(i)->GetWidth())){
+    if(reject_nan && TMath::IsNaN(m_hit_container.at(i)->GetWidth())){
       --m_cluster_size;
       continue;
     }
@@ -128,7 +130,7 @@ FiberCluster::calc( void )
     real_mean_time += m_hit_container.at(i)->GetCTime();
     double time = m_hit_container.at(i)->GetCTime();
 
-    if(isnan(mean_time)){
+    if(TMath::IsNaN(mean_time)){
       mean_time = time;
     }else if( std::abs(time) < std::abs(mean_time) ){
       mean_time = time;

@@ -291,27 +291,27 @@ void DCRHC::pushback_SdcIn( void )
 //______________________________________________________________________________
 void DCRHC::pushback_SdcOut( void )
 {
-  static const double MinTdcSDC2 = gUser.GetParameter("SDC2_TDC", 0);
-  static const double MaxTdcSDC2 = gUser.GetParameter("SDC2_TDC", 1);
-  //  static const double MinTdcSDC3 = gUser.GetParameter("SDC3_TDC", 0);
-  //  static const double MaxTdcSDC3 = gUser.GetParameter("SDC3_TDC", 1);
+  static const double MinTdcSDC3 = gUser.GetParameter("SDC3_TDC", 0);
+  static const double MaxTdcSDC3 = gUser.GetParameter("SDC3_TDC", 1);
+  //  static const double MinTdcSDC4 = gUser.GetParameter("SDC4_TDC", 0);
+  //  static const double MaxTdcSDC4 = gUser.GetParameter("SDC4_TDC", 1);
 
   for(int layer=0;layer<NumOfLayersSdcOut;++layer)
     m_hitwire[layer].clear();
-  for( int layer=0; layer<NumOfLayersSDC2; ++layer ){
-    for( int wire=0; wire<NumOfWireSDC2; ++wire ){
-      int nhits = g_unpacker.get_entries( DetIdSDC2, layer, 0, wire, 0 );
+  for( int layer=0; layer<NumOfLayersSDC3; ++layer ){
+    for( int wire=0; wire<NumOfWireSDC3; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdSDC3, layer, 0, wire, 0 );
       if( nhits==0 ) continue;
       for( int i=0; i<nhits; ++i ){
-	int tdc = g_unpacker.get(DetIdSDC2,layer,0,wire,2,i);
-	if( tdc<MinTdcSDC2 && MaxTdcSDC2<tdc ) continue;
+	int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,2,i);
+	if( tdc<MinTdcSDC3 && MaxTdcSDC3<tdc ) continue;
 	m_hitwire[layer + NumOfLayersSDC1].push_back(wire);
 	m_tdc[layer + NumOfLayersSDC1].push_back(tdc);
       }
     }
   }
 
-  for(int layer=0;layer<NumOfLayersSDC3;++layer)
+  for(int layer=0;layer<NumOfLayersSDC4;++layer)
     {
       ////// x-plane //////
       if(layer==1 || layer==4)
@@ -336,27 +336,27 @@ void DCRHC::pushback_SdcOut( void )
 	    m_tdc[layer].push_back(tdc);
 	  }
     }
-  for(int layer=0;layer<NumOfLayersSDC4;++layer)
+  for(int layer=0;layer<NumOfLayersSDC3;++layer)
     {
       ////// x-plane //////
       if(layer==1 || layer==4)
 	{
-	  for(int wire=0;wire<NumOfWireSDC4x;++wire)
+	  for(int wire=0;wire<NumOfWireSDC3x;++wire)
 	    {
-	      int hit = g_unpacker.get_entries(DetIdSDC4,layer,0,wire,0);
+	      int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
 	      if(hit==0)continue;
-	      int tdc = g_unpacker.get(DetIdSDC4,layer,0,wire,0);
+	      int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
 	      m_hitwire[layer + NumOfLayersSDC3].push_back(wire);
 	      m_tdc[layer + NumOfLayersSDC3].push_back(tdc);
 	    }
 	}
       ////// u,v-plane //////
       else
-	for(int wire=0;wire<NumOfWireSDC4uv;++wire)
+	for(int wire=0;wire<NumOfWireSDC3uv;++wire)
 	  {
-	    int hit = g_unpacker.get_entries(DetIdSDC4,layer,0,wire,0);
+	    int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
 	    if(hit==0)continue;
-	    int tdc = g_unpacker.get(DetIdSDC4,layer,0,wire,0);
+	    int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
 	    m_hitwire[layer + NumOfLayersSDC3].push_back(wire);
 	    m_tdc[layer + NumOfLayersSDC3].push_back(tdc);
 	  }

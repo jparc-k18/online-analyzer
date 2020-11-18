@@ -248,6 +248,8 @@ RawData::DecodeHits( void )
   static const double MaxSDC2_TDC = gUser.GetParameter("SDC2_TDC", 1);
   static const double MinSDC3_TDC = gUser.GetParameter("SDC3_TDC", 0);
   static const double MaxSDC3_TDC = gUser.GetParameter("SDC3_TDC", 1);
+  static const double MinSDC4_TDC = gUser.GetParameter("SDC4_TDC", 0);
+  static const double MaxSDC4_TDC = gUser.GetParameter("SDC4_TDC", 1);
 
   if( m_is_decoded ){
     hddaq::cout << "#D " << func_name << " "
@@ -501,49 +503,49 @@ RawData::DecodeHits( void )
     }
   }
 
-  // SdcOut (SDC2&SDC3)
-  for( int plane=0; plane<NumOfLayersSDC2+NumOfLayersSDC3; ++plane ){
-    if( plane<NumOfLayersSDC2 ){
-      for( int wire=0; wire<MaxWireSDC2; ++wire ){
+  // SdcOut (SDC3&SDC4)
+  for( int plane=0; plane<NumOfLayersSDC3+NumOfLayersSDC4; ++plane ){
+    if( plane<NumOfLayersSDC3 ){
+      for( int wire=0; wire<MaxWireSDC3; ++wire ){
 	for(int lt = 0; lt<2; ++lt){
-	  int nhit = gUnpacker.get_entries( DetIdSDC2, plane, 0, wire, lt );
+	  int nhit = gUnpacker.get_entries( DetIdSDC3, plane, 0, wire, lt );
 #if OscillationCut
 	  if( nhit>MaxMultiHitDC ) continue;
 #endif
 	  for(int i=0; i<nhit; i++ ){
-	    int data = gUnpacker.get( DetIdSDC2, plane, 0, wire, lt, i );
-	    if( lt == 0 && ( data<MinSDC2_TDC || MaxSDC2_TDC<data ) ) continue;
-	    if( lt == 1 && data<MinSDC2_TDC ) continue;
+	    int data = gUnpacker.get( DetIdSDC3, plane, 0, wire, lt, i );
+	    if( lt == 0 && ( data<MinSDC3_TDC || MaxSDC3_TDC<data ) ) continue;
+	    if( lt == 1 && data<MinSDC3_TDC ) continue;
 	    //	    if((plane == 0 || plane == 1) && 53 < wire && wire < 65) continue;
 	    //	    if((plane == 2 || plane == 3) && 61 < wire && wire < 68) continue;
 	    AddDCRawHit( m_SdcOutRawHC[plane+1], plane+PlMinSdcOut, wire+1, data , lt);
 	  }// for(i)
 	}// for(lt)
       }// for(wire)
-    }// if(SDC2/3)
+    }// if(SDC3/4)
     else{
-      int MaxWireSDC3;
-      if( plane==NumOfLayersSDC2 || plane==(NumOfLayersSDC2+1) )
-	MaxWireSDC3 = MaxWireSDC3Y;
+      int MaxWireSDC4;
+      if( plane==NumOfLayersSDC3 || plane==(NumOfLayersSDC3+1) )
+	MaxWireSDC4 = MaxWireSDC4Y;
       else
-	MaxWireSDC3 = MaxWireSDC3X;
-      for( int wire=0; wire<MaxWireSDC3; ++wire ){
+	MaxWireSDC4 = MaxWireSDC4X;
+      for( int wire=0; wire<MaxWireSDC4; ++wire ){
 	for(int lt = 0; lt<2; ++lt){
-	  int nhit = gUnpacker.get_entries( DetIdSDC3, plane-NumOfLayersSDC2, 0, wire, lt );
+	  int nhit = gUnpacker.get_entries( DetIdSDC4, plane-NumOfLayersSDC3, 0, wire, lt );
 #if OscillationCut
 	  if( nhit>MaxMultiHitDC ) continue;
 #endif
 	  for(int i=0; i<nhit; i++ ){
-	    int data = gUnpacker.get( DetIdSDC3, plane-NumOfLayersSDC2, 0, wire, lt ,i );
-	    if( lt == 0 && ( data<MinSDC3_TDC || MaxSDC3_TDC<data ) ) continue;
-	    if( lt == 1 && data<MinSDC3_TDC ) continue;
+	    int data = gUnpacker.get( DetIdSDC4, plane-NumOfLayersSDC3, 0, wire, lt ,i );
+	    if( lt == 0 && ( data<MinSDC4_TDC || MaxSDC4_TDC<data ) ) continue;
+	    if( lt == 1 && data<MinSDC4_TDC ) continue;
 	    //	    if((plane == 4 || plane == 5) && 30 < wire && wire < 38) continue;
 	    //	    if((plane == 6 || plane == 7) && 44 < wire && wire < 54) continue;
 	    AddDCRawHit( m_SdcOutRawHC[plane+1],  plane+PlMinSdcOut, wire+1, data , lt);
 	  }// for(i)
 	}// for(lt)
       }//for(wire)
-    }// if(SDC2/3)
+    }// if(SDC3/4)
   }// for(plane)
 
   // Scaler

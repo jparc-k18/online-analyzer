@@ -1,11 +1,15 @@
-#include<iostream>
-#include<fstream>
-#include<sstream>
+// -*- C++ -*-
 
-#include"BH1Match.hh"
-#include"DetectorID.hh"
-#include"FuncName.hh"
-#include"Exception.hh"
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <fstream>
+#include <sstream>
+
+#include "BH1Match.hh"
+#include "DetectorID.hh"
+#include "FuncName.hh"
+#include "Exception.hh"
 
 //_______________________________________________________________________
 BH1Match::Param::Param(void)
@@ -43,7 +47,7 @@ BH1Match::BH1Match(void)
 //_______________________________________________________________________
 BH1Match::~BH1Match(void)
 {
-  
+
 }
 
 //_______________________________________________________________________
@@ -72,7 +76,7 @@ BH1Match::Initialize(const std::string& file_name)
 		<< " Required: " << kNParam << std::endl;
       throw Exception(FUNC_NAME + " invalid parameter.");
     }
-    
+
     const double bh1seg = cont[kBH1Segment];
     const int i_bh1seg  = static_cast<int>(2*cont[kBH1Segment]);
     const double xmin   = cont[kXMin];
@@ -82,7 +86,7 @@ BH1Match::Initialize(const std::string& file_name)
     m_param.at(i_bh1seg).m_xmin = xmin;
     m_param.at(i_bh1seg).m_xmax = xmax;
   }// read line
-  
+
   if( m_status[kVerbose] ) this->Print();
   m_status.set(kReady);
 

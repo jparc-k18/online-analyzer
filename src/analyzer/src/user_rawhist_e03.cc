@@ -299,9 +299,9 @@ process_event( void )
     static const int k_opt     = gUnpacker.get_fe_id("optlink01");
     static const int k_clite   = gUnpacker.get_fe_id("clite1");
     static const int k_hul_sdc   = gUnpacker.get_fe_id("hul02sdc-1");
-    static const int k_hul_sft   = gUnpacker.get_fe_id("hul02sft-1");
+    //    static const int k_hul_sft   = gUnpacker.get_fe_id("hul02sft-1");
     static const int k_easiroc = gUnpacker.get_fe_id("easiroc0");
-    static const int k_Veasiroc = gUnpacker.get_fe_id("Veasiroc16");
+    //    static const int k_Veasiroc = gUnpacker.get_fe_id("Veasiroc16");
 
     // sequential id
     static const int eb_id      = gHist.getSequentialID(kDAQ, kEB, kHitPat);
@@ -342,10 +342,11 @@ process_event( void )
 	int data_size = gUnpacker.get_node_header(k_easiroc+i, DAQNode::k_data_size);
 	h->Fill( i, data_size );
       }
-      for(int i = 16; i<102; ++i){
+      /*      for(int i = 16; i<102; ++i){
 	int data_size = gUnpacker.get_node_header(k_Veasiroc+i-16, DAQNode::k_data_size);
 	h->Fill( i, data_size );
       }
+      */
     }
 
     { // HUL node
@@ -354,10 +355,11 @@ process_event( void )
 	int data_size = gUnpacker.get_node_header(k_hul_sdc+i, DAQNode::k_data_size);
 	h->Fill( i, data_size );
       }
-      for(int i = 10; i<9+10; ++i){
+      /*      for(int i = 10; i<9+10; ++i){
 	int data_size = gUnpacker.get_node_header(k_hul_sft+i-10, DAQNode::k_data_size);
 	h->Fill( i, data_size );
       }
+      */
     }
 
     { // Opt node

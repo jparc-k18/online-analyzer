@@ -20,10 +20,9 @@ exe_file=$bin_dir/raw_hist_e03
 ##### data directory
 data_dir=$ana_dir/data
 
-##### configure file   #
-#conf_file=/param/conf/analyzer.conf
-#conf_file=/param/conf/analyzer_20201111.conf
-conf_file=/param/conf/analyzer_20200905_AidaStudy.conf
+##### configure file
+# Do NOT change here. Change symbolic link.
+conf_file=/param/conf/analyzer.conf
 
 #######################################################################
 if [ ! -f $exe_file ]; then

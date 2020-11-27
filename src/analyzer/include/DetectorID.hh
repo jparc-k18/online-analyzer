@@ -31,7 +31,8 @@ const int NumOfSegFAC     =  1;
 const int NumOfSegSCH     = 64;
 const int NumOfSegTOF     = 24;
 const int NumOfSegLAC     = 30;
-const int NumOfSegWC      =  2; // E42
+//const int NumOfSegWC      =  2; // E42
+const int NumOfSegWC      =  20; // E42
 
 
 // Misc _______________________________________________________________

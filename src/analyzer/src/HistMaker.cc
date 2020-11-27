@@ -4727,14 +4727,17 @@ TList* HistMaker::createWC( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     Int_t target_id = getUniqueID(kWC, 0, kADC, 0);
-    for(Int_t i = 0; i<NumOfSegWC*2; ++i){
+    for(Int_t i = 0; i<NumOfSegWC*3; ++i){
       const char* title = NULL;
       if(i < NumOfSegWC){
 	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-      }else{
+      }else if(i < NumOfSegWC*2){
 	Int_t seg = i+1-NumOfSegWC; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }else{
+	Int_t seg = i+1-NumOfSegWC*2; // 1 origin
+	title = Form("%s_%s_%dSUM", nameDetector, nameSubDir, seg);
       }
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
 			     0x1000, 0, 0x1000,
@@ -4750,14 +4753,17 @@ TList* HistMaker::createWC( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     Int_t target_id = getUniqueID(kWC, 0, kADCwTDC, 0);
-    for(Int_t i = 0; i<NumOfSegWC*2; ++i){
+    for(Int_t i = 0; i<NumOfSegWC*3; ++i){
       const char* title = NULL;
       if(i < NumOfSegWC){
 	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-      }else{
+      }else if(i < NumOfSegWC*2){
 	Int_t seg = i+1-NumOfSegWC; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }else{
+	Int_t seg = i+1-NumOfSegWC*2; // 1 origin
+	title = Form("%s_%s_%dSUM", nameDetector, nameSubDir, seg);
       }
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
 			     0x1000, 0, 0x1000,
@@ -4776,16 +4782,18 @@ TList* HistMaker::createWC( Bool_t flag_ps )
 
     // Make histogram and add it
     Int_t target_id = getUniqueID(kWC, 0, kTDC, 0);
-    for(Int_t i = 0; i<NumOfSegWC*2; ++i){
+    for(Int_t i = 0; i<NumOfSegWC*3; ++i){
       const char* title = NULL;
       if(i < NumOfSegWC){
 	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-      }else{
+      }else if(i < NumOfSegWC*2){
 	Int_t seg = i+1-NumOfSegWC; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }else{
+	Int_t seg = i+1-NumOfSegWC*2; // 1 origin
+	title = Form("%s_%s_%dSUM", nameDetector, nameSubDir, seg);
       }
-
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "TDC [ch]", ""));

@@ -110,6 +110,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispSDC4"));
   tab_macro->Add(macro::Get("dispTOF"));
   tab_macro->Add(macro::Get("dispLAC"));
+  tab_macro->Add(macro::Get("dispWC"));
   tab_macro->Add(macro::Get("dispMsT"));
   tab_macro->Add(macro::Get("dispTriggerFlag"));
   tab_macro->Add(macro::Get("dispHitPat"));
@@ -136,6 +137,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createSDC4());
   tab_hist->Add(gHist.createTOF());
   tab_hist->Add(gHist.createLAC());
+  tab_hist->Add(gHist.createWC());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createMsT());
@@ -155,10 +157,10 @@ process_begin( const std::vector<std::string>& argv )
                                "[ch]", ""
                                ));
   tab_misc->Add(gHist.createBH2_E42());
-  tab_misc->Add(gHist.createWC());
+  //  tab_misc->Add(gHist.createWC());
   tab_misc->Add(macro::Get("dispBH2_E42"));
-  tab_misc->Add(macro::Get("dispWC"));
-  tab_misc->Add(macro::Get("fitWC"));
+  // tab_misc->Add(macro::Get("dispWC"));
+  // tab_misc->Add(macro::Get("fitWC"));
   // tab_misc->Add(gHist.createT1());
   // tab_misc->Add(gHist.createT2());
 
@@ -296,7 +298,6 @@ process_event( void )
     static const int k_eb      = gUnpacker.get_fe_id("k18eb");
     static const int k_vme     = gUnpacker.get_fe_id("vme01");
     static const int k_vme2     = gUnpacker.get_fe_id("vme02");
-    static const int k_opt     = gUnpacker.get_fe_id("optlink01");
     static const int k_clite   = gUnpacker.get_fe_id("clite1");
     static const int k_hul_sdc   = gUnpacker.get_fe_id("hul02sdc-1");
     //    static const int k_hul_sft   = gUnpacker.get_fe_id("hul02sft-1");
@@ -360,14 +361,6 @@ process_event( void )
 	h->Fill( i, data_size );
       }
       */
-    }
-
-    { // Opt node
-      TH2* h = dynamic_cast<TH2*>(hptr_array[opt_id]);
-      for(int i = 0; i<2; ++i){
-	int data_size = gUnpacker.get_node_header(k_opt+i, DAQNode::k_data_size);
-	h->Fill( i, data_size );
-      }
     }
 
     { // Misc node
@@ -2073,6 +2066,7 @@ process_event( void )
     static const int k_device = gUnpacker.get_device_id("WC");
     static const int k_u      = 0; // up
     static const int k_d      = 1; // down
+    static const int k_sum    = 2; // sum
     static const int k_adc    = gUnpacker.get_data_id("WC", "adc");
     static const int k_tdc    = gUnpacker.get_data_id("WC", "tdc");
     // static const int k_mt     = gUnpacker.get_data_id("WC", "fpga_meantime");
@@ -2112,7 +2106,7 @@ process_event( void )
     // DOWN
     wca_id   = gHist.getSequentialID(kWC, 0, kADC,     NumOfSegWC+1);
     wct_id   = gHist.getSequentialID(kWC, 0, kTDC,     NumOfSegWC+1);
-    wcawt_id = gHist.getSequentialID(kWC, 0, kADCwTDC, NumOfSegWC+1);
+    wcawt_id = gHist.getSequentialID(kWC, 0, kADCwTDC, NumOfSegWC+1);    // Down
 
     for(int seg=0; seg<NumOfSegWC; ++seg){
       // ADC
@@ -2130,6 +2124,33 @@ process_event( void )
       	  // ADC w/TDC_FPGA
       	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
       	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+      	    hptr_array[wcawt_id + seg]->Fill( adc );
+      	  }
+      	}
+      }
+    }
+
+    // SUM
+    wca_id   = gHist.getSequentialID(kWC, 0, kADC,     NumOfSegWC*2+1);
+    wct_id   = gHist.getSequentialID(kWC, 0, kTDC,     NumOfSegWC*2+1);
+    wcawt_id = gHist.getSequentialID(kWC, 0, kADCwTDC, NumOfSegWC*2+1);    // Sum
+
+    for(int seg=0; seg<NumOfSegWC; ++seg){
+      // ADC
+      int nhit = gUnpacker.get_entries(k_device, 0, seg, k_sum, k_adc);
+      if(nhit != 0){
+	unsigned int adc = gUnpacker.get(k_device, 0, seg, k_sum, k_adc);
+	hptr_array[wca_id + seg]->Fill(adc);
+      }
+      // TDC
+      nhit = gUnpacker.get_entries(k_device, 0, seg, k_sum, k_tdc);
+      for(int m = 0; m<nhit; ++m){
+      	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_sum, k_tdc, m);
+      	if( tdc!=0 ){
+      	  hptr_array[wct_id + seg]->Fill(tdc);
+      	  // ADC w/TDC_FPGA
+      	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_sum, k_adc)>0){
+      	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_sum, k_adc);
       	    hptr_array[wcawt_id + seg]->Fill( adc );
       	  }
       	}

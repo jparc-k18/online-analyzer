@@ -27,8 +27,12 @@ namespace analyzer
     //std::vector<std::string> target = { "hul01", "hul03" };
     //std::vector<std::string> target = { "vme01" };
     std::vector<std::string> target = {
-      "vme09"
-      // "hul04mht"
+				       // "vme01",
+				       // "vme02",
+				       "hul02lac",
+				       // "hul01hr-1",
+				       // "hul01hr-2",
+				       // "hul01hr-3"
     };
   }
 
@@ -42,7 +46,7 @@ process_begin(const std::vector<std::string>& argv)
     int node_id = gUnpacker.get_fe_id( target.at(i) );
     Unpacker *node = gUnpacker.get_root()->get_child(node_id);
     if( !node ) continue;
-    // node->set_dump_mode(defines::k_hex);
+    node->set_dump_mode(defines::k_hex);
   }
 
   // for( auto&& c : gUnpacker.get_root()->get_child_list() ){
@@ -63,7 +67,7 @@ process_end( void )
 int
 process_event( void )
 {
-#if 1
+#if 0
   // std::cout << TString('=', 80) << std::endl;
   Int_t eb_id = gUnpacker.get_fe_id("k18eb"); // Event builder
   std::time_t eb_time = gUnpacker.get_node_header(eb_id, DAQNode::k_unix_time);
@@ -79,7 +83,7 @@ process_event( void )
       char date[64];
       std::strftime(date, sizeof(date), "%Y/%m/%d %a %H:%M:%S", std::localtime(&t));
       cout << std::left << std::setw(20) << n
-	   << std::left << std::setw(28) << date << std::endl;
+      	   << std::left << std::setw(28) << date << std::endl;
     }
     //c.second->get_header(DAQNode::k_unix_time) << std::endl;
   }

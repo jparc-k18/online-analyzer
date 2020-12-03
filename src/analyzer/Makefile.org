@@ -144,6 +144,9 @@ my_tgt_scaler_e07	:= $(bin_dir)/scaler_e07
 my_obj_scaler_e40	:= $(core_obj) user_scaler_e40.o
 my_tgt_scaler_e40	:= $(bin_dir)/scaler_e40
 
+my_obj_scaler_e03	:= $(core_obj) user_scaler_e03.o
+my_tgt_scaler_e03	:= $(bin_dir)/scaler_e03
+
 my_obj_scaler_e42	:= $(core_obj) user_scaler_e42.o
 my_tgt_scaler_e42	:= $(bin_dir)/scaler_e42
 
@@ -170,13 +173,12 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_rawhist_vmeeasiroc) \
 	$(my_tgt_beammonitor) \
 	$(my_tgt_beamprofile_e03) \
-	$(my_tgt_beamprofile_e42) \
+	$(my_tgt_scaler_e03) \
 	$(my_tgt_scaler_e42) \
 	$(my_tgt_scaler_sch) \
 	$(my_tgt_scaler_daq) \
 	$(my_tgt_jsroot_scaler) \
 	$(my_tgt_jsroot_beammonitor) \
-	$(my_tgt_jsroot_beamprofile) \
 	$(my_tgt_jsroot_totmonitor) \
 	$(my_tgt_vme01debug) \
 	$(core_dict_lib)
@@ -193,10 +195,12 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 	$(my_tgt_scaler_e07) \
 	$(my_tgt_jsroot_e07) \
 	$(my_tgt_beamprofile_e07) \
+	$(my_tgt_beamprofile_e42) \
         $(my_tgt_mstmonitor_e40) \
 	$(my_tgt_rawhist_catch) \
 	$(my_tgt_scaler_e40) \
 	$(my_tgt_beamprofile_e40) \
+	$(my_tgt_jsroot_beamprofile) \
         $(my_tgt_mstmonitorjs_e40)
 
 #_______________________________________________________________________________
@@ -454,6 +458,12 @@ my_obj_scaler_e40	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e40))
 my_lib_scaler_e40	:= libmyscaler_e40.so
 $(eval $(call make-lib,$(my_lib_scaler_e40),$(my_obj_scaler_e40)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_e40),$(my_lib_scaler_e40)))
+
+#_______________________________________________________________________________
+my_obj_scaler_e03	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e03))
+my_lib_scaler_e03	:= libmyscaler_e03.so
+$(eval $(call make-lib,$(my_lib_scaler_e03),$(my_obj_scaler_e03)))
+$(eval $(call make-nogui-target,$(my_tgt_scaler_e03),$(my_lib_scaler_e03)))
 
 #_______________________________________________________________________________
 my_obj_scaler_e42	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e42))

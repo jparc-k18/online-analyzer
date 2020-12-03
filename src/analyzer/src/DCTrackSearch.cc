@@ -118,7 +118,7 @@ namespace
   DeleteDuplicatedTracks( std::vector<DCLocalTrack*>& trackCont, double ChisqrCut=0. )
   {
     // evaluate container size in every iteration
-    for( std::size_t i=0; i<trackCont.size(); ++i ){
+    for( std::size_t i=0, n=trackCont.size(); i<n; ++i ){
       const DCLocalTrack* const tp = trackCont[i];
       if (!tp) continue;
       int nh = tp->GetNHit();
@@ -183,7 +183,7 @@ namespace
     }
 
     // reset hit record of DCHit
-    for( int i=0; i<static_cast<int>(trackCont.size()); ++i ){
+    for( int i=0, n=trackCont.size(); i<n; ++i ){
       const DCLocalTrack* const tp = trackCont[i];
       if (!tp) continue;
       int nh = tp->GetNHit();
@@ -269,6 +269,7 @@ namespace
   }
 
   //_____________________________________________________________________
+  [[maybe_unused]]
   void
   DebugPrint( const IndexList& nCombi,
 	      const std::string& func_name="",
@@ -293,6 +294,7 @@ namespace
   }
 
   //_____________________________________________________________________
+  [[maybe_unused]]
   void
   DebugPrint( const std::vector<DCLocalTrack*>& trackCont,
 	      const std::string& arg="" )
@@ -312,6 +314,7 @@ namespace
   }
 
   //_____________________________________________________________________
+  [[maybe_unused]]
   void
   DebugPrint( const IndexList& nCombi,
 	      const std::vector<ClusterList>& CandCont,
@@ -365,7 +368,7 @@ namespace
 
     std::vector <int> nhit_vec;
 
-    for (int i=0; i<trackCont.size(); i++) {
+    for (int i=0, n=trackCont.size(); i<n; i++) {
       int nhit = trackCont[i]->GetNHit();
       nhit_vec.push_back(nhit);
     }
@@ -387,7 +390,7 @@ namespace
       }
     }
 
-    for (int i=0; i<index_pair_vec.size(); i++) {
+    for (int i=0, n=index_pair_vec.size(); i<n; i++) {
       std::stable_sort( trackCont.begin() + index_pair_vec[i].first,
 			trackCont.begin() +  index_pair_vec[i].second + 1, DCLTrackComp_Chisqr() );
     }
@@ -397,7 +400,7 @@ namespace
 #endif
 
     if( delete_flag ) {
-      for (int i = index_pair_vec.size()-1; i>=0; --i) {
+      for (int i=index_pair_vec.size()-1; i>=0; --i) {
         DeleteDuplicatedTracks( trackCont, index_pair_vec[i].first, index_pair_vec[i].second, 0.);
       }
     }

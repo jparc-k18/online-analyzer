@@ -40,11 +40,11 @@ namespace
 //______________________________________________________________________________
 ScalerAnalyzer::ScalerAnalyzer( void )
   : m_ost( std::cout ), //m_ost( hddaq::cout ),
-    m_info( MaxColumn, std::vector<ScalerInfo>(MaxRow) ),
+    m_info( MaxColumn, std::vector<ScalerInfo>( MaxRow ) ),
     m_flag( nFlag, false ),
-    m_spill_increment(false),
-    m_is_spill_end(false),
-    m_run_number(-1),
+    m_spill_increment( false ),
+    m_is_spill_end( false ),
+    m_run_number( -1 ),
     m_canvas()
 {
   for( Int_t i=0; i<MaxColumn; ++i ){
@@ -358,7 +358,7 @@ ScalerAnalyzer::MakeScalerText( void ) const
     return false;
   }
 
-  Int_t recorder_event_number = 0;
+  // Int_t recorder_event_number = 0;
   Bool_t found_run_number = false;
   std::string line;
   while( ifs.good() && std::getline(ifs,line) ){
@@ -369,7 +369,7 @@ ScalerAnalyzer::MakeScalerText( void ) const
     std::vector<std::string> log_column( line_begin, line_end );
     if( log_column.at(0) != "RUN" ) continue;
     if( log_column.at(1) != run_number_ss.str() ) continue;
-    recorder_event_number = hddaq::a2i( log_column.at(15) );
+    // recorder_event_number = hddaq::a2i( log_column.at(15) );
     ofs << line << std::endl;
     found_run_number = true;
   }

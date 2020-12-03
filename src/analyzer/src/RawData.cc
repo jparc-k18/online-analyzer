@@ -244,8 +244,8 @@ RawData::DecodeHits( void )
   static const double MaxBC4_TDC  = gUser.GetParameter("BC4_TDC", 1);
   static const double MinSDC1_TDC = gUser.GetParameter("SDC1_TDC", 0);
   static const double MaxSDC1_TDC = gUser.GetParameter("SDC1_TDC", 1);
-  static const double MinSDC2_TDC = gUser.GetParameter("SDC2_TDC", 0);
-  static const double MaxSDC2_TDC = gUser.GetParameter("SDC2_TDC", 1);
+  // static const double MinSDC2_TDC = gUser.GetParameter("SDC2_TDC", 0);
+  // static const double MaxSDC2_TDC = gUser.GetParameter("SDC2_TDC", 1);
   static const double MinSDC3_TDC = gUser.GetParameter("SDC3_TDC", 0);
   static const double MaxSDC3_TDC = gUser.GetParameter("SDC3_TDC", 1);
   static const double MinSDC4_TDC = gUser.GetParameter("SDC4_TDC", 0);

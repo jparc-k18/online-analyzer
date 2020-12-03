@@ -1920,7 +1920,7 @@ process_event( void )
     static const int k_device_bc3  = gUnpacker.get_device_id("BC3");
     static const int k_device_bc4  = gUnpacker.get_device_id("BC4");
     static const int k_device_sdc1 = gUnpacker.get_device_id("SDC1");
-    static const int k_device_sdc2 = gUnpacker.get_device_id("SDC2");
+    // static const int k_device_sdc2 = gUnpacker.get_device_id("SDC2");
     static const int k_device_sdc3 = gUnpacker.get_device_id("SDC3");
     static const int k_device_sdc4 = gUnpacker.get_device_id("SDC4");
 

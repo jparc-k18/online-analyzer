@@ -499,7 +499,7 @@ HodoAnalyzer::DecodeCFTHits( RawData* rawData )
       HodoRawHit *hit=cont[i];
       if( !hit ) continue;
 
-      char pname[8];
+      char pname[9];
       switch ( p ) {
       case 0:
 	strcpy( pname, "CFT-UV1" ); break;

@@ -96,7 +96,7 @@ void dispHitPat()
   // draw ADC
   TCanvas *c2 = (TCanvas*)gROOT->FindObject("c2");
   c2->Clear();
-  c2->Divide(4,2);
+  c2->Divide(3,2);
 
   TH1* h = NULL;
 
@@ -108,7 +108,7 @@ void dispHitPat()
   h->Draw();
 
   c2->cd(2);
-  base_id = HistMaker::getUniqueID(kSFT, 0, kHitPat,1);
+  base_id = HistMaker::getUniqueID(kSDC2, 0, kHitPat,1);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
@@ -120,40 +120,23 @@ void dispHitPat()
   h->Draw();
 
   c2->cd(4);
-  base_id = HistMaker::getUniqueID(kFHT1, 0, kHitPat,1);
+  base_id = HistMaker::getUniqueID(kSDC3, 0, kHitPat, 1);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
   c2->cd(5);
-  base_id = HistMaker::getUniqueID(kSDC2, 0, kHitPat, 1);
+  base_id = HistMaker::getUniqueID(kSDC4, 0, kHitPat, 3);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
   c2->cd(6);
-  base_id = HistMaker::getUniqueID(kSDC3, 0, kHitPat, 3);
-  h = (TH1*)GHist::get(base_id);
-  h->SetMinimum(0);
-  h->Draw();
-
-  // c2->cd(7);
-  // base_id = HistMaker::getUniqueID(kFHT2, 0, kHitPat,1);
-  // h = (TH1*)GHist::get(base_id);
-  // h->SetMinimum(0);
-  // h->Draw();
-
-  c2->cd(7);
   base_id = HistMaker::getUniqueID(kTOF, 0, kHitPat);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
-  c2->cd(8);
-  base_id = HistMaker::getUniqueID(kLC, 0, kHitPat);
-  h = (TH1*)GHist::get(base_id);
-  h->SetMinimum(0);
-  h->Draw();
 }
 
   gROOT->SetStyle("Classic");

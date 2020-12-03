@@ -49,7 +49,7 @@ const int NumOfSegScaler  = 96;
 const int SpillEndFlag    = 27; // 0-based
 const int NumOfPlaneVmeRm = 2;
 const int NumOfVmeRm      = 10;
-const int NumOfSegTFlag  = 32;
+//const int NumOfSegTFlag  = 32;
 
 const int DetIdVmeCalib      = 999;
 const int NumOfPlaneVmeCalib =   5;
@@ -141,14 +141,14 @@ const int NumOfMstLrTdc = 64;
 const int NumOfMstFlag  = 7;
 enum dTypesMst
   {
-    mstClear,
-    mstAccept,
-    finalClear,
-    cosolationAccept,
-    fastClear,
-    level2,
-    noDecision,
-    size_dTypsMsT
+   mstClear,
+   mstAccept,
+   finalClear,
+   cosolationAccept,
+   fastClear,
+   level2,
+   noDecision,
+   size_dTypsMsT
   };
 
 // Scaler ----------------------------------------------
@@ -164,121 +164,128 @@ namespace trigger
 {
   enum ETriggerFlag
     {
-      kBH2K_1,
-      kBH2K_2,
-      kBH2K_3,
-      kBH2K_4,
-      kBH2K_5,
-      kBH2K_6,
-      kBH2K_7,
-      kBH2K_8,
-      kBH2K,
-      kElseOR,
-      kBeam,
-      kBeamTOF,
-      kBeamPi,
-      kBeamP,
-      kCoin1,
-      kCoin2,
-      kE03,
-      kBH2KPS,
-      kBeamPS,
-      kBeamTOFPS,
-      kBeamPiPS,
-      kBeamPPS,
-      kCoin1PS,
-      kCoin2PS,
-      kE03PS,
-      kClock,
-      kReserve2,
-      kSpillEnd,
-      kMatrix,
-      kMsTaccept,
-      kMsTclear,
-      kTOFtiming,
-      NTriggerFlag
+     kL1SpillOn,
+     kL1SpillOff,
+     kSpillEnd,
+     kTofTiming,
+     kMatrix2D1,
+     kMatrix2D2,
+     kMatrix3D,
+     kBeamA,
+     kBeamB,
+     kBeamC,
+     kBeamD,
+     kBeamE,
+     kBeamF,
+     kTrigA,
+     kTrigB,
+     kTrigC,
+     kTrigD,
+     kTrigE,
+     kTrigF,
+     kTrigAPS,
+     kTrigBPS,
+     kTrigCPS,
+     kTrigDPS,
+     kTrigEPS,
+     kTrigFPS,
+     kLevel1A,
+     kLevel1B,
+     kClockPS,
+     kReserve2PS,
+     kLevel1OR,
+     // kClock10MHz,
+     // kClock1MHz,
+     // kClock100kHz,
+     // kClock10kHz,
+     // kClock1kHz,
+     NTriggerFlag
     };
 
   const std::vector<TString> STriggerFlag =
     {
-      "BH2K_1",
-      "BH2K_2",
-      "BH2K_3",
-      "BH2K_4",
-      "BH2K_5",
-      "BH2K_6",
-      "BH2K_7",
-      "BH2K_8",
-      "BH2K",
-      "ElseOR",
-      "Beam",
-      "BeamTOF",
-      "BeamPi",
-      "BeamP",
-      "Coin1",
-      "Coin2",
-      "E03",
-      "BH2KPS",
-      "BeamPS",
-      "BeamTOFPS",
-      "BeamPiPS",
-      "BeamPPS",
-      "Coin1PS",
-      "Coin2PS",
-      "E03PS",
-      "Clock",
-      "Reserve2",
-      "SpillEnd",
-      "Matrix",
-      "MsTaccept",
-      "MsTclear",
-      "TOFtiming",
+     "L1SpillOn",
+     "L1SpillOff",
+     "SpillEnd",
+     "TofTiming",
+     "Matrix2D1",
+     "Matrix2D2",
+     "Matrix3D",
+     "BeamA",
+     "BeamB",
+     "BeamC",
+     "BeamD",
+     "BeamE",
+     "BeamF",
+     "TrigA",
+     "TrigB",
+     "TrigC",
+     "TrigD",
+     "TrigE",
+     "TrigF",
+     "TrigA-PS",
+     "TrigB-PS",
+     "TrigC-PS",
+     "TrigD-PS",
+     "TrigE-PS",
+     "TrigF-PS",
+     "Level1A",
+     "Level1B",
+     "Clock-PS",
+     "Reserve2-PS",
+     "Level1OR",
+     // "Clock10MHz",
+     // "Clock1MHz",
+     // "Clock100kHz",
+     // "Clock10kHz",
+     // "Clock1kHz",
     };
 }
+const int NumOfSegTFlag = trigger::NTriggerFlag;
 
 namespace DetHtTOF
 {
   enum EHtTOF
     {
-      TOF1_20,
-      TOF5_22,
-      TOF18,
-      TOF4_10,
-      TOF2_11,
-      TOF8_24,
-      TOF6_9,
-      TOF7_23,
-      TOF12,
-      TOF19,
-      TOF13,
-      TOF14,
-      TOF15,
-      TOF16,
-      TOF3_21,
-      TOF17,
-      NTOF_HT
+     TOF1_20,
+     TOF5_22,
+     TOF18,
+     TOF4_10,
+     TOF2_11,
+     TOF8_24,
+     TOF6_9,
+     TOF7_23,
+     TOF12,
+     TOF19,
+     TOF13,
+     TOF14,
+     TOF15,
+     TOF16,
+     TOF3_21,
+     TOF17,
+     NTOF_HT
     };
 
   const std::vector<TString> SHtTOF     =
     {
-      "TOF(1,20)",
-      "TOF(5,22)",
-      "TOF18",
-      "TOF(4,10)",
-      "TOF(2,11)",
-      "TOF(8,24)",
-      "TOF(6,9)",
-      "TOF(7,23)",
-      "TOF12",
-      "TOF19",
-      "TOF13",
-      "TOF14",
-      "TOF15",
-      "TOF16",
-      "TOF(3,21)",
-      "TOF17",
+     "TOF(1,20)",
+     "TOF(5,22)",
+     "TOF18",
+     "TOF(4,10)",
+     "TOF(2,11)",
+     "TOF(8,24)",
+     "TOF(6,9)",
+     "TOF(7,23)",
+     "TOF12",
+     "TOF19",
+     "TOF13",
+     "TOF14",
+     "TOF15",
+     "TOF16",
+     "TOF(3,21)",
+     "TOF17",
     };
- };
+};
 
 // Old Detectors
 //E42 test in E40 beamtime
@@ -331,9 +338,9 @@ const int NumOfPlaneSFT   =   4;
 const int NumOfSegSFT_X   = 256;
 const int NumOfSegSFT_UV  = 320;
 const int NumOfSegSFT[NumOfPlaneSFT] = { NumOfSegSFT_UV,
-					   NumOfSegSFT_UV,
-					   NumOfSegSFT_X,
-					   NumOfSegSFT_X };
+					 NumOfSegSFT_UV,
+					 NumOfSegSFT_X,
+					 NumOfSegSFT_X };
 const int NumOfSegCSFT    = 48;
 // CFT
 const int NumOfPlaneCFT   =   8;
@@ -428,14 +435,14 @@ const int NumOfSegPWO  = 238;
 const int NumOfBoxPWO  = 22;
 const int NumOfUnitPWO[NumOfBoxPWO] =
   {
-    6, 9, 6, 14, 14, 21, 14, 14, 6, 9, 6,
-    6, 9, 6, 14, 14, 21, 14, 14, 6, 9, 6
+   6, 9, 6, 14, 14, 21, 14, 14, 6, 9, 6,
+   6, 9, 6, 14, 14, 21, 14, 14, 6, 9, 6
   };
 
 const int SegIdPWO[NumOfBoxPWO] =
   {
-    4, 0, 0, 4, 0, 0, 1, 5, 2, 1, 6,
-    1, 2, 5, 6, 2, 1, 3, 7, 7, 3, 3,
+   4, 0, 0, 4, 0, 0, 1, 5, 2, 1, 6,
+   1, 2, 5, 6, 2, 1, 3, 7, 7, 3, 3,
   };
 
 const int NumOfLayersSP0 = 8;

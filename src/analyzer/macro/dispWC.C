@@ -9,13 +9,15 @@ using namespace hddaq::gui; // for Updater
 void
 dispWC( void )
 {
-
   const UserParamMan& gUser = UserParamMan::GetInstance();
   // You must write these lines for the thread safe
   // ----------------------------------
   if(Updater::isUpdating()){return;}
   Updater::setUpdating(true);
   // ----------------------------------
+
+  const Double_t xmin =    0.;
+  const Double_t xmax = 4096.;
 
   // draw ADC U
   {
@@ -29,8 +31,7 @@ dispWC( void )
       gPad->SetLogy();
       TH1 *h = (TH1*)GHist::get( adc_id + i );
       if( !h ) continue;
-      //      h->GetXaxis()->SetRangeUser( 0, 4096 );
-      h->GetXaxis()->SetRangeUser( 50, 600 );
+      h->GetXaxis()->SetRangeUser( xmin, xmax );
       h->Draw();
       TH1 *hh = (TH1*)GHist::get( adcwtdc_id + i );
       if( !hh ) continue;
@@ -53,8 +54,7 @@ dispWC( void )
       gPad->SetLogy();
       TH1 *h = (TH1*)GHist::get( adc_id + i );
       if( !h ) continue;
-      //      h->GetXaxis()->SetRangeUser( 0, 4096 );
-      h->GetXaxis()->SetRangeUser( 50, 600 );
+      h->GetXaxis()->SetRangeUser( xmin, xmax );
       h->Draw();
       TH1 *hh = (TH1*)GHist::get( adcwtdc_id + i );
       if( !hh ) continue;
@@ -77,8 +77,7 @@ dispWC( void )
       gPad->SetLogy();
       TH1 *h = (TH1*)GHist::get( adc_id + i );
       if( !h ) continue;
-      //      h->GetXaxis()->SetRangeUser( 0, 4096 );
-      h->GetXaxis()->SetRangeUser( 50, 600 );
+      h->GetXaxis()->SetRangeUser( xmin, xmax );
       h->Draw();
       TH1 *hh = (TH1*)GHist::get( adcwtdc_id + i );
       if( !hh ) continue;

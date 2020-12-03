@@ -1,13 +1,15 @@
+// -*- C++ -*-
+
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
-void dispTriggerFlag()
+//_____________________________________________________________________________
+void
+dispTriggerFlag( void )
 {
-  // You must write these lines for the thread safe
-  // ----------------------------------
+  // for thread safe
   if(Updater::isUpdating()){return;}
   Updater::setUpdating(true);
-  // ----------------------------------
 
   int n_seg = 16;
   {
@@ -31,6 +33,8 @@ void dispTriggerFlag()
     for(int i = 0; i<n_seg; ++i){
       gPad->SetLogy();
       c->cd(i+1);
+      if( i+n_seg == trigger::NTriggerFlag )
+	break;
       GHist::get(base_id + i)->Draw();
     }
     c->Update();

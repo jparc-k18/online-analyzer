@@ -5288,9 +5288,8 @@ TList* HistMaker::createTriggerFlag( Bool_t flag_ps )
     // Make histogram and add it
     Int_t target_id = getUniqueID(kTriggerFlag, 0, kTDC, 0);
     for(Int_t i = 0; i<NumOfSegTFlag; ++i){
-      const char* title = NULL;
-//      title = Form("%s_%d", nameDetector, i+1);
-      title = trigger::STriggerFlag[i];
+      // title = Form("%s_%d", nameDetector, i+1);
+      TString title = Form( "%s #%d", trigger::STriggerFlag[i].Data(), i );
       top_dir->Add(createTH1(++target_id, title, // 1 origin
 			     400, 0, 4000,
 			     "TDC [ch]", ""));
@@ -5302,9 +5301,13 @@ TList* HistMaker::createTriggerFlag( Bool_t flag_ps )
     const char* title = "Trigger_Entry";
     Int_t target_id = getUniqueID(kTriggerFlag, 0, kHitPat, 0);
     // Add to the top directory
-    top_dir->Add(createTH1(++target_id, title, // 1 origin
-			   NumOfSegTFlag+1, 0., NumOfSegTFlag+1,
-			   "Trigger flag", ""));
+    auto h = createTH1(++target_id, title, // 1 origin
+		       NumOfSegTFlag+1, 0., NumOfSegTFlag+1,
+		       "Trigger flag", "");
+    // for( Int_t i=0, n=trigger::STriggerFlag.size(); i<n; ++i ){
+    //   h->GetXaxis()->SetBinLabel( i+1, trigger::STriggerFlag.at(i) );
+    // }
+    top_dir->Add( h );
   }
 
   // Return the TList pointer which is added into TGFileBrowser

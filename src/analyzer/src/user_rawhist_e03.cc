@@ -1,8 +1,5 @@
 // -*- C++ -*-
 
-// Author: Tomonori Takahashi
-// Change 2017/09/ S.Hoshino
-
 #include <iostream>
 #include <iterator>
 #include <fstream>
@@ -156,14 +153,6 @@ process_begin( const std::vector<std::string>& argv )
                                400, 400, 600,
                                "[ch]", ""
                                ));
-  tab_misc->Add(gHist.createBH2_E42());
-  //  tab_misc->Add(gHist.createWC());
-  tab_misc->Add(macro::Get("dispBH2_E42"));
-  // tab_misc->Add(macro::Get("dispWC"));
-  // tab_misc->Add(macro::Get("fitWC"));
-  // tab_misc->Add(gHist.createT1());
-  // tab_misc->Add(gHist.createT2());
-
   // Matrix pattern
   // Mtx2D
   {
@@ -262,6 +251,11 @@ process_event( void )
 	}
       }
     }// for(seg)
+
+    if( !( trigger_flag[trigger::kSpillEnd] |
+	   trigger_flag[trigger::kLevel1OR] ) ){
+      cerr << "#W Trigger flag is missing!!! " << trigger_flag << std::endl;
+    }
 
 #if 0
     // Debug, dump data relating this detector

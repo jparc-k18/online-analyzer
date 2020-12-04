@@ -49,7 +49,7 @@ const int NumOfSegScaler  = 96;
 const int SpillEndFlag    = 27; // 0-based
 const int NumOfPlaneVmeRm = 2;
 const int NumOfVmeRm      = 10;
-//const int NumOfSegTFlag  = 32;
+//const int NumOfSegTFlag  = ; // defined in the following
 
 const int DetIdVmeCalib      = 999;
 const int NumOfPlaneVmeCalib =   5;
@@ -194,11 +194,6 @@ namespace trigger
      kClockPS,
      kReserve2PS,
      kLevel1OR,
-     // kClock10MHz,
-     // kClock1MHz,
-     // kClock100kHz,
-     // kClock10kHz,
-     // kClock1kHz,
      NTriggerFlag
     };
 
@@ -234,11 +229,6 @@ namespace trigger
      "Clock-PS",
      "Reserve2-PS",
      "Level1OR",
-     // "Clock10MHz",
-     // "Clock1MHz",
-     // "Clock100kHz",
-     // "Clock10kHz",
-     // "Clock1kHz",
     };
 }
 const int NumOfSegTFlag = trigger::NTriggerFlag;

@@ -51,12 +51,13 @@ struct ScalerInfo
 class ScalerAnalyzer
 {
 public:
-  static TString         ClassName( void );
+  static TString ClassName( void );
   static ScalerAnalyzer& GetInstance( void );
+  ScalerAnalyzer( void ); // for both spill on/off at the same time
   ~ScalerAnalyzer( void );
 
 private:
-  ScalerAnalyzer( void );
+  // ScalerAnalyzer( void );
   ScalerAnalyzer( const ScalerAnalyzer& );
   ScalerAnalyzer& operator=( const ScalerAnalyzer& );
 

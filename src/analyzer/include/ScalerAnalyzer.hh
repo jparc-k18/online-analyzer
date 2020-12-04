@@ -61,7 +61,7 @@ private:
   ScalerAnalyzer& operator=( const ScalerAnalyzer& );
 
 public:
-  static const Int_t MaxRow = 33;
+  static const Int_t MaxRow = 36;
   enum eDisp {
     kLeft,
     kCenter,
@@ -77,6 +77,8 @@ public:
     kScalerSch,
     kScalerDaq,
     kScalerE42,
+    kSpillOn,
+    kSpillOff,
     nFlag
   };
 
@@ -88,6 +90,7 @@ private:
   std::vector<Bool_t> m_flag;
   Bool_t              m_spill_increment;
   Bool_t              m_is_spill_end;
+  Bool_t              m_is_spill_on_end;
   Int_t               m_run_number;
   TCanvas*            m_canvas;
 

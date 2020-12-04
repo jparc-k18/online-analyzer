@@ -34,7 +34,7 @@ namespace
   const UnpackerManager& gUnpacker = GUnpacker::get_instance();
   const std::vector<TString> sFlag =
     { "SeparateComma", "SpillBySpill", "SemiOnline", "ScalerSheet",
-      "ScalerText", "ScalerSch", "ScalerDaq", "ScalerE42" };
+      "ScalerText", "ScalerSch", "ScalerDaq", "ScalerE42", "SpillOn", "SpillOff" };
 }
 
 //______________________________________________________________________________
@@ -44,6 +44,7 @@ ScalerAnalyzer::ScalerAnalyzer( void )
     m_flag( nFlag, false ),
     m_spill_increment( false ),
     m_is_spill_end( false ),
+    m_is_spill_on_end( false ),
     m_run_number( -1 ),
     m_canvas()
 {
@@ -80,23 +81,48 @@ ScalerAnalyzer::Decode( void )
 {
   m_spill_increment = false;
   m_is_spill_end    = false;
+  m_is_spill_on_end = false;
 
   //////////////////// Run Number
   if( m_run_number != gUnpacker.get_root()->get_run_number() ){
     m_run_number = gUnpacker.get_root()->get_run_number();
-    Clear("all");
+    Clear( "all" );
   }
 
   //////////////////// Trigger Flag
+  std::bitset<NumOfSegTFlag> trigger_flag;
   {
-    static const Int_t device_id = gUnpacker.get_device_id("TFlag");
-    static const Int_t tdc_id    = gUnpacker.get_data_id("TFlag", "tdc");
-    if( gUnpacker.get_entries( device_id, 0, SpillEndFlag, 0, tdc_id ) > 0 &&
-	gUnpacker.get( device_id, 0, SpillEndFlag, 0, tdc_id ) > 0 ){
-      m_is_spill_end = true;
+    static const auto k_device = gUnpacker.get_device_id( "TFlag" );
+    static const auto k_tdc    = gUnpacker.get_data_id( "TFlag", "tdc" );
+    for( Int_t seg=0; seg<NumOfSegTFlag; ++seg ){
+      for( Int_t i=0, n=gUnpacker.get_entries( k_device, 0, seg, 0, k_tdc );
+	   i<n; ++i ){
+	auto tdc = gUnpacker.get( k_device, 0, seg, 0, k_tdc, i );
+	if( tdc>0 ){
+	  trigger_flag.set(seg);
+	}
+      }
     }
   }
-
+  if( trigger_flag[trigger::kSpillEnd] ){
+    m_is_spill_end = true;
+  }
+  if( trigger_flag[trigger::kSpillOnEnd] )
+    m_is_spill_on_end = true;
+  if( m_flag[kSpillOn] ){
+    if( !trigger_flag[trigger::kSpillOnEnd] &&
+	!trigger_flag[trigger::kL1SpillOn] ){
+      return false;
+    }
+  }
+  auto spill_off_end = ( trigger_flag[trigger::kSpillEnd] &&
+			 !trigger_flag[trigger::kSpillOnEnd] );
+  if( m_flag[kSpillOff] ){
+    if( !spill_off_end &&
+	!trigger_flag[trigger::kL1SpillOff] ){
+      return false;
+    }
+  }
   if( m_flag[kScalerSheet] && !m_is_spill_end ){
     for( Int_t i=0; i<MaxColumn; ++i ){
       for( Int_t j=0; j<MaxRow; ++j ){
@@ -158,7 +184,8 @@ ScalerAnalyzer::Decode( void )
     if( Has("BH2-SUM") ){
       static Channel ch = Find("BH2-SUM");
       m_info[ch.first][ch.second].data = 0;
-      static const Int_t n = GetFlag( kScalerE42 ) ? NumOfSegBH2_E42 : NumOfSegBH2;
+      // static const Int_t n = GetFlag( kScalerE42 ) ? NumOfSegBH2_E42 : NumOfSegBH2;
+      static const Int_t n = 5;
       for( Int_t i=0; i<n; ++i ){
 	m_info[ch.first][ch.second].data += Get( Form("BH2-%02d", i+1) );
       }
@@ -389,7 +416,8 @@ ScalerAnalyzer::Print( Option_t* ) const
 {
   m_ost << "\033[2J" << std::endl;
 
-  TString end_mark = m_is_spill_end ? "Spill End" : "";
+  TString end_mark = ( m_is_spill_on_end ? "Spill On End" :
+		       m_is_spill_end ? "Spill Off End" : "" );
 
   Int_t event_number = gUnpacker.get_event_number();
   if( GetFlag( kScalerDaq ) || GetFlag( kScalerE42 ) ){
@@ -438,14 +466,14 @@ ScalerAnalyzer::Print( Option_t* ) const
     }
     if( !GetFlag( kScalerSch ) && !GetFlag( kScalerE42 ) ){
       m_ost << std::endl  << std::setprecision(6) << std::fixed
-	    << std::left  << std::setw(16) << "Beam/TM"
-	    << std::right << std::setw(16) << Fraction("Beam", "TM") << " : "
+	    << std::left  << std::setw(16) << "BH2/TM"
+	    << std::right << std::setw(16) << Fraction("BH2", "TM") << " : "
 	    << std::left  << std::setw(16) << "Live/Real"
 	    << std::right << std::setw(16) << Fraction("Live-Time","Real-Time") << " : "
 	    << std::left  << std::setw(16) << "DAQ-Eff"
 	    << std::right << std::setw(16) << Fraction("L1-Acc","L1-Req") << std::endl
-	    << std::left  << std::setw(16) << "(BH2,K)/Beam"
-	    << std::right << std::setw(16) << Fraction("(BH2,K)", "Beam") << " : "
+	    << std::left  << std::setw(16) << "L1Req/BH2"
+	    << std::right << std::setw(16) << Fraction("L1-Req", "BH2") << " : "
 	    << std::left  << std::setw(16) << "L2-Eff"
 	    << std::right << std::setw(16) << Fraction("L2-Acc","L1-Acc") << " : "
 	    << std::left  << std::setw(16) << "Duty-Factor"

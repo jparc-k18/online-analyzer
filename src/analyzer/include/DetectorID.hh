@@ -45,7 +45,7 @@ const int DetIdVmeRm      = 81;
 const int DetIdMsTRM      = 82;
 const int DetIdHulRM      = 83;
 const int NumOfSegTrig    = 32;
-const int NumOfSegScaler  = 96;
+const int NumOfSegScaler  = 128;
 const int SpillEndFlag    = 27; // 0-based
 const int NumOfPlaneVmeRm = 2;
 const int NumOfVmeRm      = 10;
@@ -167,6 +167,7 @@ namespace trigger
      kL1SpillOn,
      kL1SpillOff,
      kSpillEnd,
+     kSpillOnEnd,
      kTofTiming,
      kMatrix2D1,
      kMatrix2D2,
@@ -202,6 +203,7 @@ namespace trigger
      "L1SpillOn",
      "L1SpillOff",
      "SpillEnd",
+     "SpillOnEnd",
      "TofTiming",
      "Matrix2D1",
      "Matrix2D2",
@@ -296,7 +298,7 @@ const int NumOfSegSAC     =  4;
 const int NumOfSegFBH     = 16;
 const int DetIdSFT  = 111;
 const int DetIdCFT  = 113;
-const int DetIdBGO  = 114;
+//const int DetIdBGO  = 114;
 const int DetIdPiID = 115;
 const int DetIdFHT1 = 131;
 const int DetIdFHT2 = 132;
@@ -354,8 +356,9 @@ const int    NumOfBGOInOneUnit = 2;//pair unit
 const double RadiusOfBGOSurface = 100.;
 const int    NumOfBGOInOneUnit2 = 1;//single unit
 const double RadiusOfBGOSurface2 = 120.;
-const int NumOfSegBGO = NumOfBGOUnit*(NumOfBGOInOneUnit+NumOfBGOInOneUnit2);//24
+//const int NumOfSegBGO = NumOfBGOUnit*(NumOfBGOInOneUnit+NumOfBGOInOneUnit2);//24
 const int NumOfSegBGO_T=   4;
+
 // PiID counter
 const int NumOfSegPiID =  32;
 const int NumOfPiIDUnit = 8;
@@ -369,6 +372,7 @@ const double PiID2_X = 40.;
 const double PiID2_Y = 10.;
 const double PiID2_Z = 400.;
 const double RadiusOfPiID2Surface = 180.;
+
 // Tracker const
 const int FHTOffset             = 200;
 const int NumOfUDStructureFHT   = 2;
@@ -414,12 +418,12 @@ const int DetIdMatrix  = 12;
 const int DetIdSFV     = 24;
 const int DetIdTOFMT   = 25;
 const int DetIdSP0     = 26;
-const int DetIdGe      = 27;
+//const int DetIdGe      = 27;
 const int DetIdPWO     = 28;
 const int DetIdPWOADC  = 29;
 const int NumOfSegBAC_SAC = 6;
 const int NumOfSegSFV = 18;
-const int NumOfSegGe   = 32;
+//const int NumOfSegGe   = 32;
 
 const int NumOfSegPWO  = 238;
 const int NumOfBoxPWO  = 22;
@@ -437,6 +441,12 @@ const int SegIdPWO[NumOfBoxPWO] =
 
 const int NumOfLayersSP0 = 8;
 const int NumOfSegSP0    = 5;
+
+//E03 HBX detctors
+const int DetIdGe     = 27;
+const int DetIdBGO    = 114;
+const int NumOfSegGe  = 16;
+const int NumOfSegBGO = 48;
 
 const int DetIdBC1   = 101;
 const int DetIdBC2   = 102;

@@ -452,8 +452,8 @@ process_event( void )
     static const int k_tdc      = gUnpacker.get_data_id("BH1", "fpga_leading");
 
     // TDC gate range
-    static const unsigned int tdc_min = gUser.GetParameter("BH1_TDC_FPGA", 0);
-    static const unsigned int tdc_max = gUser.GetParameter("BH1_TDC_FPGA", 1);
+    static const unsigned int tdc_min = gUser.GetParameter("BH1_TDC", 0);
+    static const unsigned int tdc_max = gUser.GetParameter("BH1_TDC", 1);
 
     // Up PMT
     int bh1a_id   = gHist.getSequentialID(kBH1, 0, kADC);
@@ -473,7 +473,7 @@ process_event( void )
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
 	if(tdc!=0){
 	  hptr_array[bh1t_id + seg]->Fill(tdc);
-	  // ADC wTDC_FPGA
+	  // ADC wTDC
 	  if( tdc>tdc_min && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
 	    hptr_array[bh1awt_id + seg]->Fill( adc );
@@ -500,7 +500,7 @@ process_event( void )
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
 	if( tdc!=0 ){
 	  hptr_array[bh1t_id + seg]->Fill(tdc);
-	  // ADC w/TDC_FPGA
+	  // ADC w/TDC
 	  if( tdc>tdc_min && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
 	    hptr_array[bh1awt_id + seg]->Fill(adc);
@@ -935,8 +935,8 @@ process_event( void )
     static const int k_mt     = gUnpacker.get_data_id("BH2", "fpga_meantime");
 
     // TDC gate range
-    static const unsigned int tdc_min = gUser.GetParameter("BH2_TDC_FPGA", 0);
-    static const unsigned int tdc_max = gUser.GetParameter("BH2_TDC_FPGA", 1);
+    static const unsigned int tdc_min = gUser.GetParameter("BH2_TDC", 0);
+    static const unsigned int tdc_max = gUser.GetParameter("BH2_TDC", 1);
 
     // UP
     int bh2a_id   = gHist.getSequentialID(kBH2, 0, kADC);
@@ -955,7 +955,7 @@ process_event( void )
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
 	if(tdc!=0){
 	  hptr_array[bh2t_id + seg]->Fill(tdc);
-	  // ADC w/TDC_FPGA
+	  // ADC w/TDC
 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
 	    hptr_array[bh2awt_id + seg]->Fill(adc);
@@ -981,7 +981,7 @@ process_event( void )
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
 	if( tdc!=0 ){
 	  hptr_array[bh2t_id + seg]->Fill(tdc);
-	  // ADC w/TDC_FPGA
+	  // ADC w/TDC
 	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
 	    hptr_array[bh2awt_id + seg]->Fill( adc );
@@ -1657,8 +1657,8 @@ process_event( void )
     static const int k_tdc    = gUnpacker.get_data_id("TOF","fpga_leading");
 
     // TDC gate range
-    static const unsigned int tdc_min = gUser.GetParameter("TOF_TDC_FPGA", 0);
-    static const unsigned int tdc_max = gUser.GetParameter("TOF_TDC_FPGA", 1);
+    static const unsigned int tdc_min = gUser.GetParameter("TOF_TDC", 0);
+    static const unsigned int tdc_max = gUser.GetParameter("TOF_TDC", 1);
 
     // sequential id
     int tofa_id   = gHist.getSequentialID(kTOF, 0, kADC);
@@ -1678,7 +1678,7 @@ process_event( void )
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
 	if(tdc!=0){
 	  hptr_array[toft_id + seg]->Fill(tdc);
-	  // ADC wTDC_FPGA
+	  // ADC wTDC
 	  if( tdc_min<tdc && tdc<tdc_max ) is_in_gate = true;
 	}
 
@@ -1711,7 +1711,7 @@ process_event( void )
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
 	if(tdc != 0){
 	  hptr_array[toft_id + seg]->Fill(tdc);
-	  // ADC w/TDC_FPGA
+	  // ADC w/TDC
 	  if( tdc_min<tdc && tdc<tdc_max ) is_in_gate = true;
 
 	  if(is_in_gate){
@@ -1814,8 +1814,8 @@ process_event( void )
     // static const int k_mt     = gUnpacker.get_data_id("WC", "fpga_meantime");
 
     // TDC gate range
-    static const unsigned int tdc_min = gUser.GetParameter("WC_TDC_FPGA", 0);
-    static const unsigned int tdc_max = gUser.GetParameter("WC_TDC_FPGA", 1);
+    static const unsigned int tdc_min = gUser.GetParameter("WC_TDC", 0);
+    static const unsigned int tdc_max = gUser.GetParameter("WC_TDC", 1);
 
     // UP
     int wca_id   = gHist.getSequentialID(kWC, 0, kADC);
@@ -1836,7 +1836,7 @@ process_event( void )
       	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
       	if(tdc!=0){
       	  hptr_array[wct_id + seg]->Fill(tdc);
-      	  // ADC w/TDC_FPGA
+      	  // ADC w/TDC
       	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
       	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
       	    hptr_array[wcawt_id + seg]->Fill(adc);
@@ -1863,7 +1863,7 @@ process_event( void )
       	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
       	if( tdc!=0 ){
       	  hptr_array[wct_id + seg]->Fill(tdc);
-      	  // ADC w/TDC_FPGA
+      	  // ADC w/TDC
       	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
       	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
       	    hptr_array[wcawt_id + seg]->Fill( adc );
@@ -1890,7 +1890,7 @@ process_event( void )
       	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_sum, k_tdc, m);
       	if( tdc!=0 ){
       	  hptr_array[wct_id + seg]->Fill(tdc);
-      	  // ADC w/TDC_FPGA
+      	  // ADC w/TDC
       	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_sum, k_adc)>0){
       	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_sum, k_adc);
       	    hptr_array[wcawt_id + seg]->Fill( adc );
@@ -1959,8 +1959,8 @@ process_event( void )
     }
 
     //TOF TDC gate range
-    static const unsigned int tof_tdc_min = gUser.GetParameter("TOF_TDC_FPGA", 0);
-    static const unsigned int tof_tdc_max = gUser.GetParameter("TOF_TDC_FPGA", 1);
+    static const unsigned int tof_tdc_min = gUser.GetParameter("TOF_TDC", 0);
+    static const unsigned int tof_tdc_max = gUser.GetParameter("TOF_TDC", 1);
 
     //SCH TDC gate range
     static const unsigned int sch_tdc_min = gUser.GetParameter("SCH_TDC", 0);

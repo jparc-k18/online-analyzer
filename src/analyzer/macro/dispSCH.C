@@ -11,7 +11,7 @@ dispSCH( void )
   Updater::setUpdating( true );
 
   const auto& gUser = UserParamMan::GetInstance();
-  const Double_t RefTot = gUser.GetParameter( "SCH_REFTOT" );
+  const Double_t TotRef = gUser.GetParameter( "SCH_TOTREF" );
 
   std::vector<Int_t> hid_c1 = {
     HistMaker::getUniqueID( kSCH, 0, kTDC, NumOfSegSCH+1 ),
@@ -36,7 +36,7 @@ dispSCH( void )
       if( TString( h->GetTitle() ).Contains("TOT") &&
 	  TString( h->GetTitle() ).Contains("ALL")) {
 	Double_t peak = h->GetMaximum();
-	TLine *l = new TLine( RefTot, 0, RefTot, peak );
+	TLine *l = new TLine( TotRef, 0, TotRef, peak );
 	l->SetLineColor( kRed );
 	l->Draw( "same" );
       }

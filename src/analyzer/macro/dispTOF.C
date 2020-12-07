@@ -61,8 +61,8 @@ void dispTOF()
   }
 
   //TOF TDC gate range
-  static const unsigned int tdc_min = gUser.GetParameter("TOF_TDC_FPGA", 0);
-  static const unsigned int tdc_max = gUser.GetParameter("TOF_TDC_FPGA", 1);
+  static const unsigned int tdc_min = gUser.GetParameter("TOF_TDC", 0);
+  static const unsigned int tdc_max = gUser.GetParameter("TOF_TDC", 1);
 
   // draw TDC U
   {

@@ -15,8 +15,8 @@ void dispBH2()
   // ----------------------------------
   //
   // TDC gate range
-  static const unsigned int tdc_min = gUser.GetParameter("BH2_TDC_FPGA", 0);
-  static const unsigned int tdc_max = gUser.GetParameter("BH2_TDC_FPGA", 1);
+  static const unsigned int tdc_min = gUser.GetParameter("BH2_TDC", 0);
+  static const unsigned int tdc_max = gUser.GetParameter("BH2_TDC", 1);
 
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
@@ -47,7 +47,7 @@ void dispBH2()
     }
     for( int ud=0; ud<NumOfSegBH2; ++ud ){
       TH1 *h  = NULL;
-      // draw TDC_FPGA
+      // draw TDC
       c2->cd( ++icanvas3 );
       //      gPad->SetLogy();
       h = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, ud+1) );

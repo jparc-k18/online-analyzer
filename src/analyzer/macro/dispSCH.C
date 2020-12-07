@@ -29,14 +29,14 @@ dispSCH( void )
     c->Divide( 3, 2 );
     for( Int_t i=0, n=hid_c1.size(); i<n; ++i ){
       c->cd( i+1 ); //->SetGrid();
-      auto h = dynamic_cast<TH1*>( GHist::get( hid_c1.at(i) ) );
+      auto h = GHist::get( hid_c1.at(i) );
       if( TString( h->GetTitle() ).Contains("TOT") )
 	h->GetXaxis()->SetRangeUser(0., 100.);
       h->Draw("colz");
       if( TString( h->GetTitle() ).Contains("TOT") &&
 	  TString( h->GetTitle() ).Contains("ALL")) {
 	Double_t peak = h->GetMaximum();
-	TLine *l = new TLine( TotRef, 0, TotRef, peak );
+	auto l = new TLine( TotRef, 0, TotRef, peak );
 	l->SetLineColor( kRed );
 	l->Draw( "same" );
       }
@@ -44,8 +44,5 @@ dispSCH( void )
     c->Update();
   }
 
-  // You must write these lines for the thread safe
-  // ----------------------------------
-  Updater::setUpdating(false);
-  // ----------------------------------
+  Updater::setUpdating( false );
 }

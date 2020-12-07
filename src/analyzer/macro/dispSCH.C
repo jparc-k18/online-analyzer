@@ -1,51 +1,45 @@
-// Updater belongs to the namespace hddaq::gui
-using namespace hddaq::gui;
+// -*- C++ -*-
 
-void dispSCH()
+using hddaq::gui::Updater;
+
+//_____________________________________________________________________________
+void
+dispSCH( void )
 {
-  // You must write these lines for the thread safe
-  // ----------------------------------
-  if(Updater::isUpdating()){return;}
-  Updater::setUpdating(true);
-  // ----------------------------------
+  if( Updater::isUpdating() )
+    return;
+  Updater::setUpdating( true );
 
-  const int n_seg     = 64;
+  const auto& gUser = UserParamMan::GetInstance();
+  const Double_t RefTot = gUser.GetParameter( "SCH_REFTOT" );
 
-  int sch_id_c1[] = {
-    HistMaker::getUniqueID(kSCH, 0, kTDC,    kSCH_1to16_Offset),
-    HistMaker::getUniqueID(kSCH, 0, kTDC,    kSCH_17to64_Offset),
-    HistMaker::getUniqueID(kSCH, 0, kADC,    kSCH_1to16_Offset),
-    HistMaker::getUniqueID(kSCH, 0, kADC,    kSCH_17to64_Offset),
-    HistMaker::getUniqueID(kSCH, 0, kHitPat, 1),
-    HistMaker::getUniqueID(kSCH, 0, kTDC2D,  1),
-    HistMaker::getUniqueID(kSCH, 0, kADC2D,  1),
-    HistMaker::getUniqueID(kSCH, 0, kMulti,  1)
+  std::vector<Int_t> hid_c1 = {
+    HistMaker::getUniqueID( kSCH, 0, kTDC, NumOfSegSCH+1 ),
+    HistMaker::getUniqueID( kSCH, 0, kADC, NumOfSegSCH+1 ),
+    HistMaker::getUniqueID( kSCH, 0, kHitPat, 1 ),
+    HistMaker::getUniqueID( kSCH, 0, kTDC2D, 1 ),
+    HistMaker::getUniqueID( kSCH, 0, kADC2D, 1 ),
+    HistMaker::getUniqueID( kSCH, 0, kMulti, 1 )
   };
 
   // draw TDC/TOT
   {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
+    auto c = dynamic_cast<TCanvas*>( gROOT->FindObject("c1") );
     c->Clear();
-    c->Divide(4,2);
-    for(int i=0; i<8; i++){
-      c->cd(i+1);//->SetGrid();
-      TH1 *h = (TH1*)GHist::get( sch_id_c1[i] );
-      if( TString(h->GetTitle()).Contains("TOT") )
+    c->Divide( 3, 2 );
+    for( Int_t i=0, n=hid_c1.size(); i<n; ++i ){
+      c->cd( i+1 ); //->SetGrid();
+      auto h = dynamic_cast<TH1*>( GHist::get( hid_c1.at(i) ) );
+      if( TString( h->GetTitle() ).Contains("TOT") )
 	h->GetXaxis()->SetRangeUser(0., 100.);
       h->Draw("colz");
-
-      if( TString(h->GetTitle()).Contains("TOT") && TString(h->GetTitle()).Contains("16")) {
-	double peak = h->GetMaximum();
-	TLine *l = new TLine(42, 0, 42, peak);
-	l->SetLineColor(kRed);
-	l->Draw("same");
-      } else if( TString(h->GetTitle()).Contains("TOT") && TString(h->GetTitle()).Contains("17")) {
-	double peak = h->GetMaximum();
-	TLine *l = new TLine(54, 0, 54, peak);
-	l->SetLineColor(kRed);
-	l->Draw("same");
+      if( TString( h->GetTitle() ).Contains("TOT") &&
+	  TString( h->GetTitle() ).Contains("ALL")) {
+	Double_t peak = h->GetMaximum();
+	TLine *l = new TLine( RefTot, 0, RefTot, peak );
+	l->SetLineColor( kRed );
+	l->Draw( "same" );
       }
-
     }
     c->Update();
   }

@@ -63,11 +63,10 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.Initialize(argv);
   gConfMan.InitializeParameter<HodoParamMan>("HDPRM");
   gConfMan.InitializeParameter<HodoPHCMan>("HDPHC");
-  gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
-  gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
-  gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
+  gConfMan.InitializeParameter<DCGeomMan>("DCGEO");
+  gConfMan.InitializeParameter<DCTdcCalibMan>("DCTDC");
+  gConfMan.InitializeParameter<DCDriftParamMan>("DCDRFT");
   // gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D", "MATRIX3D");
-  gConfMan.InitializeParameter<MsTParamMan>("MASS");
   gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
@@ -1040,50 +1039,43 @@ process_event( void )
     static const int k_device   = gUnpacker.get_device_id("SCH");
     static const int k_leading  = gUnpacker.get_data_id("SCH", "leading");
     static const int k_trailing = gUnpacker.get_data_id("SCH", "trailing");
-
     // TDC gate range
     static const int tdc_min = gUser.GetParameter("SCH_TDC", 0);
     static const int tdc_max = gUser.GetParameter("SCH_TDC", 1);
-
     // sequential id
-    static const int sch_t_id    = gHist.getSequentialID(kSCH, 0, kTDC,      1);
-    static const int sch_tot_id  = gHist.getSequentialID(kSCH, 0, kADC,      1);
-    static const int sch_t_1to16_id    = gHist.getSequentialID(kSCH, 0, kTDC, kSCH_1to16_Offset);
-    static const int sch_t_17to64_id   = gHist.getSequentialID(kSCH, 0, kTDC, kSCH_17to64_Offset);
-    static const int sch_tot_1to16_id  = gHist.getSequentialID(kSCH, 0, kADC, kSCH_1to16_Offset);
-    static const int sch_tot_17to64_id = gHist.getSequentialID(kSCH, 0, kADC, kSCH_17to64_Offset);
-    static const int sch_hit_id  = gHist.getSequentialID(kSCH, 0, kHitPat,   1);
-    static const int sch_mul_id  = gHist.getSequentialID(kSCH, 0, kMulti,    1);
+    static const int tdc_id    = gHist.getSequentialID(kSCH, 0, kTDC, 1);
+    static const int tot_id    = gHist.getSequentialID(kSCH, 0, kADC, 1);
+    static const int tdcall_id = gHist.getSequentialID(kSCH, 0, kTDC, NumOfSegSCH+1);
+    static const int totall_id = gHist.getSequentialID(kSCH, 0, kADC, NumOfSegSCH+1);
+    static const int hit_id    = gHist.getSequentialID(kSCH, 0, kHitPat, 1);
+    static const int mul_id    = gHist.getSequentialID(kSCH, 0, kMulti, 1);
+    static const int tdc2d_id  = gHist.getSequentialID(kSCH, 0, kTDC2D, 1);
+    static const int tot2d_id  = gHist.getSequentialID(kSCH, 0, kADC2D, 1);
 
-    static const int sch_t_2d_id   = gHist.getSequentialID(kSCH, 0, kTDC2D,  1);
-    static const int sch_tot_2d_id = gHist.getSequentialID(kSCH, 0, kADC2D,  1);
-
-    int multiplicity  = 0;
+    int multiplicity = 0;
     for( int i=0; i<NumOfSegSCH; ++i ){
       int nhit = gUnpacker.get_entries(k_device, 0, i, 0, k_leading);
-
-      bool flag_t = false;
+      bool is_in_gate = false;
       for(int m = 0; m<nhit; ++m){
 	int tdc      = gUnpacker.get(k_device, 0, i, 0, k_leading,  m);
 	int trailing = gUnpacker.get(k_device, 0, i, 0, k_trailing, m);
 	int tot      = tdc - trailing;
-	hptr_array[sch_t_id +i]->Fill(tdc);
-	if(i < 16)  hptr_array[sch_t_1to16_id]->Fill(tdc);
-	if(i >= 16) hptr_array[sch_t_17to64_id]->Fill(tdc);
-	hptr_array[sch_tot_id +i]->Fill(tot);
-	if(i < 16)  hptr_array[sch_tot_1to16_id]->Fill(tot);
-	if(i >= 16) hptr_array[sch_tot_17to64_id]->Fill(tot);
-	hptr_array[sch_t_2d_id]->Fill(i, tdc);
-	hptr_array[sch_tot_2d_id]->Fill(i, tot);
-	if( tdc_min<tdc && tdc<tdc_max ) flag_t = true;
+	hptr_array[tdc_id +i]->Fill( tdc );
+	hptr_array[tdcall_id]->Fill( tdc );
+	hptr_array[tot_id +i]->Fill( tot );
+	hptr_array[totall_id]->Fill( tot );
+	hptr_array[tdc2d_id]->Fill( i, tdc );
+	hptr_array[tot2d_id]->Fill( i, tot );
+	if( tdc_min<tdc && tdc<tdc_max ){
+	  is_in_gate = true;
+	}
       }
-
-      if(flag_t){
+      if( is_in_gate ){
 	++multiplicity;
-	hptr_array[sch_hit_id]->Fill(i);
+	hptr_array[hit_id]->Fill( i );
       }
     }
-    hptr_array[sch_mul_id]->Fill(multiplicity);
+    hptr_array[mul_id]->Fill( multiplicity );
 
 #if 0
     // Debug, dump data relating this detector
@@ -1681,16 +1673,16 @@ process_event( void )
       }
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-      bool flag_t = false;
+      bool is_in_gate = false;
       for(int m = 0; m<nhit; ++m){
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
 	if(tdc!=0){
 	  hptr_array[toft_id + seg]->Fill(tdc);
 	  // ADC wTDC_FPGA
-	  if( tdc_min<tdc && tdc<tdc_max ) flag_t = true;
+	  if( tdc_min<tdc && tdc<tdc_max ) is_in_gate = true;
 	}
 
-	if(flag_t){
+	if(is_in_gate){
 	  if( gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
 	    unsigned int adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
 	    hptr_array[tofawt_id + seg]->Fill( adc );
@@ -1714,15 +1706,15 @@ process_event( void )
 
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
-      bool flag_t = false;
+      bool is_in_gate = false;
       for(int m = 0; m<nhit; ++m){
 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
 	if(tdc != 0){
 	  hptr_array[toft_id + seg]->Fill(tdc);
 	  // ADC w/TDC_FPGA
-	  if( tdc_min<tdc && tdc<tdc_max ) flag_t = true;
+	  if( tdc_min<tdc && tdc<tdc_max ) is_in_gate = true;
 
-	  if(flag_t){
+	  if(is_in_gate){
 	    if( gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
 	      unsigned int adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
 	      hptr_array[tofawt_id + seg]->Fill( adc );
@@ -1782,16 +1774,16 @@ process_event( void )
     int multiplicity = 0;
     for(int seg = 0; seg<NumOfSegLAC; ++seg){
       int nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-      bool flag_t = false;
+      bool is_in_gate = false;
       for(int m = 0; m<nhit; ++m){
 	int tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
 	hptr_array[lact_id + seg]->Fill(tdc);
 
-	if(tdc_min < tdc && tdc < tdc_max) flag_t = true;
+	if(tdc_min < tdc && tdc < tdc_max) is_in_gate = true;
       }
 
       // Hit pattern && multiplicity
-      if(flag_t){
+      if(is_in_gate){
 	hptr_array[lachit_id]->Fill(seg);
 	++multiplicity;
       }
@@ -2187,18 +2179,18 @@ process_event( void )
       }
       // TDC
       int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      bool flag_t = false;
+      bool is_in_gate = false;
 
       for(int m = 0; m<nhit_t; ++m){
 	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
 	hptr_array[bact_id + seg]->Fill( tdc );
 
 	if(tdc_min < tdc && tdc < tdc_max){
-	  flag_t = true;
+	  is_in_gate = true;
 	}// tdc range is ok
       }// for(m)
 
-      if( flag_t ){
+      if( is_in_gate ){
 	// ADC w/TDC
 	if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
 	  int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
@@ -2245,18 +2237,18 @@ process_event( void )
       }
       // TDC
       int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      bool flag_t = false;
+      bool is_in_gate = false;
 
       for(int m = 0; m<nhit_t; ++m){
 	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
 	hptr_array[bact_id + seg]->Fill( tdc );
 
 	if(tdc_min < tdc && tdc < tdc_max){
-	  flag_t = true;
+	  is_in_gate = true;
 	}// tdc range is ok
       }// for(m)
 
-      if( flag_t ){
+      if( is_in_gate ){
 	// ADC w/TDC
 	if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
 	  int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
@@ -2303,18 +2295,18 @@ process_event( void )
       }
       // TDC
       int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      bool flag_t = false;
+      bool is_in_gate = false;
 
       for(int m = 0; m<nhit_t; ++m){
 	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
 	hptr_array[bact_id + seg]->Fill( tdc );
 
 	if(tdc_min < tdc && tdc < tdc_max){
-	  flag_t = true;
+	  is_in_gate = true;
 	}// tdc range is ok
       }// for(m)
 
-      if( flag_t ){
+      if( is_in_gate ){
 	// ADC w/TDC
 	if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
 	  int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);

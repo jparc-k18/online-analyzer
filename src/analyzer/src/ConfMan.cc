@@ -1,8 +1,4 @@
-/**
- *  file: ConfMan.cc
- *  date: 2017.04.10
- *
- */
+// -*- C++ -*-
 
 #include "ConfMan.hh"
 
@@ -47,19 +43,26 @@ namespace
 
 ClassImp(ConfMan);
 
-//______________________________________________________________________________
+//_____________________________________________________________________________
 ConfMan::ConfMan( void )
-  : m_is_ready(false)
+  : m_is_ready( false )
 {
   flag_.reset();
 }
 
-//______________________________________________________________________________
+//_____________________________________________________________________________
 ConfMan::~ConfMan( void )
 {
 }
 
-//______________________________________________________________________________
+//_____________________________________________________________________________
+Bool_t
+ConfMan::Contains( const TString& key ) const
+{
+  return m_key_map.find( key ) != m_key_map.end();
+}
+
+//_____________________________________________________________________________
 bool
 ConfMan::Initialize( void )
 {
@@ -120,7 +123,7 @@ ConfMan::Initialize( void )
   return true;
 }
 
-//______________________________________________________________________________
+//_____________________________________________________________________________
 bool
 ConfMan::Initialize( const std::string& file_name )
 {
@@ -128,7 +131,7 @@ ConfMan::Initialize( const std::string& file_name )
   return Initialize();
 }
 
-//______________________________________________________________________________
+//_____________________________________________________________________________
 bool
 ConfMan::Initialize( const std::vector<std::string>& argv )
 {
@@ -190,22 +193,21 @@ ConfMan::Initialize( const std::vector<std::string>& argv )
       std::string value_str=value.Data();
       std::string key_str=key.Data();
 
-    m_file[key_str]   = FilePath(value_str);
-    m_string[key_str] = value;
-    m_double[key_str] = hddaq::lexical_cast<double>(value);
-    m_int[key_str]    = hddaq::lexical_cast<int>(value);
-    m_bool[key_str]   = hddaq::lexical_cast<bool>(value);
-
+      m_file[key_str]   = FilePath(value_str);
+      m_string[key_str] = value;
+      m_double[key_str] = hddaq::lexical_cast<double>(value);
+      m_int[key_str]    = hddaq::lexical_cast<int>(value);
+      m_bool[key_str]   = hddaq::lexical_cast<bool>(value);
 
     }
   }
 
   // initialize unpacker system
-  UnpackerManager& g_unpacker = GUnpacker::get_instance();
-  g_unpacker.set_config_file( std::string(m_key_map["UNPACKER"]),
-			      std::string(m_key_map["DIGIT"]),
-			      std::string(m_key_map["CMAP"]) );
-  g_unpacker.set_istream(dataSrc);
+  TString key_unpacker = Contains( "UNPACK" ) ? "UNPACK" : "UNPACKER";
+  gUnpacker.set_config_file( std::string(m_key_map[key_unpacker]),
+			     std::string(m_key_map["DIGIT"]),
+			     std::string(m_key_map["CMAP"]) );
+  gUnpacker.set_istream( dataSrc );
 
   hddaq::cout << std::endl;
 
@@ -215,7 +217,7 @@ ConfMan::Initialize( const std::vector<std::string>& argv )
   return true;
 }
 
-//______________________________________________________________________________
+//_____________________________________________________________________________
 bool
 ConfMan::InitializeUnpacker( void )
 {
@@ -225,7 +227,7 @@ ConfMan::InitializeUnpacker( void )
   return true;
 }
 
-//______________________________________________________________________________
+//_____________________________________________________________________________
 bool
 ConfMan::Finalize( void )
 {
@@ -233,7 +235,7 @@ ConfMan::Finalize( void )
   return true;
 }
 
-//______________________________________________________________________________
+//_____________________________________________________________________________
 std::string
 ConfMan::FilePath( const std::string& src ) const
 {

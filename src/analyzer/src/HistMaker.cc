@@ -2716,25 +2716,14 @@ TList* HistMaker::createSCH( Bool_t flag_ps )
   // TDC/TOT SUM -----------------------------------------------------
   {
     // TDC
-    top_dir->Add(createTH1(getUniqueID(kSCH, 0, kTDC, kSCH_1to16_Offset),
-			   Form("%s_TDC (1-16ch)", nameDetector),
-			   1024, 0, 1024,
-			   "TDC [ch]", ""));
+    top_dir->Add(createTH1(getUniqueID(kSCH, 0, kTDC, NumOfSegSCH+1),
+			   Form("%s_TDC_ALL", nameDetector),
+			   1024, 0, 1024, "TDC [ch]", ""));
 
-    top_dir->Add(createTH1(getUniqueID(kSCH, 0, kTDC, kSCH_17to64_Offset),
-			   Form("%s_TDC (17-64ch)", nameDetector),
-			   1024, 0, 1024,
-			   "TDC [ch]", ""));
     // TOT
-    top_dir->Add(createTH1(getUniqueID(kSCH, 0, kADC, kSCH_1to16_Offset),
-			   Form("%s_TOT (1-16ch)", nameDetector),
-			   200, -50, 150,
-			   "TOT [ch]", ""));
-
-    top_dir->Add(createTH1(getUniqueID(kSCH, 0, kADC, kSCH_17to64_Offset),
-			   Form("%s_TOT (17-64ch)", nameDetector),
-			   200, -50, 150,
-			   "TOT [ch]", ""));
+    top_dir->Add(createTH1(getUniqueID(kSCH, 0, kADC, NumOfSegSCH+1),
+			   Form("%s_TOT_ALL", nameDetector),
+			   200, -50, 150, "TOT [ch]", ""));
   }
   // TDC-2D --------------------------------------------
   {

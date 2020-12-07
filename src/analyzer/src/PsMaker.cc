@@ -1018,14 +1018,10 @@ void PsMaker::create(TString& name)
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
 
     // TDC/TOT 2D, HitPat and Multi
-    par_list[kXdiv] = 4; par_list[kYdiv] = 2;
-    base_id = HistMaker::getUniqueID(kSCH, 0, kTDC, kSCH_1to16_Offset);
+    par_list[kXdiv] = 3; par_list[kYdiv] = 2;
+    base_id = HistMaker::getUniqueID(kSCH, 0, kTDC, NumOfSegSCH+1);
     id_list.push_back(base_id);
-    base_id = HistMaker::getUniqueID(kSCH, 0, kTDC, kSCH_17to64_Offset);
-    id_list.push_back(base_id);
-    base_id = HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_1to16_Offset);
-    id_list.push_back(base_id);
-    base_id = HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_17to64_Offset);
+    base_id = HistMaker::getUniqueID(kSCH, 0, kADC, NumOfSegSCH+1);
     id_list.push_back(base_id);
     base_id = HistMaker::getUniqueID(kSCH, 0, kHitPat);
     id_list.push_back(base_id);

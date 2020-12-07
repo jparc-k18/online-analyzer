@@ -61,7 +61,7 @@ enum SubDetectorType {
   factorSubDetectorType = 100000
 };
 
-enum DataType{
+enum DataType {
   kDataTypeZero,
   // Usual data type
   kADC,   kTDC,   kHitPat,   kMulti,
@@ -93,8 +93,8 @@ enum EProfile { FFm600, FFm300, FF0, FFp300, FFp600, NProfile };
 const Double_t Profiles[] = { -600, -300, 0, 300, 600 };
 
 const int kTOTcutOffset      = 20;
-const int kSCH_1to16_Offset  = 64+1;
-const int kSCH_17to64_Offset = 64+2;
+// const int kSCH_1to16_Offset  = 64+1;
+// const int kSCH_17to64_Offset = 64+2;
 
 TString getStr_FromEnum(const char* c);
 

@@ -515,18 +515,16 @@ SCHHitMulti( void )
   TCanvas *c1 = new TCanvas(__func__, __func__);
 
   std::vector<Int_t> id = {
-    HistMaker::getUniqueID(kSCH, 0, kTDC, kSCH_1to16_Offset),
-    HistMaker::getUniqueID(kSCH, 0, kTDC, kSCH_17to64_Offset),
-    HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_1to16_Offset),
-    HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_17to64_Offset),
+    HistMaker::getUniqueID(kSCH, 0, kTDC, NumOfSegSCH+1),
+    HistMaker::getUniqueID(kSCH, 0, kADC, NumOfSegSCH+1),
     HistMaker::getUniqueID(kSCH, 0, kHitPat, 1),
     HistMaker::getUniqueID(kSCH, 0, kTDC2D, 1),
     HistMaker::getUniqueID(kSCH, 0, kADC2D, 1),
     HistMaker::getUniqueID(kSCH, 0, kMulti, 1)
   };
 
-  c1->Divide(4,2);
-  for( Int_t i=0; i<8; ++i ){
+  c1->Divide(3,2);
+  for( Int_t i=0; i<6; ++i ){
     c1->cd(i+1);
     TH1 *h = GHist::get( id[i] );
     if( !h ) return 0;
@@ -2258,30 +2256,30 @@ SSDEfficiency( void )
 }
 
 //____________________________________________________________________________
-TCanvas*
-BFTSFTSCHTOT( void )
-{
-  TCanvas *c1 = new TCanvas(__func__, __func__);
-  c1->Divide(4,2);
-  std::vector<Int_t> id = {
-    HistMaker::getUniqueID(kBFT, 0, kADC, 11),
-    HistMaker::getUniqueID(kBFT, 0, kADC, 12),
-    HistMaker::getUniqueID(kSFT, 0, kADC, 11),
-    HistMaker::getUniqueID(kSFT, 0, kADC, 12),
-    HistMaker::getUniqueID(kSFT, 0, kADC, 13),
-    HistMaker::getUniqueID(kSFT, 0, kADC, 14),
-    HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_1to16_Offset),
-    HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_17to64_Offset)
-  };
-  for( Int_t i=0, n=id.size(); i<n; ++i ){
-    c1->cd(i+1);
-    TH1 *h = GHist::get(id[i]);
-    if( !h ) continue;
-    h->GetXaxis()->SetRangeUser(-20, 100);
-    h->Draw();
-  }
-  return c1;
-}
+// TCanvas*
+// BFTSFTSCHTOT( void )
+// {
+//   TCanvas *c1 = new TCanvas(__func__, __func__);
+//   c1->Divide(4,2);
+//   std::vector<Int_t> id = {
+//     HistMaker::getUniqueID(kBFT, 0, kADC, 11),
+//     HistMaker::getUniqueID(kBFT, 0, kADC, 12),
+//     HistMaker::getUniqueID(kSFT, 0, kADC, 11),
+//     HistMaker::getUniqueID(kSFT, 0, kADC, 12),
+//     HistMaker::getUniqueID(kSFT, 0, kADC, 13),
+//     HistMaker::getUniqueID(kSFT, 0, kADC, 14),
+//     HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_1to16_Offset),
+//     HistMaker::getUniqueID(kSCH, 0, kADC, kSCH_17to64_Offset)
+//   };
+//   for( Int_t i=0, n=id.size(); i<n; ++i ){
+//     c1->cd(i+1);
+//     TH1 *h = GHist::get(id[i]);
+//     if( !h ) continue;
+//     h->GetXaxis()->SetRangeUser(-20, 100);
+//     h->Draw();
+//   }
+//   return c1;
+// }
 
 //____________________________________________________________________________
 TCanvas*

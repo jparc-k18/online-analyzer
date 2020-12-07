@@ -68,6 +68,7 @@ private:
 
 public:
   //VEvent* EventAllocator( void );
+  Bool_t  Contains( const TString& key ) const;
   template <typename T>
   static const T& Get( const std::string& key ) { return T(); }
   bool    Initialize( void );

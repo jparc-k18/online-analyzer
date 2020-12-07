@@ -64,8 +64,12 @@ process_begin(const std::vector<std::string>& argv)
   TGFileBrowser *tab_macro = gCon.makeFileBrowser("Macro");
 
   // Add macros to the Macro tab
-  tab_macro->Add(macro::Get("dispGe"));
-  tab_macro->Add(macro::Get("dispBGO"));
+  //tab_macro->Add(macro::Get("dispGe"));
+  tab_macro->Add(macro::Get("dispGeAdc"));
+  tab_macro->Add(macro::Get("dispGeTdc"));
+  tab_macro->Add(macro::Get("dispGeAdc_60Co_1170"));
+  tab_macro->Add(macro::Get("dispGeTdc_60Co_1330"));
+  tab_macro->Add(macro::Get("dispGeAdc_60Co"));
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();

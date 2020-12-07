@@ -15,8 +15,8 @@ void dispBH2Fit()
   // ----------------------------------
   //
   // TDC gate range
-  static const unsigned int tdc_min = gUser.GetParameter("BH2_TDC_FPGA", 0);
-  static const unsigned int tdc_max = gUser.GetParameter("BH2_TDC_FPGA", 1);
+  static const unsigned int tdc_min = gUser.GetParameter("BH2_TDC", 0);
+  static const unsigned int tdc_max = gUser.GetParameter("BH2_TDC", 1);
 
   {
     TCanvas *c1 = (TCanvas*)gROOT->FindObject("c1");
@@ -28,7 +28,7 @@ void dispBH2Fit()
       TH1 *h1  = NULL;
       TF1 fit = TF1("fit","gaus");
       fit.SetLineColor(kRed);
-      // draw TDC_FPGA
+      // draw TDC
       c1->cd( ++icanvas1 );
       //      gPad->SetLogy();
       h = (TH1*)GHist::get( HistMaker::getUniqueID(kBH2, 0, kTDC, ud+1) );

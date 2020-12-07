@@ -89,8 +89,8 @@ dispWC( void )
   }
 
   //TOF TDC gate range
-  static const unsigned int tdc_min = gUser.GetParameter("WC_TDC_FPGA", 0);
-  static const unsigned int tdc_max = gUser.GetParameter("WC_TDC_FPGA", 1);
+  static const unsigned int tdc_min = gUser.GetParameter("WC_TDC", 0);
+  static const unsigned int tdc_max = gUser.GetParameter("WC_TDC", 1);
 
   // draw TDC U
   {
@@ -151,8 +151,8 @@ dispWC( void )
   // Updater::setUpdating( true );
 
   // const auto& gUser = UserParamMan::GetInstance();
-  // const UInt_t tdc_min = gUser.GetParameter( "WC_TDC_FPGA", 0 );
-  // const UInt_t tdc_max = gUser.GetParameter( "WC_TDC_FPGA", 1 );
+  // const UInt_t tdc_min = gUser.GetParameter( "WC_TDC", 0 );
+  // const UInt_t tdc_max = gUser.GetParameter( "WC_TDC", 1 );
 
   // auto c1 = dynamic_cast<TCanvas*>( gROOT->FindObject("c1") );
   // c1->Clear();

@@ -1,0 +1,58 @@
+#!/bin/sh
+##
+#  shell script for online/semi online analyzer
+##
+
+. $(dirname $(readlink -f $0))/setebhost
+
+dis_port=8901
+rec_port=8902
+
+#port=$rec_port
+port=$dis_port
+
+ana_dir=$(dirname $(readlink -f $0))/..
+bin_dir=$ana_dir/bin
+
+##### execute file
+exe_file=$bin_dir/scaler_e03
+
+##### data directory
+data_dir=$ana_dir/data
+
+##### configure file
+conf_file=/param/conf/analyzer_scaler.conf
+
+#######################################################################
+if [ ! -f $exe_file ]; then
+    echo "#E [$(basename $0)] no such file: $exe_file"
+    exit
+fi
+if [ ! -f $conf_file ]; then
+    echo "#E [$(basename $0)] no such file: $conf_file"
+    exit
+fi
+
+if [ $# = 0 ]; then
+    $exe_file $conf_file ${ebhost}:$port --spill-by-spill --spillon --hbx
+    exit
+fi
+
+for d in ${data_dir[@]}
+do
+    data_file=`find -L $d/ -name "run$1.dat*" 2>/dev/null`
+    if [ -z "$data_file" ]; then
+	continue
+    fi
+    if [ $# = 1 ]; then
+	$exe_file $conf_file $data_file
+	exit
+    elif [ $# = 2 ]; then
+	$exe_file $conf_file $data_file $2
+	exit
+    else
+	echo "#D Usage: $(basename $0) [run number]"
+	exit
+    fi
+done
+echo "#E [$(basename $0)] no such run: $1"

@@ -1881,7 +1881,7 @@ process_event( void )
 
   // Correlation (2D histograms) -------------------------------------
   {
-    // data typep
+    // data type
     static const Int_t k_device_bh1  = gUnpacker.get_device_id("BH1");
     static const Int_t k_device_bft  = gUnpacker.get_device_id("BFT");
     static const Int_t k_device_bh2  = gUnpacker.get_device_id("BH2");
@@ -1941,26 +1941,22 @@ process_event( void )
     static const UInt_t sch_tdc_max = gUser.GetParameter("SCH_TDC", 1);
 
     // TOF vs SCH
-    TH2* hcor_tofsch = dynamic_cast<TH2*>(hptr_array[cor_id++]);
-    for(Int_t seg1 = 0; seg1<NumOfSegSCH; ++seg1){
-      for(Int_t seg2 = 0; seg2<NumOfSegTOF; ++seg2){
-	Int_t hitSCH = gUnpacker.get_entries(k_device_sch, 0, seg1, 0, 0);
-	Int_t hitTOF = gUnpacker.get_entries(k_device_tof, 0, seg2, 0, 1);
-	if(hitTOF == 0 || hitSCH == 0) continue;
-          for(Int_t m1 = 0; m1<hitSCH; ++m1){
-	    UInt_t tdcSCH = gUnpacker.get(k_device_sch, 0, seg1, 0, 0, m1);
-	      if(tdcSCH != 0){
-                for(Int_t m2 = 0; m2<hitTOF; ++m2){
-	          UInt_t tdcTOF = gUnpacker.get(k_device_tof, 0, seg2, 0, 1, m2);
-	            if( tof_tdc_min<tdcTOF &&
-                        tdcTOF<tof_tdc_max &&
-                        sch_tdc_min<tdcSCH &&
-                        tdcSCH<sch_tdc_max  ){
-	              hcor_tofsch->Fill(seg1, seg2);
-	            }
-	        }
-	      }
-	  }
+    auto hcor_tofsch = dynamic_cast<TH2*>( hptr_array[cor_id++] );
+    for( Int_t seg1 = 0; seg1<NumOfSegSCH; ++seg1 ){
+      for( Int_t seg2 = 0; seg2<NumOfSegTOF; ++seg2 ){
+	Int_t hitSCH = gUnpacker.get_entries( k_device_sch, 0, seg1, 0, 0 );
+	Int_t hitTOF = gUnpacker.get_entries( k_device_tof, 0, seg2, 0, 1 );
+        for( Int_t m1=0; m1<hitSCH; ++m1 ){
+          auto tdcSCH = gUnpacker.get( k_device_sch, 0, seg1, 0, 0, m1 );
+          if( tdcSCH == 0 ) continue;
+          for( Int_t m2=0; m2<hitTOF; ++m2 ){
+            auto tdcTOF = gUnpacker.get( k_device_tof, 0, seg2, 0, 1, m2 );
+            if( tof_tdc_min < tdcTOF && tdcTOF < tof_tdc_max &&
+                sch_tdc_min < tdcSCH && tdcSCH < sch_tdc_max ){
+              hcor_tofsch->Fill( seg1, seg2 );
+            }
+          }
+        }
       }
     }
 

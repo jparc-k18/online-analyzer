@@ -1,42 +1,43 @@
-// Updater belongs to the namespace hddaq::gui
-using namespace hddaq::gui;
+// -*- C++ -*-
 
-void dispCorrelation( void )
+using hddaq::gui::Updater;
+
+//_____________________________________________________________________________
+void
+dispCorrelation( void )
 {
-  // You must write these lines for the thread safe
-  // ----------------------------------
-  if(Updater::isUpdating()){return;}
-  Updater::setUpdating(true);
-  // ----------------------------------
+  if( Updater::isUpdating() )
+    return;
+  Updater::setUpdating( true );
 
   {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
+    auto c = dynamic_cast<TCanvas*>( gROOT->FindObject("c1") );
+    if( !c )
+      return;
     c->Clear();
-    c->Divide(3,2);
+    c->Divide( 3, 2 );
+    const auto base_id = HistMaker::getUniqueID( kCorrelation, 0, 0 );
     for( Int_t i=0; i<6; ++i ){
-      c->cd(i+1);//->SetGrid();
-      TH1 *h = GHist::get( HistMaker::getUniqueID(kCorrelation, 0, 0, i+1) );
+      c->cd( i+1 ); //->SetGrid();
+      auto h = GHist::get( base_id+i );
       if( !h ) continue;
       h->Draw("colz");
     }
     c->Update();
   }
 
-  {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
-    c->Clear();
-    c->Divide(2,2);
-    for( Int_t i=0; i<4; ++i ){
-      c->cd(i+1);//->SetGrid();
-      TH1 *h = GHist::get( HistMaker::getUniqueID(kCorrelation, 0, 0, i+7) );
-      if( !h ) continue;
-      h->Draw("colz");
-    }
-    c->Update();
-  }
+  // {
+  //   TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
+  //   c->Clear();
+  //   c->Divide(2,2);
+  //   for( Int_t i=0; i<4; ++i ){
+  //     c->cd(i+1);//->SetGrid();
+  //     TH1 *h = GHist::get( HistMaker::getUniqueID(kCorrelation, 0, 0, i+7) );
+  //     if( !h ) continue;
+  //     h->Draw("colz");
+  //   }
+  //   c->Update();
+  // }
 
-  // You must write these lines for the thread safe
-  // ----------------------------------
-  Updater::setUpdating(false);
-  // ----------------------------------
+  Updater::setUpdating( false );
 }

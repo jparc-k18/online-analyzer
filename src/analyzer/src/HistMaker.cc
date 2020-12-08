@@ -5426,29 +5426,29 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
 			   NumOfSegTOF, 0, NumOfSegTOF,
 			   "SDC4 wire", "TOF seg"));
 
-    // FHT1 UX1 vs FHT1 UX2 --------------------------------------------
-    top_dir->Add(createTH2(++target_id, "FHT1_UX1_FHT1_UX2", // 1 origin
-			   NumOfSegFHT1, 0, NumOfSegFHT1,
-			   NumOfSegFHT1, 0, NumOfSegFHT1,
-			   "FHT1 UX1", "FHT1 UX2"));
+    // // FHT1 UX1 vs FHT1 UX2 --------------------------------------------
+    // top_dir->Add(createTH2(++target_id, "FHT1_UX1_FHT1_UX2", // 1 origin
+    //     		   NumOfSegFHT1, 0, NumOfSegFHT1,
+    //     		   NumOfSegFHT1, 0, NumOfSegFHT1,
+    //     		   "FHT1 UX1", "FHT1 UX2"));
 
-    // FHT1 DX1 vs FHT1 DX2 --------------------------------------------
-    top_dir->Add(createTH2(++target_id, "FHT1_DX1_FHT1_DX2", // 1 origin
-			   NumOfSegFHT1, 0, NumOfSegFHT1,
-			   NumOfSegFHT1, 0, NumOfSegFHT1,
-			   "FHT1 DX1", "FHT1 DX2"));
+    // // FHT1 DX1 vs FHT1 DX2 --------------------------------------------
+    // top_dir->Add(createTH2(++target_id, "FHT1_DX1_FHT1_DX2", // 1 origin
+    //     		   NumOfSegFHT1, 0, NumOfSegFHT1,
+    //     		   NumOfSegFHT1, 0, NumOfSegFHT1,
+    //     		   "FHT1 DX1", "FHT1 DX2"));
 
-    // FHT2 UX1 vs FHT2 UX2 --------------------------------------------
-    top_dir->Add(createTH2(++target_id, "FHT2_UX1_FHT2_UX2", // 1 origin
-			   NumOfSegFHT2, 0, NumOfSegFHT2,
-			   NumOfSegFHT2, 0, NumOfSegFHT2,
-			   "FHT2 UX1", "FHT2 UX2"));
+    // // FHT2 UX1 vs FHT2 UX2 --------------------------------------------
+    // top_dir->Add(createTH2(++target_id, "FHT2_UX1_FHT2_UX2", // 1 origin
+    //     		   NumOfSegFHT2, 0, NumOfSegFHT2,
+    //     		   NumOfSegFHT2, 0, NumOfSegFHT2,
+    //     		   "FHT2 UX1", "FHT2 UX2"));
 
-    // FHT2 DX1 vs FHT2 DX2 --------------------------------------------
-    top_dir->Add(createTH2(++target_id, "FHT2_DX1_FHT2_DX2", // 1 origin
-			   NumOfSegFHT2, 0, NumOfSegFHT2,
-			   NumOfSegFHT2, 0, NumOfSegFHT2,
-			   "FHT2 DX1", "FHT2 DX2"));
+    // // FHT2 DX1 vs FHT2 DX2 --------------------------------------------
+    // top_dir->Add(createTH2(++target_id, "FHT2_DX1_FHT2_DX2", // 1 origin
+    //     		   NumOfSegFHT2, 0, NumOfSegFHT2,
+    //     		   NumOfSegFHT2, 0, NumOfSegFHT2,
+    //     		   "FHT2 DX1", "FHT2 DX2"));
   }
 
   return top_dir;

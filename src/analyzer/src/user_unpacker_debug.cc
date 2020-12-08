@@ -28,7 +28,7 @@ namespace analyzer
     //std::vector<std::string> target = { "vme01" };
     std::vector<std::string> target = {
 				       // "vme01",
-				       "hul01scr-1",
+				       "hul_hbx_scr",
 				       // "hul02lac",
 				       // "hul01hr-1",
 				       // "hul01hr-2",
@@ -78,8 +78,8 @@ process_event( void )
       std::time_t t = gUnpacker.get_node_header(c.first, DAQNode::k_unix_time);
       if( t == 0 )
 	continue;
-      if( TMath::Abs( t - eb_time ) <= 1 )
-	continue;
+      // if( TMath::Abs( t - eb_time ) <= 1 )
+      //   continue;
       char date[64];
       std::strftime(date, sizeof(date), "%Y/%m/%d %a %H:%M:%S", std::localtime(&t));
       cout << std::left << std::setw(20) << n

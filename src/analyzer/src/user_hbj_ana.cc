@@ -70,6 +70,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(dispGeTdc());
   tab_macro->Add(dispPWOTdc());
   tab_macro->Add(dispGeAdc_60Co());
+  tab_macro->Add(dispGeAdc_LSO());
   // tab_macro->Add(dispGeAdc_60Co_1170());
   // tab_macro->Add(dispGeAdc_60Co_1330());
 

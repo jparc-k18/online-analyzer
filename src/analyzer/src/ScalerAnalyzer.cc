@@ -32,9 +32,6 @@ namespace
 {
   using namespace hddaq::unpacker;
   const UnpackerManager& gUnpacker = GUnpacker::get_instance();
-  const std::vector<TString> sFlag =
-    { "SeparateComma", "SpillBySpill", "SemiOnline", "ScalerSheet",
-      "ScalerText", "ScalerSch", "ScalerDaq", "ScalerE42", "SpillOn", "SpillOff" };
 }
 
 //______________________________________________________________________________

@@ -297,18 +297,12 @@ process_event( void )
 	continue;
       TString n = c.second->get_name();
       auto id = c.second->get_id();
-      if( n.Contains( "vme" ) ){
-	std::cout << "vme " << id << std::endl;
+      if( n.Contains( "vme" ) )
 	vme_fe_id.push_back( id );
-      }
-      if( n.Contains( "hul" ) ){
-	std::cout << "hul " << id << std::endl;
+      if( n.Contains( "hul" ) )
 	hul_fe_id.push_back( id );
-      }
-      if( n.Contains( "easiroc" ) ){
-	std::cout << "easiroc " << id << std::endl;
+      if( n.Contains( "easiroc" ) )
 	ea0c_fe_id.push_back( id );
-      }
     }
 
     //___ sequential id

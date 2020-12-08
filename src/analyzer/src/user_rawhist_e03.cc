@@ -39,18 +39,18 @@
 #include "UserParamMan.hh"
 
 #define DEBUG    0
-#define FLAG_DAQ 0
+#define FLAG_DAQ 1
 
 namespace
 {
-  using hddaq::unpacker::GUnpacker;
-  using hddaq::unpacker::DAQNode;
-  const auto& gUnpacker = GUnpacker::get_instance();
-        auto& gHist     = HistMaker::getInstance();
-  const auto& gUser     = UserParamMan::GetInstance();
-  std::vector<TH1*> hptr_array;
-  Bool_t flag_event_cut = false;
-  Int_t event_cut_factor = 1; // for fast semi-online analysis
+using hddaq::unpacker::GUnpacker;
+using hddaq::unpacker::DAQNode;
+const auto& gUnpacker = GUnpacker::get_instance();
+      auto& gHist     = HistMaker::getInstance();
+const auto& gUser     = UserParamMan::GetInstance();
+std::vector<TH1*> hptr_array;
+Bool_t flag_event_cut = false;
+Int_t event_cut_factor = 1; // for fast semi-online analysis
 }
 
 namespace analyzer
@@ -288,8 +288,10 @@ process_event( void )
   // DAQ -------------------------------------------------------------
   {
     //___ node id
-    static const Int_t k_eb      = gUnpacker.get_fe_id( "k18eb" );
+    static const Int_t k_eb = gUnpacker.get_fe_id( "k18eb" );
     std::vector<Int_t> vme_fe_id;
+    std::vector<Int_t> hul_fe_id;
+    std::vector<Int_t> ea0c_fe_id;
     for( auto&& c : gUnpacker.get_root()->get_child_list() ){
       if( !c.second )
 	continue;
@@ -299,52 +301,45 @@ process_event( void )
 	std::cout << "vme " << id << std::endl;
 	vme_fe_id.push_back( id );
       }
+      if( n.Contains( "hul" ) ){
+	std::cout << "hul " << id << std::endl;
+	hul_fe_id.push_back( id );
+      }
+      if( n.Contains( "easiroc" ) ){
+	std::cout << "easiroc " << id << std::endl;
+	ea0c_fe_id.push_back( id );
+      }
     }
 
-    //___ fe_id
-    static const Int_t k_vme     = gUnpacker.get_fe_id( "vme01" );
-    static const Int_t k_hulbc   = gUnpacker.get_fe_id( "hulbc-1" );
-    static const Int_t k_hul01   = gUnpacker.get_fe_id( "hul01scr-1" );
-    static const Int_t k_ea0c    = gUnpacker.get_fe_id( "easiroc0" );
-    // static const Int_t k_vea0c   = gUnpacker.get_fe_id( "veasiroc0" );
     //___ sequential id
-    static const Int_t eb_id    = gHist.getSequentialID( kDAQ, kEB, kHitPat );
-    static const Int_t vme_id   = gHist.getSequentialID( kDAQ, kVME, kHitPat2D );
-    static const Int_t hul_id   = gHist.getSequentialID( kDAQ, kHUL, kHitPat2D );
-    static const Int_t ea0c_id  = gHist.getSequentialID( kDAQ, kEASIROC, kHitPat2D );
-    // static const Int_t vea0c_id = gHist.getSequentialID( kDAQ, kVMEEASIROC, kHitPat2D );
+    static const Int_t eb_hid   = gHist.getSequentialID( kDAQ, kEB, kHitPat );
+    static const Int_t vme_hid  = gHist.getSequentialID( kDAQ, kVME, kHitPat2D );
+    static const Int_t hul_hid  = gHist.getSequentialID( kDAQ, kHUL, kHitPat2D );
+    static const Int_t ea0c_hid = gHist.getSequentialID( kDAQ, kEASIROC, kHitPat2D );
 
     { //___ EB
       auto data_size = gUnpacker.get_node_header( k_eb, DAQNode::k_data_size );
-      hptr_array[eb_id]->Fill( data_size );
+      hptr_array[eb_hid]->Fill( data_size );
     }
 
-    { //___ VME node
-      auto h = dynamic_cast<TH2*>( hptr_array[vme_id] );
-      for( Int_t i=0, n=h->GetXaxis()->GetXmax(); i<n; ++i ){
-	auto data_size = gUnpacker.get_node_header( k_vme+i, DAQNode::k_data_size );
-	h->Fill( i, data_size );
+    { //___ VME
+      for( Int_t i=0, n=vme_fe_id.size(); i<n; ++i ){
+	auto data_size = gUnpacker.get_node_header( vme_fe_id[i], DAQNode::k_data_size );
+        hptr_array[vme_hid]->Fill( i, data_size );
       }
     }
 
     { // EASIROC & VMEEASIROC node
-      auto h = dynamic_cast<TH2*>( hptr_array[ea0c_id] );
-      for( Int_t i=0, n=h->GetXaxis()->GetXmax(); i<n; ++i ){
-	Int_t data_size = gUnpacker.get_node_header( k_ea0c+i, DAQNode::k_data_size );
-	h->Fill( i, data_size );
+      for( Int_t i=0, n=ea0c_fe_id.size(); i<n; ++i ){
+        auto data_size = gUnpacker.get_node_header( ea0c_fe_id[i], DAQNode::k_data_size );
+        hptr_array[ea0c_hid]->Fill( i, data_size );
       }
-      // for( Int_t i = 16; i<102; ++i ){
-      // 	Int_t data_size = gUnpacker.get_node_header(k_vea0c+i-16, DAQNode::k_data_size );
-      // 	h->Fill( i, data_size );
-      // }
     }
 
     { //___ HUL node
-      auto h = dynamic_cast<TH2*>( hptr_array[hul_id] );
-      static const Int_t max_hulbc = 12;
-      for( Int_t i=0; i<max_hulbc; ++i ){
-	Int_t data_size = gUnpacker.get_node_header( k_hulbc+i, DAQNode::k_data_size );
-	h->Fill( i, data_size );
+      for( Int_t i=0, n=hul_fe_id.size(); i<n; ++i ){
+        auto data_size = gUnpacker.get_node_header( hul_fe_id[i], DAQNode::k_data_size );
+        hptr_array[hul_hid]->Fill( i, data_size );
       }
     }
 

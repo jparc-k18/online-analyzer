@@ -17,6 +17,9 @@
 #include <TDirectory.h>
 #include <TString.h>
 
+#include <Unpacker.hh>
+#include <UnpackerManager.hh>
+
 #define USE_copper 0
 
 ClassImp(HistMaker)
@@ -30,6 +33,12 @@ TString getStr_FromEnum(const char* c){
 }
 
 // #define DETECTOR_NAME(x) TString(x).ReplaceAll("create", "");
+
+namespace
+{
+using hddaq::unpacker::GUnpacker;
+const auto& gUnpacker = GUnpacker::get_instance();
+}
 
 // Constructor -------------------------------------------------------------
 HistMaker::HistMaker( void )
@@ -5581,58 +5590,95 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-
-  // DAQ infomation --------------------------------------------------
-  {
-    // Event builder infomation
-    Int_t target_id = getUniqueID(kDAQ, kEB, kHitPat, 0);
-    top_dir->Add(createTH1(target_id + 1, "Data size EB", // 1 origin
-			   50000, 0, 100000,
-			   "Data size [words]", ""));
-
-    // Node information
-    target_id = getUniqueID(kDAQ, kVME, kHitPat2D, 0);
-    top_dir->Add(createTH2(target_id + 1, "Data size VME nodes", // 1 origin
-			   5, 0, 5,
-			   100, 0, 1200,
-			   "VME node ID", "Data size [words]"));
-
-    target_id = getUniqueID(kDAQ, kCLite, kHitPat2D, 0);
-    top_dir->Add(createTH2(target_id + 1, "Data size CLite nodes", // 1 origin
-			   15, 0, 15,
-			   200, 0, 400,
-			   "CLite node ID", "Data size [words]"));
-
-    target_id = getUniqueID(kDAQ, kEASIROC, kHitPat2D, 0);
-    top_dir->Add(createTH2(target_id + 1, "Data size EASIROC nodes", // 1 origin
-			   110, 0, 110,
-			   100, 0, 300,
-			   "EASIROC node ID", "Data size [words]"));
-
-    target_id = getUniqueID(kDAQ, kHUL, kHitPat2D, 0);
-    top_dir->Add(createTH2(target_id + 1, "Data size HUL nodes", // 1 origin
-			   20, 0, 20,
-			   200, 0, 400,
-			   "HUL node ID", "Data size [words]"));
-
-//    target_id = getUniqueID(kDAQ, kCAMAC, kHitPat2D, 0);
-//    top_dir->Add(createTH2(target_id + 1, "Data size CAMAC nodes", // 1 origin
-//			   3, 0, 3,
-//			   100, 0, 200,
-//			   "CAMAC node ID", "Data size [words]"));
-
-    target_id = getUniqueID(kDAQ, kOpt, kHitPat2D, 0);
-    top_dir->Add(createTH2(target_id + 1, "Data size OptLink nodes", // 1 origin
-			   2, 0, 2,
-			   500, 0, 1000,
-			   "Opt node ID", "Data size [words]"));
-
-    target_id = getUniqueID(kDAQ, kMiscNode, kHitPat2D, 0);
-    top_dir->Add(createTH2(target_id + 1, "Data size Misc nodes", // 1 origin
-			   5, 0, 5,
-			   100, 0, 200,
-			   "Misc node ID", "Data size [words]"));
+  std::vector<Int_t> vme_fe_id;
+  std::vector<Int_t> hul_fe_id;
+  std::vector<Int_t> ea0c_fe_id;
+  for( auto&& c : gUnpacker.get_root()->get_child_list() ){
+    if( !c.second )
+      continue;
+    TString n = c.second->get_name();
+    auto id = c.second->get_id();
+    if( n.Contains( "vme" ) ){
+      std::cout << "vme " << id << std::endl;
+      vme_fe_id.push_back( id );
+    }
+    if( n.Contains( "hul" ) ){
+      std::cout << "hul " << id << std::endl;
+      hul_fe_id.push_back( id );
+    }
+    if( n.Contains( "easiroc" ) ){
+      std::cout << "easiroc " << id << std::endl;
+      ea0c_fe_id.push_back( id );
+    }
   }
+
+  { //___ EB
+    top_dir->Add( createTH1( getUniqueID( kDAQ, kEB, kHitPat ),
+                             "Data size EB",
+                             50000, 0, 100000,
+                             "Data size [words]", "" ) );
+  }
+  { //___ VME
+    auto h = createTH2( getUniqueID( kDAQ, kVME, kHitPat2D ),
+                        "Data size VME nodes",
+                        vme_fe_id.size(), 0, vme_fe_id.size(),
+                        100, 0, 1200,
+                        "VME node ID", "Data size [words]" );
+    for( Int_t i=0, n=vme_fe_id.size(); i<n; ++i ){
+      h->GetXaxis()->SetBinLabel( i+1, "0x"+TString::Itoa( vme_fe_id[i], 16 ) );
+    }
+    top_dir->Add( h );
+  }
+  // {
+  //   Int_t target_id = getUniqueID(kDAQ, kCLite, kHitPat2D, 0);
+  //   auto h = createTH2(target_id + 1, "Data size CLite nodes", // 1 origin
+  //                      15, 0, 15,
+  //                      200, 0, 400,
+  //                      "CLite node ID", "Data size [words]");
+  //   top_dir->Add( h );
+  // }
+  {
+    auto h = createTH2( getUniqueID( kDAQ, kEASIROC, kHitPat2D ),
+                        "Data size EASIROC nodes",
+                        ea0c_fe_id.size(), 0, ea0c_fe_id.size(),
+                        100, 0, 300,
+                        "EASIROC node ID", "Data size [words]" );
+    for( Int_t i=0, n=ea0c_fe_id.size(); i<n; ++i ){
+      h->GetXaxis()->SetBinLabel( i+1, "0x"+TString::Itoa( ea0c_fe_id[i], 16 ) );
+    }
+    top_dir->Add( h );
+  }
+  {
+    auto h = createTH2( getUniqueID( kDAQ, kHUL, kHitPat2D ),
+                        "Data size HUL nodes", // 1 origin
+                        hul_fe_id.size(), 0, hul_fe_id.size(),
+                        200, 0, 400,
+                        "HUL node ID", "Data size [words]");
+    for( Int_t i=0, n=hul_fe_id.size(); i<n; ++i ){
+      h->GetXaxis()->SetBinLabel( i+1, "0x"+TString::Itoa( hul_fe_id[i], 16 ) );
+    }
+    top_dir->Add( h );
+  }
+  // {
+  //   Int_t target_id = getUniqueID(kDAQ, kCAMAC, kHitPat2D, 0);
+  //   top_dir->Add(createTH2(target_id + 1, "Data size CAMAC nodes", // 1 origin
+  //       		   3, 0, 3,
+  //       		   100, 0, 200,
+  //       		   "CAMAC node ID", "Data size [words]"));
+  // }
+  // {
+  //   Int_t target_id = getUniqueID(kDAQ, kOpt, kHitPat2D, 0);
+  //   top_dir->Add(createTH2(target_id + 1, "Data size OptLink nodes", // 1 origin
+  //       		   2, 0, 2,
+  //       		   500, 0, 1000,
+  //       		   "Opt node ID", "Data size [words]"));
+
+  //   target_id = getUniqueID(kDAQ, kMiscNode, kHitPat2D, 0);
+  //   top_dir->Add(createTH2(target_id + 1, "Data size Misc nodes", // 1 origin
+  //       		   5, 0, 5,
+  //       		   100, 0, 200,
+  //       		   "Misc node ID", "Data size [words]"));
+  // }
 
   // {
   //   // TKO box information

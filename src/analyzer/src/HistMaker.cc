@@ -16,6 +16,7 @@
 #include <TList.h>
 #include <TDirectory.h>
 #include <TString.h>
+#include <TTimeStamp.h>
 
 #include <Unpacker.hh>
 #include <UnpackerManager.hh>
@@ -220,15 +221,22 @@ HistMaker::createTimeStamp( Bool_t flag_ps )
   if( flag_ps )
     name_ps_files_.push_back( det_name );
 
-  TList *top_dir = new TList;
+  auto top_dir = new TList;
   top_dir->SetName( det_name );
 
-  Int_t target_id = getUniqueID( kTimeStamp, 0, kTDC );
-  for( Int_t i=0; i<NumOfVmeRm; ++i ){
-    top_dir->Add( createTH1( target_id++,
-			     Form("%s_%d", det_name.Data(), i+1),
-			     0x1000, -0x1000, 0x1000,
+  auto target_id = getUniqueID( kTimeStamp, 0, kTDC );
+  Int_t i = 0;
+  TTimeStamp tstart( 2020, 12, 1, 0, 0, 0 );
+  TTimeStamp tend( 2021, 3, 1, 0, 0, 0 );
+  for( auto&& c : gUnpacker.get_root()->get_child_list() ){
+    if( !c.second )
+      continue;
+    top_dir->Add( createTH1( target_id + i,
+			     Form( "%s_%s_#%02d", det_name.Data(),
+                                   c.second->get_name().c_str(), i ),
+			     (tend - tstart)/60, tstart.GetSec(), tend.GetSec(),
 			     "TimeStamp", ""));
+    ++i;
   }
 
   return top_dir;

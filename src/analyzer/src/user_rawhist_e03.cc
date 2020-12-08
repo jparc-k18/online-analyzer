@@ -38,8 +38,9 @@
 #include "SsdAnalyzer.hh"
 #include "UserParamMan.hh"
 
-#define DEBUG    0
-#define FLAG_DAQ 1
+#define DEBUG      0
+#define FLAG_DAQ   1
+#define TIME_STAMP 0
 
 namespace
 {
@@ -147,8 +148,12 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createTriggerFlag());
   tab_hist->Add(gHist.createMsT());
+#if FLAG_DAQ
   tab_hist->Add(gHist.createDAQ());
-  tab_hist->Add(gHist.createTimeStamp(false));
+#endif
+#if TIME_STAMP
+  tab_hist->Add(gHist.createTimeStamp( false ));
+#endif
   tab_hist->Add(gHist.createDCEff());
 
   //misc tab
@@ -267,22 +272,21 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+#if TIME_STAMP
   // TimeStamp --------------------------------------------------------
   {
-    static const Int_t k_device = gUnpacker.get_device_id("VME-RM");
-    static const Int_t k_time   = gUnpacker.get_data_id("VME-RM", "time");
-    static const Int_t hist_id  = gHist.getSequentialID(kTimeStamp, 0, kTDC);
-    Int_t time0 = 0;
-    for( Int_t i=0; i<NumOfVmeRm; ++i ){
-      Int_t nhit = gUnpacker.get_entries( k_device, i, 0, 0, k_time );
-      if( nhit>0 ){
-	Int_t time = gUnpacker.get( k_device, i, 0, 0, k_time );
-	if( i==0 ) time0 = time;
-	TH1* h = dynamic_cast<TH1*>(hptr_array[hist_id +i]);
-	h->Fill( time - time0 );
-      }
+    static const auto hist_id = gHist.getSequentialID( kTimeStamp, 0, kTDC );
+    Int_t i = 0;
+    for( auto&& c : gUnpacker.get_root()->get_child_list() ){
+      if( !c.second )
+	continue;
+      auto t = gUnpacker.get_node_header( c.second->get_id(),
+                                          DAQNode::k_unix_time );
+      hptr_array[hist_id+i]->Fill( t );
+      ++i;
     }
   }
+#endif
 
 #if FLAG_DAQ
   // DAQ -------------------------------------------------------------

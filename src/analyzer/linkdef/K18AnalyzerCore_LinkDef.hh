@@ -13,6 +13,7 @@
 #pragma link C++ enum DetectorType;
 #pragma link C++ enum SubDetectorType;
 #pragma link C++ enum DataType;
+#pragma link C++ enum ParticleType;
 
 #pragma link C++ class BH2Cluster+;
 #pragma link C++ class BH2Filter+;

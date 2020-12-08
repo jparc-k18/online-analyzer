@@ -70,7 +70,7 @@ enum DataType {
   kDeltaE, kCTime, kDeltaE2D, kCTime2D,
   kChisqr,
   // Extra data type for CFT
-  kHighGain,kLowGain,kPede,
+  kHighGain, kLowGain, kPede,
   // Extra data type for EMC
   kSerial, kXpos, kYpos, kXYpos, kTime,
   // Extra data type for Ge detector

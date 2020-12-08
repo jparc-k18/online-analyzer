@@ -172,12 +172,6 @@ process_begin( const std::vector<std::string>& argv )
     scaler_on.Set( c, r++, ScalerInfo( "Clear",         0,  6 ) );
     scaler_on.Set( c, r++, ScalerInfo( "L2-Req",        0,  7 ) );
     scaler_on.Set( c, r++, ScalerInfo( "L2-Acc",        0,  8 ) );
-    scaler_on.Set( c, r++, ScalerInfo( "BEAM-A",        0, 35 ) );
-    scaler_on.Set( c, r++, ScalerInfo( "BEAM-B",        0, 36 ) );
-    scaler_on.Set( c, r++, ScalerInfo( "BEAM-C",        0, 37 ) );
-    scaler_on.Set( c, r++, ScalerInfo( "BEAM-D",        0, 38 ) );
-    scaler_on.Set( c, r++, ScalerInfo( "BEAM-E",        0, 39 ) );
-    scaler_on.Set( c, r++, ScalerInfo( "BEAM-F",        0, 40 ) );
     scaler_on.Set( c, r++, ScalerInfo( "TRIG-A",        0, 41 ) );
     scaler_on.Set( c, r++, ScalerInfo( "TRIG-B",        0, 42 ) );
     scaler_on.Set( c, r++, ScalerInfo( "TRIG-C",        0, 43 ) );

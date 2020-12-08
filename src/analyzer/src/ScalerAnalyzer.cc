@@ -452,6 +452,8 @@ ScalerAnalyzer::Print( Option_t* ) const
 	  << std::right << std::setw(16) << end_mark
 	  << std::endl << std::endl;
     for( Int_t i=0; i<MaxRow; ++i ){
+      if( m_info[kLeft][i].name.Contains("n/a") )
+        continue;
       m_ost << std::left  << std::setw(16) << m_info[kLeft][i].name
 	    << std::right << std::setw(16) << SeparateComma( m_info[kLeft][i].data )
 	    << " : "
@@ -461,7 +463,7 @@ ScalerAnalyzer::Print( Option_t* ) const
 	    << std::right << std::setw(16) << SeparateComma( m_info[kRight][i].data )
 	    <<std::endl;
     }
-    if( !GetFlag( kScalerSch ) && !GetFlag( kScalerE42 ) ){
+    if( !GetFlag( kScalerSch ) && !GetFlag( kScalerE42 ) && !GetFlag( kScalerHBX ) ){
       m_ost << std::endl  << std::setprecision(6) << std::fixed
 	    << std::left  << std::setw(16) << "BH2/TM"
 	    << std::right << std::setw(16) << Fraction("BH2", "TM") << " : "

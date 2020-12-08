@@ -80,7 +80,6 @@ public:
     kScalerE42,
     kSpillOn,
     kSpillOff,
-    kScalerMain,
     kScalerHBX,
     nFlag
   };
@@ -95,7 +94,6 @@ public:
     "ScalerE42",
     "SpillOn",
     "SpillOff",
-    "ScalerMain",
     "ScalerHBX",
   };
 

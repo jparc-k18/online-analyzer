@@ -5945,6 +5945,34 @@ TList* HistMaker::createGe( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
+  // ADCwTDC ---------------------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kADCwTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+    Int_t target_id = getUniqueID(kGe, 0, kADCwTDC, 0);
+    for(Int_t i = 0; i<NumOfSegGe; ++i){
+      const char* title = NULL;
+      Int_t seg = i+1;
+      title = Form("%s_ADCwTFA_%d", nameDetector, seg);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x2000, 0, 0x2000,
+			     "ADC [ch]", ""));
+    }
+
+    target_id = getUniqueID(kGe, 0, kADCwTDC, NumOfSegGe );
+    for(Int_t i = 0; i<NumOfSegGe; ++i){
+      const char* title = NULL;
+      Int_t seg = i+1;
+      title = Form("%s_ADCwCRM_%d", nameDetector, seg);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x2000, 0, 0x2000,
+			     "ADC [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
   // CRM---------------------------------------------------------
   {
     // Declaration of the sub-directory

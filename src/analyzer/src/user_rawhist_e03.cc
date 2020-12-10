@@ -2301,6 +2301,11 @@ process_event( void )
 
   // Ge --------------------------------------------------------------
   {
+    static const Int_t tfa_min = gUser.GetParameter("TFA_TDC", 0);
+    static const Int_t tfa_max = gUser.GetParameter("TFA_TDC", 1);
+    static const Int_t crm_min = gUser.GetParameter("CRM_TDC", 0);
+    static const Int_t crm_max = gUser.GetParameter("CRM_TDC", 1);
+
     // data type
     static const Int_t k_device = gUnpacker.get_device_id("Ge");
     static const Int_t k_adc    = gUnpacker.get_data_id("Ge","adc");
@@ -2310,10 +2315,12 @@ process_event( void )
 
     // sequential id
     // sequential hist
-    static const Int_t ge_adc_id = gHist.getSequentialID(kGe, 0, kADC);
-    static const Int_t ge_tfa_id = gHist.getSequentialID(kGe, 0, kTFA);
-    static const Int_t ge_crm_id = gHist.getSequentialID(kGe, 0, kCRM);
-    static const Int_t ge_rst_id = gHist.getSequentialID(kGe, 0, kRST);
+    static const Int_t ge_adc_id    = gHist.getSequentialID(kGe, 0, kADC);
+    static const Int_t ge_adc_wt_id = gHist.getSequentialID(kGe, 0, kADCwTDC);
+    static const Int_t ge_adc_wc_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe+1);
+    static const Int_t ge_tfa_id    = gHist.getSequentialID(kGe, 0, kTFA);
+    static const Int_t ge_crm_id    = gHist.getSequentialID(kGe, 0, kCRM);
+    static const Int_t ge_rst_id    = gHist.getSequentialID(kGe, 0, kRST);
 
     // sum hist id
     /*
@@ -2361,6 +2368,7 @@ process_event( void )
       // TFA
       Int_t nhit_tfa = gUnpacker.get_entries(k_device, 0, seg, 0, k_tfa);
       Int_t tfa_first = -9999;
+      Int_t tfaflag = 0;
       if(nhit_tfa != 0){
 	tfa_first = gUnpacker.get(k_device, 0, seg, 0, k_tfa, 0);
 	if(adc >= 0) hptr_array[ge_tfa_adc_id + seg]->Fill(tfa_first, adc);
@@ -2368,11 +2376,14 @@ process_event( void )
 	  Int_t tfa = gUnpacker.get(k_device, 0, seg, 0, k_tfa, m);
 	  hptr_array[ge_tfa_id + seg]->Fill(tfa);
 	  hptr_array[ge_tfa2d_id]->Fill(seg, tfa);
+	  if( tfa_min < tfa && tfa < tfa_max ) tfaflag = 1;
 	}
+	if(tfaflag == 1) hptr_array[ge_adc_wt_id + seg]->Fill(adc);
       }
 
       // CRM
       Int_t nhit_crm = gUnpacker.get_entries(k_device, 0, seg, 0, k_crm);
+      Int_t crmflag = 0;
       if(nhit_crm != 0){
 	Int_t crm_first = gUnpacker.get(k_device, 0, seg, 0, k_crm, 0);
 	if(tfa_first > 0) hptr_array[ge_tfa_crm_id + seg]->Fill(tfa_first, crm_first);
@@ -2380,7 +2391,9 @@ process_event( void )
 	  Int_t crm = gUnpacker.get(k_device, 0, seg, 0, k_crm, m);
 	  hptr_array[ge_crm_id + seg]->Fill(crm);
 	  hptr_array[ge_crm2d_id]->Fill(seg, crm);
+	  if( crm_min < crm && crm < crm_max ) crmflag = 1;
 	}
+	if(crmflag == 1) hptr_array[ge_adc_wc_id + seg]->Fill(adc);
       }
 
       // RST

@@ -46,6 +46,47 @@ void dispGeAdc()
     c->Update();
   }
 
+  // draw ADCwTFA
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
+    c->Clear();
+    c->Divide( 4, 4 );
+    int adc_id  = HistMaker::getUniqueID(kGe, 0, kADC, 1);
+    int adcwtdc_id = HistMaker::getUniqueID(kGe, 0, kADCwTDC, 1);
+    for( int i=0; i<NumOfSegGe; ++i ){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get( adc_id + i );
+      h->GetXaxis()->SetRangeUser( 0, 8192 );
+      h->Draw();
+      TH1 *hh = (TH1*)GHist::get( adcwtdc_id + i );
+      hh->GetXaxis()->SetRangeUser( 0, 8192 );
+      hh->SetLineColor( kRed );
+      hh->Draw("same");
+    }
+    c->Update();
+  }
+
+  // draw ADCwCRM
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
+    c->Clear();
+    c->Divide( 4, 4 );
+    int adc_id  = HistMaker::getUniqueID(kGe, 0, kADC, 1);
+    int adcwtdc_id = HistMaker::getUniqueID(kGe, 0, kADCwTDC, NumOfSegGe+1);
+    for( int i=0; i<NumOfSegGe; ++i ){
+      c->cd(i+1);
+      TH1 *h = (TH1*)GHist::get( adc_id + i );
+      h->GetXaxis()->SetRangeUser( 0, 8192 );
+      h->Draw();
+      TH1 *hh = (TH1*)GHist::get( adcwtdc_id + i );
+      hh->GetXaxis()->SetRangeUser( 0, 8192 );
+      hh->SetLineColor( kRed );
+      hh->Draw("same");
+    }
+    c->Update();
+  }
+
+
 
   // You must write these lines for the thread safe
   // ----------------------------------

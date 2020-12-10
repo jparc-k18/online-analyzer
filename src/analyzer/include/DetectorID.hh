@@ -156,40 +156,41 @@ const Int_t NumOfSegVMEEASIROC    = 64;
 namespace trigger
 {
   enum ETriggerFlag
-    {
-     kL1SpillOn,
-     kL1SpillOff,
-     kSpillEnd,
-     kSpillOnEnd,
-     kTofTiming,
-     kMatrix2D1,
-     kMatrix2D2,
-     kMatrix3D,
-     kBeamA,
-     kBeamB,
-     kBeamC,
-     kBeamD,
-     kBeamE,
-     kBeamF,
-     kTrigA,
-     kTrigB,
-     kTrigC,
-     kTrigD,
-     kTrigE,
-     kTrigF,
-     kTrigAPS,
-     kTrigBPS,
-     kTrigCPS,
-     kTrigDPS,
-     kTrigEPS,
-     kTrigFPS,
-     kLevel1A,
-     kLevel1B,
-     kClockPS,
-     kReserve2PS,
-     kLevel1OR,
-     NTriggerFlag
-    };
+  {
+    kL1SpillOn,
+    kL1SpillOff,
+    kSpillEnd,
+    kSpillOnEnd,
+    kTofTiming,
+    kMatrix2D1,
+    kMatrix2D2,
+    kMatrix3D,
+    kBeamA,
+    kBeamB,
+    kBeamC,
+    kBeamD,
+    kBeamE,
+    kBeamF,
+    kTrigA,
+    kTrigB,
+    kTrigC,
+    kTrigD,
+    kTrigE,
+    kTrigF,
+    kTrigAPS,
+    kTrigBPS,
+    kTrigCPS,
+    kTrigDPS,
+    kTrigEPS,
+    kTrigFPS,
+    kLevel1A,
+    kLevel1B,
+    kClockPS,
+    kReserve2PS,
+    kLevel1OR,
+    kEssDischarge,
+    NTriggerFlag
+  };
 
   const std::vector<TString> STriggerFlag =
     {
@@ -224,6 +225,7 @@ namespace trigger
      "Clock-PS",
      "Reserve2-PS",
      "Level1OR",
+     "EssDischarge",
     };
 }
 const Int_t NumOfSegTFlag = trigger::NTriggerFlag;

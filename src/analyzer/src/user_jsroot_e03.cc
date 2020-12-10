@@ -160,6 +160,16 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register( http::WCTDCU() );
   gHttp.Register( http::WCTDCD() );
   gHttp.Register( http::WCTDCSUM() );
+  gHttp.Register( http::GeADC() );
+  gHttp.Register( http::GeCRM() );
+  gHttp.Register( http::GeTFA() );
+  gHttp.Register( http::GeRST() );
+  // gHttp.Register( http::GeMultiCRM() );
+  // gHttp.Register( http::GeMultiTFA() );
+  gHttp.Register( http::GeTFACRM() );
+  gHttp.Register( http::GeTFAADC() );
+  gHttp.Register( http::GeRSTADC() );
+  gHttp.Register( http::BGOTDC() );
   gHttp.Register( http::TriggerFlag() );
   gHttp.Register( http::HitPattern() );
   gHttp.Register( http::BcOutEfficiency() );

@@ -1478,6 +1478,177 @@ DAQ( void )
 
 //_____________________________________________________________________________
 TCanvas*
+GeADC( void )
+{
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 4, 5 );
+  const auto base_id = HistMaker::getUniqueID( kGe, 0, kADC );
+  for( Int_t i=0; i<NumOfSegGe; ++i ){
+    c1->cd( i+1 );
+    auto h1 = GHist::get( base_id + i );
+    if( !h1 ) continue;
+    h1->Draw();
+  }
+  std::vector<Int_t> hist_id = {
+    HistMaker::getUniqueID( kGe, 0, kADC, NumOfSegGe+1 ),
+    HistMaker::getUniqueID( kGe, 0, kADC, NumOfSegGe+2 ),
+    HistMaker::getUniqueID( kGe, 0, kADC2D ),
+    HistMaker::getUniqueID( kGe, 0, kHitPat ),
+  };
+  for( Int_t i=0, n=hist_id.size(); i<n; ++i ){
+    c1->cd( i+1+NumOfSegGe );
+    auto h1 = GHist::get( hist_id[i] );
+    if( !h1 ) continue;
+    h1->Draw( "colz" );
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+GeCRM( void )
+{
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 4, 4 );
+  const auto base_id = HistMaker::getUniqueID( kGe, 0, kCRM );
+  for( Int_t i=0; i<NumOfSegGe; ++i ){
+    c1->cd( i+1 );
+    auto h1 = GHist::get( base_id + i );
+    if( !h1 ) continue;
+    h1->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+GeTFA( void )
+{
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 4, 4 );
+  const auto base_id = HistMaker::getUniqueID( kGe, 0, kTFA );
+  for( Int_t i=0; i<NumOfSegGe; ++i ){
+    c1->cd( i+1 );
+    auto h1 = GHist::get( base_id + i );
+    if( !h1 ) continue;
+    h1->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+GeRST( void )
+{
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 4, 4 );
+  const auto base_id = HistMaker::getUniqueID( kGe, 0, kRST );
+  for( Int_t i=0; i<NumOfSegGe; ++i ){
+    c1->cd( i+1 );
+    auto h1 = GHist::get( base_id + i );
+    if( !h1 ) continue;
+    h1->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+GeMultiCRM( void )
+{
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 4, 4 );
+  const auto base_id = HistMaker::getUniqueID( kGe, 0, kMulti );
+  for( Int_t i=0; i<NumOfSegGe; ++i ){
+    c1->cd( i+1 );
+    auto h1 = GHist::get( base_id + i );
+    if( !h1 ) continue;
+    h1->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+GeMultiTFA( void )
+{
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 4, 4 );
+  const auto base_id = HistMaker::getUniqueID( kGe, 0, kMulti, NumOfSegGe+1 );
+  for( Int_t i=0; i<NumOfSegGe; ++i ){
+    c1->cd( i+1 );
+    auto h1 = GHist::get( base_id + i );
+    if( !h1 ) continue;
+    h1->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+GeTFACRM( void )
+{
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 4, 4 );
+  const auto base_id = HistMaker::getUniqueID( kGe, 0, kTFA_CRM );
+  for( Int_t i=0; i<NumOfSegGe; ++i ){
+    c1->cd( i+1 );
+    auto h1 = GHist::get( base_id + i );
+    if( !h1 ) continue;
+    h1->Draw( "colz" );
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+GeTFAADC( void )
+{
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 4, 4 );
+  const auto base_id = HistMaker::getUniqueID( kGe, 0, kTFA_ADC );
+  for( Int_t i=0; i<NumOfSegGe; ++i ){
+    c1->cd( i+1 );
+    auto h1 = GHist::get( base_id + i );
+    if( !h1 ) continue;
+    h1->Draw( "colz" );
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+BGOTDC( void )
+{
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 8, 6 );
+  const auto base_id = HistMaker::getUniqueID( kBGO, 0, kTDC );
+  for( Int_t i=0; i<NumOfSegBGO; ++i ){
+    c1->cd( i+1 );
+    auto h1 = GHist::get( base_id + i );
+    if( !h1 ) continue;
+    h1->Draw( "colz" );
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas* GeRSTADC( void )
+{
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 4, 4 );
+  const auto base_id = HistMaker::getUniqueID( kGe, 0, kRST_ADC );
+  for( Int_t i=0; i<NumOfSegGe; ++i ){
+    c1->cd( i+1 );
+    auto h1 = GHist::get( base_id + i );
+    if( !h1 ) continue;
+    h1->Draw( "colz" );
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
 FHT1TDC( void )
 {
   const int FHTOffset = 200;
@@ -1962,20 +2133,20 @@ BGOADC( void )
 }
 
 //_____________________________________________________________________________
-TCanvas*
-BGOTDC( void )
-{
-  TCanvas *c1 = new TCanvas(__func__, __func__);
-  c1->Divide(6, 4);
-  TH1 *h;
-  for( Int_t i=0; i<NumOfSegBGO; ++i ){
-    c1->cd(i+1);
-    h = GHist::get( HistMaker::getUniqueID(kBGO, 0, kTDC, i+1) );
-    if(!h) continue;
-    h->Draw();
-  }
-  return c1;
-}
+// TCanvas*
+// BGOTDC( void )
+// {
+//   TCanvas *c1 = new TCanvas(__func__, __func__);
+//   c1->Divide(6, 4);
+//   TH1 *h;
+//   for( Int_t i=0; i<NumOfSegBGO; ++i ){
+//     c1->cd(i+1);
+//     h = GHist::get( HistMaker::getUniqueID(kBGO, 0, kTDC, i+1) );
+//     if(!h) continue;
+//     h->Draw();
+//   }
+//   return c1;
+// }
 
 //_____________________________________________________________________________
 TCanvas*

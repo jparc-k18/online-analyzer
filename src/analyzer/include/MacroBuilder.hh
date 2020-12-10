@@ -78,6 +78,16 @@ TCanvas* BeamProfileFF( void );
 TCanvas* BeamEnvelope( ParticleType p );
 
 // E03
+TCanvas* GeADC( void );
+TCanvas* GeCRM( void );
+TCanvas* GeTFA( void );
+TCanvas* GeRST( void );
+TCanvas* GeMultiCRM( void );
+TCanvas* GeMultiTFA( void );
+TCanvas* GeTFACRM( void );
+TCanvas* GeTFAADC( void );
+TCanvas* GeRSTADC( void );
+TCanvas* BGOTDC( void );
 TCanvas* HitPatternE03( void );
 void     UpdateTOTPeakFittingE03( void );
 
@@ -139,11 +149,11 @@ TCanvas* CFTClusterLowGain( void );
 TCanvas* CFTClusterLowGain2D( void );
 TCanvas* CFTClusterTDC( void );
 TCanvas* CFTClusterTDC2D( void );
-TCanvas* BGOFADC( void );
-TCanvas* BGOADC( void );
-TCanvas* BGOTDC( void );
-TCanvas* BGOADCTDC2D( void );
-TCanvas* BGOHitMulti( void );
+// TCanvas* BGOFADC( void );
+// TCanvas* BGOADC( void );
+// TCanvas* BGOTDC( void );
+// TCanvas* BGOADCTDC2D( void );
+// TCanvas* BGOHitMulti( void );
 TCanvas* PiIDTDC( void );
 TCanvas* PiIDHighGain( void );
 TCanvas* PiIDLowGain( void );

@@ -62,7 +62,7 @@ private:
   ScalerAnalyzer& operator=( const ScalerAnalyzer& );
 
 public:
-  static const Int_t MaxRow = 27;
+  static const Int_t MaxRow = 50;
   enum eDisp {
     kLeft,
     kCenter,

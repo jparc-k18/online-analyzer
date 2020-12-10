@@ -1,7 +1,7 @@
 #!/bin/sh
 
 . $(dirname $(readlink -f $0))/setebhost
-program=jsroot_e40
+program=jsroot_e03
 
 #_______________________________________________________________________________
 # if [ -z $ROOTSYS ]; then
@@ -37,7 +37,7 @@ fi
 #     sh -c ". $thisroot_sh && while true; do $server $conf $data; done"
 # screen -AmdS K18OnlineServer \
 #     sh -c "while true; do $server $conf $data 2>/dev/null; done"
-name=jsroot_e40
+name=jsroot_e03
 session=`tmux ls | grep $name`
 if [ -z "$session" ]; then
     echo "create new session $name"

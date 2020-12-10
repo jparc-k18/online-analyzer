@@ -1,5 +1,6 @@
 // -*- C++ -*-
 
+#include <iomanip>
 #include <iostream>
 #include <iterator>
 #include <fstream>
@@ -7,221 +8,175 @@
 #include <string>
 #include <vector>
 
+#include <TCanvas.h>
 #include <TGFileBrowser.h>
 #include <TH1.h>
 #include <TH2.h>
+#include <THttpServer.h>
+#include <TKey.h>
 #include <TMath.h>
 #include <TStyle.h>
+#include <TSystem.h>
+#include <TText.h>
+#include <TTimeStamp.h>
 
-#include <DAQNode.hh>
-#include <filesystem_util.hh>
+#include <user_analyzer.hh>
 #include <Unpacker.hh>
 #include <UnpackerManager.hh>
-
-#include "Controller.hh"
-#include "user_analyzer.hh"
+#include <DAQNode.hh>
+#include <filesystem_util.hh>
 
 #include "ConfMan.hh"
+#include "DetectorID.hh"
+#include "DCAnalyzer.hh"
 #include "DCDriftParamMan.hh"
 #include "DCGeomMan.hh"
 #include "DCTdcCalibMan.hh"
-#include "DetectorID.hh"
-#include "GuiPs.hh"
+#include "EMCParamMan.hh"
+#include "EventAnalyzer.hh"
+#include "FiberCluster.hh"
+#include "FiberHit.hh"
 #include "HistMaker.hh"
+#include "HodoAnalyzer.hh"
 #include "HodoParamMan.hh"
 #include "HodoPHCMan.hh"
+#include "HodoRawHit.hh"
+#include "HttpServer.hh"
 #include "MacroBuilder.hh"
 #include "MatrixParamMan.hh"
 #include "MsTParamMan.hh"
-#include "ProcInfo.hh"
 #include "PsMaker.hh"
-#include "SsdAnalyzer.hh"
 #include "UserParamMan.hh"
 
-#define DEBUG      0
-#define FLAG_DAQ   1
-#define TIME_STAMP 0
+#define DEBUG    0
+#define FLAG_DAQ 1
 
 namespace
 {
 using hddaq::unpacker::GUnpacker;
 using hddaq::unpacker::DAQNode;
-const auto& gUnpacker = GUnpacker::get_instance();
-      auto& gHist     = HistMaker::getInstance();
-const auto& gUser     = UserParamMan::GetInstance();
 std::vector<TH1*> hptr_array;
-Bool_t flag_event_cut = false;
-Int_t event_cut_factor = 1; // for fast semi-online analysis
+const auto& gUnpacker = GUnpacker::get_instance();
+auto&       gHist     = HistMaker::getInstance();
+auto&       gHttp     = HttpServer::GetInstance();
+auto&       gMatrix   = MatrixParamMan::GetInstance();
+auto&       gMsT      = MsTParamMan::GetInstance();
+const auto& gUser     = UserParamMan::GetInstance();
 }
 
 namespace analyzer
 {
 
 //____________________________________________________________________________
-Int_t
+int
 process_begin( const std::vector<std::string>& argv )
 {
-  auto& gConfMan = ConfMan::GetInstance();
+  // gROOT->SetBatch(kTRUE);
+  gStyle->SetOptStat(1110);
+  gStyle->SetTitleW(.4);
+  gStyle->SetTitleH(.1);
+  // gStyle->SetStatW(.42);
+  // gStyle->SetStatH(.35);
+  gStyle->SetStatW(.32);
+  gStyle->SetStatH(.25);
+  // gStyle->SetPalette(55);
+
+  ConfMan& gConfMan = ConfMan::GetInstance();
   gConfMan.Initialize(argv);
   gConfMan.InitializeParameter<HodoParamMan>("HDPRM");
   gConfMan.InitializeParameter<HodoPHCMan>("HDPHC");
   gConfMan.InitializeParameter<DCGeomMan>("DCGEO");
   gConfMan.InitializeParameter<DCTdcCalibMan>("DCTDC");
   gConfMan.InitializeParameter<DCDriftParamMan>("DCDRFT");
-  // gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D", "MATRIX3D");
   gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
-  // unpacker and all the parameter managers are initialized at this stage
 
-  if( argv.size()==4 ){
-    Int_t factor = std::strtod( argv[3].c_str(), NULL );
-    if( factor!=0 ) event_cut_factor = std::abs( factor );
-    flag_event_cut = true;
-    std::cout << "#D Event cut flag on : factor="
-	      << event_cut_factor << std::endl;
+  gHttp.SetPort( 9090 );
+  gHttp.Open();
+  gHttp.Register(gHist.createBH1());
+  gHttp.Register(gHist.createBFT());
+  gHttp.Register(gHist.createBC3());
+  gHttp.Register(gHist.createBC4());
+  gHttp.Register(gHist.createBH2());
+  gHttp.Register(gHist.createBAC());
+  gHttp.Register(gHist.createFAC());
+  gHttp.Register(gHist.createPVAC());
+  gHttp.Register(gHist.createSDC1());
+  gHttp.Register(gHist.createSDC2());
+  gHttp.Register(gHist.createSCH());
+  gHttp.Register(gHist.createSDC3());
+  gHttp.Register(gHist.createSDC4());
+  gHttp.Register(gHist.createTOF());
+  gHttp.Register(gHist.createLAC());
+  gHttp.Register(gHist.createWC());
+  gHttp.Register(gHist.createGe());
+  gHttp.Register(gHist.createBGO());
+  gHttp.Register(gHist.createCorrelation());
+  gHttp.Register(gHist.createTriggerFlag());
+  gHttp.Register(gHist.createDAQ(false));
+  gHttp.Register(gHist.createDCEff());
+  {
+    int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
+    gHttp.Register( gHist.createTH1( btof_id, "BTOF",
+                                     300, -10, 5,
+                                     "BTOF [ns]", "" ) );
+    gHttp.Register( gHist.createTH1( btof_id + 1, "BH1-6_BH2-4",
+                                     400, 400, 600,
+                                     "[ch]", "" ) );
   }
 
-  // Make tabs
-  hddaq::gui::Controller& gCon = hddaq::gui::Controller::getInstance();
-  TGFileBrowser *tab_hist  = gCon.makeFileBrowser("Hist");
-  TGFileBrowser *tab_macro = gCon.makeFileBrowser("Macro");
-  TGFileBrowser *tab_misc   = gCon.makeFileBrowser("Misc");
-
-  // Add macros to the Macro tab
-  //tab_macro->Add(hoge());
-  tab_macro->Add(macro::Get("clear_all_canvas"));
-  tab_macro->Add(macro::Get("clear_canvas"));
-  tab_macro->Add(macro::Get("split22"));
-  tab_macro->Add(macro::Get("split32"));
-  tab_macro->Add(macro::Get("split33"));
-  tab_macro->Add(macro::Get("dispBH1"));
-  tab_macro->Add(macro::Get("dispBFT"));
-  tab_macro->Add(macro::Get("dispBC3"));
-  tab_macro->Add(macro::Get("dispBC4"));
-  tab_macro->Add(macro::Get("dispBH2"));
-  tab_macro->Add(macro::Get("dispBAC"));
-  tab_macro->Add(macro::Get("dispFAC"));
-  tab_macro->Add(macro::Get("dispPVAC"));
-  tab_macro->Add(macro::Get("dispSDC1"));
-  tab_macro->Add(macro::Get("dispSDC2"));
-  tab_macro->Add(macro::Get("dispSCH"));
-  tab_macro->Add(macro::Get("dispSDC3"));
-  tab_macro->Add(macro::Get("dispSDC4"));
-  tab_macro->Add(macro::Get("dispTOF"));
-  tab_macro->Add(macro::Get("dispLAC"));
-  tab_macro->Add(macro::Get("dispWC"));
-  tab_macro->Add(macro::Get("dispGeAdc"));
-  tab_macro->Add(macro::Get("dispGeTdc"));
-  tab_macro->Add(macro::Get("dispGe2dhist"));
-  tab_macro->Add(macro::Get("dispGeAdc_60Co_1170"));
-  tab_macro->Add(macro::Get("dispGeAdc_60Co"));
-  tab_macro->Add(macro::Get("dispGeAdc_LSO"));
-  tab_macro->Add(macro::Get("dispBGO"));
-  tab_macro->Add(macro::Get("dispMsT"));
-  tab_macro->Add(macro::Get("dispTriggerFlag"));
-  tab_macro->Add(macro::Get("dispHitPat"));
-  tab_macro->Add(macro::Get("dispCorrelation"));
-  tab_macro->Add(macro::Get("effBcOut"));
-  tab_macro->Add(macro::Get("effSdcInOut"));
-  tab_macro->Add(macro::Get("dispBH2Fit"));
-  tab_macro->Add(macro::Get("dispDAQ"));
-
-  // Add histograms to the Hist tab
-  tab_hist->Add(gHist.createBH1());
-  tab_hist->Add(gHist.createBFT());
-  tab_hist->Add(gHist.createBC3());
-  tab_hist->Add(gHist.createBC4());
-  tab_hist->Add(gHist.createBH2());
-  tab_hist->Add(gHist.createBAC());
-  tab_hist->Add(gHist.createFAC());
-  tab_hist->Add(gHist.createPVAC());
-  tab_hist->Add(gHist.createSDC1());
-  tab_hist->Add(gHist.createSDC2());
-  tab_hist->Add(gHist.createSCH());
-  tab_hist->Add(gHist.createSDC3());
-  tab_hist->Add(gHist.createSDC4());
-  tab_hist->Add(gHist.createTOF());
-  tab_hist->Add(gHist.createLAC());
-  tab_hist->Add(gHist.createWC());
-  tab_hist->Add(gHist.createGe());
-  tab_hist->Add(gHist.createBGO());
-  tab_hist->Add(gHist.createCorrelation());
-  tab_hist->Add(gHist.createTriggerFlag());
-  tab_hist->Add(gHist.createMsT());
-#if FLAG_DAQ
-  tab_hist->Add(gHist.createDAQ());
-#endif
-#if TIME_STAMP
-  tab_hist->Add(gHist.createTimeStamp( false ));
-#endif
-  tab_hist->Add(gHist.createDCEff());
-
-  //misc tab
-  Int_t btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
-  tab_misc->Add(gHist.createTH1(btof_id, "BTOF",
-                               300, -10, 5,
-                               "BTOF [ns]", ""
-                               ));
-
-  tab_misc->Add(gHist.createTH1(btof_id + 1, "BH1-6_BH2-4",
-                               400, 400, 600,
-                               "[ch]", ""
-                               ));
-  // Matrix pattern
-  // Mtx2D
-  {
-    Int_t mtx2d_id = gHist.getUniqueID(kMisc, kHul2D, kHitPat2D);
-    gHist.createTH2(mtx2d_id, "Mtx2D pattern",
-                    NumOfSegSCH,   0, NumOfSegSCH,
-                    NumOfSegTOF+1, 0, NumOfSegTOF+1,
-                    "SCH seg", "TOF seg"
-                    );
-  }// Mtx2D
-
-  // Mtx3D
-  //  {
-  //    Int_t mtx3d_id = gHist.getUniqueID(kMisc, kHul3D, kHitPat2D);
-  //    for(Int_t i = 0; i<NumOfSegClusteredFBH; ++i){
-  //      gHist.createTH2(mtx3d_id+i, Form("Mtx3D pattern_FBH%d",i),
-  //                      NumOfSegSCH,   0, NumOfSegSCH,
-  //                      NumOfSegTOF+1, 0, NumOfSegTOF+1,
-  //                      "SCH seg", "TOF seg"
-  //                      );
-  //    }// for(i)
-  //  }// Mtx3D
-
-  // Set histogram pointers to the vector sequentially.
-  // This vector contains both TH1 and TH2.
-  // Then you need to do down cast when you use TH2.
   if(0 != gHist.setHistPtr(hptr_array)){ return -1; }
 
-  // Users don't have to touch this section (Make Ps tab),
-  // but the file path should be changed.
-  // ----------------------------------------------------------
-  auto& gPsMaker = PsMaker::getInstance();
-  std::vector<TString> detList;
-  std::vector<TString> optList;
-  gHist.getListOfPsFiles(detList);
-  gPsMaker.getListOfOption(optList);
+  //___ Macro for HttpServer
+  gHttp.Register( http::BH1ADC() );
+  gHttp.Register( http::BH1TDC() );
+  gHttp.Register( http::BFT() );
+  gHttp.Register( http::BC3TDCTOT() );
+  gHttp.Register( http::BC3HitMulti() );
+  gHttp.Register( http::BC4TDCTOT() );
+  gHttp.Register( http::BC4HitMulti() );
+  gHttp.Register( http::BH2ADC() );
+  gHttp.Register( http::BH2TDC() );
+  gHttp.Register( http::T0() );
+  gHttp.Register( http::SDC1TDCTOT() );
+  gHttp.Register( http::SDC1HitMulti() );
+  gHttp.Register( http::SCHTDCU() );
+  gHttp.Register( http::SCHTDCD() );
+  gHttp.Register( http::SCHTOTU() );
+  gHttp.Register( http::SCHTOTD() );
+  gHttp.Register( http::SCHHitMulti() );
+  gHttp.Register( http::SDC2TDCTOT() );
+  gHttp.Register( http::SDC2HitMulti() );
+  gHttp.Register( http::SDC3TDCTOT() );
+  gHttp.Register( http::SDC3HitMulti() );
+  gHttp.Register( http::TOFADCU() );
+  gHttp.Register( http::TOFADCD() );
+  gHttp.Register( http::TOFTDCU() );
+  gHttp.Register( http::TOFTDCD() );
+  gHttp.Register( http::LACTDC() );
+  gHttp.Register( http::WCADCU() );
+  gHttp.Register( http::WCADCD() );
+  gHttp.Register( http::WCADCSUM() );
+  gHttp.Register( http::WCTDCU() );
+  gHttp.Register( http::WCTDCD() );
+  gHttp.Register( http::WCTDCSUM() );
+  gHttp.Register( http::TriggerFlag() );
+  gHttp.Register( http::HitPattern() );
+  gHttp.Register( http::BcOutEfficiency() );
+  gHttp.Register( http::SdcInOutEfficiency() );
+  gHttp.Register( http::Correlation() );
+  gHttp.Register( http::BFTSCHTOT() );
+  gHttp.Register( http::DAQ() );
 
-  auto& gPsTab = hddaq::gui::GuiPs::getInstance();
-  gPsTab.setFilename(Form("%s/PSFile/pro/default.ps", std::getenv("HOME")));
-  gPsTab.initialize(optList, detList);
-  // ----------------------------------------------------------
-
-  gStyle->SetOptStat(1110);
-  gStyle->SetTitleW(.400);
-  gStyle->SetTitleH(.100);
-  // gStyle->SetStatW(.420);
-  // gStyle->SetStatH(.350);
-  gStyle->SetStatW(.320);
-  gStyle->SetStatH(.250);
+  for( Int_t i=0, n=hptr_array.size(); i<n; ++i ){
+    hptr_array[i]->SetDirectory(0);
+  }
 
   return 0;
 }
 
 //____________________________________________________________________________
-Int_t
+int
 process_end( void )
 {
   hptr_array.clear();
@@ -229,16 +184,16 @@ process_end( void )
 }
 
 //____________________________________________________________________________
-Int_t
+int
 process_event( void )
 {
-#if DEBUG
-  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-#endif
-
-  const Int_t event_number = gUnpacker.get_event_number();
-  if( flag_event_cut && event_number%event_cut_factor!=0 )
-    return 0;
+  static int run_number = -1;
+  if( run_number != gUnpacker.get_root()->get_run_number() ){
+    for( Int_t i=0, n=hptr_array.size(); i<n; ++i ){
+      hptr_array[i]->Reset();
+    }
+    run_number = gUnpacker.get_root()->get_run_number();
+  }
 
   // TriggerFlag ---------------------------------------------------
   std::bitset<NumOfSegTFlag> trigger_flag;
@@ -503,7 +458,7 @@ process_event( void )
 	  if(true
 	     && tdc_min < tdc_u && tdc_u < tdc_max
 	     && tdc_min < tdc_d && tdc_d < tdc_max
-	     ){
+          ){
 	    hptr_array[bh1hit_id+1]->Fill(seg); // CHitPat
 	    ++cmultiplicity;
 	  }// TDC range OK
@@ -1197,7 +1152,7 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
-    // SDC2 ------------------------------------------------------------
+  // SDC2 ------------------------------------------------------------
 
   std::vector< std::vector<Int_t> > SDC2HitCont(4);
   {
@@ -2122,11 +2077,11 @@ process_event( void )
 
     // sequential id
     /*
-    static const Int_t baca_id   = gHist.getSequentialID(kBAC, 0, kADC,     2);
-    static const Int_t bact_id   = gHist.getSequentialID(kBAC, 0, kTDC,     2);
-    static const Int_t bacawt_id = gHist.getSequentialID(kBAC, 0, kADCwTDC, 2);
-    static const Int_t bach_id   = gHist.getSequentialID(kBAC, 0, kHitPat,  1);
-    static const Int_t bacm_id   = gHist.getSequentialID(kBAC, 0, kMulti,   1);
+      static const Int_t baca_id   = gHist.getSequentialID(kBAC, 0, kADC,     2);
+      static const Int_t bact_id   = gHist.getSequentialID(kBAC, 0, kTDC,     2);
+      static const Int_t bacawt_id = gHist.getSequentialID(kBAC, 0, kADCwTDC, 2);
+      static const Int_t bach_id   = gHist.getSequentialID(kBAC, 0, kHitPat,  1);
+      static const Int_t bacm_id   = gHist.getSequentialID(kBAC, 0, kMulti,   1);
     */
 
     static const Int_t baca_id   = gHist.getSequentialID(kBAC, 0, kADC);
@@ -2179,7 +2134,7 @@ process_event( void )
 #endif
   }//BAC
 
-    // FAC -----------------------------------------------------------
+  // FAC -----------------------------------------------------------
   {
     // data type
     static const Int_t k_device = gUnpacker.get_device_id("FAC");
@@ -2317,9 +2272,9 @@ process_event( void )
 
     // sum hist id
     /*
-    static const Int_t ge_adcsum_id
+      static const Int_t ge_adcsum_id
       = gHist.getSequentialID(kGe, 0, kADC, NumOfSegGe +1);
-    static const Int_t ge_adcsum_calib_id
+      static const Int_t ge_adcsum_calib_id
       = gHist.getSequentialID(kGe, 0, kADC, NumOfSegGe +2);
     */
 
@@ -2351,10 +2306,10 @@ process_event( void )
 	  hptr_array[ge_hitpat_id]->Fill(seg);
 	}
 	/*
-	GeAdcCalibMan& gGeAMan = GeAdcCalibMan::GetInstance();
-	Double_t energy;
-	gGeAMan.CalibAdc(seg, adc, energy);
-	if(energy > 100) hptr_array[ge_adcsum_calib_id]->Fill(energy);
+          GeAdcCalibMan& gGeAMan = GeAdcCalibMan::GetInstance();
+          Double_t energy;
+          gGeAMan.CalibAdc(seg, adc, energy);
+          if(energy > 100) hptr_array[ge_adcsum_calib_id]->Fill(energy);
 	*/
       }
 
@@ -2386,10 +2341,10 @@ process_event( void )
       // RST
       Int_t nhit_rst = gUnpacker.get_entries(k_device, 0, seg, 0, k_rst);
       if(nhit_rst != 0){
-	  Int_t rst = gUnpacker.get(k_device, 0, seg, 0, k_rst);
-	  hptr_array[ge_rst_id + seg]->Fill(rst);
-	  hptr_array[ge_rst2d_id]->Fill(seg, rst);
-	  if(adc >= 0) hptr_array[ge_rst_adc_id + seg]->Fill(rst, adc);
+        Int_t rst = gUnpacker.get(k_device, 0, seg, 0, k_rst);
+        hptr_array[ge_rst_id + seg]->Fill(rst);
+        hptr_array[ge_rst2d_id]->Fill(seg, rst);
+        if(adc >= 0) hptr_array[ge_rst_adc_id + seg]->Fill(rst, adc);
       }
     }
 #if 0
@@ -2437,18 +2392,19 @@ process_event( void )
       //hptr_array[bgo_mul_id+seg]->Fill(Multiplicity);
 
     }// for(unit)
-
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
   }
+  // Update
+  if( gUnpacker.get_counter()%100 == 0 ){
+    auto prev_level = gErrorIgnoreLevel;
+    gErrorIgnoreLevel = kError;
+    http::UpdateBcOutEfficiency();
+    http::UpdateSdcInOutEfficiency();
+    http::UpdateT0PeakFitting();
+    http::UpdateTOTPeakFitting();
+    gErrorIgnoreLevel = prev_level;
+  }
+  return 0;
 
-#if DEBUG
-  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-#endif
+}
 
- return 0;
-} //process_event()
-
-} //analyzer
+}

@@ -272,9 +272,10 @@ process_event( void )
        << "<td width=\"100\">" << " : " << "</td>"
        << "<td align=\"right\" width=\"100\">" << end_mark << "</td>"
        << "<tr><td></td><td></td><td></td></tr>";
-    for(Int_t j=0; j<ScalerAnalyzer::MaxRow; ++j){
+    for(Int_t j=0; j<27; ++j){
       ss << "<tr>";
       for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
+      // for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
         TString n = scaler_on.GetScalerName(i, j);
         if( n.Contains("n/a") )
           continue;
@@ -337,7 +338,8 @@ process_event( void )
        << "<td width=\"100\">" << " : " << "</td>"
        << "<td align=\"right\" width=\"100\">" << end_mark << "</td>"
        << "<tr><td></td><td></td><td></td></tr>";
-    for(Int_t j=0; j<ScalerAnalyzer::MaxRow; ++j){
+    for(Int_t j=0; j<27; ++j){
+    // for(Int_t j=0; j<ScalerAnalyzer::MaxRow; ++j){
       ss << "<tr>";
       for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
         TString n = scaler_off.GetScalerName(i, j);

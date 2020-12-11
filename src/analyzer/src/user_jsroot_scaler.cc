@@ -275,11 +275,15 @@ process_event( void )
     for(Int_t j=0; j<ScalerAnalyzer::MaxRow; ++j){
       ss << "<tr>";
       for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
+        TString n = scaler_on.GetScalerName(i, j);
+        if( n.Contains("n/a") )
+          continue;
 	ss << "<td>";
 	if(i != 0)
 	  ss << " : ";
-	ss << scaler_on.GetScalerName(i, j) << "</td>"
-	   << "<td align=\"right\">" << scaler_on.SeparateComma(scaler_on.Get(i, j)) << "</td>";
+	ss << n << "</td>"
+	   << "<td align=\"right\">"
+           << scaler_on.SeparateComma(scaler_on.Get(i, j)) << "</td>";
       }
       ss << "</tr>";
     }
@@ -336,11 +340,15 @@ process_event( void )
     for(Int_t j=0; j<ScalerAnalyzer::MaxRow; ++j){
       ss << "<tr>";
       for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
+        TString n = scaler_off.GetScalerName(i, j);
+        if( n.Contains("n/a") )
+          continue;
 	ss << "<td>";
 	if(i != 0)
 	  ss << " : ";
-	ss << scaler_off.GetScalerName(i, j) << "</td>"
-	   << "<td align=\"right\">" << scaler_off.SeparateComma(scaler_off.Get(i, j)) << "</td>";
+	ss << n << "</td>"
+	   << "<td align=\"right\">"
+           << scaler_off.SeparateComma(scaler_off.Get(i, j)) << "</td>";
       }
       ss << "</tr>";
     }

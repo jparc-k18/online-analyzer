@@ -77,6 +77,8 @@ enum DataType {
   kCRM,   kTFA,   kPUR,   kRST,
   kCRM2D, kTFA2D, kPUR2D, kRST2D,
   kTFA_CRM, kTFA_ADC, kRST_ADC,
+  kADCwFlag,
+  kFlagTDC, kFlagHitPat,
   sizeDataType,
   factorDataType = 1000
 };

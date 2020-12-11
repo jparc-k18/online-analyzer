@@ -42,6 +42,12 @@ const Int_t NumOfSegTrig    = 32;
 const Int_t NumOfSegScaler  = 128;
 const Int_t NumOfPlaneVmeRm = 2;
 const Int_t NumOfVmeRm      = 10;
+
+const Int_t LSOGeFlag       = 0; // HbxTrig
+const Int_t GeCoinFlag      = 1; // HbxTrig
+const Int_t SpillOnFlag     = 2; // HbxTrig
+const Int_t SpillOffFlag    = 3; // HbxTrig
+
 //const Int_t NumOfSegTFlag  = ; // defined in the following
 
 const Int_t DetIdVmeCalib      = 999;
@@ -438,10 +444,12 @@ const Int_t NumOfLayersSP0 = 8;
 const Int_t NumOfSegSP0    = 5;
 
 //E03 HBX detctors
-const Int_t DetIdGe     = 27;
-const Int_t DetIdBGO    = 114;
-const Int_t NumOfSegGe  = 16;
-const Int_t NumOfSegBGO = 48;
+const Int_t DetIdGe         = 27;
+const Int_t DetIdBGO        = 114;
+const Int_t DetIdHbxTrig    = 23;
+const Int_t NumOfSegGe      = 16;
+const Int_t NumOfSegBGO     = 48;
+const Int_t NumOfSegHbxTrig = 4;
 
 const Int_t DetIdBC1   = 101;
 const Int_t DetIdBC2   = 102;

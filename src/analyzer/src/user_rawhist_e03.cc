@@ -100,8 +100,9 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispBC4"));
   tab_macro->Add(macro::Get("dispBH2"));
   tab_macro->Add(macro::Get("dispBAC"));
-  tab_macro->Add(macro::Get("dispFAC"));
   tab_macro->Add(macro::Get("dispPVAC"));
+  tab_macro->Add(macro::Get("dispFAC"));
+  tab_macro->Add(macro::Get("dispACs"));
   tab_macro->Add(macro::Get("dispSDC1"));
   tab_macro->Add(macro::Get("dispSDC2"));
   tab_macro->Add(macro::Get("dispSCH"));
@@ -113,7 +114,6 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispGeAdc"));
   tab_macro->Add(macro::Get("dispGeTdc"));
   tab_macro->Add(macro::Get("dispGe2dhist"));
-  tab_macro->Add(macro::Get("dispGeAdc_60Co_1170"));
   tab_macro->Add(macro::Get("dispGeAdc_60Co"));
   tab_macro->Add(macro::Get("dispGeAdc_LSO"));
   tab_macro->Add(macro::Get("dispBGO"));
@@ -2312,12 +2312,19 @@ process_event( void )
     static const Int_t k_tfa    = gUnpacker.get_data_id("Ge","tfa_leading");
     static const Int_t k_crm    = gUnpacker.get_data_id("Ge","crm_leading");
     static const Int_t k_rst    = gUnpacker.get_data_id("Ge","reset_time");
+    static const Int_t k_flag_device = gUnpacker.get_device_id("HBXTFlag");
+    static const Int_t k_flag_tdc    = gUnpacker.get_data_id("HBXTFlag","tdc");
 
     // sequential id
     // sequential hist
+    static const Int_t ge_flag_hitpat_id    = gHist.getSequentialID(kGe, 0, kFlagHitPat);
+    static const Int_t ge_flag_tdc_id    = gHist.getSequentialID(kGe, 0, kFlagTDC);
+
     static const Int_t ge_adc_id    = gHist.getSequentialID(kGe, 0, kADC);
     static const Int_t ge_adc_wt_id = gHist.getSequentialID(kGe, 0, kADCwTDC);
     static const Int_t ge_adc_wc_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe+1);
+    //static const Int_t ge_adc_flag_id = gHist.getSequentialID(kGe, 0, kADCwFlag);
+
     static const Int_t ge_tfa_id    = gHist.getSequentialID(kGe, 0, kTFA);
     static const Int_t ge_crm_id    = gHist.getSequentialID(kGe, 0, kCRM);
     static const Int_t ge_rst_id    = gHist.getSequentialID(kGe, 0, kRST);
@@ -2337,12 +2344,25 @@ process_event( void )
     static const Int_t ge_adc2d_id = gHist.getSequentialID(kGe, 0, kADC2D);
     static const Int_t ge_tfa2d_id = gHist.getSequentialID(kGe, 0, kTFA2D);
     static const Int_t ge_crm2d_id = gHist.getSequentialID(kGe, 0, kCRM2D);
-    // static const Int_t ge_pur2d_id = gHist.getSequentialID(kGe, 0, kPUR2D);
     static const Int_t ge_rst2d_id = gHist.getSequentialID(kGe, 0, kRST2D);
 
     static const Int_t ge_tfa_adc_id = gHist.getSequentialID(kGe, 0, kTFA_ADC);
     static const Int_t ge_rst_adc_id = gHist.getSequentialID(kGe, 0, kRST_ADC);
     static const Int_t ge_tfa_crm_id = gHist.getSequentialID(kGe, 0, kTFA_CRM);
+
+    // HBX TriggerFlag ---------------------------------------------------
+    //Int_t trig_flag[4] ={};
+    for(Int_t seg = 0; seg<NumOfSegHbxTrig; ++seg){
+      Int_t nhit_flag = gUnpacker.get_entries(k_flag_device, 0, seg, 0, k_flag_tdc);
+      if( nhit_flag>0 ){
+	Int_t tdc = gUnpacker.get( k_flag_device, 0, seg, 0, k_flag_tdc );
+	if( tdc>0 ){
+	  hptr_array[ge_flag_tdc_id+seg]->Fill( tdc );
+	  hptr_array[ge_flag_hitpat_id]->Fill( seg );
+	  //trig_flag[seg] = 1;
+	}
+      }
+    }
 
     for(Int_t seg = 0; seg<NumOfSegGe; ++seg){
       // ADC
@@ -2352,6 +2372,7 @@ process_event( void )
 	adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
 	hptr_array[ge_adc_id + seg]->Fill(adc);
 	hptr_array[ge_adc2d_id]->Fill(seg, adc);
+	//if(trig_flag[0]==1) hptr_array[ge_adc_flag_id + seg]->Fill(adc);
 	//hptr_array[ge_adcsum_id]->Fill(adc);
 
 	if(115 < adc && adc < 7500){
@@ -2378,6 +2399,7 @@ process_event( void )
 	  hptr_array[ge_tfa2d_id]->Fill(seg, tfa);
 	  if( tfa_min < tfa && tfa < tfa_max ) tfaflag = 1;
 	}
+	//ADCwTFA
 	if(tfaflag == 1) hptr_array[ge_adc_wt_id + seg]->Fill(adc);
       }
 
@@ -2393,6 +2415,7 @@ process_event( void )
 	  hptr_array[ge_crm2d_id]->Fill(seg, crm);
 	  if( crm_min < crm && crm < crm_max ) crmflag = 1;
 	}
+	//ADCwCRM
 	if(crmflag == 1) hptr_array[ge_adc_wc_id + seg]->Fill(adc);
       }
 

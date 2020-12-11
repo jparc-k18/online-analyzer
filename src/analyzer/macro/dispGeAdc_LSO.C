@@ -13,7 +13,7 @@ void dispGeAdc_LSO()
   gStyle->SetStatH(.45);
   const int n_calib = 2;
   const int NumOfSegGe = 16;
-  const double energy[n_calib] = { 306.791, 202.843 };
+  const double energy[n_calib] = { 202.843, 306.791 };
   const int hmin[n_calib] = { 700, 1400 };
   const int hmax[n_calib] = { 1000, 1600 };
   const double width = 20.;

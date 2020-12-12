@@ -123,6 +123,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispCorrelation"));
   tab_macro->Add(macro::Get("effBcOut"));
   tab_macro->Add(macro::Get("effSdcInOut"));
+  tab_macro->Add(macro::Get("effWC"));
   tab_macro->Add(macro::Get("dispBH2Fit"));
   tab_macro->Add(macro::Get("dispDAQ"));
 
@@ -1788,25 +1789,20 @@ process_event( void )
     static const Int_t k_sum    = 2; // sum
     static const Int_t k_adc    = gUnpacker.get_data_id("WC", "adc");
     static const Int_t k_tdc    = gUnpacker.get_data_id("WC", "tdc");
-    // static const Int_t k_mt     = gUnpacker.get_data_id("WC", "fpga_meantime");
-
     // TDC gate range
     static const UInt_t tdc_min = gUser.GetParameter("WC_TDC", 0);
     static const UInt_t tdc_max = gUser.GetParameter("WC_TDC", 1);
-
     // UP
     Int_t wca_id   = gHist.getSequentialID(kWC, 0, kADC);
     Int_t wct_id   = gHist.getSequentialID(kWC, 0, kTDC);
     Int_t wcawt_id = gHist.getSequentialID(kWC, 0, kADCwTDC);    // UP
-
-    for(Int_t seg=0; seg<NumOfSegWC; ++seg){
+    for( Int_t seg=0; seg<NumOfSegWC; ++seg ){
       // ADC
       Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
       if(nhit != 0){
 	UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
 	hptr_array[wca_id + seg]->Fill(adc);
       }
-
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       for(Int_t m = 0; m<nhit; ++m){
@@ -1814,7 +1810,8 @@ process_event( void )
       	if(tdc!=0){
       	  hptr_array[wct_id + seg]->Fill(tdc);
       	  // ADC w/TDC
-      	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
+      	  if( tdc_min<tdc && tdc<tdc_max &&
+              gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
       	    UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
       	    hptr_array[wcawt_id + seg]->Fill(adc);
       	  }
@@ -1826,7 +1823,6 @@ process_event( void )
     wca_id   = gHist.getSequentialID(kWC, 0, kADC,     NumOfSegWC+1);
     wct_id   = gHist.getSequentialID(kWC, 0, kTDC,     NumOfSegWC+1);
     wcawt_id = gHist.getSequentialID(kWC, 0, kADCwTDC, NumOfSegWC+1);    // Down
-
     for(Int_t seg=0; seg<NumOfSegWC; ++seg){
       // ADC
       Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
@@ -1841,7 +1837,8 @@ process_event( void )
       	if( tdc!=0 ){
       	  hptr_array[wct_id + seg]->Fill(tdc);
       	  // ADC w/TDC
-      	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
+      	  if( tdc_min<tdc && tdc<tdc_max &&
+              gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
       	    UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
       	    hptr_array[wcawt_id + seg]->Fill( adc );
       	  }
@@ -1853,28 +1850,36 @@ process_event( void )
     wca_id   = gHist.getSequentialID(kWC, 0, kADC,     NumOfSegWC*2+1);
     wct_id   = gHist.getSequentialID(kWC, 0, kTDC,     NumOfSegWC*2+1);
     wcawt_id = gHist.getSequentialID(kWC, 0, kADCwTDC, NumOfSegWC*2+1);    // Sum
-
+    Int_t multi = 0;
     for(Int_t seg=0; seg<NumOfSegWC; ++seg){
       // ADC
       Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, k_sum, k_adc);
-      if(nhit != 0){
+      if( nhit != 0 ){
 	UInt_t adc = gUnpacker.get(k_device, 0, seg, k_sum, k_adc);
 	hptr_array[wca_id + seg]->Fill(adc);
       }
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_sum, k_tdc);
-      for(Int_t m = 0; m<nhit; ++m){
+      Bool_t is_in_gate = false;
+      for( Int_t m = 0; m<nhit; ++m ){
       	UInt_t tdc = gUnpacker.get(k_device, 0, seg, k_sum, k_tdc, m);
       	if( tdc!=0 ){
       	  hptr_array[wct_id + seg]->Fill(tdc);
       	  // ADC w/TDC
-      	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_sum, k_adc)>0){
+      	  if( tdc_min<tdc && tdc<tdc_max &&
+              gUnpacker.get_entries(k_device, 0, seg, k_sum, k_adc)>0 ){
+            is_in_gate = true;
       	    UInt_t adc = gUnpacker.get(k_device, 0, seg, k_sum, k_adc);
       	    hptr_array[wcawt_id + seg]->Fill( adc );
       	  }
       	}
       }
+      if( is_in_gate ){
+        hptr_array[gHist.getSequentialID( kWC, 0, kHitPat )]->Fill( seg );
+        ++multi;
+      }
     }
+    hptr_array[gHist.getSequentialID( kWC, 0, kMulti )]->Fill( multi );
 
 #if 0
     // Debug, dump data relating this detector

@@ -27,15 +27,6 @@ private:
     kLandscape = 112,
     NPSType
   };
-  enum OptionList {
-    kExpDataSheet,
-    kFixXaxis,
-    kLogyADC,
-    kLogyTDC,
-    // kLogyHitPat,
-    // kLogyMulti,
-    sizeOptionList
-  };
   enum ParameterList {
     kXdiv,
     kYdiv,
@@ -49,6 +40,16 @@ private:
   TPostScript*         m_ps;
 
 public:
+  enum OptionList {
+    kExpDataSheet,
+    kFixXaxis,
+    kLogyADC,
+    kLogyTDC,
+    // kLogyHitPat,
+    // kLogyMulti,
+    // kAutoSaveAtRunChange,
+    sizeOptionList
+  };
   void getListOfOption( std::vector<TString>& vec );
   void makePs( void );
 

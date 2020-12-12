@@ -45,7 +45,6 @@
 #include "MacroBuilder.hh"
 #include "MatrixParamMan.hh"
 #include "MsTParamMan.hh"
-#include "PsMaker.hh"
 #include "UserParamMan.hh"
 
 #define DEBUG    0
@@ -113,7 +112,7 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(gHist.createBGO());
   gHttp.Register(gHist.createCorrelation());
   gHttp.Register(gHist.createTriggerFlag());
-  gHttp.Register(gHist.createDAQ(false));
+  gHttp.Register(gHist.createDAQ());
   gHttp.Register(gHist.createDCEff());
   {
     int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
@@ -2423,8 +2422,8 @@ process_event( void )
     http::UpdateTOTPeakFitting();
     gErrorIgnoreLevel = prev_level;
   }
-  return 0;
 
+  return 0;
 }
 
 }

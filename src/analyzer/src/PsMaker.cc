@@ -48,6 +48,7 @@ PsMaker::PsMaker( void )
   m_name_option[kLogyTDC]      = "LogyTDC";
   // m_name_option[kLogyHitPat]   = "LogyHitPat";
   // m_name_option[kLogyMulti]    = "LogyMulti";
+  // m_name_option[kAutoSaveAtRunChange] = "AutoSaveAtRunChange";
 }
 
 //_____________________________________________________________________________
@@ -75,11 +76,13 @@ PsMaker::makePs( void )
   gStyle->SetTitleH( .1 );
   gStyle->SetStatW( .32 );
   gStyle->SetStatH( .25 );
+  if( m_ps ) delete m_ps;
+  if( m_canvas ) delete m_canvas;
 
   // make ps file instance
   const TString& filename = GuiPs::getFilename();
   m_ps     = new TPostScript( filename, kLandscape );
-  m_canvas = new TCanvas( "cps", "" );
+  m_canvas = new TCanvas( "cps", "", 700, 500 );
 
   std::cout << std::endl << "PSFile = " << filename
 	    << std::endl << std::endl;
@@ -96,17 +99,15 @@ PsMaker::makePs( void )
       create( name_detectors[i] );
     }
   }
-
   if( m_ps ){
     m_ps->Close();
+    delete m_ps;
     m_ps = nullptr;
   }
-
   if( m_canvas ){
     delete m_canvas;
     m_canvas = nullptr;
   }
-
   gROOT->SetStyle("Classic");
 }
 
@@ -1707,6 +1708,7 @@ PsMaker::drawOneCanvas( std::vector<Int_t>& id_list,
 
   // make new ps page
   m_ps->NewPage();
+  m_canvas->Clear();
   m_canvas->Divide( par_list[kXdiv], par_list[kYdiv] );
   for( Int_t i=0, n=id_list.size(); i<n; ++i ){
     if( id_list[i]==-1 ) continue;
@@ -1726,14 +1728,15 @@ PsMaker::drawOneCanvas( std::vector<Int_t>& id_list,
     // Rebin
     TString hclass = h->ClassName();
     TString hname  = Form("hclone_%d", id_list[i]);
-    if( hclass.Contains("TH1") )
-      h->SetMinimum( 0 );
     if( flag_log ){
       // log scale flag
       if( hclass.Contains("TH1") )
 	gPad->SetLogy(1);
       if( hclass.Contains("TH2") )
 	gPad->SetLogz(1);
+    } else {
+      if( hclass.Contains("TH1") )
+      h->SetMinimum( 0 );
     }
     if( hclass.Contains("TH2") &&
 	h->GetNbinsX() * h->GetNbinsY() > 200000 ){
@@ -1774,6 +1777,8 @@ PsMaker::drawRunNumber( void )
   hddaq::unpacker::UnpackerManager& g_unpacker =
     hddaq::unpacker::GUnpacker::get_instance();
   Int_t runno = g_unpacker.get_root()->get_run_number();
+  // if( GuiPs::isOptOn( kAutoSaveAtRunChange ) )
+  //   runno -= 1;
 
   m_ps->NewPage();
   m_canvas->Divide(1,1);

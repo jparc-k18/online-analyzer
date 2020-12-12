@@ -19,11 +19,11 @@ namespace hddaq
 namespace gui
 {
 
+//_____________________________________________________________________________
 class GuiPs
 {
 
 public:
-
   enum e_command
     {
       k_Save,
@@ -42,30 +42,31 @@ private:
   TString                     m_filename;
 
 public:
-  static GuiPs& getInstance();
+  static GuiPs& getInstance( void );
   virtual ~GuiPs();
 
-  static TString getFilename();
-  void initialize(const std::vector<TString>& optList,
-		  const std::vector<TString>& devList);
+  static TString getFilename( void );
+  void initialize( const std::vector<TString>& optList,
+                   const std::vector<TString>& devList );
   static bool isDevOn(int i);
   static bool isOptOn(int i);
-  void print();
-  void save();
-  void setFilename();
-  void setFilename(const char* filename);
-  void toggleAllDevice();
-  void toggleAllOption();
+  // Bool_t isAutoMode( void );
+  void print( void );
+  void save( void );
+  void setFilename( void );
+  void setFilename( const char* filename );
+  void toggleAllDevice( void );
+  void toggleAllOption( void );
 
 private:
-  GuiPs();
-  GuiPs(const GuiPs&);
-  GuiPs& operator=(const GuiPs&);
+  GuiPs( void );
+  GuiPs( const GuiPs& );
+  GuiPs& operator=( const GuiPs& );
 
-  ClassDef(hddaq::gui::GuiPs,0)
+  ClassDef( hddaq::gui::GuiPs, 0 )
+};
 
-    };
+}
 
-  }
 }
 #endif

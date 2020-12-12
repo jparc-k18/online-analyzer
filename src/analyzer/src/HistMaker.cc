@@ -4785,7 +4785,6 @@ TList* HistMaker::createWC( Bool_t flag_ps )
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-
     // Make histogram and add it
     Int_t target_id = getUniqueID(kWC, 0, kTDC, 0);
     for(Int_t i = 0; i<NumOfSegWC*3; ++i){
@@ -5617,7 +5616,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
   { //___ EB
     top_dir->Add( createTH1( getUniqueID( kDAQ, kEB, kHitPat ),
                              "Data size EB",
-                             50000, 0, 100000,
+                             2000, 0, 20000,
                              "Data size [words]", "" ) );
   }
   { //___ VME
@@ -5882,7 +5881,9 @@ TList* HistMaker::createSFV_SAC3( Bool_t flag_ps )
   return top_dir;
 }
 
-TList* HistMaker::createGe( Bool_t flag_ps )
+//_____________________________________________________________________________
+TList*
+HistMaker::createGe( Bool_t flag_ps )
 {
   // Determine the detector name
   TString strDet = CONV_STRING(kGe);
@@ -5892,14 +5893,11 @@ TList* HistMaker::createGe( Bool_t flag_ps )
     // name list which are displayed in Ps tab
     name_ps_files_.push_back(strDet);
   }
-
   // Declaration of the directory
   // Just type conversion from TString to char*
   const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
-
-
   // ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -5907,7 +5905,6 @@ TList* HistMaker::createGe( Bool_t flag_ps )
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-
     // Make histogram and add it
     Int_t target_id = getUniqueID(kGe, 0, kADC, 0);
     for(Int_t i = 0; i<NumOfSegGe; ++i){
@@ -5918,30 +5915,26 @@ TList* HistMaker::createGe( Bool_t flag_ps )
 			     0x2000, 0, 0x2000,
 			     "ADC [ch]", ""));
     }
-
     // Sum histogram
     sub_dir->Add(createTH1(++target_id + NumOfSegGe, "Ge_ADC_Sum", // 1 origin
 			   0x2000, 0, 0x2000,
 			   "ADC [ch]", ""));
-
     // Sum histogram (Energy calibrated)
-    sub_dir->Add(createTH1(++target_id + NumOfSegGe, "Ge_ADC_Sum_EnergyCalibrated", // 1 origin
+    sub_dir->Add(createTH1(++target_id + NumOfSegGe,
+                           "Ge_ADC_Sum_EnergyCalibrated", // 1 origin
 			   8000, 0, 8000,
 			   "Ge energy [keV]", ""));
-
     // 2D histogram
     target_id = getUniqueID(kGe, 0, kADC2D, 0);
     sub_dir->Add(createTH2(++target_id, "Ge_ADC_2D", // 1 origin
 			   NumOfSegGe, 0, NumOfSegGe,
 			   0x2000, 0, 0x2000,
 			   "Ge segment", "ADC [ch]"));
-
     // HitPat
     target_id = getUniqueID(kGe, 0, kHitPat, 0);
     sub_dir->Add(createTH1(++target_id, "Ge_HitPat (using ADC)", // 1 origin
 			   NumOfSegGe, 0, NumOfSegGe,
 			   "Ge segment", ""));
-
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -7100,7 +7093,6 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-
     // sum hist
     Int_t target_id = getUniqueID(kBGO, 0, kTDC, 0);
     for(Int_t i = 0; i<NumOfSegBGO; ++i){
@@ -7111,14 +7103,11 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
   			     0x3000, 0, 0x3000,
   			     "TDC [ch]", ""));
     }
-
     target_id = getUniqueID(kBGO, 0, kTDC2D, 0);
     sub_dir->Add(createTH2(++target_id, "TDC_2D", // 1 origin
 			   NumOfSegBGO, 0, NumOfSegBGO,
 			   0x3000, 0, 0x3000,
 			   "BGO segment", "TDC [ch]"));
-
-
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -7130,13 +7119,10 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-
     Int_t target_id = getUniqueID(kBGO, 0, kHitPat, 0);
     sub_dir->Add(createTH1(++target_id, "BGO_HitPat", // 1 origin
 			   NumOfSegBGO, 0, NumOfSegBGO,
 			   "BGO segment", ""));
-
-
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -7148,7 +7134,6 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-
     Int_t target_id = getUniqueID(kBGO, 0, kMulti, 0);
     for(Int_t i = 0; i<NumOfSegBGO; ++i){
       const char* title = NULL;
@@ -7158,11 +7143,9 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
   			     NumOfSegBGO, 0, NumOfSegBGO,
   			     "Multiplicity", ""));
     }
-
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }

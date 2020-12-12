@@ -133,8 +133,8 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createBC4());
   tab_hist->Add(gHist.createBH2());
   tab_hist->Add(gHist.createBAC());
-  tab_hist->Add(gHist.createFAC());
   tab_hist->Add(gHist.createPVAC());
+  tab_hist->Add(gHist.createFAC());
   tab_hist->Add(gHist.createSDC1());
   tab_hist->Add(gHist.createSDC2());
   tab_hist->Add(gHist.createSCH());
@@ -147,7 +147,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createBGO());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createTriggerFlag());
-  tab_hist->Add(gHist.createMsT());
+  // tab_hist->Add(gHist.createMsT());
 #if FLAG_DAQ
   tab_hist->Add(gHist.createDAQ());
 #endif
@@ -259,7 +259,10 @@ process_event( void )
       }
     }
     if( !( trigger_flag[trigger::kSpillEnd] |
-	   trigger_flag[trigger::kLevel1OR] ) ){
+	   trigger_flag[trigger::kLevel1OR] ) |
+        !( trigger_flag[trigger::kL1SpillOn] |
+	   trigger_flag[trigger::kL1SpillOff] |
+           trigger_flag[trigger::kSpillEnd] ) ){
       hddaq::cerr << "#W Trigger flag is missing!!! "
 		  << trigger_flag << std::endl;
     }

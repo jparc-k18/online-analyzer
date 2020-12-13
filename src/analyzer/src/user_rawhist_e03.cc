@@ -167,10 +167,9 @@ process_begin( const std::vector<std::string>& argv )
                                "BTOF [ns]", ""
                                ));
 
-  tab_misc->Add(gHist.createTH1(btof_id + 1, "BH1-6_BH2-3",
-                               400, 400, 600,
-                               "[ch]", ""
-                               ));
+  tab_misc->Add( gHist.createTH1( btof_id + 1, "BH1-6_BH2-3",
+                                  600, 50000, 350000,
+                                  "[ch]", "" ) );
   //___ Matrix ___
   gMatrix.Print2D1();
   gMatrix.Print2D2();
@@ -2098,8 +2097,8 @@ process_event( void )
   //------------------------------------------------------------------
   {
     // Unpacker
-    static const Int_t k_d_bh1  = gUnpacker.get_device_id("BH1");
-    static const Int_t k_d_bh2  = gUnpacker.get_device_id("BH2");
+    static const Int_t k_d_bh1  = gUnpacker.get_device_id( "BH1" );
+    static const Int_t k_d_bh2  = gUnpacker.get_device_id( "BH2" );
 
     static const Int_t k_u      = 0; // up
     static const Int_t k_d      = 1; // down
@@ -2114,13 +2113,13 @@ process_event( void )
     Double_t ofs = 0;
     Int_t seg = 2;
     Int_t nhitu = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
-    Int_t nhitd = gUnpacker.get_entries(k_d_bh2, 0, seg, k_d, k_tdc);
-    if( nhitu != 0 && nhitd != 0 ){
+    // Int_t nhitd = gUnpacker.get_entries(k_d_bh2, 0, seg, k_d, k_tdc);
+    if( nhitu != 0 /* && nhitd != 0 */ ){
       Int_t tdcu = gUnpacker.get(k_d_bh2, 0, seg, k_u, k_tdc);
-      Int_t tdcd = gUnpacker.get(k_d_bh2, 0, seg, k_d, k_tdc);
-      if( tdcu != 0 && tdcd != 0 ){
+      // Int_t tdcd = gUnpacker.get(k_d_bh2, 0, seg, k_d, k_tdc);
+      if( tdcu != 0 /* && tdcd != 0 */ ){
         ++multiplicity;
-        t0 = (Double_t)(tdcu+tdcd)/2.;
+        t0 = tdcu;//(Double_t)(tdcu+tdcd)/2.;
       }//if(tdc)
     }// if(nhit)
 

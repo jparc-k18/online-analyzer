@@ -131,7 +131,8 @@ const Int_t NumOfSegBFT     = 160;
 const Int_t NumOfHulRm   = 4;
 
 // Matrix ----------------------------------------------
-const Int_t NumOfSegSFT_Mtx = 48;
+// const Int_t NumOfSegSFT_Mtx = 48;
+const Int_t NumOfSegTOF_Mtx = 28;
 
 // MsT -------------------------------------------------
 enum TypesMst{typeHrTdc, typeLrTdc, typeFlag, NumOfTypesMst};

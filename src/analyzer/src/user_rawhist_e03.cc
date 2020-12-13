@@ -48,6 +48,7 @@ using hddaq::unpacker::GUnpacker;
 using hddaq::unpacker::DAQNode;
 const auto& gUnpacker = GUnpacker::get_instance();
       auto& gHist     = HistMaker::getInstance();
+const auto& gMatrix   = MatrixParamMan::GetInstance();
 const auto& gUser     = UserParamMan::GetInstance();
 std::vector<TH1*> hptr_array;
 Bool_t flag_event_cut = false;
@@ -68,7 +69,9 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.InitializeParameter<DCGeomMan>("DCGEO");
   gConfMan.InitializeParameter<DCTdcCalibMan>("DCTDC");
   gConfMan.InitializeParameter<DCDriftParamMan>("DCDRFT");
-  // gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D", "MATRIX3D");
+  gConfMan.InitializeParameter<MatrixParamMan>( "MATRIX2D1",
+                                                "MATRIX2D2",
+                                                "MATRIX3D" );
   gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
@@ -117,7 +120,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispGeAdc_60Co"));
   tab_macro->Add(macro::Get("dispGeAdc_LSO"));
   tab_macro->Add(macro::Get("dispBGO"));
-  tab_macro->Add(macro::Get("dispMsT"));
+  tab_macro->Add(macro::Get("dispMatrix"));
   tab_macro->Add(macro::Get("dispTriggerFlag"));
   tab_macro->Add(macro::Get("dispHitPat"));
   tab_macro->Add(macro::Get("dispCorrelation"));
@@ -168,28 +171,28 @@ process_begin( const std::vector<std::string>& argv )
                                400, 400, 600,
                                "[ch]", ""
                                ));
-  // Matrix pattern
-  // Mtx2D
-  {
-    Int_t mtx2d_id = gHist.getUniqueID(kMisc, kHul2D, kHitPat2D);
-    gHist.createTH2(mtx2d_id, "Mtx2D pattern",
-                    NumOfSegSCH,   0, NumOfSegSCH,
-                    NumOfSegTOF+1, 0, NumOfSegTOF+1,
-                    "SCH seg", "TOF seg"
-                    );
-  }// Mtx2D
-
-  // Mtx3D
-  //  {
-  //    Int_t mtx3d_id = gHist.getUniqueID(kMisc, kHul3D, kHitPat2D);
-  //    for(Int_t i = 0; i<NumOfSegClusteredFBH; ++i){
-  //      gHist.createTH2(mtx3d_id+i, Form("Mtx3D pattern_FBH%d",i),
-  //                      NumOfSegSCH,   0, NumOfSegSCH,
-  //                      NumOfSegTOF+1, 0, NumOfSegTOF+1,
-  //                      "SCH seg", "TOF seg"
-  //                      );
-  //    }// for(i)
-  //  }// Mtx3D
+  //___ Matrix ___
+  gMatrix.Print2D1();
+  gMatrix.Print2D2();
+  gMatrix.Print3D();
+  { // Mtx2D
+    Int_t mtx2d_id = gHist.getUniqueID( kMisc, kHul2D, kHitPat2D );
+    for( Int_t i=0; i<2; ++i ){
+      gHist.createTH2( mtx2d_id + i, Form( "Mtx2D pattern #%d", i+1 ),
+                       NumOfSegSCH, 0, NumOfSegSCH,
+                       NumOfSegTOF, 0, NumOfSegTOF,
+                       "SCH seg", "TOF seg" );
+    }
+  }
+  { // Mtx3D
+    Int_t mtx3d_id = gHist.getUniqueID( kMisc, kHul3D, kHitPat2D );
+    for( Int_t i=0; i<NumOfSegBH2; ++i ){
+      gHist.createTH2( mtx3d_id+i, Form( "Mtx3D pattern BH2-%d", i ),
+                       NumOfSegSCH, 0, NumOfSegSCH,
+                       NumOfSegTOF, 0, NumOfSegTOF,
+                       "SCH seg", "TOF seg" );
+    }
+  }
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -1904,6 +1907,8 @@ process_event( void )
 
     // sequential id
     Int_t cor_id= gHist.getSequentialID(kCorrelation, 0, 0, 1);
+    Int_t mtx2d_id= gHist.getSequentialID(kCorrelation, 1, 0, 1);
+    Int_t mtx3d_id= gHist.getSequentialID(kCorrelation, 2, 0, 1);
 
     // BH1 vs BFT
     TH2* hcor_bh1bft = dynamic_cast<TH2*>(hptr_array[cor_id++]);
@@ -1948,8 +1953,10 @@ process_event( void )
     static const UInt_t sch_tdc_min = gUser.GetParameter("SCH_TDC", 0);
     static const UInt_t sch_tdc_max = gUser.GetParameter("SCH_TDC", 1);
 
-    // TOF vs SCH
+    // TOF vs SCH ( x BH2 )
     auto hcor_tofsch = dynamic_cast<TH2*>( hptr_array[cor_id++] );
+    auto hmtx2d1 = dynamic_cast<TH2*>( hptr_array[mtx2d_id] );
+    auto hmtx2d2 = dynamic_cast<TH2*>( hptr_array[mtx2d_id+1] );
     for( Int_t seg1 = 0; seg1<NumOfSegSCH; ++seg1 ){
       for( Int_t seg2 = 0; seg2<NumOfSegTOF; ++seg2 ){
 	Int_t hitSCH = gUnpacker.get_entries( k_device_sch, 0, seg1, 0, 0 );
@@ -1962,6 +1969,21 @@ process_event( void )
             if( tof_tdc_min < tdcTOF && tdcTOF < tof_tdc_max &&
                 sch_tdc_min < tdcSCH && tdcSCH < sch_tdc_max ){
               hcor_tofsch->Fill( seg1, seg2 );
+              if( trigger_flag[trigger::kTrigAPS] )
+                hmtx2d1->Fill( seg1, seg2 );
+              if( trigger_flag[trigger::kTrigBPS] )
+                hmtx2d2->Fill( seg1, seg2 );
+              for( Int_t seg3=0; seg3<NumOfSegBH2; ++seg3 ){
+                auto nhBh2 = gUnpacker.get_entries( k_device_bh2, 0, seg3, 0, 1 );
+                if( nhBh2 == 0 ) continue;
+                auto tdcBH2 = gUnpacker.get( k_device_bh2, 0, seg3, 0, 1 );
+                if( tdcBH2 == 0 ) continue;
+                if( trigger_flag[trigger::kTrigAPS] ||
+                    trigger_flag[trigger::kTrigBPS] ){
+                  auto hmtx3d  = dynamic_cast<TH2*>( hptr_array[mtx3d_id+seg3] );
+                  hmtx3d->Fill( seg1, seg2 );
+                }
+              }
             }
           }
         }
@@ -1969,7 +1991,7 @@ process_event( void )
     }
 
     // BC3 vs BC4
-    TH2* hcor_bc3bc4 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+    auto hcor_bc3bc4 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
     for(Int_t wire1 = 0; wire1<NumOfWireBC3; ++wire1){
       for(Int_t wire2 = 0; wire2<NumOfWireBC4; ++wire2){
 	Int_t hitBC3 = gUnpacker.get_entries(k_device_bc3, 0, 0, wire1, 0);
@@ -1980,7 +2002,7 @@ process_event( void )
     }
 
     // SDC3 vs SDC1
-    TH2* hcor_sdc1sdc3 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+    auto hcor_sdc1sdc3 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
     for(Int_t wire1 = 0; wire1<NumOfWireSDC1; ++wire1){
       for(Int_t wire3 = 0; wire3<NumOfWireSDC3; ++wire3){
 	Int_t hitSDC1 = gUnpacker.get_entries(k_device_sdc1, 0, 0, wire1, 0);

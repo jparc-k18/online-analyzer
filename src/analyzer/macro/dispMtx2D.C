@@ -1,44 +1,46 @@
-// Updater belongs to the namespace hddaq::gui
-using namespace hddaq::gui;
+// -*- C++ -*-
 
-void dispMtx2D( void )
+using hddaq::gui::Updater;
+
+//_____________________________________________________________________________
+void
+dispMtx2D( void )
 {
-  // You must write these lines for the thread safe
-  // ----------------------------------
-  if(Updater::isUpdating()){return;}
-  Updater::setUpdating(true);
-  // ----------------------------------
+  if( Updater::isUpdating() )
+    return;
+  Updater::setUpdating( true );
 
-  const Int_t n_seg_tof = 24;
-  const Int_t n_seg_sch = 64;
+  const auto& gMatrix = MatrixParamMan::GetInstance();
 
-  // Draw Mtx2D pattern and TOFxSCH
-  {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
+  for( Int_t i=0; i<2; ++i ){
+    auto c = dynamic_cast<TCanvas*>( gROOT->FindObject( Form( "c%d", i+1 ) ) );
+    if( !c ) continue;
+    c->Clear();
     c->cd(0);
-    Int_t mtx2d_id  = HistMaker::getUniqueID(kMisc,  kHul2D,      kHitPat2D);
-    Int_t tofsch_id = HistMaker::getUniqueID(kMtx3D, kHul2DHitPat,kHitPat2D);
-    TH2 *hmtx2d  = (TH2*)GHist::get(mtx2d_id);
-    TH2 *htofsch = (TH2*)GHist::get(tofsch_id);
-
+    Int_t mtx2d_id  = HistMaker::getUniqueID( kMisc, kHul2D, kHitPat2D );
+    Int_t tofsch_id = HistMaker::getUniqueID( kCorrelation, 0, 0, 3 );
+    auto hmtx2d  = dynamic_cast<TH2*>( GHist::get( mtx2d_id + i ) );
+    auto htofsch = dynamic_cast<TH2*>( GHist::get( tofsch_id ) );
+    if( !hmtx2d ) continue;
+    if( !htofsch ) continue;
     hmtx2d->Reset();
-    hmtx2d->SetLineWidth(2);
-    hmtx2d->SetLineColor(2);
-    MatrixParamMan& gMatrix = MatrixParamMan::GetInstance();
-    for( Int_t i_tof=0; i_tof<n_seg_tof; ++i_tof ){
-      for( Int_t i_sch=0; i_sch<n_seg_sch; ++i_sch ){
-	bool hul2d_flag = gMatrix.IsAccept( i_tof, i_sch );
+    hmtx2d->SetLineWidth( 1 );
+    hmtx2d->SetLineColor( kRed );
+    for( Int_t i_tof=0; i_tof<NumOfSegTOF; ++i_tof ){
+      for( Int_t i_sch=0; i_sch<NumOfSegSCH; ++i_sch ){
+	Bool_t hul2d_flag = gMatrix.IsAccept( i_tof, i_sch );
 	if( !hul2d_flag ) hmtx2d->Fill( i_sch, i_tof );
       } // for(i_sch)
     } // for(i_tof)
 
-    hmtx2d->GetXaxis()->SetRangeUser(0, n_seg_sch);
-    hmtx2d->GetYaxis()->SetRangeUser(0, n_seg_tof+1);
-    hmtx2d->Draw("box");
+    hmtx2d->GetXaxis()->SetRangeUser(0, NumOfSegSCH);
+    hmtx2d->GetYaxis()->SetRangeUser(0, NumOfSegTOF);
+    hmtx2d->SetStats( 0 );
+    hmtx2d->Draw( "box" );
 
-    htofsch->GetXaxis()->SetRangeUser(0, n_seg_sch);
-    htofsch->GetYaxis()->SetRangeUser(0, n_seg_tof);
-    htofsch->Draw("same");
+    htofsch->GetXaxis()->SetRangeUser(0, NumOfSegSCH);
+    htofsch->GetYaxis()->SetRangeUser(0, NumOfSegTOF);
+    htofsch->Draw( "same colz" );
 
     gPad->SetGridx();
     gPad->SetGridy();
@@ -46,8 +48,5 @@ void dispMtx2D( void )
     c->Update();
   }
 
-  // You must write these lines for the thread safe
-  // ----------------------------------
-  Updater::setUpdating(false);
-  // ----------------------------------
+  Updater::setUpdating( false );
 }

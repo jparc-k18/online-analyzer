@@ -41,7 +41,7 @@ namespace
   const UserParamMan&   gUser     = UserParamMan::GetInstance();
 }
 
-ClassImp(ConfMan);
+ClassImp( ConfMan );
 
 //_____________________________________________________________________________
 ConfMan::ConfMan( void )
@@ -114,8 +114,10 @@ ConfMan::Initialize( void )
   // if ( !InitializeParameterFiles() || !InitializeHistograms() )
   //  return false;
 
-  if( gMatrix.IsReady() )
-    gMatrix.Print2D();
+  if( gMatrix.IsReady() ){
+    gMatrix.Print2D1();
+    gMatrix.Print2D2();
+  }
   if( gUser.IsReady() )
     gUser.Print();
 

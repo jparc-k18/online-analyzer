@@ -89,6 +89,10 @@ public:
   template <typename T>
   bool    InitializeParameter( const std::string& key1,
 			       const std::string& key2 );
+  template <typename T>
+  bool    InitializeParameter( const std::string& key1,
+			       const std::string& key2,
+                               const std::string& key3 );
 
 private:
   std::string FilePath( const std::string& src ) const;
@@ -214,7 +218,21 @@ ConfMan::InitializeParameter( const std::string& key1,
   return
     ShowResult( T::GetInstance().Initialize(m_file[key1],
 					    m_file[key2]),
-		T::ClassName() );
+		std::string( T::ClassName() ) );
+}
+
+//______________________________________________________________________________
+template <typename T>
+inline bool
+ConfMan::InitializeParameter( const std::string& key1,
+			      const std::string& key2,
+                              const std::string& key3 )
+{
+  return
+    ShowResult( T::GetInstance().Initialize( m_file[key1],
+                                             m_file[key2],
+                                             m_file[key3] ),
+		std::string( T::ClassName() ) );
 }
 
 #endif

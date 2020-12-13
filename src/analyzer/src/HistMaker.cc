@@ -5450,6 +5450,26 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
     //     		   "FHT2 DX1", "FHT2 DX2"));
   }
 
+  { // SCH x TOF for Mtx2D
+    Int_t target_id = getUniqueID( kCorrelation, 1, 0, 0 );
+    for( Int_t i=0; i<2; ++i ){
+      top_dir->Add(createTH2( ++target_id, Form( "SCH_TOF_Mtx2D%d", i+1 ),
+                              NumOfSegSCH, 0, NumOfSegSCH,
+                              NumOfSegTOF, 0, NumOfSegTOF,
+                              "SCH seg", "TOF seg" ) );
+    }
+  }
+
+  { // SCH x TOF for Mtx3D
+    Int_t target_id = getUniqueID( kCorrelation, 2, 0, 0 );
+    for( Int_t i=0; i<NumOfSegBH2; ++i ){
+      top_dir->Add(createTH2( ++target_id, Form( "SCH_TOF_Mtx3D_BH2-%d", i+1 ),
+                              NumOfSegSCH, 0, NumOfSegSCH,
+                              NumOfSegTOF, 0, NumOfSegTOF,
+                              "SCH seg", "TOF seg" ) );
+    }
+  }
+
   return top_dir;
 }
 /*

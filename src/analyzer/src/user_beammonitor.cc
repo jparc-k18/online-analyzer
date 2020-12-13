@@ -155,7 +155,7 @@ process_event( void )
     static Int_t clock     = 0;
     static Int_t clock_pre = 0;
     Int_t hit = g_unpacker.get_entries( scaler_id, module_id, 0, channel_id, 0 );
-    if(hit>0){
+    if( hit>0 ){
       clock = g_unpacker.get( scaler_id, module_id, 0, channel_id, 0 );
       if( clock<clock_pre ) spill_inc = true;
     }

@@ -77,7 +77,7 @@ process_begin( const std::vector<std::string>& argv )
     Int_t r = 0;
     scaler_main.Set( c, r++, ScalerInfo( "Level1-PS",     0, 58 ) );
     for( Int_t i=0; i<16; ++i ){
-      scaler_main.Set( c, r++, ScalerInfo( Form( "TFA-%02d", i ), 2, i ) );
+      scaler_main.Set( c, r++, ScalerInfo( Form( "TFA-%02d", i+1 ), 2, i ) );
     }
     scaler_main.Set( c, r++, ScalerInfo( "LSO1",         2, 48 ) );
     scaler_main.Set( c, r++, ScalerInfo( "LSO2",         2, 49 ) );
@@ -120,7 +120,7 @@ process_begin( const std::vector<std::string>& argv )
     Int_t r = 0;
     scaler_main.Set( c, r++, ScalerInfo( "10M-Clock",    0,  0 ) );
     for( Int_t i=0; i<16; ++i ){
-      scaler_main.Set( c, r++, ScalerInfo( Form( "CRM-%02d", i ), 2, i+16 ) );
+      scaler_main.Set( c, r++, ScalerInfo( Form( "CRM-%02d", i+1 ), 2, i+16 ) );
     }
     scaler_main.Set( c, r++, ScalerInfo( "LSO1High",     2, 54 ) );
     scaler_main.Set( c, r++, ScalerInfo( "LSO2High",     2, 55 ) );
@@ -163,7 +163,7 @@ process_begin( const std::vector<std::string>& argv )
     Int_t r = 0;
     scaler_main.Set( c, r++, ScalerInfo( "Spill",        -1, -1 ) );
     for( Int_t i=0; i<16; ++i ){
-      scaler_main.Set( c, r++, ScalerInfo( Form( "Reset-%02d", i ), 2, i+32 ) );
+      scaler_main.Set( c, r++, ScalerInfo( Form( "Reset-%02d", i+1 ), 2, i+32 ) );
     }
     scaler_main.Set( c, r++, ScalerInfo( "GeCoin1",      2, 52 ) );
     scaler_main.Set( c, r++, ScalerInfo( "GeCoin2",      2, 53 ) );

@@ -222,7 +222,7 @@ process_begin( const std::vector<std::string>& argv )
       g_reset[i]->SetMarkerColor( col_reset[i] );
       g_reset[i]->SetLineWidth( 3 );
       g_reset[i]->SetLineColor( col_reset[i] );
-      g_reset[i]->GetYaxis()->SetRangeUser( 0, 200 );
+      g_reset[i]->GetYaxis()->SetRangeUser( 0, 300 );
       if(i==0) g_reset[i]->Draw( "AL" );
       else     g_reset[i]->Draw( "L" );
       g_reset[i]->SetPoint( 0, 0, 0 );
@@ -412,7 +412,7 @@ process_event( void )
 	}
       }
     }
-    if( spill_inc && spill%10 == 0 ){
+    if( spill_inc && spill%20 == 0 ){
       static Double_t val[nTOT]     = {};
       static Double_t val_pre[nTOT] = {};
       val[kBFT_U] = GetTOT( htot_bftu );
@@ -425,7 +425,7 @@ process_event( void )
       };
       for( Int_t i=0; i<nTOT; ++i ){
 	g_tot[i]->SetPoint( spill/10, spill/10, val_pre[i] - vTOT[i]);
-	g_tot[i]->GetYaxis()->SetRangeUser( -3, 3 );
+	g_tot[i]->GetYaxis()->SetRangeUser( -5, 5 );
 	g_tot[i]->GetXaxis()->SetLimits(spill/10-90, spill/10+10);
       }
       for( Int_t i=0; i<nTOT; ++i ) val_pre[i] = val[i];

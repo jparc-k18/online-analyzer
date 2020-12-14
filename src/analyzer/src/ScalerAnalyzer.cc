@@ -608,7 +608,9 @@ ScalerAnalyzer::PrintScalerSheet( void )
                  "Duty Factor",  Form("%.6lf", Duty()) );
   }
 
-  const TString& scaler_sheet_pdf( "/tmp/scaler_sheet.pdf" );
+  const TString& scaler_sheet_pdf( Form( "/tmp/scaler_sheet_%d_%d_pdf",
+					 (Int_t)m_flag[kScalerHBX],
+					 (Int_t)m_flag[kSpillOn] ) );
   m_canvas->Print( scaler_sheet_pdf );
 
   const TString& print_command( "lpr "+scaler_sheet_pdf );

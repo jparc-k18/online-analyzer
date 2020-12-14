@@ -934,13 +934,13 @@ process_event( void )
     Int_t multiplicity = 0;
     for(Int_t seg=0; seg<NumOfSegBH2; ++seg){
       Int_t nhit_u = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-      Int_t nhit_d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+      // Int_t nhit_d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
       // AND
-      if( nhit_u!=0 && nhit_d!=0 ){
+      if( nhit_u!=0 /* && nhit_d!=0 */ ){
 	UInt_t tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-	UInt_t tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
+	// UInt_t tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
 	// TDC AND
-	if( tdc_u!=0 && tdc_d!=0 ){
+	if( tdc_u!=0 /* && tdc_d!=0 */ ){
 	  hptr_array[bh2hit_id]->Fill( seg );
 	  ++multiplicity;
 	}

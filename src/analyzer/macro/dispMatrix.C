@@ -42,7 +42,7 @@ dispMatrix( void )
 
     htofsch->GetXaxis()->SetRangeUser(0, NumOfSegSCH);
     htofsch->GetYaxis()->SetRangeUser(0, NumOfSegTOF);
-    htofsch->Draw( "same colz" );
+    htofsch->Draw( "same" );
 
     gPad->SetGridx();
     gPad->SetGridy();
@@ -79,7 +79,7 @@ dispMatrix( void )
 
       htofsch->GetXaxis()->SetRangeUser(0, NumOfSegSCH);
       htofsch->GetYaxis()->SetRangeUser(0, NumOfSegTOF);
-      htofsch->Draw( "same colz" );
+      htofsch->Draw( "same" );
 
       gPad->SetGridx();
       gPad->SetGridy();

@@ -120,7 +120,7 @@ process_begin( const std::vector<std::string>& argv )
     scaler_on.Set( c, r++, ScalerInfo( "BAC",        0, 18 ) );
     scaler_on.Set( c, r++, ScalerInfo( "PVAC",       0, 20 ) );
     scaler_on.Set( c, r++, ScalerInfo( "FAC",        0, 21 ) );
-    scaler_on.Set( c, r++, ScalerInfo( "SCH",        0, 22 ) );
+    scaler_on.Set( c, r++, ScalerInfo( "SCH",        0, 11 ) );
     scaler_on.Set( c, r++, ScalerInfo( "TOF",        0, 22 ) );
     scaler_on.Set( c, r++, ScalerInfo( "LAC",        0, 23 ) );
     scaler_on.Set( c, r++, ScalerInfo( "WC",         0, 24 ) );

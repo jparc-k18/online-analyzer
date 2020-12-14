@@ -582,10 +582,10 @@ ScalerAnalyzer::PrintScalerSheet( void )
     DrawOneLine( "Clock", SeparateComma( Get("10M-Clock") ),
                  "BH2", SeparateComma( Get("BH2") ),
                  "SY", SeparateComma( Get("SY") ) );
-    DrawOneLine( "K-Beam", SeparateComma( Get("BEAM-E") ),
+    DrawOneLine( "K-in", SeparateComma( Get("BEAM-E") ),
                  "BH1-SUM", SeparateComma( Get("BH1-SUM") ),
                  "BH1-1/100-PS", SeparateComma( Get("BH1-1/100-PS") ) );
-    DrawOneLine( "#pi-Beam", SeparateComma( Get("BEAM-F") ),
+    DrawOneLine( "#pi-in", SeparateComma( Get("BEAM-F") ),
                  "BH2-SUM", SeparateComma( Get("BH2-SUM") ),
                  "TOF-24", SeparateComma( Get("TOF-24") ) );
 

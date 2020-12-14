@@ -568,9 +568,9 @@ ScalerAnalyzer::PrintScalerSheet( void )
                  "Clock", SeparateComma( Get("10M-Clock") ),
                  "Level1-PS", SeparateComma( Get("Level1-PS") ) );
     for( Int_t i=0; i<NumOfSegGe; ++i )
-      DrawOneLine( Form( "TFA-%02d", i ),
-                   Form( "CRM-%02d", i ),
-                   Form( "Reset-%02d", i ) );
+      DrawOneLine( Form( "TFA-%02d", i+1 ),
+                   Form( "CRM-%02d", i+1 ),
+                   Form( "Reset-%02d", i+1 ) );
     DrawOneLine( "LSO1", "LSO1High", "GeCoin1" );
     DrawOneLine( "LSO2", "LSO2High", "GeCoin2" );
     DrawOneLine( "LSO1xGe13", "GeHigh1", "Other3" );

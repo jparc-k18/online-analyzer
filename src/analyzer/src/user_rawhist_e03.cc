@@ -251,15 +251,15 @@ process_event( void )
     static const Int_t tdc_id   = gHist.getSequentialID( kTriggerFlag, 0, kTDC );
     static const Int_t hit_id   = gHist.getSequentialID( kTriggerFlag, 0, kHitPat );
     for( Int_t seg=0; seg<NumOfSegTFlag; ++seg ){
-      auto nhit = gUnpacker.get_entries( k_device, 0, seg, 0, k_tdc );
-      if( nhit>0 ){
-	auto tdc = gUnpacker.get( k_device, 0, seg, 0, k_tdc );
+      for( Int_t m=0, n=gUnpacker.get_entries( k_device, 0, seg, 0, k_tdc );
+           m<n; ++m ){
+	auto tdc = gUnpacker.get( k_device, 0, seg, 0, k_tdc, m );
 	if( tdc>0 ){
 	  trigger_flag.set( seg );
 	  hptr_array[tdc_id+seg]->Fill( tdc );
-	  hptr_array[hit_id]->Fill( seg );
 	}
       }
+      if( trigger_flag[seg] ) hptr_array[hit_id]->Fill( seg );
     }
     if( !( trigger_flag[trigger::kSpillEnd] |
 	   trigger_flag[trigger::kLevel1OR] ) |
@@ -976,7 +976,7 @@ process_event( void )
     Int_t multiplicity = 0;
     for(Int_t seg=0; seg<NumOfSegBH2; ++seg){
       Int_t nhit_u = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-      Int_t nhit_d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+      // Int_t nhit_d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
       // AND
       //      if( nhit_u!=0 && nhit_d!=0){
       if( nhit_u!=0 ){

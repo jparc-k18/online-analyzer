@@ -45,10 +45,10 @@ do
 	continue
     fi
     if [ $# = 1 ]; then
-	$exe_file $conf_file $data_file
+	$exe_file $conf_file $data_file --spillon
 	exit
     elif [ $# = 2 ]; then
-	$exe_file $conf_file $data_file $2
+	$exe_file $conf_file $data_file $2 --spillon
 	exit
     else
 	echo "#D Usage: $(basename $0) [run number]"

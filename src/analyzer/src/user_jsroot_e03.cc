@@ -169,6 +169,7 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register( http::GeTFAADC() );
   gHttp.Register( http::GeRSTADC() );
   gHttp.Register( http::BGOTDC() );
+  gHttp.Register( http::ACs() );
   gHttp.Register( http::TriggerFlag() );
   gHttp.Register( http::HitPattern() );
   gHttp.Register( http::BcOutEfficiency() );

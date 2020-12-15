@@ -449,7 +449,7 @@ process_event( void )
     if( spill_inc ){
       for(Int_t i=0; i<NumOfSegGe; ++i){
         g_reset[i]->SetPoint(spill, spill, val_pre[i]);
-        g_reset[i]->GetYaxis()->SetRangeUser( 0, 200 );
+        g_reset[i]->GetYaxis()->SetRangeUser( 0, 300 );
         g_reset[i]->GetXaxis()->SetLimits( spill-90, spill+10 );
       }
     }

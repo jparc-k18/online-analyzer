@@ -262,22 +262,25 @@ T0( void )
 TCanvas*
 ACs( void )
 {
-  TCanvas *c1 = new TCanvas(__func__, __func__);
-  c1->Divide(4,2);
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 4, 2 );
 
   std::vector<Int_t> adc_id = {
+    HistMaker::getUniqueID(kBAC,  0, kADC, 1),
     HistMaker::getUniqueID(kBAC,  0, kADC, 2),
     HistMaker::getUniqueID(kPVAC, 0, kADC, 1),
     HistMaker::getUniqueID(kFAC,  0, kADC, 1)
   };
 
   std::vector<Int_t> awt_id = {
+    HistMaker::getUniqueID(kBAC,  0, kADCwTDC, 1),
     HistMaker::getUniqueID(kBAC,  0, kADCwTDC, 2),
     HistMaker::getUniqueID(kPVAC, 0, kADCwTDC, 1),
     HistMaker::getUniqueID(kFAC,  0, kADCwTDC, 1)
   };
 
   std::vector<Int_t> tdc_id = {
+    HistMaker::getUniqueID(kBAC,  0, kTDC, 1),
     HistMaker::getUniqueID(kBAC,  0, kTDC, 2),
     HistMaker::getUniqueID(kPVAC, 0, kTDC, 1),
     HistMaker::getUniqueID(kFAC,  0, kTDC, 1)

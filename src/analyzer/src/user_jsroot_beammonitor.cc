@@ -412,7 +412,8 @@ process_event( void )
 	}
       }
     }
-    if( spill_inc && spill%20 == 0 ){
+    static const Int_t nspill = 20;
+    if( spill_inc && spill%nspill == 0 ){
       static Double_t val[nTOT]     = {};
       static Double_t val_pre[nTOT] = {};
       val[kBFT_U] = GetTOT( htot_bftu );
@@ -424,9 +425,9 @@ process_event( void )
         gUser.GetParameter( "SCH_TOTREF" ),
       };
       for( Int_t i=0; i<nTOT; ++i ){
-	g_tot[i]->SetPoint( spill/10, spill/10, val_pre[i] - vTOT[i]);
+	g_tot[i]->SetPoint( spill/nspill, spill/nspill, val_pre[i] - vTOT[i]);
 	g_tot[i]->GetYaxis()->SetRangeUser( -5, 5 );
-	g_tot[i]->GetXaxis()->SetLimits(spill/10-90, spill/10+10);
+	g_tot[i]->GetXaxis()->SetLimits(spill/nspill-90, spill/nspill+10);
       }
       for( Int_t i=0; i<nTOT; ++i ) val_pre[i] = val[i];
       htot_bftu->Reset();

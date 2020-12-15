@@ -49,9 +49,9 @@ process_begin(const std::vector<std::string>& argv)
 {
   ConfMan& gConfMan = ConfMan::GetInstance();
   gConfMan.Initialize(argv);
-  gConfMan.InitializeParameter<DCGeomMan>("DCGEOM");
-  gConfMan.InitializeParameter<DCTdcCalibMan>("TDCCALIB");
-  gConfMan.InitializeParameter<DCDriftParamMan>("DRFTPM");
+  gConfMan.InitializeParameter<DCGeomMan>("DCGEO");
+  gConfMan.InitializeParameter<DCTdcCalibMan>("DCTDC");
+  gConfMan.InitializeParameter<DCDriftParamMan>("DCDRFT");
   gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage

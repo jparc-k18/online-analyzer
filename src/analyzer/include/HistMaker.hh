@@ -176,6 +176,7 @@ public:
   TList* createCorrelation_catch( Bool_t flag_ps=true );
   TList* createDAQ( Bool_t flag_ps=true );
   TList* createDCEff( Bool_t flag_ps=true );
+  TList* createBTOF( Bool_t flag_ps=true );
 
   // Beam Profile
   TList* createBeamProfile( Bool_t flag_ps=true );

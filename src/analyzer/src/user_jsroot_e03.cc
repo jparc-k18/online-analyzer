@@ -114,15 +114,7 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(gHist.createTriggerFlag());
   gHttp.Register(gHist.createDAQ());
   gHttp.Register(gHist.createDCEff());
-  {
-    int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
-    gHttp.Register( gHist.createTH1( btof_id, "BTOF",
-                                     300, -10, 5,
-                                     "BTOF [ns]", "" ) );
-    gHttp.Register( gHist.createTH1( btof_id + 1, "BH1-6_BH2-3",
-                                     600, 50000, 350000,
-                                     "[ch]", "" ) );
-  }
+  gHttp.Register(gHist.createBTOF());
 
   if(0 != gHist.setHistPtr(hptr_array)){ return -1; }
 
@@ -148,6 +140,8 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register( http::SDC2HitMulti() );
   gHttp.Register( http::SDC3TDCTOT() );
   gHttp.Register( http::SDC3HitMulti() );
+  gHttp.Register( http::SDC4TDCTOT() );
+  gHttp.Register( http::SDC4HitMulti() );
   gHttp.Register( http::TOFADCU() );
   gHttp.Register( http::TOFADCD() );
   gHttp.Register( http::TOFTDCU() );

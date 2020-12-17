@@ -456,24 +456,25 @@ process_event( void )
     for(Int_t seg=0; seg<NumOfSegBH1; ++seg){
       Int_t nhit_bh1u = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       Int_t nhit_bh1d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
-      // AND
-      if(nhit_bh1u!=0 && nhit_bh1d!=0){
-	UInt_t tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-	UInt_t tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
-	// TDC AND
-	if(tdc_u != 0 && tdc_d != 0){
-	  hptr_array[bh1hit_id]->Fill(seg);
-	  ++multiplicity;
-	  // TDC range
-	  if(true
-	     && tdc_min < tdc_u && tdc_u < tdc_max
-	     && tdc_min < tdc_d && tdc_d < tdc_max
-          ){
-	    hptr_array[bh1hit_id+1]->Fill(seg); // CHitPat
-	    ++cmultiplicity;
-	  }// TDC range OK
-	}// TDC AND
-      }// AND
+      for( Int_t mu=0; mu<nhit_bh1u; ++mu ){
+        for( Int_t md=0; md<nhit_bh1d; ++md ){
+          UInt_t tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, mu);
+          UInt_t tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, md);
+          // TDC AND
+          if(tdc_u != 0 && tdc_d != 0){
+            hptr_array[bh1hit_id]->Fill(seg);
+            ++multiplicity;
+            // TDC range
+            if(true
+               && tdc_min < tdc_u && tdc_u < tdc_max
+               && tdc_min < tdc_d && tdc_d < tdc_max
+            ){
+              hptr_array[bh1hit_id+1]->Fill(seg); // CHitPat
+              ++cmultiplicity;
+            }// TDC range OK
+          }// TDC AND
+        }
+      }
     }// for(seg)
 
     hptr_array[bh1mul_id]->Fill(multiplicity);

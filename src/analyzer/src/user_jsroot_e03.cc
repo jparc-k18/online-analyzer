@@ -199,13 +199,10 @@ process_event( void )
 {
   static int run_number = -1;
   {
-    static const int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
     if( run_number != gUnpacker.get_root()->get_run_number() ){
       for( Int_t i=0, n=hptr_array.size(); i<n; ++i ){
 	hptr_array[i]->Reset();
       }
-      hptr_array[btof_id]->Reset();
-      hptr_array[btof_id+1]->Reset();
       run_number = gUnpacker.get_root()->get_run_number();
     }
   }

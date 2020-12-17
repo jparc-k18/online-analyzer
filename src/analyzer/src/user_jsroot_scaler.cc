@@ -130,14 +130,16 @@ process_begin( const std::vector<std::string>& argv )
     Int_t c = ScalerAnalyzer::kCenter;
     Int_t r = 0;
     scaler_on.Set( c, r++, ScalerInfo( "10M-Clock",    0,  0 ) );
+    scaler_on.Set( c, r++, ScalerInfo( "K-in",         0, 39 ) );
+    scaler_on.Set( c, r++, ScalerInfo( "Pi-in",        0, 40 ) );
     scaler_on.Set( c, r++, ScalerInfo( "BH1-1/100-PS", 1, 11 ) );
     scaler_on.Set( c, r++, ScalerInfo( "BH1-1/1e5-PS", 1, 12 ) );
     scaler_on.Set( c, r++, ScalerInfo( "TOF-24",       0, 29 ) );
     scaler_on.Set( c, r++, ScalerInfo( "Mtx2D-1",      0, 32 ) );
     scaler_on.Set( c, r++, ScalerInfo( "Mtx2D-2",      0, 33 ) );
     scaler_on.Set( c, r++, ScalerInfo( "Mtx3D",        0, 34 ) );
-    scaler_on.Set( c, r++, ScalerInfo( "Other1",       0, 25 ) );
-    scaler_on.Set( c, r++, ScalerInfo( "Other2",       0, 26 ) );
+    // scaler_on.Set( c, r++, ScalerInfo( "Other1",       0, 25 ) );
+    // scaler_on.Set( c, r++, ScalerInfo( "Other2",       0, 26 ) );
     scaler_on.Set( c, r++, ScalerInfo( "Other3",       0, 27 ) );
     scaler_on.Set( c, r++, ScalerInfo( "Other4",       0, 28 ) );
     scaler_on.Set( c, r++, ScalerInfo( "LSO1",         2, 48 ) );

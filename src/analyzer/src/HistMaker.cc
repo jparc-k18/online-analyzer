@@ -5999,30 +5999,22 @@ HistMaker::createGe( Bool_t flag_ps )
 			     0x2000, 0, 0x2000,
 			     "ADC [ch]", ""));
     }
-    top_dir->Add(sub_dir);
-  }
-  /*
-  // ADCwFlag(LSO*Ge) ---------------------------------------------------------
-  {
-    TString strSubDir  = CONV_STRING(kADCwFlag);
-    const char* nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-    Int_t target_id = getUniqueID(kGe, 0, kADCwFlag, 0);
+
+    target_id = getUniqueID(kGe, 0, kADCwTDC, NumOfSegGe*2 );
     for(Int_t i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
       Int_t seg = i+1;
-      title = Form("%s_ADCwFlag(LSO*Ge)_%d", nameDetector, seg);
+      title = Form("%s_ADCwTFAwFlag1_%d", nameDetector, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x2000, 0, 0x2000,
 			     "ADC [ch]", ""));
     }
 
-    target_id = getUniqueID(kGe, 0, kADCwTDC, NumOfSegGe );
+    target_id = getUniqueID(kGe, 0, kADCwTDC, NumOfSegGe*3 );
     for(Int_t i = 0; i<NumOfSegGe; ++i){
       const char* title = NULL;
       Int_t seg = i+1;
-      title = Form("%s_ADCwCRM_%d", nameDetector, seg);
+      title = Form("%s_ADCwTFAwFlag2_%d", nameDetector, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x2000, 0, 0x2000,
 			     "ADC [ch]", ""));
@@ -6030,7 +6022,6 @@ HistMaker::createGe( Bool_t flag_ps )
 
     top_dir->Add(sub_dir);
   }
-  */
   // CRM---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -7135,13 +7126,13 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
       Int_t seg = i+1; // 1 origin
       title = Form("%s_%s%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-  			     0x3000, 0, 0x3000,
+  			     1000, 0, 1000,
   			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kBGO, 0, kTDC2D, 0);
     sub_dir->Add(createTH2(++target_id, "TDC_2D", // 1 origin
 			   NumOfSegBGO, 0, NumOfSegBGO,
-			   0x3000, 0, 0x3000,
+			   100, 0, 1000,
 			   "BGO segment", "TDC [ch]"));
     // insert sub directory
     top_dir->Add(sub_dir);

@@ -14,7 +14,7 @@ void dispGeAdc_LSO()
   const int n_calib = 2;
   const int NumOfSegGe = 16;
   const double energy[n_calib] = { 202.843, 306.791 };
-  const int hmin[n_calib] = { 700, 1400 };
+  const int hmin[n_calib] = { 700, 1350 };
   const int hmax[n_calib] = { 1000, 1600 };
   const double width = 20.;
 
@@ -38,7 +38,8 @@ void dispGeAdc_LSO()
     TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d",i+1));
     c->Clear();
     c->Divide(4,4);
-    int base_id = HistMaker::getUniqueID(kGe, 0, kADC, 1);
+    //int base_id = HistMaker::getUniqueID(kGe, 0, kADC, 1);
+    int base_id = HistMaker::getUniqueID(kGe, 0, kADCwTDC, NumOfSegGe*2+1); //ADC w/ LSO*Ge flag
     for(int j=0; j<NumOfSegGe; j++){
 	slot[i][j] = j + 1;
 	c->cd(j+1);
@@ -80,6 +81,10 @@ void dispGeAdc_LSO()
 	t_name.DrawLatex(0.55, 0.56, "FWHM [ch]");
 	t_val.DrawLatex(0.54, 0.44, Form("%.2lf#pm %.2lf",
 					 Sigma[i][j]*2.35482, eSigma[i][j]*2.35482));
+
+	int peak_count = h->Integral(h->GetBin(Mean[i][j]-3*Sigma[i][j]), h->GeBin(Mean[i][j]+3*Sigma[i][j]));
+	std::cout << "ch1 " peak_count << std::endl;
+
       }
       c->Update();
   }
@@ -91,8 +96,8 @@ void dispGeAdc_LSO()
   double eFWHM[NumOfSegGe];
   std::cout<<std::endl<<"Slot\tGain[keV/ch]\tSigma[ch]\tFWHM[keV]"<<std::endl;
   for(int i=0; i<NumOfSegGe; i++){
-    Gain[i]  = ( energy[0] - energy[1] ) / ( Mean[1][i] - Mean[0][i] );
-    eGain[i] = ( energy[0] - energy[1] ) / pow( Mean[1][i] - Mean[0][i], 2. )
+    Gain[i]  = ( energy[1] - energy[0] ) / ( Mean[1][i] - Mean[0][i] );
+    eGain[i] = ( energy[1] - energy[0] ) / pow( Mean[1][i] - Mean[0][i], 2. )
       * sqrt( pow(eMean[0][i],2.) + pow(eMean[1][i],2.) );
     FWHM[i]  = Gain[i] * Sigma[1][i] * 2.35482;
     eFWHM[i] = sqrt( pow(Gain[i]*eSigma[1][i],2.) + pow(eGain[i]*Sigma[1][i],2.) ) * 2.35482;

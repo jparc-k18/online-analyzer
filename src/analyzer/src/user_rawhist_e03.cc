@@ -354,7 +354,9 @@ process_event( void )
 
 #endif
 
-  if( trigger_flag[trigger::kSpillEnd] )
+  if( trigger_flag[trigger::kSpillEnd] ||
+      trigger_flag[trigger::kTrigEPS] ||
+      trigger_flag[trigger::kTrigFPS] )
     return 0;
 
   // MsT -----------------------------------------------------------

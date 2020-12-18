@@ -1669,15 +1669,16 @@ process_event( void )
     for(Int_t seg=0; seg<NumOfSegTOF; ++seg){
       Int_t nhit_tofu = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       Int_t nhit_tofd = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
-      // AND
-      if(nhit_tofu!=0 && nhit_tofd!=0){
-	UInt_t tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-	UInt_t tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
-	// TDC AND
-	if(tdc_u!=0 && tdc_d!=0){
-	  hptr_array[tofhit_id]->Fill(seg);
-	  ++multiplicity;
-	}
+      for( Int_t mu=0; mu<nhit_tofu; ++mu ){
+        for( Int_t md=0; md<nhit_tofd; ++md ){
+          UInt_t tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
+          UInt_t tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
+          if( tdc_min < tdc_u && tdc_u < tdc_max &&
+              tdc_min < tdc_d && tdc_d < tdc_max ){
+            hptr_array[tofhit_id]->Fill(seg);
+            ++multiplicity;
+          }
+        }
       }
     }
 

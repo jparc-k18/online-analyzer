@@ -222,7 +222,7 @@ process_begin( const std::vector<std::string>& argv )
       g_reset[i]->SetMarkerColor( col_reset[i] );
       g_reset[i]->SetLineWidth( 3 );
       g_reset[i]->SetLineColor( col_reset[i] );
-      g_reset[i]->GetYaxis()->SetRangeUser( 0, 300 );
+      g_reset[i]->GetYaxis()->SetRangeUser( 0, 1000 );
       if(i==0) g_reset[i]->Draw( "AL" );
       else     g_reset[i]->Draw( "L" );
       g_reset[i]->SetPoint( 0, 0, 0 );
@@ -440,16 +440,18 @@ process_event( void )
   {
     static Double_t val[NumOfSegGe]     = {};
     static Double_t val_pre[NumOfSegGe] = {};
-
+    // Double_t max_val = 0;
     for(Int_t i=0; i<NumOfSegGe; ++i){
       auto hit = gUnpacker.get_entries( scaler_id, 2, 0, i+32, 0 );
       if( hit == 0 ) continue;
       val[i] = static_cast<Double_t>( gUnpacker.get( scaler_id, 2, 0, i+32, 0 ) );
+      // max_val = TMath::Max( max_val, val_pre[i] );
     }
     if( spill_inc ){
       for(Int_t i=0; i<NumOfSegGe; ++i){
         g_reset[i]->SetPoint(spill, spill, val_pre[i]);
-        g_reset[i]->GetYaxis()->SetRangeUser( 0, 300 );
+        // g_reset[i]->GetYaxis()->SetRangeUser( 0, max_val*1.1 );
+	g_reset[i]->GetYaxis()->SetRangeUser( 0, 1000 );
         g_reset[i]->GetXaxis()->SetLimits( spill-90, spill+10 );
       }
     }

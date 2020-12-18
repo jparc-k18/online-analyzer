@@ -1717,8 +1717,8 @@ process_event( void )
       Int_t nhit_tofd = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
       for( Int_t mu=0; mu<nhit_tofu; ++mu ){
         for( Int_t md=0; md<nhit_tofd; ++md ){
-          UInt_t tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-          UInt_t tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
+          UInt_t tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, mu);
+          UInt_t tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, md);
           if( tdc_min < tdc_u && tdc_u < tdc_max &&
               tdc_min < tdc_d && tdc_d < tdc_max ){
             hptr_array[tofhit_id]->Fill(seg);

@@ -495,7 +495,6 @@ process_event( void )
     static const Int_t bh1hit_id = gHist.getSequentialID(kBH1, 0, kHitPat);
     static const Int_t bh1mul_id = gHist.getSequentialID(kBH1, 0, kMulti);
     Int_t multiplicity  = 0;
-    Int_t cmultiplicity = 0;
     for(Int_t seg=0; seg<NumOfSegBH1; ++seg){
       Int_t nhit_bh1u = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       Int_t nhit_bh1d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
@@ -503,24 +502,16 @@ process_event( void )
         for( Int_t md=0; md<nhit_bh1d; ++md ){
           UInt_t tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, mu);
           UInt_t tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, md);
-          if(tdc_u != 0 && tdc_d != 0){
-            hptr_array[bh1hit_id]->Fill(seg);
+          // TDC range
+          if( tdc_min < tdc_u && tdc_u < tdc_max &&
+              tdc_min < tdc_d && tdc_d < tdc_max ){
+            hptr_array[bh1hit_id]->Fill(seg); // CHitPat
             ++multiplicity;
-            // TDC range
-            if(true
-               && tdc_min < tdc_u && tdc_u < tdc_max
-               && tdc_min < tdc_d && tdc_d < tdc_max
-            ){
-              hptr_array[bh1hit_id+1]->Fill(seg); // CHitPat
-              ++cmultiplicity;
-            }// TDC range OK
-          }// TDC AND
+          }
         } //md
       }// mu
     }// for(seg)
-
     hptr_array[bh1mul_id]->Fill(multiplicity);
-    hptr_array[bh1mul_id+1]->Fill(cmultiplicity); // CMulti
 
 #if 0
     // Debug, dump data relating this detector
@@ -979,20 +970,14 @@ process_event( void )
     for(Int_t seg=0; seg<NumOfSegBH2; ++seg){
       Int_t nhit_u = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
       // Int_t nhit_d = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
-      // AND
-      //      if( nhit_u!=0 && nhit_d!=0){
-      if( nhit_u!=0 ){
-	UInt_t tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc);
-	//	UInt_t tdc_d = gUnpacker.get(k_device, 0, seg, k_d, k_tdc);
-	// TDC AND
-	//	if( tdc_u!=0 && tdc_d!=0 ){
-	if( tdc_u!=0){
+      for( Int_t mu=0; mu<nhit_u; ++mu ){
+	UInt_t tdc_u = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, mu);
+	if( tdc_min < tdc_u && tdc_u < tdc_max ){
 	  hptr_array[bh2hit_id]->Fill( seg );
 	  ++multiplicity;
 	}
       }
     }
-
     hptr_array[bh2mul_id]->Fill(multiplicity);
 
     // Mean Timer

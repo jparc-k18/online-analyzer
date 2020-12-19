@@ -1,7 +1,7 @@
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
-void dispGeAdc_LSO()
+void dispGeAdc_LSO_off()
 {
   // You must write these lines for the thread safe
   // ----------------------------------
@@ -39,7 +39,7 @@ void dispGeAdc_LSO()
     c->Clear();
     c->Divide(4,4);
     //int base_id = HistMaker::getUniqueID(kGe, 0, kADC, 1);
-    int base_id = HistMaker::getUniqueID(kGe, 0, kADCwTDC, NumOfSegGe*2+1); //ADC w/ LSO*Ge flag
+    int base_id = HistMaker::getUniqueID(kGe, 0, kADCwTDC, NumOfSegGe*3+1); //ADC w/ LSO*Ge flag
     for(int j=0; j<NumOfSegGe; j++){
 	slot[i][j] = j + 1;
 	c->cd(j+1);

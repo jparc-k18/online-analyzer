@@ -93,12 +93,14 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(macro::Get("dispGe2dhist"));
   tab_macro->Add(macro::Get("dispGeAdc_60Co"));
   tab_macro->Add(macro::Get("dispGeAdc_LSO"));
+  tab_macro->Add(macro::Get("dispGeAdc_LSO_off"));
   tab_macro->Add(macro::Get("dispBGO"));
 
 
   // Add histograms to the Hist tab
   tab_hist->Add(gHist.createGe());
   tab_hist->Add(gHist.createBGO());
+  tab_hist->Add(gHist.createTriggerFlag());
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -128,6 +130,40 @@ process_end()
 int
 process_event()
 {
+  // TriggerFlag ---------------------------------------------------
+  std::bitset<NumOfSegTFlag> trigger_flag;
+  {
+    static const Int_t k_device = gUnpacker.get_device_id("TFlag");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("TFlag", "tdc");
+    static const Int_t tdc_id   = gHist.getSequentialID( kTriggerFlag, 0, kTDC );
+    static const Int_t hit_id   = gHist.getSequentialID( kTriggerFlag, 0, kHitPat );
+    for( Int_t seg=0; seg<NumOfSegTFlag; ++seg ){
+      for( Int_t m=0, n=gUnpacker.get_entries( k_device, 0, seg, 0, k_tdc );
+           m<n; ++m ){
+	auto tdc = gUnpacker.get( k_device, 0, seg, 0, k_tdc, m );
+	if( tdc>0 ){
+	  trigger_flag.set( seg );
+	  hptr_array[tdc_id+seg]->Fill( tdc );
+	}
+      }
+      if( trigger_flag[seg] ) hptr_array[hit_id]->Fill( seg );
+    }
+    if( !( trigger_flag[trigger::kSpillEnd] |
+	   trigger_flag[trigger::kLevel1OR] ) |
+        !( trigger_flag[trigger::kL1SpillOn] |
+	   trigger_flag[trigger::kL1SpillOff] |
+           trigger_flag[trigger::kSpillEnd] ) ){
+      hddaq::cerr << "#W Trigger flag is missing!!! "
+		  << trigger_flag << std::endl;
+    }
+#if 0
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
 
   //------------------------------------------------------------------
   // Hyperball-X'
@@ -157,21 +193,14 @@ process_event()
     static const Int_t ge_adc_id    = gHist.getSequentialID(kGe, 0, kADC);
     static const Int_t ge_adc_wt_id = gHist.getSequentialID(kGe, 0, kADCwTDC);
     static const Int_t ge_adc_wc_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe+1);
-    static const Int_t ge_adc_lso_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe*2+1);
-    static const Int_t ge_adc_gecoin_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe*3+1);
-    //static const Int_t ge_adc_flag_id = gHist.getSequentialID(kGe, 0, kADCwFlag);
+    static const Int_t ge_adc_lso_on_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe*2+1);
+    static const Int_t ge_adc_lso_off_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe*3+1);
+    static const Int_t ge_adc_gecoin_on_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe*4+1);
+    static const Int_t ge_adc_gecoin_off_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe*5+1);
 
     static const Int_t ge_tfa_id    = gHist.getSequentialID(kGe, 0, kTFA);
     static const Int_t ge_crm_id    = gHist.getSequentialID(kGe, 0, kCRM);
     static const Int_t ge_rst_id    = gHist.getSequentialID(kGe, 0, kRST);
-
-    // sum hist id
-    /*
-    static const Int_t ge_adcsum_id
-      = gHist.getSequentialID(kGe, 0, kADC, NumOfSegGe +1);
-    static const Int_t ge_adcsum_calib_id
-      = gHist.getSequentialID(kGe, 0, kADC, NumOfSegGe +2);
-    */
 
     // hitpat hist id
     static const Int_t ge_hitpat_id = gHist.getSequentialID(kGe, 0, kHitPat);
@@ -208,18 +237,10 @@ process_event()
 	adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
 	hptr_array[ge_adc_id + seg]->Fill(adc);
 	hptr_array[ge_adc2d_id]->Fill(seg, adc);
-	//if(trig_flag[0]==1) hptr_array[ge_adc_flag_id + seg]->Fill(adc);
-	//hptr_array[ge_adcsum_id]->Fill(adc);
 
 	if(115 < adc && adc < 7500){
 	  hptr_array[ge_hitpat_id]->Fill(seg);
 	}
-	/*
-	GeAdcCalibMan& gGeAMan = GeAdcCalibMan::GetInstance();
-	Double_t energy;
-	gGeAMan.CalibAdc(seg, adc, energy);
-	if(energy > 100) hptr_array[ge_adcsum_calib_id]->Fill(energy);
-	*/
       }
 
       // TFA
@@ -238,8 +259,14 @@ process_event()
 	//ADCwTFA
 	if(tfaflag == 1){
 	  hptr_array[ge_adc_wt_id + seg]->Fill(adc);
-	  if(trig_flag[0]==1) hptr_array[ge_adc_lso_id + seg]->Fill(adc);
-	  if(trig_flag[1]==1) hptr_array[ge_adc_gecoin_id + seg]->Fill(adc);
+	  if(trig_flag[0]==1){
+	    if (trigger_flag[trigger::kL1SpillOn]) hptr_array[ge_adc_lso_on_id + seg]->Fill(adc);
+	    if (trigger_flag[trigger::kL1SpillOff]) hptr_array[ge_adc_lso_off_id + seg]->Fill(adc);
+	  }
+	  if(trig_flag[1]==1){
+	    if (trigger_flag[trigger::kL1SpillOn]) hptr_array[ge_adc_gecoin_on_id + seg]->Fill(adc);
+	    if (trigger_flag[trigger::kL1SpillOff]) hptr_array[ge_adc_gecoin_off_id + seg]->Fill(adc);
+	  }
 	}
       }
 
@@ -286,15 +313,11 @@ process_event()
     static const Int_t bgo_tdc_id = gHist.getSequentialID(kBGO, 0, kTDC);
     static const Int_t bgo_tdc2d_id  = gHist.getSequentialID(kBGO, 0, kTDC2D);
     static const Int_t bgo_hit_id    = gHist.getSequentialID(kBGO, 0, kHitPat);
-    // static const Int_t bgo_mul_id    = gHist.getSequentialID(kBGO, 0, kMulti);
+
 
     for(Int_t seg = 0; seg<NumOfSegBGO; ++seg){
 
-      //TH2* hadc2d = dynamic_cast<TH2*>(hptr_array[pwo_adc2d_id + box]);
       TH2* htdc2d = dynamic_cast<TH2*>(hptr_array[bgo_tdc2d_id]);
-
-      Int_t Multiplicity = 0;
-
 
       // TDC
       Int_t nhit_tdc = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
@@ -307,12 +330,9 @@ process_event()
       // HitPat
       if(nhit_tdc != 0){
 	hptr_array[bgo_hit_id]->Fill(seg);
-	++Multiplicity;
       }
 
-      //hptr_array[bgo_mul_id+seg]->Fill(Multiplicity);
-
-    }// for(unit)
+    }
 
 #if 0
     // Debug, dump data relating this detector

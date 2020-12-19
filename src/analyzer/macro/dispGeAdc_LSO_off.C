@@ -83,10 +83,9 @@ void dispGeAdc_LSO_off()
 	t_val.DrawLatex(0.54, 0.44, Form("%.2lf#pm %.2lf",
 					 Sigma[i][j]*2.35482, eSigma[i][j]*2.35482));
 
-	int peak_count = h->Integral(h->GetBin(Mean[i][j]-3*Sigma[i][j]), h->GetBin(Mean[i][j]+3*Sigma[i][j]));
-	int calc_peak_count = sqrt(2.*3.14)*Sigma[i][j]*(f1->GetParameter(0));
-	std::cout << Form("ch%d ",j) << peak_count << "    " << calc_peak_count << std::endl;
-
+	//int peak_count = h->Integral(h->GetXaxis()->FindBin(Mean[i][j]-3*Sigma[i][j]), h->GetXaxis()->FindBin(Mean[i][j]+3*Sigma[i][j]));
+	int calc_peak_count = sqrt(2.*3.14)*Sigma[i][j]*(f1->GetParameter(0))/2; //2ch 1bin
+	std::cout << Form("ch%d ",j) << calc_peak_count << std::endl;
 
       }
       c->Update();

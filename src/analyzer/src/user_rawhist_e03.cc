@@ -102,9 +102,6 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispBC3"));
   tab_macro->Add(macro::Get("dispBC4"));
   tab_macro->Add(macro::Get("dispBH2"));
-  tab_macro->Add(macro::Get("dispBAC"));
-  tab_macro->Add(macro::Get("dispPVAC"));
-  tab_macro->Add(macro::Get("dispFAC"));
   tab_macro->Add(macro::Get("dispACs"));
   tab_macro->Add(macro::Get("dispSDC1"));
   tab_macro->Add(macro::Get("dispSDC2"));
@@ -2344,19 +2341,10 @@ process_event( void )
     static const Int_t ge_adc_id    = gHist.getSequentialID(kGe, 0, kADC);
     static const Int_t ge_adc_wt_id = gHist.getSequentialID(kGe, 0, kADCwTDC);
     static const Int_t ge_adc_wc_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe+1);
-    //static const Int_t ge_adc_flag_id = gHist.getSequentialID(kGe, 0, kADCwFlag);
 
     static const Int_t ge_tfa_id    = gHist.getSequentialID(kGe, 0, kTFA);
     static const Int_t ge_crm_id    = gHist.getSequentialID(kGe, 0, kCRM);
     static const Int_t ge_rst_id    = gHist.getSequentialID(kGe, 0, kRST);
-
-    // sum hist id
-    /*
-    static const Int_t ge_adcsum_id
-      = gHist.getSequentialID(kGe, 0, kADC, NumOfSegGe +1);
-    static const Int_t ge_adcsum_calib_id
-      = gHist.getSequentialID(kGe, 0, kADC, NumOfSegGe +2);
-    */
 
     // hitpat hist id
     static const Int_t ge_hitpat_id = gHist.getSequentialID(kGe, 0, kHitPat);
@@ -2372,7 +2360,6 @@ process_event( void )
     static const Int_t ge_tfa_crm_id = gHist.getSequentialID(kGe, 0, kTFA_CRM);
 
     // HBX TriggerFlag ---------------------------------------------------
-    //Int_t trig_flag[4] ={};
     for(Int_t seg = 0; seg<NumOfSegHbxTrig; ++seg){
       Int_t nhit_flag = gUnpacker.get_entries(k_flag_device, 0, seg, 0, k_flag_tdc);
       if( nhit_flag>0 ){
@@ -2380,7 +2367,6 @@ process_event( void )
 	if( tdc>0 ){
 	  hptr_array[ge_flag_tdc_id+seg]->Fill( tdc );
 	  hptr_array[ge_flag_hitpat_id]->Fill( seg );
-	  //trig_flag[seg] = 1;
 	}
       }
     }
@@ -2393,18 +2379,11 @@ process_event( void )
 	adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
 	hptr_array[ge_adc_id + seg]->Fill(adc);
 	hptr_array[ge_adc2d_id]->Fill(seg, adc);
-	//if(trig_flag[0]==1) hptr_array[ge_adc_flag_id + seg]->Fill(adc);
-	//hptr_array[ge_adcsum_id]->Fill(adc);
 
 	if(115 < adc && adc < 7500){
 	  hptr_array[ge_hitpat_id]->Fill(seg);
 	}
-	/*
-	GeAdcCalibMan& gGeAMan = GeAdcCalibMan::GetInstance();
-	Double_t energy;
-	gGeAMan.CalibAdc(seg, adc, energy);
-	if(energy > 100) hptr_array[ge_adcsum_calib_id]->Fill(energy);
-	*/
+
       }
 
       // TFA
@@ -2443,10 +2422,10 @@ process_event( void )
       // RST
       Int_t nhit_rst = gUnpacker.get_entries(k_device, 0, seg, 0, k_rst);
       if(nhit_rst != 0){
-	  Int_t rst = gUnpacker.get(k_device, 0, seg, 0, k_rst);
-	  hptr_array[ge_rst_id + seg]->Fill(rst);
-	  hptr_array[ge_rst2d_id]->Fill(seg, rst);
-	  if(adc >= 0) hptr_array[ge_rst_adc_id + seg]->Fill(rst, adc);
+	Int_t rst = gUnpacker.get(k_device, 0, seg, 0, k_rst);
+	hptr_array[ge_rst_id + seg]->Fill(rst);
+	hptr_array[ge_rst2d_id]->Fill(seg, rst);
+	if(adc >= 0) hptr_array[ge_rst_adc_id + seg]->Fill(rst, adc);
       }
     }
 #if 0
@@ -2467,15 +2446,10 @@ process_event( void )
     static const Int_t bgo_tdc_id = gHist.getSequentialID(kBGO, 0, kTDC);
     static const Int_t bgo_tdc2d_id  = gHist.getSequentialID(kBGO, 0, kTDC2D);
     static const Int_t bgo_hit_id    = gHist.getSequentialID(kBGO, 0, kHitPat);
-    // static const Int_t bgo_mul_id    = gHist.getSequentialID(kBGO, 0, kMulti);
 
     for(Int_t seg = 0; seg<NumOfSegBGO; ++seg){
 
-      //TH2* hadc2d = dynamic_cast<TH2*>(hptr_array[pwo_adc2d_id + box]);
       TH2* htdc2d = dynamic_cast<TH2*>(hptr_array[bgo_tdc2d_id]);
-
-      Int_t Multiplicity = 0;
-
 
       // TDC
       Int_t nhit_tdc = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
@@ -2488,12 +2462,9 @@ process_event( void )
       // HitPat
       if(nhit_tdc != 0){
 	hptr_array[bgo_hit_id]->Fill(seg);
-	++Multiplicity;
       }
 
-      //hptr_array[bgo_mul_id+seg]->Fill(Multiplicity);
-
-    }// for(unit)
+    }
 
 #if 0
     // Debug, dump data relating this detector

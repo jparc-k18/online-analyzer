@@ -214,6 +214,11 @@ PsMaker::create( TString& name )
     base_id = HistMaker::getUniqueID(kBC3, 0, kTDC);
     for(Int_t i = 0; i<NumOfLayersBC3; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, false);
+    // BC3 TOT
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 500;
+    base_id = HistMaker::getUniqueID(kBC3, 0, kADC);
+    for(Int_t i = 0; i<NumOfLayersBC3; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, flag_xaxis, false);
     // BC3 HitPat
     base_id = HistMaker::getUniqueID(kBC3, 0, kHitPat);
     for(Int_t i = 0; i<NumOfLayersBC3; ++i){id_list.push_back(base_id + i);}
@@ -233,6 +238,11 @@ PsMaker::create( TString& name )
     // BC4 TDC
     par_list[kXrange_min] = 256; par_list[kXrange_max] = 1000;
     base_id = HistMaker::getUniqueID(kBC4, 0, kTDC);
+    for(Int_t i = 0; i<NumOfLayersBC4; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, flag_xaxis, false);
+    // BC4 TOT
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 500;
+    base_id = HistMaker::getUniqueID(kBC4, 0, kADC);
     for(Int_t i = 0; i<NumOfLayersBC4; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, false);
     // BC4 HitPat
@@ -908,6 +918,11 @@ PsMaker::create( TString& name )
     base_id = HistMaker::getUniqueID(kSDC1, 0, kTDC);
     for(Int_t i = 0; i<NumOfLayersSDC1; ++i){id_list.push_back(base_id + i);}
     drawOneCanvas(id_list, par_list, flag_xaxis, false);
+    // SDC1 TOT
+    par_list[kXrange_min] = 0; par_list[kXrange_max] = 500;
+    base_id = HistMaker::getUniqueID(kSDC1, 0, kADC);
+    for(Int_t i = 0; i<NumOfLayersSDC1; ++i){id_list.push_back(base_id + i);}
+    drawOneCanvas(id_list, par_list, flag_xaxis, false);
     // SDC1 HitPat
     base_id = HistMaker::getUniqueID(kSDC1, 0, kHitPat);
     for(Int_t i = 0; i<NumOfLayersSDC1; ++i){id_list.push_back(base_id + i);}
@@ -1448,8 +1463,8 @@ PsMaker::create( TString& name )
     drawOneCanvas( id_list, par_list, flag_xaxis, flag_log );
     // ADC misc
     par_list[kXdiv] = 2; par_list[kYdiv] = 2;
-    id_list.push_back( HistMaker::getUniqueID( kGe, 0, kADC, NumOfSegGe+1 ) );
-    id_list.push_back( HistMaker::getUniqueID( kGe, 0, kADC, NumOfSegGe+2 ) );
+    // id_list.push_back( HistMaker::getUniqueID( kGe, 0, kADC, NumOfSegGe+1 ) );
+    // id_list.push_back( HistMaker::getUniqueID( kGe, 0, kADC, NumOfSegGe+2 ) );
     id_list.push_back( HistMaker::getUniqueID( kGe, 0, kADC2D ) );
     id_list.push_back( HistMaker::getUniqueID( kGe, 0, kHitPat ) );
     drawOneCanvas( id_list, par_list, false, false, "colz" );
@@ -1477,17 +1492,17 @@ PsMaker::create( TString& name )
     id_list.push_back( HistMaker::getUniqueID( kGe, 0, kRST2D ) );
     drawOneCanvas( id_list, par_list, false, false, "colz" );
     // Multi
-    par_list[kXdiv] = 4; par_list[kYdiv] = 4;
-    par_list[kXrange_min] = 0; par_list[kXrange_max] = 10000;
-    base_id = HistMaker::getUniqueID( kGe, 0, kMulti );
-    for( Int_t i=0; i<NumOfSegGe; ++i )
-      id_list.push_back( base_id + i );
-    drawOneCanvas( id_list, par_list, false, false );
-    base_id = HistMaker::getUniqueID( kGe, 0, kMulti, NumOfSegGe+1 );
-    for( Int_t i=0; i<NumOfSegGe; ++i )
-      id_list.push_back( base_id + i );
-    drawOneCanvas( id_list, par_list, false, false );
+    // par_list[kXrange_min] = 0; par_list[kXrange_max] = 10000;
+    // base_id = HistMaker::getUniqueID( kGe, 0, kMulti );
+    // for( Int_t i=0; i<NumOfSegGe; ++i )
+    //   id_list.push_back( base_id + i );
+    // drawOneCanvas( id_list, par_list, false, false );
+    // base_id = HistMaker::getUniqueID( kGe, 0, kMulti, NumOfSegGe+1 );
+    // for( Int_t i=0; i<NumOfSegGe; ++i )
+    //   id_list.push_back( base_id + i );
+    // drawOneCanvas( id_list, par_list, false, false );
     // Corr
+    par_list[kXdiv] = 4; par_list[kYdiv] = 4;
     base_id = HistMaker::getUniqueID( kGe, 0, kTFA_CRM );
     for( Int_t i=0; i<NumOfSegGe; ++i )
       id_list.push_back( base_id + i );
@@ -1534,14 +1549,14 @@ PsMaker::create( TString& name )
     id_list.push_back( HistMaker::getUniqueID( kBGO, 0, kHitPat ) );
     drawOneCanvas( id_list, par_list, false, true, "colz");
     // Multi
-    par_list[kXdiv] = 6; par_list[kYdiv] = 4;
-    base_id = HistMaker::getUniqueID( kBGO, 0, kMulti );
-    for( Int_t i=0; i<NumOfSegBGO/2; ++i)
-      id_list.push_back( base_id+i );
-    drawOneCanvas( id_list, par_list, false, false );
-    for( Int_t i=0; i<NumOfSegBGO/2; ++i)
-      id_list.push_back( base_id+i+NumOfSegBGO/2 );
-    drawOneCanvas( id_list, par_list, false, false );
+    // par_list[kXdiv] = 6; par_list[kYdiv] = 4;
+    // base_id = HistMaker::getUniqueID( kBGO, 0, kMulti );
+    // for( Int_t i=0; i<NumOfSegBGO/2; ++i)
+    //   id_list.push_back( base_id+i );
+    // drawOneCanvas( id_list, par_list, false, false );
+    // for( Int_t i=0; i<NumOfSegBGO/2; ++i)
+    //   id_list.push_back( base_id+i+NumOfSegBGO/2 );
+    // drawOneCanvas( id_list, par_list, false, false );
   }
 
   // MsT ----------------------------------------------------------------

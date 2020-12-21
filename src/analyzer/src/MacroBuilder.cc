@@ -137,8 +137,8 @@ BH1TDC( void )
       auto h1id = HistMaker::getUniqueID( kBH1, 0, kTDC, i+j*NumOfSegBH1+1 );
       auto h1 = GHist::get( h1id );
       if( !h1 ) continue;
-      auto xmin = gUser.GetParameter( "BH2_TDC", 0 );
-      auto xmax = gUser.GetParameter( "BH2_TDC", 1 );
+      auto xmin = gUser.GetParameter( "BH1_TDC", 0 );
+      auto xmax = gUser.GetParameter( "BH1_TDC", 1 );
       h1->GetXaxis()->SetRangeUser( xmin, xmax );
       h1->Draw();
     }

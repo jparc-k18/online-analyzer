@@ -6139,6 +6139,30 @@ HistMaker::createGe( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
+    // CRM_ADC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kCRM_ADC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kGe, 0, kCRM_ADC, 0);
+    for(Int_t i = 0; i<NumOfSegGe; ++i){
+      const char* title = NULL;
+      Int_t seg = i+1; // 1 origin
+      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+      sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
+			     400, 0, 10000,
+			     400, 0, 8000,
+			     "Ge_CRM", "Ge_ADC"));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
   // RST_ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -6185,40 +6209,6 @@ HistMaker::createGe( Bool_t flag_ps )
 
     // insert sub directory
     top_dir->Add(sub_dir);
-  }
-
-  // HBX Trigger Flag---------------------------------------------------------
-  // Declaration of the sub-directory
-  TString strSubDir  = CONV_STRING(kADC);
-  const char* nameSubDir = strSubDir.Data();
-  TList *sub_dir = new TList;
-  sub_dir->SetName(nameSubDir);
-
-  // TDC---------------------------------------------------------
-  {
-    // Make histogram and add it
-      Int_t target_id = getUniqueID(kGe, 0, kFlagTDC, 0);
-      for(Int_t i = 0; i<NumOfSegHbxTrig; ++i){
-	// title = Form("%s_%d", nameDetector, i+1);
-	TString title = Form( "HBX_TriggerFlag %d", i );
-	top_dir->Add(createTH1(++target_id, title, // 1 origin
-			       400, 0, 10000,
-			       "TDC [ch]", ""));
-      }
-  }
-
-  // Hit parttern -----------------------------------------------
-  {
-      const char* title = "HBX_Trigger_Entry";
-      Int_t target_id = getUniqueID(kGe, 0, kFlagHitPat, 0);
-      // Add to the top directory
-      auto h = createTH1(++target_id, title, // 1 origin
-			 NumOfSegHbxTrig+1, 0., NumOfSegHbxTrig+1,
-			 "HBX Trigger flag", "");
-      // for( Int_t i=0, n=trigger::STriggerFlag.size(); i<n; ++i ){
-      //   h->GetXaxis()->SetBinLabel( i+1, trigger::STriggerFlag.at(i) );
-      // }
-      top_dir->Add( h );
   }
 
   // Return the TList pointer which is added into TGFileBrowser

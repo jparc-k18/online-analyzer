@@ -15,7 +15,7 @@ void dispGeAdc_LSO()
   const int NumOfSegGe = 16;
   const double energy[n_calib] = { 202.843, 306.791 };
   const int hmin[n_calib] = { 700, 1350 };
-  const int hmax[n_calib] = { 1000, 1600 };
+  const int hmax[n_calib] = { 1100, 1600 };
   const double width = 10.;
 
   double slot[n_calib][NumOfSegGe]  = {};
@@ -84,7 +84,8 @@ void dispGeAdc_LSO()
 					 Sigma[i][j]*2.35482, eSigma[i][j]*2.35482));
 
 	//int peak_count = h->Integral(h->GetXaxis()->FindBin(Mean[i][j]-3*Sigma[i][j]), h->GetXaxis()->FindBin(Mean[i][j]+3*Sigma[i][j]));
-	int calc_peak_count = sqrt(2.*3.14)*Sigma[i][j]*(f1->GetParameter(0))/2; //2ch 1bin
+	//int calc_peak_count = sqrt(2.*3.14)*Sigma[i][j]*(f1->GetParameter(0))/2; //2ch 1bin
+	int calc_peak_count = sqrt(2.*TMath::Pi())*Sigma[i][j]*(f1->GetParameter(0))/h->GetBinWidth(1); //2ch 1bin
 	std::cout << Form("ch%d ",j) << calc_peak_count << std::endl;
 
     }

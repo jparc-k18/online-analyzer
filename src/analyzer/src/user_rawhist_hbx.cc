@@ -80,7 +80,6 @@ process_begin(const std::vector<std::string>& argv)
   hddaq::gui::Controller& gCon = hddaq::gui::Controller::getInstance();
   TGFileBrowser *tab_hist  = gCon.makeFileBrowser("Hist");
   TGFileBrowser *tab_macro = gCon.makeFileBrowser("Macro");
-  TGFileBrowser *tab_misc   = gCon.makeFileBrowser("Misc");
 
   // Add macros to the Macro tab
   tab_macro->Add(macro::Get("clear_all_canvas"));
@@ -182,13 +181,6 @@ process_event()
     static const Int_t k_tfa    = gUnpacker.get_data_id("Ge","tfa_leading");
     static const Int_t k_crm    = gUnpacker.get_data_id("Ge","crm_leading");
     static const Int_t k_rst    = gUnpacker.get_data_id("Ge","reset_time");
-    static const Int_t k_flag_device = gUnpacker.get_device_id("HBXTFlag");
-    static const Int_t k_flag_tdc    = gUnpacker.get_data_id("HBXTFlag","tdc");
-
-    // sequential id
-    // sequential hist
-    static const Int_t ge_flag_hitpat_id    = gHist.getSequentialID(kGe, 0, kFlagHitPat);
-    static const Int_t ge_flag_tdc_id    = gHist.getSequentialID(kGe, 0, kFlagTDC);
 
     static const Int_t ge_adc_id    = gHist.getSequentialID(kGe, 0, kADC);
     static const Int_t ge_adc_wt_id = gHist.getSequentialID(kGe, 0, kADCwTDC);
@@ -212,22 +204,9 @@ process_event()
     static const Int_t ge_rst2d_id = gHist.getSequentialID(kGe, 0, kRST2D);
 
     static const Int_t ge_tfa_adc_id = gHist.getSequentialID(kGe, 0, kTFA_ADC);
+    static const Int_t ge_crm_adc_id = gHist.getSequentialID(kGe, 0, kCRM_ADC);
     static const Int_t ge_rst_adc_id = gHist.getSequentialID(kGe, 0, kRST_ADC);
     static const Int_t ge_tfa_crm_id = gHist.getSequentialID(kGe, 0, kTFA_CRM);
-
-    // HBX TriggerFlag ---------------------------------------------------
-    Int_t trig_flag[4] ={};
-    for(Int_t seg = 0; seg<NumOfSegHbxTrig; ++seg){
-      Int_t nhit_flag = gUnpacker.get_entries(k_flag_device, 0, seg, 0, k_flag_tdc);
-      if( nhit_flag>0 ){
-	Int_t tdc = gUnpacker.get( k_flag_device, 0, seg, 0, k_flag_tdc );
-	if( tdc>0 ){
-	  hptr_array[ge_flag_tdc_id+seg]->Fill( tdc );
-	  hptr_array[ge_flag_hitpat_id]->Fill( seg );
-	  if(tdc>4300 && tdc<4400) trig_flag[seg] = 1;
-	}
-      }
-    }
 
     for(Int_t seg = 0; seg<NumOfSegGe; ++seg){
       // ADC
@@ -259,14 +238,14 @@ process_event()
 	//ADCwTFA
 	if(tfaflag == 1){
 	  hptr_array[ge_adc_wt_id + seg]->Fill(adc);
-	  if(trig_flag[0]==1){
-	    if (trigger_flag[trigger::kL1SpillOn]) hptr_array[ge_adc_lso_on_id + seg]->Fill(adc);
-	    if (trigger_flag[trigger::kL1SpillOff]) hptr_array[ge_adc_lso_off_id + seg]->Fill(adc);
-	  }
-	  if(trig_flag[1]==1){
-	    if (trigger_flag[trigger::kL1SpillOn]) hptr_array[ge_adc_gecoin_on_id + seg]->Fill(adc);
-	    if (trigger_flag[trigger::kL1SpillOff]) hptr_array[ge_adc_gecoin_off_id + seg]->Fill(adc);
-	  }
+	  //if(trigger_flag[trigger::kTrigEPS]){
+	  //  if (trigger_flag[trigger::kL1SpillOn]) hptr_array[ge_adc_lso_on_id + seg]->Fill(adc);
+	  //  if (trigger_flag[trigger::kL1SpillOff]) hptr_array[ge_adc_lso_off_id + seg]->Fill(adc);
+	  //}
+	  //if(trigger_flag[trigger::kTrigFPS]){
+	  //  if (trigger_flag[trigger::kL1SpillOn]) hptr_array[ge_adc_gecoin_on_id + seg]->Fill(adc);
+	  //  if (trigger_flag[trigger::kL1SpillOff]) hptr_array[ge_adc_gecoin_off_id + seg]->Fill(adc);
+	  //}
 	}
       }
 
@@ -275,6 +254,7 @@ process_event()
       Int_t crmflag = 0;
       if(nhit_crm != 0){
 	Int_t crm_first = gUnpacker.get(k_device, 0, seg, 0, k_crm, 0);
+	if(adc >= 0) hptr_array[ge_crm_adc_id + seg]->Fill(crm_first, adc);
 	if(tfa_first > 0) hptr_array[ge_tfa_crm_id + seg]->Fill(tfa_first, crm_first);
 	for(Int_t m = 0; m<nhit_crm; ++m){
 	  Int_t crm = gUnpacker.get(k_device, 0, seg, 0, k_crm, m);
@@ -283,7 +263,17 @@ process_event()
 	  if( crm_min < crm && crm < crm_max ) crmflag = 1;
 	}
 	//ADCwCRM
-	if(crmflag == 1) hptr_array[ge_adc_wc_id + seg]->Fill(adc);
+	if(crmflag == 1){
+	  hptr_array[ge_adc_wc_id + seg]->Fill(adc);
+	  if(trigger_flag[trigger::kTrigEPS]){
+	    if (trigger_flag[trigger::kL1SpillOn]) hptr_array[ge_adc_lso_on_id + seg]->Fill(adc);
+	    if (trigger_flag[trigger::kL1SpillOff]) hptr_array[ge_adc_lso_off_id + seg]->Fill(adc);
+	  }
+	  if(trigger_flag[trigger::kTrigFPS]){
+	    if (trigger_flag[trigger::kL1SpillOn]) hptr_array[ge_adc_gecoin_on_id + seg]->Fill(adc);
+	    if (trigger_flag[trigger::kL1SpillOff]) hptr_array[ge_adc_gecoin_off_id + seg]->Fill(adc);
+	  }
+	}
       }
 
       // RST
@@ -310,10 +300,9 @@ process_event()
 
     // sequential id
     // sequential hist
-    static const Int_t bgo_tdc_id = gHist.getSequentialID(kBGO, 0, kTDC);
+    static const Int_t bgo_tdc_id    = gHist.getSequentialID(kBGO, 0, kTDC);
     static const Int_t bgo_tdc2d_id  = gHist.getSequentialID(kBGO, 0, kTDC2D);
     static const Int_t bgo_hit_id    = gHist.getSequentialID(kBGO, 0, kHitPat);
-
 
     for(Int_t seg = 0; seg<NumOfSegBGO; ++seg){
 

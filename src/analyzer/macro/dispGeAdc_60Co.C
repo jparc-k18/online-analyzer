@@ -14,8 +14,8 @@ void dispGeAdc_60Co()
   const int n_calib = 2;
   const int NumOfSegGe = 16;
   const double energy[n_calib] = { 1.17, 1.33 };
-  const int hmin[n_calib] = { 5200, 5800 };
-  const int hmax[n_calib] = { 5900, 6500 };
+  const int hmin[n_calib] = { 5200, 6000 };
+  const int hmax[n_calib] = { 5900, 6700 };
   const double width = 20.;
 
   double slot[n_calib][NumOfSegGe]  = {};

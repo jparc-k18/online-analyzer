@@ -76,7 +76,7 @@ enum DataType {
   // Extra data type for Ge detector
   kCRM,   kTFA,   kPUR,   kRST,
   kCRM2D, kTFA2D, kPUR2D, kRST2D,
-  kTFA_CRM, kTFA_ADC, kRST_ADC,
+  kTFA_CRM, kTFA_ADC, kCRM_ADC, kRST_ADC,
   kFlagTDC, kFlagHitPat,
   sizeDataType,
   factorDataType = 1000

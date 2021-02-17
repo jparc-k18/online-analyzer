@@ -148,7 +148,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createBGO());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createTriggerFlag());
-  // tab_hist->Add(gHist.createMsT());
+  tab_hist->Add(gHist.createMsT());
 #if FLAG_DAQ
   tab_hist->Add(gHist.createDAQ());
 #endif
@@ -351,9 +351,12 @@ process_event( void )
 
 #endif
 
-  if( trigger_flag[trigger::kSpillEnd] ||
-      trigger_flag[trigger::kTrigEPS] ||
-      trigger_flag[trigger::kTrigFPS] )
+  if(
+     trigger_flag[trigger::kSpillEnd] ||
+     trigger_flag[trigger::kL1SpillOff] ||
+     trigger_flag[trigger::kTrigEPS] ||
+     trigger_flag[trigger::kTrigFPS]
+      )
     return 0;
 
   // MsT -----------------------------------------------------------
@@ -448,17 +451,23 @@ process_event( void )
 
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      Bool_t is_in_gate = false;
       for(Int_t m = 0; m<nhit; ++m){
 	UInt_t tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
 	if(tdc!=0){
 	  hptr_array[bh1t_id + seg]->Fill(tdc);
-	  // ADC wTDC
-	  if( tdc>tdc_min && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
-	    UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-	    hptr_array[bh1awt_id + seg]->Fill( adc );
-	  }
+	  if( tdc>tdc_min && tdc<tdc_max) is_in_gate = true;
 	}
       }
+
+      // ADC wTDC
+      if(is_in_gate){
+	if( gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
+	  UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+	  hptr_array[bh1awt_id + seg]->Fill( adc );
+	}
+      }
+
     }
 
     // Down PMT
@@ -475,17 +484,23 @@ process_event( void )
 
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+      Bool_t is_in_gate = false;
       for(Int_t m = 0; m<nhit; ++m){
 	UInt_t tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
 	if( tdc!=0 ){
 	  hptr_array[bh1t_id + seg]->Fill(tdc);
-	  // ADC w/TDC
-	  if( tdc>tdc_min && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
-	    UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-	    hptr_array[bh1awt_id + seg]->Fill(adc);
-	  }
+	  if( tdc>tdc_min && tdc<tdc_max) is_in_gate = true;
 	}
       }
+
+      // ADC wTDC
+      if(is_in_gate){
+	if( gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
+	  UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+	  hptr_array[bh1awt_id + seg]->Fill( adc );
+	}
+      }
+
     }
 
     // Hit pattern && multiplicity
@@ -921,15 +936,20 @@ process_event( void )
       }
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+      Bool_t is_in_gate = false;
       for(Int_t m = 0; m<nhit; ++m){
 	UInt_t tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
 	if(tdc!=0){
 	  hptr_array[bh2t_id + seg]->Fill(tdc);
-	  // ADC w/TDC
-	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0){
-	    UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-	    hptr_array[bh2awt_id + seg]->Fill(adc);
-	  }
+	  if( tdc>tdc_min && tdc<tdc_max) is_in_gate = true;
+	}
+      }
+
+      // ADC wTDC
+      if(is_in_gate){
+	if( gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
+	  UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+	  hptr_array[bh2awt_id + seg]->Fill( adc );
 	}
       }
     }
@@ -947,17 +967,23 @@ process_event( void )
       }
       // TDC
       nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
+      Bool_t is_in_gate = false;
       for(Int_t m = 0; m<nhit; ++m){
 	UInt_t tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
-	if( tdc!=0 ){
+	if(tdc!=0){
 	  hptr_array[bh2t_id + seg]->Fill(tdc);
-	  // ADC w/TDC
-	  if( tdc_min<tdc && tdc<tdc_max && gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0){
-	    UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-	    hptr_array[bh2awt_id + seg]->Fill( adc );
-	  }
+	  if( tdc>tdc_min && tdc<tdc_max) is_in_gate = true;
 	}
       }
+
+      // ADC wTDC
+      if(is_in_gate){
+	if( gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
+	  UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+	  hptr_array[bh2awt_id + seg]->Fill( adc );
+	}
+      }
+
     }
 
     // Hit pattern &&  Multiplicity
@@ -1647,14 +1673,15 @@ process_event( void )
 	  // ADC wTDC
 	  if( tdc_min<tdc && tdc<tdc_max ) is_in_gate = true;
 	}
+      }
 
-	if(is_in_gate){
-	  if( gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
-	    UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
+      if(is_in_gate){
+	if( gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0 ){
+	  UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
 	    hptr_array[tofawt_id + seg]->Fill( adc );
-	  }
 	}
       }
+
     }
 
     // Down PMT
@@ -1679,15 +1706,16 @@ process_event( void )
 	  hptr_array[toft_id + seg]->Fill(tdc);
 	  // ADC w/TDC
 	  if( tdc_min<tdc && tdc<tdc_max ) is_in_gate = true;
-
-	  if(is_in_gate){
-	    if( gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
-	      UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-	      hptr_array[tofawt_id + seg]->Fill( adc );
-	    }
-	  }
 	}
       }
+
+      if(is_in_gate){
+	if( gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0 ){
+	  UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
+	  hptr_array[tofawt_id + seg]->Fill( adc );
+	}
+      }
+
     }
 
     // Hit pattern && multiplicity

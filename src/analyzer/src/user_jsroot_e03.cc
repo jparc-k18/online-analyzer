@@ -311,7 +311,8 @@ process_event( void )
 
   if( trigger_flag[trigger::kSpillEnd] ||
       trigger_flag[trigger::kTrigEPS] ||
-      trigger_flag[trigger::kTrigFPS] )
+      trigger_flag[trigger::kTrigFPS] ||
+      trigger_flag[trigger::kClockPS] )
     return 0;
 
   // MsT -----------------------------------------------------------

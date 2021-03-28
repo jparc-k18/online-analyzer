@@ -1,7 +1,5 @@
 // -*- C++ -*-
 
-// Author: Tomonori Takahashi
-
 #include <iomanip>
 #include <iostream>
 #include <cstdio>
@@ -22,16 +20,16 @@
 
 namespace analyzer
 {
-  using namespace hddaq::unpacker;
-  using namespace hddaq;
+using namespace hddaq::unpacker;
+using namespace hddaq;
 
-  namespace
-  {
-    UnpackerManager& gUnpacker = GUnpacker::get_instance();
-    ScalerAnalyzer&  gScaler   = ScalerAnalyzer::GetInstance();
-    ///// Number of spill for Scaler Sheet
-    Scaler nspill_scaler_sheet  = 1;
-  }
+namespace
+{
+UnpackerManager& gUnpacker = GUnpacker::get_instance();
+ScalerAnalyzer&  gScaler   = ScalerAnalyzer::GetInstance();
+///// Number of spill for Scaler Sheet
+Scaler nspill_scaler_sheet  = 1;
+}
 
 //____________________________________________________________________________
 Int_t
@@ -69,28 +67,13 @@ process_begin( const std::vector<std::string>& argv )
   {
     Int_t c = 0;
     Int_t r = 0;
-    gScaler.Set( c, r++, ScalerInfo( "10M-Clock",     0, 50 ) );
-    gScaler.Set( c, r++, ScalerInfo( "Spill",         0, 49 ) );
-    gScaler.Set( c, r++, ScalerInfo( "WC-U",          1, 32 ) );
-    gScaler.Set( c, r++, ScalerInfo( "WC-D",          1, 33 ) );
-    gScaler.Set( c, r++, ScalerInfo( "WC-SUM",        1, 34 ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-01",        2, 32  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-02",        2, 33  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-03",        2, 34  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-04",        2, 35  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-05",        2, 36  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-06",        2, 37  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-07",        2, 38  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-08",        2, 39  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-09",        2, 40  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-10",        2, 41  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-11",        2, 42  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-12",        2, 43  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-13",        2, 44  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-14",        2, 45  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-15",        2, 46  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2",           2, 47  ) );
-    gScaler.Set( c, r++, ScalerInfo( "BH2-SUM",      -1, -1 ) );
+    gScaler.Set( c, r++, ScalerInfo( "Spark",     0, 0 ) );
+    gScaler.Set( c, r++, ScalerInfo( "L1-Req",    0, 1 ) );
+    gScaler.Set( c, r++, ScalerInfo( "L1-Acc",    0, 2 ) );
+    gScaler.Set( c, r++, ScalerInfo( "Real-Time", 0, 3 ) );
+    gScaler.Set( c, r++, ScalerInfo( "Live-Time", 0, 4 ) );
+    gScaler.Set( c, r++, ScalerInfo( "HTOF",      0, 5 ) );
+    gScaler.Set( c, r++, ScalerInfo( "GET-Busy",  0, 6 ) );
   }
 
   gScaler.PrintFlags();

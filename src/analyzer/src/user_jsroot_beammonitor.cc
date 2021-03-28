@@ -183,6 +183,11 @@ process_begin( const std::vector<std::string>& argv )
     leg_tot->SetTextSize(0.05);
     leg_tot->SetFillColor(0);
     leg_tot->SetBorderSize(4);
+    const Double_t vTOT[nTOT] = {
+				 gUser.GetParameter( "BFT_TOTREF", 0 ),
+				 gUser.GetParameter( "BFT_TOTREF", 1 ),
+				 gUser.GetParameter( "SCH_TOTREF" ),
+    };
     for( Int_t i=0; i<nTOT; ++i ){
       c->cd(3);
       gPad->SetGrid();
@@ -198,7 +203,7 @@ process_begin( const std::vector<std::string>& argv )
       if(i==0) g_tot[i]->Draw("AL");
       else     g_tot[i]->Draw("L");
       g_tot[i]->SetPoint(0,0,0);
-      leg_tot->AddEntry( g_tot[i], sTOT[i], "P" );
+      leg_tot->AddEntry( g_tot[i], sTOT[i]+Form("  %.1f", vTOT[i]), "P" );
     }
     leg_tot->Draw();
   }
@@ -420,9 +425,9 @@ process_event( void )
       val[kBFT_D] = GetTOT( htot_bftd );
       val[kSCH] = GetTOT( htot_sch );
       static const Double_t vTOT[nTOT] = {
-        gUser.GetParameter( "BFT_TOTREF" ),
-        gUser.GetParameter( "BFT_TOTREF" ),
-        gUser.GetParameter( "SCH_TOTREF" ),
+					  gUser.GetParameter( "BFT_TOTREF", 0 ),
+					  gUser.GetParameter( "BFT_TOTREF", 1 ),
+					  gUser.GetParameter( "SCH_TOTREF" ),
       };
       for( Int_t i=0; i<nTOT; ++i ){
 	g_tot[i]->SetPoint( spill/nspill, spill/nspill, val_pre[i] - vTOT[i]);

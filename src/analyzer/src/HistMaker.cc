@@ -13,13 +13,17 @@
 
 #include <TH1.h>
 #include <TH2.h>
+#include <TH2Poly.h>
 #include <TList.h>
+#include <TMath.h>
 #include <TDirectory.h>
 #include <TString.h>
 #include <TTimeStamp.h>
 
 #include <Unpacker.hh>
 #include <UnpackerManager.hh>
+
+#include "TpcPadHelper.hh"
 
 #define USE_copper 0
 
@@ -200,6 +204,36 @@ TH2* HistMaker::createTH2( Int_t unique_id, const TString& title,
   }
   h->GetXaxis()->SetTitle(xtitle);
   h->GetYaxis()->SetTitle(ytitle);
+  return h;
+}
+
+//_____________________________________________________________________________
+TH2* HistMaker::createTH2Poly( Int_t unique_id, const TString& title,
+                               Double_t xmin, Double_t xmax,
+                               Double_t ymin, Double_t ymax )
+{
+  Int_t sequential_id = current_hist_id_++;
+  TypeRetInsert ret =
+    idmap_seq_from_unique_.insert( std::make_pair( unique_id, sequential_id ) );
+  idmap_seq_from_name_.insert( std::make_pair( title, sequential_id ) );
+  idmap_unique_from_seq_.insert( std::make_pair( sequential_id, unique_id ) );
+  if( !ret.second ){
+    std::cerr << "#E " << FUNC_NAME
+	      << " The unique id overlaps with other id"
+	      << std::endl;
+    std::cerr << " " << unique_id << " " << title << std::endl;
+    std::exit(-1);
+  }
+
+  TH2 *h = GHist::P2( unique_id, title, xmin, xmax, ymin, ymax );
+  if( !h ){
+    std::cerr << "#E " << FUNC_NAME << " Fail to create TH2" << std::endl
+	      << " " << unique_id << " " << title << std::endl;
+    std::exit(-1);
+    //    return h;
+  } else {
+    gDirectory->GetList()->Add( h );
+  }
   return h;
 }
 
@@ -5261,6 +5295,96 @@ TList* HistMaker::createMtx3D( Bool_t flag_ps )
 }
 
 // -------------------------------------------------------------------------
+// createTPC
+// -------------------------------------------------------------------------
+TList* HistMaker::createTPC( Bool_t flag_ps )
+{
+  TString strDet = CONV_STRING(kTPC);
+  name_created_detectors_.push_back(strDet);
+  if( flag_ps ) name_ps_files_.push_back(strDet);
+  const char* nameDetector = strDet.Data();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // PAD Display ---------------------------------------------------------
+  {
+    Int_t target_id = getUniqueID( kTPC, 0, kADC2D );
+    auto title = Form( "%s_ADC2D", nameDetector );
+    auto h_adc = dynamic_cast<TH2Poly*>
+      ( createTH2Poly( target_id++, title, -300, 300, -300, 300 ) );
+    title = Form( "%s_RMS2D", nameDetector );
+    auto h_rms = dynamic_cast<TH2Poly*>
+      ( createTH2Poly( target_id++, title, -300, 300, -300, 300 ) );
+    title = Form( "%s_TDC2D", nameDetector );
+    auto h_loc = dynamic_cast<TH2Poly*>
+      ( createTH2Poly( target_id++, title, -300, 300, -300, 300 ) );
+    Double_t X[5];
+    Double_t Y[5];
+    for( Int_t i=0; i<32; i++ ){
+      Double_t pLength = TpcPadHelper::PadParameter[i][5];
+      Double_t st      = ( 180. -
+                           360./TpcPadHelper::PadParameter[i][3] *
+                           TpcPadHelper::PadParameter[i][1]/2. );
+      Double_t sTheta  = (-1+st/180.)*TMath::Pi();
+      Double_t dTheta  = ( (360./TpcPadHelper::PadParameter[i][3]) /
+                           180.*TMath::Pi() );
+      Double_t cRad    = TpcPadHelper::PadParameter[i][2];
+      Int_t    nPad    = TpcPadHelper::PadParameter[i][1];
+      for( Int_t j=0; j<nPad; j++ ){
+        X[1] = (cRad+(pLength/2.))*TMath::Cos(j*dTheta+sTheta);
+        X[2] = (cRad+(pLength/2.))*TMath::Cos((j+1)*dTheta+sTheta);
+        X[3] = (cRad-(pLength/2.))*TMath::Cos((j+1)*dTheta+sTheta);
+        X[4] = (cRad-(pLength/2.))*TMath::Cos(j*dTheta+sTheta);
+        X[0] = X[4];
+        Y[1] = (cRad+(pLength/2.))*TMath::Sin(j*dTheta+sTheta);
+        Y[2] = (cRad+(pLength/2.))*TMath::Sin((j+1)*dTheta+sTheta);
+        Y[3] = (cRad-(pLength/2.))*TMath::Sin((j+1)*dTheta+sTheta);
+        Y[4] = (cRad-(pLength/2.))*TMath::Sin(j*dTheta+sTheta);
+        Y[0] = Y[4];
+        for( Int_t ii=0; ii<5; ii++ ) X[ii] -=143;
+        h_adc->AddBin( 5, X, Y );
+        h_rms->AddBin( 5, X, Y );
+        h_loc->AddBin( 5, X, Y );
+      }
+    }
+    h_adc->SetStats( 0 );
+    h_adc->SetMinimum(    0. );
+    h_adc->SetMaximum( 4000. );
+    h_rms->SetStats( 0 );
+    h_rms->SetMinimum(    0. );
+    h_rms->SetMaximum(  200. );
+    h_loc->SetStats( 0 );
+    h_loc->SetMinimum(    0. );
+    h_loc->SetMaximum(  200. );
+    top_dir->Add( h_adc );
+    top_dir->Add( h_rms );
+    top_dir->Add( h_loc );
+  }
+
+  // ADC
+  top_dir->Add( createTH1( getUniqueID( kTPC, 0, kADC ),
+                           "TPC_ADC", 4000, 0, 4000 ) );
+  top_dir->Add( createTH1( getUniqueID( kTPC, 0, kPede ),
+                           "TPC_RMS", 1000, 0, 1000 ) );
+
+  // TDC
+  top_dir->Add( createTH1( getUniqueID( kTPC, 0, kTDC ),
+                           "TPC_TDC", 200, 0, 200 ) );
+
+  // FADC
+  top_dir->Add( createTH2( getUniqueID( kTPC, 0, kFADC ),
+                           "TPC_FADC",
+                           200, 0, 200, 200, 0, 0x1000,
+                           "Time bucket", "ADC" ) );
+
+  // Multiplicity
+  top_dir->Add( createTH1( getUniqueID( kTPC, 0, kMulti ),
+                           "TPC_multiplicity", 600, 0, 6000 ) );
+
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
 // createTriggerFlag
 // -------------------------------------------------------------------------
 TList* HistMaker::createTriggerFlag( Bool_t flag_ps )
@@ -5628,7 +5752,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
   { //___ EB
     top_dir->Add( createTH1( getUniqueID( kDAQ, kEB, kHitPat ),
                              "Data size EB",
-                             2000, 0, 20000,
+                             2000, 0, 200000,
                              "Data size [words]", "" ) );
   }
   { //___ VME
@@ -6139,7 +6263,7 @@ HistMaker::createGe( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
-    // CRM_ADC---------------------------------------------------------
+ // CRM_ADC---------------------------------------------------------
   {
     // Declaration of the sub-directory
     TString strSubDir  = CONV_STRING(kCRM_ADC);
@@ -6154,9 +6278,9 @@ HistMaker::createGe( Bool_t flag_ps )
       Int_t seg = i+1; // 1 origin
       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
-			     400, 0, 10000,
-			     400, 0, 8000,
-			     "Ge_CRM", "Ge_ADC"));
+                             400, 0, 10000,
+                             400, 0, 8000,
+                             "Ge_CRM", "Ge_ADC"));
     }
 
     // insert sub directory
@@ -6209,6 +6333,40 @@ HistMaker::createGe( Bool_t flag_ps )
 
     // insert sub directory
     top_dir->Add(sub_dir);
+  }
+
+  // HBX Trigger Flag---------------------------------------------------------
+  // Declaration of the sub-directory
+  TString strSubDir  = CONV_STRING(kADC);
+  const char* nameSubDir = strSubDir.Data();
+  TList *sub_dir = new TList;
+  sub_dir->SetName(nameSubDir);
+
+  // TDC---------------------------------------------------------
+  {
+    // Make histogram and add it
+      Int_t target_id = getUniqueID(kGe, 0, kFlagTDC, 0);
+      for(Int_t i = 0; i<NumOfSegHbxTrig; ++i){
+	// title = Form("%s_%d", nameDetector, i+1);
+	TString title = Form( "HBX_TriggerFlag %d", i );
+	top_dir->Add(createTH1(++target_id, title, // 1 origin
+			       400, 0, 10000,
+			       "TDC [ch]", ""));
+      }
+  }
+
+  // Hit parttern -----------------------------------------------
+  {
+      const char* title = "HBX_Trigger_Entry";
+      Int_t target_id = getUniqueID(kGe, 0, kFlagHitPat, 0);
+      // Add to the top directory
+      auto h = createTH1(++target_id, title, // 1 origin
+			 NumOfSegHbxTrig+1, 0., NumOfSegHbxTrig+1,
+			 "HBX Trigger flag", "");
+      // for( Int_t i=0, n=trigger::STriggerFlag.size(); i<n; ++i ){
+      //   h->GetXaxis()->SetBinLabel( i+1, trigger::STriggerFlag.at(i) );
+      // }
+      top_dir->Add( h );
   }
 
   // Return the TList pointer which is added into TGFileBrowser

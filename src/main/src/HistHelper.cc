@@ -6,6 +6,7 @@
 
 #include <TH1.h>
 #include <TH2.h>
+#include <TH2Poly.h>
 #include <TDirectory.h>
 #include <TROOT.h>
 #include <TString.h>
@@ -210,6 +211,43 @@ GHist::I2( Int_t id,
   return new TH2I( name, title,
 		   nbinsx, xlow, xup,
 		   nbinsy, ylow, yup );
+}
+
+//______________________________________________________________________________
+TH2*
+GHist::P2( const TString& name,
+	   const TString& title,
+	   Double_t xlow,
+	   Double_t xup,
+	   Double_t ylow,
+	   Double_t yup )
+{
+  return new TH2Poly( name, title,
+                      xlow, xup,
+                      ylow, yup );
+}
+
+//______________________________________________________________________________
+TH2*
+GHist::P2( Int_t id,
+	   const TString& title,
+	   Double_t xlow,
+	   Double_t xup,
+	   Double_t ylow,
+	   Double_t yup )
+{
+  TString name = title;
+  GHist& g_h = GHist::getInstance();
+  if( !g_h.m_index[id].IsNull() ){
+    std::cerr << "#E HistHelper::P2" << std::endl;
+    std::cerr << " The histogram already exists with the same ID" << std::endl;
+    std::cerr << " ID : " << id << std::endl;
+    return NULL;
+  }
+  g_h.m_index[id] = name;
+  return new TH2Poly( name, title,
+                      xlow, xup,
+                      ylow, yup );
 }
 
 //______________________________________________________________________________

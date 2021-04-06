@@ -24,6 +24,7 @@ enum DetectorType {
   kVMEEASIROC,
   // E42
   kBH2_E42, kBH2_E42MT, kWC, kWCMT, kT1, kT1MT, kT2, kT2MT,
+  kTPC,
   // Old detectors E07
   kFBH, kSSDT, kSSD1, kSSD2, kEMC,
   // Old detectors E40
@@ -147,6 +148,9 @@ public:
 		    Int_t nbinx, Double_t xmin, Double_t xmax,
 		    Int_t nbiny, Double_t ymin, Double_t ymax,
 		    const TString& xtitle="", const TString& ytitle="" );
+  TH2*   createTH2Poly( Int_t unique_id, const TString& title,
+                        Double_t xmin, Double_t xmax,
+                        Double_t ymin, Double_t ymax );
 
   TString MakeDetectorName( const TString& name );
 
@@ -170,6 +174,7 @@ public:
   TList* createMsT( Bool_t flag_ps=true );
   TList* createMsT_T0( Bool_t flag_ps=true );
   TList* createMtx3D( Bool_t flag_ps=false );
+  TList* createTPC( Bool_t flag_ps=true );
   TList* createTriggerFlag( Bool_t flag_ps=true );
   TList* createCorrelation( Bool_t flag_ps=true );
   TList* createCorrelation_catch( Bool_t flag_ps=true );

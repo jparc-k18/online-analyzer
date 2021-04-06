@@ -77,6 +77,12 @@ TCanvas* BeamProfileXY( ParticleType p );
 TCanvas* BeamProfileFF( void );
 TCanvas* BeamEnvelope( ParticleType p );
 
+// E42
+TCanvas* TPC( void );
+TCanvas* TPCADCPAD( void );
+TCanvas* TPCTDCPAD( void );
+TCanvas* TPCFADC( void );
+
 // E03
 TCanvas* GeADC( void );
 TCanvas* GeCRM( void );

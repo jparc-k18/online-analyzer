@@ -40,7 +40,7 @@ const Int_t DetIdMsTRM      = 82;
 const Int_t DetIdHulRM      = 83;
 const Int_t NumOfSegTrig    = 32;
 const Int_t NumOfSegScaler  = 128;
-const Int_t NumOfPlaneVmeRm = 2;
+const Int_t NumOfPlaneVmeRm = 10;
 const Int_t NumOfVmeRm      = 10;
 
 const Int_t LSOGeFlag       = 0; // HbxTrig
@@ -153,6 +153,11 @@ enum dTypesMst
 
 // Scaler ----------------------------------------------
 const Int_t NumOfScaler  = 2;
+
+// E42
+const Int_t DetIdTPC       = 70;
+const Int_t NumOfLayersTPC = 32;
+const Int_t NumOfTimeBucket = 200;
 
 // VMEEASIROC Board
 const Int_t DetIdVEASIROC         = 116;

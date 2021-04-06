@@ -53,7 +53,7 @@ public:
 		    Double_t x,
 		    Double_t w=1.0);
 
-  // methods for TH1 --------------------------------------------------
+  // methods for TH2 --------------------------------------------------
   static TH2* D2(const TString& name,
 		 const TString& title,
 		 Int_t nbinsx,
@@ -84,6 +84,18 @@ public:
 		 Double_t xlow,
 		 Double_t xip,
 		 Int_t nbinsy,
+		 Double_t ylow,
+		 Double_t yup);
+  static TH2* P2(const TString& name,
+		 const TString& title,
+		 Double_t xlow,
+		 Double_t xip,
+		 Double_t ylow,
+		 Double_t yup);
+  static TH2* P2(Int_t id,
+		 const TString& title,
+		 Double_t xlow,
+		 Double_t xip,
 		 Double_t ylow,
 		 Double_t yup);
   static Int_t  fill2(const TString& name,

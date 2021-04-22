@@ -61,18 +61,20 @@ HodoAnalyzer::~HodoAnalyzer( void )
 {
   ClearBH1Hits();
   ClearBH2Hits();
-  ClearSACHits();
   ClearTOFHits();
+  ClearBFTHits();
+  ClearSCHHits();
+#ifdef E40
+  ClearSACHits();
   ClearHtTOFHits();
   ClearLCHits();
-  ClearBFTHits();
-  ClearSFTHits();
   ClearCFTHits();
+  ClearSFTHits();
   ClearBGOHits();
   ClearPiIDHits();
-  ClearSCHHits();
   ClearFHT1Hits();
   ClearFHT2Hits();
+#endif
   debug::ObjectCounter::decrease(class_name);
 }
 
@@ -211,18 +213,20 @@ HodoAnalyzer::DecodeRawHits( RawData *rawData )
 {
   DecodeBH1Hits( rawData );
   DecodeBH2Hits( rawData );
-  DecodeSACHits( rawData );
   DecodeTOFHits( rawData );
+  DecodeBFTHits( rawData );
+  DecodeSCHHits( rawData );
+#ifdef E40
+  DecodeSACHits( rawData );
   DecodeHtTOFHits( rawData );
   DecodeLCHits( rawData );
-  DecodeBFTHits( rawData );
   DecodeSFTHits( rawData );
   DecodeCFTHits( rawData );
   DecodeBGOHits( rawData );
   DecodePiIDHits( rawData );
-  DecodeSCHHits( rawData );
   DecodeFHT1Hits( rawData );
   DecodeFHT2Hits( rawData );
+#endif
   return true;
 }
 
@@ -1536,15 +1540,17 @@ HodoAnalyzer::ReCalcAll( void )
 {
   ReCalcBH1Hits();
   ReCalcBH2Hits();
-  ReCalcSACHits();
   ReCalcTOFHits();
-  ReCalcHtTOFHits();
-  ReCalcLCHits();
   ReCalcBH1Clusters();
   ReCalcBH2Clusters();
   ReCalcTOFClusters();
+#ifdef E40
+  ReCalcSACHits();
+  ReCalcHtTOFHits();
   ReCalcHtTOFClusters();
+  ReCalcLCHits();
   ReCalcLCClusters();
+#endif
   return true;
 }
 

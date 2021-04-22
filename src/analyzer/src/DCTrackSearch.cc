@@ -1,8 +1,4 @@
-/**
- *  file: DCTrackSearch.cc
- *  date: 2017.04.10
- *
- */
+// -*- C++ -*-
 
 #include "DCTrackSearch.hh"
 
@@ -12,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <TH2D.h>
 
 #include "DCGeomMan.hh"
 #include "DCLocalTrack.hh"
@@ -27,13 +24,15 @@
 #include "TrackMaker.hh"
 #include "UserParamMan.hh"
 #include "DeleteUtility.hh"
-
+#include "ConfMan.hh"
 #include "RootHelper.hh"
 
 namespace
 {
   const std::string& class_name("DCTrackSearch");
-  DCGeomMan& gGeom = DCGeomMan::GetInstance();
+  const ConfMan& gConf = ConfMan::GetInstance();
+  const DCGeomMan& gGeom = DCGeomMan::GetInstance();
+  const UserParamMan& gUser = UserParamMan::GetInstance();
   const double& zTarget    = gGeom.LocalZ("Target");
   const double& zK18Target = gGeom.LocalZ("K18Target");
   const double& zBH2       = gGeom.LocalZ("BH2");
@@ -41,29 +40,19 @@ namespace
   const double MaxChisquareSdcIn  = 5000.; // Set to be More than 30
   const double MaxChisquareSdcOut = 50.;   // Set to be More than 30
   const double MaxNumOfCluster = 20.;	   // Set to be Less than 30
-  const double MaxNumOfClusterCFT = 10.;   // Set to be Less than 30
   const double MaxCombi = 1.0e6;	   // Set to be Less than 10^6
   // SdcIn & BcOut for XUV Tracking routine
   const double MaxChisquareVXU = 50.;//
   const double ChisquareCutVXU = 50.;//
 
-  const double Bh2SegX[NumOfSegBH2]      = {35./2., 10./2., 7./2., 7./2., 7./2., 7./2., 10./2., 35./2.};
-  const double Bh2SegXAcc[NumOfSegBH2]   = {20., 6.5, 5., 5., 5., 5., 6.5, 20.};
+  const double Bh2SegX[NumOfSegBH2]      = { 7./2., 7./2., 7./2., 7./2.,7./2.};
+  const double Bh2SegXAcc[NumOfSegBH2]   = {5., 5., 5., 5., 5.};
   const double localPosBh2X_dX           = 0.;
-  const double localPosBh2X[NumOfSegBH2] = {-41.5 + localPosBh2X_dX,
-					    -19.0 + localPosBh2X_dX,
-					    -10.5 + localPosBh2X_dX,
-					    -3.5  + localPosBh2X_dX,
+  const double localPosBh2X[NumOfSegBH2] = {-3.5  + localPosBh2X_dX,
 					    3.5   + localPosBh2X_dX,
 					    10.5  + localPosBh2X_dX,
 					    19.0  + localPosBh2X_dX,
 					    41.5  + localPosBh2X_dX};
-
-  // for CFT
-  const double MaxChi2CFT1st  = 150.;
-  const double MaxChi2CFT2nd  = 100.;
-  const double MaxChi2CFTcosmic  = 300.;
-
 
   //_____________________________________________________________________
   // Local Functions ____________________________________________________
@@ -78,14 +67,6 @@ namespace
 
   //_____________________________________________________________________
   inline void
-  CalcTracksCFT( std::vector<DCLocalTrack*>& trackCont )
-  {
-    for( std::size_t i=0, n=trackCont.size(); i<n; ++i )
-      trackCont[i]->CalculateCFT();
-  }
-
-  //_____________________________________________________________________
-  inline void
   ClearFlags( std::vector<DCLocalTrack*>& trackCont )
   {
     for( std::size_t i=0, n=trackCont.size(); i<n; ++i){
@@ -96,29 +77,13 @@ namespace
     }
   }
 
-  //_____________________________________________________________________
-  inline void
-  ClearFlagsCFT( std::vector<DCLocalTrack*>& trackCont )
-  {
-    for( std::size_t i=0, n=trackCont.size(); i<n; ++i){
-      const DCLocalTrack* const tp = trackCont[i];
-      if (!tp) continue;
-
-      int nh = tp->GetNHit();
-      for( int j=0; j<nh; ++j ) tp->GetHit(j)->QuitTrackCFT();
-
-      int nhUV = tp->GetNHitUV();
-      for( int j=0; j<nhUV; ++j ) tp->GetHitUV(j)->QuitTrackCFT();
-
-    }
-  }
 
   //_____________________________________________________________________
   inline void
   DeleteDuplicatedTracks( std::vector<DCLocalTrack*>& trackCont, double ChisqrCut=0. )
   {
     // evaluate container size in every iteration
-    for( std::size_t i=0, n=trackCont.size(); i<n; ++i ){
+    for( std::size_t i=0; i<trackCont.size(); ++i ){
       const DCLocalTrack* const tp = trackCont[i];
       if (!tp) continue;
       int nh = tp->GetNHit();
@@ -141,11 +106,12 @@ namespace
 
   //_____________________________________________________________________
   inline void
-  DeleteDuplicatedTracks( std::vector<DCLocalTrack*>& trackCont, int first, int second, double ChisqrCut=0. )
+  DeleteDuplicatedTracks( std::vector<DCLocalTrack*>& trackCont,
+			  int first, int second, double ChisqrCut=0. )
   {
     std::vector <int> delete_index;
     // evaluate container size in every iteration
-    for( int i=first; i<=second; ++i ){
+    for( std::size_t i=first; i<=second; ++i ){
 
       auto itr = std::find(delete_index.begin(), delete_index.end(), i);
       if (itr != delete_index.end())
@@ -157,7 +123,7 @@ namespace
       int nh = tp->GetNHit();
       for(int j=0; j<nh; ++j) tp->GetHit(j)->JoinTrack();
 
-      for( int i2=second; i2>i; --i2 ){
+      for( std::size_t i2=second; i2>i; --i2 ){
         auto itr = std::find(delete_index.begin(), delete_index.end(), i2);
         if (itr != delete_index.end())
           continue;
@@ -178,19 +144,18 @@ namespace
 
     // sort from bigger order
     std::sort(delete_index.begin(), delete_index.end(), std::greater<int>());
-    for (int i=0; i<static_cast<int>(delete_index.size()); i++) {
+    for (int i=0; i<delete_index.size(); i++) {
       trackCont.erase(trackCont.begin()+delete_index[i]);
     }
 
     // reset hit record of DCHit
-    for( int i=0, n=trackCont.size(); i<n; ++i ){
+    for( std::size_t i=0; i<trackCont.size(); ++i ){
       const DCLocalTrack* const tp = trackCont[i];
       if (!tp) continue;
       int nh = tp->GetNHit();
       for(int j=0; j<nh; ++j) tp->GetHit(j)->QuitTrack();
     }
   }
-
 
 
   //_____________________________________________________________________
@@ -269,8 +234,7 @@ namespace
   }
 
   //_____________________________________________________________________
-  [[maybe_unused]]
-  void
+  [[maybe_unused]] void
   DebugPrint( const IndexList& nCombi,
 	      const std::string& func_name="",
 	      const std::string& msg="" )
@@ -294,8 +258,7 @@ namespace
   }
 
   //_____________________________________________________________________
-  [[maybe_unused]]
-  void
+  [[maybe_unused]] void
   DebugPrint( const std::vector<DCLocalTrack*>& trackCont,
 	      const std::string& arg="" )
   {
@@ -314,8 +277,7 @@ namespace
   }
 
   //_____________________________________________________________________
-  [[maybe_unused]]
-  void
+  [[maybe_unused]] void
   DebugPrint( const IndexList& nCombi,
 	      const std::vector<ClusterList>& CandCont,
 	      const std::string& arg="" )
@@ -341,7 +303,7 @@ namespace
     }
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   template <class Functor>
   inline void
   FinalizeTrack( const std::string& arg,
@@ -350,14 +312,12 @@ namespace
 		 std::vector<ClusterList>& candCont,
 		 bool delete_flag=true )
   {
-    ClearFlags(trackCont);
 
 #if 0
     DebugPrint( trackCont, arg+" Before Sorting " );
 #endif
 
     std::stable_sort( trackCont.begin(), trackCont.end(), DCLTrackComp_Nhit() );
-
 
 #if 0
     DebugPrint( trackCont, arg+" After Sorting (Nhit) " );
@@ -368,7 +328,7 @@ namespace
 
     std::vector <int> nhit_vec;
 
-    for (int i=0, n=trackCont.size(); i<n; i++) {
+    for (int i=0; i<trackCont.size(); i++) {
       int nhit = trackCont[i]->GetNHit();
       nhit_vec.push_back(nhit);
     }
@@ -390,7 +350,7 @@ namespace
       }
     }
 
-    for (int i=0, n=index_pair_vec.size(); i<n; i++) {
+    for (int i=0; i<index_pair_vec.size(); i++) {
       std::stable_sort( trackCont.begin() + index_pair_vec[i].first,
 			trackCont.begin() +  index_pair_vec[i].second + 1, DCLTrackComp_Chisqr() );
     }
@@ -399,16 +359,10 @@ namespace
       DebugPrint( trackCont, arg+" After Sorting (chisqr)" );
 #endif
 
-    if( delete_flag ) {
-      for (int i=index_pair_vec.size()-1; i>=0; --i) {
-        DeleteDuplicatedTracks( trackCont, index_pair_vec[i].first, index_pair_vec[i].second, 0.);
-      }
-    }
 
 #if 0
       DebugPrint( trackCont, arg+" After Deleting in each hit number" );
 #endif
-
 
     std::stable_sort( trackCont.begin(), trackCont.end(), comp );
 
@@ -416,7 +370,7 @@ namespace
     DebugPrint( trackCont, arg+" After Sorting with comp func " );
 #endif
 
-    if( delete_flag ) DeleteDuplicatedTracks( trackCont );
+    DeleteDuplicatedTracks( trackCont );
 
 #if 0
     DebugPrint( trackCont, arg+" After Deleting " );
@@ -426,27 +380,9 @@ namespace
     del::ClearContainerAll( candCont );
   }
 
-  //______________________________________________________________________________
-  template <class Functor>
-  inline void
-  FinalizeTrackCFT( const std::string& arg,
-		 std::vector<DCLocalTrack*>& trackCont,
-		 Functor comp,
-		 std::vector<ClusterList>& candCont,
-		 bool delete_flag=true )
-  {
-
-    std::stable_sort( trackCont.begin(), trackCont.end(), comp );
-
-    CalcTracksCFT( trackCont );
-
-    del::ClearContainerAll( candCont );
-  }
-
-  //______________________________________________________________________________
-  // MakeCluster _________________________________________________________________
-
-  //______________________________________________________________________________
+  //___________________________________________________________________________
+  // MakeCluster ______________________________________________________________
+  //___________________________________________________________________________
   bool
   MakePairPlaneHitCluster( const DCHitContainer & HC1,
 			   const DCHitContainer & HC2,
@@ -469,11 +405,7 @@ namespace
 	  int multi1 = hit1->GetDriftLengthSize();
 	  int multi2 = hit2->GetDriftLengthSize();
 	  for ( int m1=0; m1<multi1; ++m1 ) {
-	    if( !hit1->IsWithinRange(m1) )
-	      continue;
 	    for ( int m2=0; m2<multi2; ++m2 ) {
-	      if( !hit2->IsWithinRange(m2) )
-		continue;
 	      double x1,x2;
 	      if( wp1<wp2 ){
 		x1=wp1+hit1->GetDriftLength(m1);
@@ -497,7 +429,6 @@ namespace
       if(!flag){
 	int multi1 = hit1->GetDriftLengthSize();
 	for (int m1=0; m1<multi1; m1++) {
-	  if( !(hit1->IsWithinRange(m1)) ) continue;
 	  double dl=hit1->GetDriftLength(m1);
 	  DCPairHitCluster *cluster1 = new DCPairHitCluster( new DCLTrackHit(hit1,wp1+dl,m1) );
 	  DCPairHitCluster *cluster2 = new DCPairHitCluster( new DCLTrackHit(hit1,wp1-dl,m1) );
@@ -515,7 +446,6 @@ namespace
 	DCHit *hit2=HC2[i2];
 	int multi2 = hit2->GetDriftLengthSize();
 	for (int m2=0; m2<multi2; m2++) {
-	  if( !(hit2->IsWithinRange(m2)) ) continue;
 	  double wp=hit2->GetWirePosition();
 	  double dl=hit2->GetDriftLength(m2);
 	  DCPairHitCluster *cluster1 = new DCPairHitCluster( new DCLTrackHit(hit2,wp+dl,m2) );
@@ -531,7 +461,7 @@ namespace
     return true;
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   bool
   MakeUnPairPlaneHitCluster( const DCHitContainer& HC,
 			     ClusterList& Cont,
@@ -545,7 +475,6 @@ namespace
       if( !hit ) continue;
       std::size_t mh = hit->GetDriftLengthSize();
       for ( std::size_t m=0; m<mh; ++m ) {
-	if( !hit->IsWithinRange(m) ) continue;
 	double wp = hit->GetWirePosition();
 	double dl = hit->GetDriftLength(m);
 	DCPairHitCluster *cluster1 =
@@ -562,7 +491,7 @@ namespace
     return true;
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   bool
   MakeMWPCPairPlaneHitCluster( const DCHitContainer& HC,
 			       ClusterList& Cont )
@@ -573,7 +502,6 @@ namespace
       if( hit ){
 	int multi = hit->GetDriftTimeSize();
 	for (int m=0; m<multi; m++) {
-	  if( !(hit->IsWithinRange(m)) ) continue;
 	  double wp=hit->GetWirePosition();
 	  // double dl=hit->GetDriftLength(m);
 	  Cont.push_back( new DCPairHitCluster( new DCLTrackHit( hit, wp, m ) ) );
@@ -583,7 +511,7 @@ namespace
     return true;
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   bool
   MakeTOFHitCluster( const DCHitContainer& HitCont,
 		     ClusterList& Cont,
@@ -600,51 +528,7 @@ namespace
     return true;
   }
 
-  bool MakeCFTHitCluster( const DCHitContainer & HC,
-			  std::vector <DCPairHitCluster *> & Cont,
-			  bool honeycomb=false )
-  {
-    int nh=HC.size();
-    for( int i=0; i<nh; ++i ){
-      DCHit *hit=HC[i];
-      if( hit ){
-
-	DCPairHitCluster *cluster =
-	  new DCPairHitCluster( new DCLTrackHit(hit,0.,i) );
-	cluster->SetHoneycomb( honeycomb );
-	Cont.push_back( cluster );
-
-      }
-    }
-
-    /*
-    //ref
-    const std::size_t nh = HC.size();
-    for( std::size_t i=0; i<nh; ++i ){
-      DCHit *hit = HC[i];
-      if( !hit ) continue;
-      std::size_t mh = hit->GetDriftLengthSize();
-      for ( std::size_t m=0; m<mh; ++m ) {
-	if( !hit->IsWithinRange(m) ) continue;
-	double wp = hit->GetWirePosition();
-	double dl = hit->GetDriftLength(m);
-	DCPairHitCluster *cluster1 =
-	  new DCPairHitCluster( new DCLTrackHit(hit,wp+dl,m) );
-	DCPairHitCluster *cluster2 =
-	  new DCPairHitCluster( new DCLTrackHit(hit,wp-dl,m) );
-	cluster1->SetHoneycomb( honeycomb );
-	cluster2->SetHoneycomb( honeycomb );
-	Cont.push_back( cluster1 );
-	Cont.push_back( cluster2 );
-      }
-    }
-    */
-
-    return true;
-  }
-
-
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   bool
   MakePairPlaneHitClusterVUX( const DCHitContainer& HC1,
 			      const DCHitContainer& HC2,
@@ -670,9 +554,7 @@ namespace
 	  int multi1 = hit1->GetDriftLengthSize();
 	  int multi2 = hit2->GetDriftLengthSize();
 	  for (int m1=0; m1<multi1; m1++) {
-	    if( !(hit1->IsWithinRange(m1)) ) continue;
 	    for (int m2=0; m2<multi2; m2++) {
-	      if( !(hit2->IsWithinRange(m2)) ) continue;
 	      double dl1=hit1->GetDriftLength(m1);
 	      double dl2=hit2->GetDriftLength(m2);
 
@@ -693,7 +575,6 @@ namespace
       if(!flag){
 	int multi1 = hit1->GetDriftLengthSize();
 	for (int m1=0; m1<multi1; m1++) {
-	  if( !(hit1->IsWithinRange(m1)) ) continue;
 	  double dl=hit1->GetDriftLength(m1);
 	  Cont.push_back( new DCPairHitCluster( new DCLTrackHit(hit1,wp1+dl,m1) ) );
 	  Cont.push_back( new DCPairHitCluster( new DCLTrackHit(hit1,wp1-dl,m1) ) );
@@ -705,7 +586,6 @@ namespace
 	DCHit *hit2=HC2[i2];
 	int multi2 = hit2->GetDriftLengthSize();
 	for (int m2=0; m2<multi2; m2++) {
-	  if( !(hit2->IsWithinRange(m2)) ) continue;
 
 	  double wp=hit2->GetWirePosition();
 	  double dl=hit2->GetDriftLength(m2);
@@ -718,10 +598,9 @@ namespace
     return true;
   }
 
-  //______________________________________________________________________________
-  // MakeIndex ___________________________________________________________________
-
-  //______________________________________________________________________________
+  //___________________________________________________________________________
+  // MakeIndex ________________________________________________________________
+  //___________________________________________________________________________
   std::vector<IndexList>
   MakeIndex( int ndim, const int *index1, bool& status)
   {
@@ -763,14 +642,14 @@ namespace
     return index;
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   std::vector<IndexList>
   MakeIndex( int ndim, const IndexList& index1, bool& status )
   {
     return MakeIndex( ndim, &(index1[0]), status );
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   std::vector<IndexList>
   MakeIndex_VXU( int ndim,int maximumHit, const int *index1 )
   {
@@ -813,17 +692,16 @@ namespace
     return index;
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   std::vector<IndexList>
   MakeIndex_VXU( int ndim,int maximumHit, const IndexList& index1 )
   {
     return MakeIndex_VXU( ndim, maximumHit, &(index1[0]) );
   }
 
-  //______________________________________________________________________________
-  // MakeTrack ___________________________________________________________________
-
-  //______________________________________________________________________________
+  //___________________________________________________________________________
+  // MakeTrack ________________________________________________________________
+  //___________________________________________________________________________
   DCLocalTrack*
   MakeTrack( const std::vector<ClusterList>& CandCont,
 	     const IndexList& combination )
@@ -850,51 +728,12 @@ namespace
     }
     return tp;
   }
-
-
-  //______________________________________________________________________________
-  DCLocalTrack*
-  MakeTrackCFT( const std::vector<ClusterList>& CandCont,
-		const IndexList& combination )
-  {
-    static const std::string func_name("["+class_name+"::"+__func__+"()]");
-
-    DCLocalTrack *tp = new DCLocalTrack;
-    for( std::size_t i=0, n=CandCont.size(); i<n; ++i ){
-      int m = combination[i];
-      if( m<0 ) continue;
-      DCPairHitCluster *cluster = CandCont[i][m];
-      if( !cluster ) continue;
-      int mm = cluster->NumberOfHits();
-      int Layer[mm];
-
-      for( int j=0; j<mm; ++j ){
-	DCLTrackHit *hitp = cluster->GetHit(j);
-	Layer[j] = hitp->GetLayer();
-	if( !hitp ) continue;
-
-	if(Layer[j]%2==0){
-	  tp->AddHitUV( hitp ); // spiral layer
-	}else if(Layer[j]%2==1){
-	  tp->AddHit( hitp ); // straight layer
-	}
-      }
-#if 0
-      hddaq::cout << func_name << ":" << std::setw(3)
-		  << i << std::setw(3) << m  << " "
-		  << CandCont[i][m] << " " << mm << std::endl;
-#endif
-    }
-    return tp;
-  }
-
 }
 
-
-//______________________________________________________________________________
+//_____________________________________________________________________________
 namespace track
 {
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   int /* Local Track Search without BH2Filter */
   LocalTrackSearch( const std::vector<DCHitContainer>& HC,
 		    const DCPairPlaneInfo * PpInfo,
@@ -972,7 +811,7 @@ namespace track
     return status? TrackCont.size() : -1;
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   int /* Local Track Search with BH2Filter */
   LocalTrackSearch( const std::vector< std::vector<DCHitContainer> > &hcAssemble,
 		    const DCPairPlaneInfo * PpInfo,
@@ -992,16 +831,12 @@ namespace track
       trackCont.insert( trackCont.end(), tc.begin(), tc.end() );
     }
 
-    ClearFlags(trackCont);
     std::stable_sort( trackCont.begin(), trackCont.end(), DCLTrackComp() );
 
-    DeleteDuplicatedTracks( trackCont );
-    //    CalcTracks( trackCont );
-
-    return status < 0 ? status : trackCont.size();
+    return status < 0? status : trackCont.size();
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   int
   LocalTrackSearchSdcOut( const std::vector<DCHitContainer>& SdcOutHC,
 			  const DCPairPlaneInfo *PpInfo,
@@ -1058,7 +893,7 @@ namespace track
     return status? TrackCont.size() : -1;
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   int
   LocalTrackSearchSdcOut( const DCHitContainer& TOFHC,
 			  const std::vector<DCHitContainer>& SdcOutHC,
@@ -1079,7 +914,7 @@ namespace track
       if( ppFlag  ){ //DC2, 3
 	MakePairPlaneHitCluster( SdcOutHC[layer1], SdcOutHC[layer2],
 				 PpInfo[i].CellSize, CandCont[i], honeycomb );
-      }else{ //FHT
+      }else{ //FBT
 	MakeMWPCPairPlaneHitCluster( SdcOutHC[layer1], CandCont[i] );
 	MakeMWPCPairPlaneHitCluster( SdcOutHC[layer2], CandCont[i] );
       }
@@ -1122,15 +957,15 @@ namespace track
       // 	Track[layer]=1;
       // }
 
-      //      bool FHT =
-      //	( Track[80]==1 && Track[82]==1 ) || ( Track[81]==1 && Track[83]==1 ) ||
-      //	( Track[84]==1 && Track[86]==1 ) || ( Track[85]==1 && Track[87]==1 ) ;
+      // bool FBT =
+      // 	( Track[80]==1 && Track[82]==1 ) || ( Track[81]==1 && Track[83]==1 ) ||
+      // 	( Track[84]==1 && Track[86]==1 ) || ( Track[85]==1 && Track[87]==1 ) ;
+      // bool DC23x_off =
+      // 	( Track[31]==0 && Track[32]==0 && Track[37]==0 && Track[38]==0 );
 
-      //      bool DC23x_off =
-      //	( Track[31]==0 && Track[32]==0 && Track[37]==0 && Track[38]==0 );
 
       if( TOFSegXYMatching &&
-	  //FHT&&
+	  //FBT&&
 	  track->GetNHit()>=MinNumOfHits+2   &&
 	  track->GetNHitY() >= 2             &&
 	  track->DoFit()                     &&
@@ -1148,9 +983,9 @@ namespace track
     return status? TrackCont.size() : -1;
   }
 
-  //______________________________________________________________________________
-  int /* Local Track Search SdcIn w/Fiber */
-  LocalTrackSearchSdcInFiber( const std::vector<DCHitContainer>& HC,
+  //___________________________________________________________________________
+  int /* Local Track Search SdcIn */
+  LocalTrackSearchSdcIn( const std::vector<DCHitContainer>& SdcInHC,
 			      const DCPairPlaneInfo *PpInfo,
 			      int npp, std::vector<DCLocalTrack*>& TrackCont,
 			      int MinNumOfHits /*=6*/ )
@@ -1167,12 +1002,10 @@ namespace track
       int  layer2    = PpInfo[i].id2;
 
       if(ppFlag) {
-	MakePairPlaneHitCluster( HC[layer1], HC[layer2],
+	MakePairPlaneHitCluster( SdcInHC[layer1], SdcInHC[layer2],
 				 PpInfo[i].CellSize, CandCont[i], honeycomb );
-      }else if(layer1==layer2){
-	MakeMWPCPairPlaneHitCluster( HC[layer1], CandCont[i] );
       }else{
-	MakeUnPairPlaneHitCluster( HC[layer1], CandCont[i], honeycomb );
+	MakeUnPairPlaneHitCluster( SdcInHC[layer1], CandCont[i], honeycomb );
       }
     }
 
@@ -1188,8 +1021,8 @@ namespace track
     for( int i=0, n=CombiIndex.size(); i<n; ++i ){
       DCLocalTrack *track = MakeTrack( CandCont, CombiIndex[i] );
       if( !track ) continue;
+
       if(true
-	 && track->GetNHitSFT() > 1
 	 && track->GetNHit()>=MinNumOfHits
 	 && track->DoFit()
 	 && track->GetChiSquare()<MaxChisquare
@@ -1200,7 +1033,7 @@ namespace track
 	delete track;
     }
 
-    FinalizeTrack( func_name, TrackCont, DCLTrackCompSdcInFiber(), CandCont );
+    FinalizeTrack( func_name, TrackCont, DCLTrackComp(), CandCont );
     return status? TrackCont.size() : -1;
   }
 
@@ -1346,10 +1179,6 @@ namespace track
       }
     }
 
-    // Clear Flags
-    if(nV>3) ClearFlags( TrackContV );
-    if(nX>3) ClearFlags( TrackContX );
-    if(nU>3) ClearFlags( TrackContU );
 
     std::stable_sort( TrackContV.begin(), TrackContV.end(), DCLTrackComp1() );
     std::stable_sort( TrackContX.begin(), TrackContX.end(), DCLTrackComp1() );
@@ -1361,14 +1190,10 @@ namespace track
     DebugPrint( TrackContU, func_name+" U After Sorting." );
 #endif
 
-    // Delete Duplicated Tracks (cut chisqr>100 & flag)
     double chiV = ChisquareCutVXU;
     double chiX = ChisquareCutVXU;
     double chiU = ChisquareCutVXU;
 
-    DeleteDuplicatedTracks( TrackContV, chiV );
-    DeleteDuplicatedTracks( TrackContX, chiX );
-    DeleteDuplicatedTracks( TrackContU, chiU );
     CalcTracks( TrackContV );
     CalcTracks( TrackContX );
     CalcTracks( TrackContU );
@@ -1696,7 +1521,7 @@ namespace track
     }
 #endif
 
-    FinalizeTrack( func_name, TrackCont, DCLTrackCompSdcInFiber(), CandCont );
+    FinalizeTrack( func_name, TrackCont, DCLTrackComp(), CandCont );
 
     std::stable_sort( TrackCont.begin(), TrackCont.end(), DCLTrackComp() );
 
@@ -1793,7 +1618,7 @@ namespace track
     return status_all? TrackCont.size() : -1;
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   int
   LocalTrackSearchBcOutSdcIn( const std::vector<DCHitContainer>& BcHC,
 			      const DCPairPlaneInfo *BcPpInfo,
@@ -1884,7 +1709,7 @@ namespace track
     return TrackCont.size();
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   inline bool
   IsDeletionTarget( const std::vector< std::pair<int,int> >& nh,
 		    std::size_t NDelete, int layer )
@@ -1903,7 +1728,7 @@ namespace track
     return false;
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   int
   LocalTrackSearchSdcInSdcOut( const std::vector<DCHitContainer>& SdcInHC,
 			       const DCPairPlaneInfo* SdcInPpInfo,
@@ -1945,8 +1770,8 @@ namespace track
 
     IndexList nCombi( npp );
     for( int i=0; i<npp; ++i ){
-	int n = CandCont[i].size();
-	nCombi[i] = n>MaxNumOfCluster ? 0 : n;
+      int n = CandCont[i].size();
+      nCombi[i] = n>MaxNumOfCluster ? 0 : n;
     }
 
     bool status = true;
@@ -1968,167 +1793,9 @@ namespace track
     return status? TrackCont.size() : -1;
   }
 
-  //______________________________________________________________________________
-  int /* Local Track Search CFT */
-  LocalTrackSearchCFT( const std::vector<DCHitContainer>& HC,
-		       const DCPairPlaneInfo *PpInfo,
-		       int npp, std::vector<DCLocalTrack*>& TrackCont,
-		       int MinNumOfHits )
-  {
-    static const std::string func_name("["+class_name+"::"+__func__+"()]");
-    // for vertex cut
-    double z_center  = 150.;
-    double cut_range = 250.; // center-250~center+250
-
-    std::vector<ClusterList> CandCont(npp);
-
-    for( int i=0; i<npp; ++i ){
-      bool honeycomb = PpInfo[i].honeycomb;
-      int  layer1    = PpInfo[i].id1;
-
-      MakeCFTHitCluster( HC[layer1], CandCont[i],  honeycomb);
-    }
-
-    IndexList nCombi(npp);
-    for ( int i=0; i<npp; ++i ) {
-      int n = CandCont[i].size();
-      nCombi[i] = n>MaxNumOfClusterCFT ? 0 : n;
-    }
-
-    bool status = true;
-    std::vector<IndexList> CombiIndex = MakeIndex( npp, nCombi, status );
-
-    double Chi1st = MaxChi2CFT1st;
-    double Chi2nd = MaxChi2CFT2nd;
-    if(MinNumOfHits>4){// 16 layer tracking
-      Chi1st = MaxChi2CFTcosmic;
-      Chi2nd = MaxChi2CFTcosmic;
-    }
-
-    if(MinNumOfHits<=4){// 16 layer tracking
-
-      for( int i=0, n=CombiIndex.size(); i<n; ++i ){
-	DCLocalTrack *track = MakeTrackCFT( CandCont, CombiIndex[i] );
-	if( !track ) continue;
-	if(true
-	   && track->GetNHit()>=MinNumOfHits
-	   && track->GetNHitUV()>=MinNumOfHits
-	   && track->DoFitPhi()
-	   && track->GetChiSquareXY()<Chi1st
-	   && track->DoFitUV()
-	   && track->GetChiSquareZ ()<Chi1st
-	   && fabs(track->GetVtxZ()-z_center)<cut_range // vtx cut
-	   // CFT 2nd tracking (position correction)
-	   && track->DoFitPhi2nd()
-	   && track->GetChiSquareXY ()<Chi2nd
-	   && track->DoFitUV2nd()
-	   && track->GetChiSquareZ ()<Chi2nd
-	   && fabs(track->GetVtxZ()-z_center)<cut_range // vtx cut
-	   ){
-
-	  TrackCont.push_back(track);
-
-	}else{delete track;}
-      }
-
-    }else{ //
-
-      for( int i=0, n=CombiIndex.size(); i<n; ++i ){
-	DCLocalTrack *track = MakeTrackCFT( CandCont, CombiIndex[i] );
-	if( !track ) continue;
-	if(true
-	   && track->GetNHit()>=MinNumOfHits
-	   && track->GetNHitUV()>=MinNumOfHits
-	   && track->DoFitPhi()
-	   && track->GetChiSquareXY()<Chi1st
-	   && track->DoFitUV()
-	   && track->GetChiSquareZ ()<Chi1st
-	   && fabs(track->GetVtxZ()-z_center)<cut_range // vtx cut
-	   // CFT 2nd tracking (position correction)
-	   && track->DoFitPhi2nd()
-	   && track->GetChiSquareXY ()<Chi2nd
-	   && track->DoFitUV2nd()
-	   && track->GetChiSquareZ ()<Chi2nd
-	   && fabs(track->GetVtxZ()-z_center)<cut_range // vtx cut
-	   ){
-
-	  TrackCont.push_back(track);
-
-	}else{delete track;}
-      }
-
-    }
-
-
-
-    // Clear Flags
-    ClearFlagsCFT(TrackCont);
-
-    partial_sort( TrackCont.begin(), TrackCont.end(),
-		  TrackCont.end(), DCLTrackCompCFT() );
-
-    // Delete Duplicated Tracks
-    for( int i=0; i<int(TrackCont.size()); ++i ){
-      DCLocalTrack *tp=TrackCont[i];
-
-      int nh=tp->GetNHit();
-      for( int j=0; j<nh; ++j ){
-	tp->GetHit(j)->JoinTrackCFT();
-      }
-      int nhUV=tp->GetNHitUV();
-      for( int j=0; j<nhUV; ++j ){
-	tp->GetHitUV(j)->JoinTrackCFT();
-      }
-
-      for( int i2=TrackCont.size()-1; i2>i; --i2 ){
-	int flag1=0, flag2=0, flag=0;
-
-	DCLocalTrack *tp2=TrackCont[i2];
-	int nh2=tp2->GetNHit();
-
-	for( int j=0; j<nh2; ++j ){
-	  if( tp2->GetHit(j)->BelongToTrackCFT() ==true ){++flag1; ++flag;}
-	}
-
-	int nhUV2=tp2->GetNHitUV();
-	for( int j=0; j<nhUV2; ++j ){
-	  if( tp2->GetHitUV(j)->BelongToTrackCFT() ==true ){ ++flag2; ++flag;}
-	}
-
-	if(flag>0){
-	  delete tp2;
-	  TrackCont.erase(TrackCont.begin()+i2);
-	}
-
-      }
-    }
-
-
-    int nn=TrackCont.size();
-    for(int i=0; i<nn; ++i ){
-      DCLocalTrack *tp=TrackCont[i];
-      tp->SetCalculatedValueCFT();
-    }
-
-    for(int i=0; i<nn; ++i ){
-      DCLocalTrack *tp=TrackCont[i];
-      int nh=tp->GetNHit();
-      for( int j=0; j<nh; ++j ){
-	int lnum = tp->GetHit(j)->GetLayer();
-	int ll = lnum;
-	if(lnum>7){ll -= 8;}
-      }
-    }
-
-    FinalizeTrackCFT( func_name, TrackCont, DCLTrackCompCFT(), CandCont );
-
-    return status? TrackCont.size() : -1;
-  }
-
-
-
-  //For MWPC
-  //_____________________________________________________________________________
+  //___________________________________________________________________________
+  // For MWPC _________________________________________________________________
+  //___________________________________________________________________________
   int MWPCLocalTrackSearch( const std::vector<DCHitContainer>& HC,
 			    std::vector<DCLocalTrack*>& TrackCont )
 
@@ -2169,7 +1836,7 @@ namespace track
     return TrackCont.size();
   }
 
-  //______________________________________________________________________________
+  //___________________________________________________________________________
   int MWPCLocalTrackSearch( const std::vector< std::vector<DCHitContainer> >& hcList,
 			    std::vector<DCLocalTrack*>& trackCont )
   {
@@ -2187,8 +1854,6 @@ namespace track
 	// 		<< " : " << trackCont.size() << std::endl;
       }
 
-    ClearFlags(trackCont);
-    DeleteDuplicatedTracks(trackCont);
     CalcTracks( trackCont );
     return trackCont.size();
   }

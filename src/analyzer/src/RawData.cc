@@ -157,19 +157,21 @@ RawData::RawData( void )
   : m_is_decoded(false),
     m_BH1RawHC(),
     m_BH2RawHC(),
-    m_SACRawHC(),
     m_TOFRawHC(),
+    m_BFTRawHC(NumOfPlaneBFT),
+    m_SCHRawHC(),
+#ifdef E40
+    m_SACRawHC(),
     m_HtTOFRawHC(),
     m_LCRawHC(),
-    m_BFTRawHC(NumOfPlaneBFT),
     m_SFTRawHC(NumOfPlaneSFT),
     m_CFTRawHC(NumOfPlaneCFT),
     m_BGORawHC(),
     m_BGOFadcRawHC(NumOfSegBGO),
     m_PiIDRawHC(),
-    m_SCHRawHC(),
     m_FHT1RawHC(2*NumOfLayersFHT1),
     m_FHT2RawHC(2*NumOfLayersFHT2),
+#endif
     m_BcInRawHC(NumOfLayersBcIn+1),
     m_BcOutRawHC(NumOfLayersBcOut+1),
     m_SdcInRawHC(NumOfLayersSdcIn+1),
@@ -197,12 +199,14 @@ RawData::ClearAll( void )
 
   del::ClearContainer( m_BH1RawHC );
   del::ClearContainer( m_BH2RawHC );
-  del::ClearContainer( m_SACRawHC );
   del::ClearContainer( m_TOFRawHC );
-  del::ClearContainer( m_HtTOFRawHC );
-  del::ClearContainer( m_LCRawHC );
 
   del::ClearContainerAll( m_BFTRawHC );
+
+#ifdef E40
+  del::ClearContainer( m_SACRawHC );
+  del::ClearContainer( m_HtTOFRawHC );
+  del::ClearContainer( m_LCRawHC );
   del::ClearContainerAll( m_SFTRawHC );
   del::ClearContainerAll( m_CFTRawHC );
   del::ClearContainer( m_BGORawHC );
@@ -211,12 +215,10 @@ RawData::ClearAll( void )
     m_BGOFadcRawHC[i].clear();
     m_BGOFadcRawHC[i].shrink_to_fit();
   }
-
-
-
   del::ClearContainer( m_PiIDRawHC );
   del::ClearContainerAll( m_FHT1RawHC );
   del::ClearContainerAll( m_FHT2RawHC );
+#endif
 
   del::ClearContainer( m_SCHRawHC );
 
@@ -263,14 +265,8 @@ RawData::DecodeHits( void )
   DecodeHodo( DetIdBH1, NumOfSegBH1, kBothSide, m_BH1RawHC );
   // BH2
   DecodeHodo( DetIdBH2, NumOfSegBH2, kBothSide, m_BH2RawHC );
-  // SAC
-  DecodeHodo( DetIdSAC, NumOfSegSAC, kOneSide,  m_SACRawHC );
   // TOF
   DecodeHodo( DetIdTOF, NumOfSegTOF, kBothSide, m_TOFRawHC );
-  // TOF-HT
-  DecodeHodo( DetIdHtTOF,NumOfSegHtTOF,kOneSide,  m_HtTOFRawHC );
-  // LC
-  DecodeHodo( DetIdLC,  NumOfSegLC,  kOneSide,  m_LCRawHC );
 
   //BFT
   for( int plane=0; plane<NumOfPlaneBFT; ++plane ){
@@ -287,6 +283,26 @@ RawData::DecodeHits( void )
     }
   }
 
+  //SCH
+  for(int seg=0; seg<NumOfSegSCH; ++seg){
+    int nhit = gUnpacker.get_entries( DetIdSCH, 0, seg, 0, 0 );
+    if( nhit>0 ){
+      for(int i = 0; i<nhit; ++i){
+	int leading  = gUnpacker.get( DetIdSCH, 0, seg, 0, 0, i );
+	int trailing = gUnpacker.get( DetIdSCH, 0, seg, 0, 1, i );
+	AddHodoRawHit( m_SCHRawHC, DetIdSCH, 0, seg , 0, kHodoLeading,  leading );
+	AddHodoRawHit( m_SCHRawHC, DetIdSCH, 0, seg , 0, kHodoTrailing, trailing );
+      }
+    }
+  }
+
+#ifdef E40
+  // SAC
+  DecodeHodo( DetIdSAC, NumOfSegSAC, kOneSide,  m_SACRawHC );
+  // TOF-HT
+  DecodeHodo( DetIdHtTOF,NumOfSegHtTOF,kOneSide,  m_HtTOFRawHC );
+  // LC
+  DecodeHodo( DetIdLC,  NumOfSegLC,  kOneSide,  m_LCRawHC );
   //SFT
   for( int plane=0; plane<NumOfPlaneSFT; ++plane ){
     int nseg = 0;
@@ -410,18 +426,6 @@ RawData::DecodeHits( void )
 
   }
 
-  //SCH
-  for(int seg=0; seg<NumOfSegSCH; ++seg){
-    int nhit = gUnpacker.get_entries( DetIdSCH, 0, seg, 0, 0 );
-    if( nhit>0 ){
-      for(int i = 0; i<nhit; ++i){
-	int leading  = gUnpacker.get( DetIdSCH, 0, seg, 0, 0, i );
-	int trailing = gUnpacker.get( DetIdSCH, 0, seg, 0, 1, i );
-	AddHodoRawHit( m_SCHRawHC, DetIdSCH, 0, seg , 0, kHodoLeading,  leading );
-	AddHodoRawHit( m_SCHRawHC, DetIdSCH, 0, seg , 0, kHodoTrailing, trailing );
-      }
-    }
-  }
 
   //FHT1
   for( int layer=0; layer<NumOfLayersFHT1; ++layer ){
@@ -452,6 +456,7 @@ RawData::DecodeHits( void )
       }// UorD
     }// seg
   }// layer
+#endif
 
   // BC3&BC4 MWDC
   for(int plane=0; plane<NumOfLayersBcOut; ++plane ){

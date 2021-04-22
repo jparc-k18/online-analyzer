@@ -136,8 +136,10 @@ DCAnalyzer::DCAnalyzer( void )
     m_BcOutHC(NumOfLayersBcOut+2),
     m_SdcInHC(NumOfLayersSdcIn+1),
     m_SdcOutHC(NumOfLayersSdcOut+1),
+#ifdef E40
     m_CFTHC(NumOfPlaneCFT),
     m_CFT16HC(NumOfPlaneCFT*2+1),
+#endif
     m_SdcInExTC(NumOfLayersSdcIn+1),
     m_SdcOutExTC(NumOfLayersSdcOut+1)
 {
@@ -161,12 +163,14 @@ DCAnalyzer::~DCAnalyzer( void )
   ClearTracksBcOut();
   ClearTracksBcOutSdcIn();
   ClearTracksSdcInSdcOut();
+#ifdef E40
   ClearTracksCFT();
   ClearTracksCFT16();
-  ClearDCHits();
-  ClearVtxHits();
   ClearCFTHits();
   ClearCFT16Hits();
+#endif
+  ClearDCHits();
+  ClearVtxHits();
   debug::ObjectCounter::decrease(class_name);
 }
 
@@ -318,6 +322,7 @@ DCAnalyzer::DecodeSdcInHits( RawData *rawData )
 
   ClearSdcInHits();
 
+#ifdef E40
   // SFT
   {
     // HodoAnalyzer& hodoAna = HodoAnalyzer::GetInstance();
@@ -351,6 +356,7 @@ DCAnalyzer::DecodeSdcInHits( RawData *rawData )
       }
     }
   }
+#endif
 
   // SDC1
   {
@@ -419,6 +425,7 @@ DCAnalyzer::DecodeSdcOutHits( RawData *rawData , double ofs_dt)
     }
   }
 
+#ifdef E40
   // FHT1
   {
     HodoAnalyzer hodoAna;
@@ -518,6 +525,8 @@ DCAnalyzer::DecodeSdcOutHits( RawData *rawData , double ofs_dt)
       }
     }
   }
+#endif
+
   m_is_decoded[k_SdcOut] = true;
   return true;
 }
@@ -930,10 +939,9 @@ DCAnalyzer::TrackSearchBcOut( const std::vector<std::vector<DCHitContainer> >& h
 bool
 DCAnalyzer::TrackSearchSdcIn( void )
 {
-  static const int MinLayer = gUser.GetParameter("MinLayerSdcIn");
-
+  // static const int MinLayer = gUser.GetParameter("MinLayerSdcIn");
   // track::LocalTrackSearch( m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn, m_SdcInTC, MinLayer );
-  track::LocalTrackSearchSdcInFiber( m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn, m_SdcInTC, MinLayer );
+  // track::LocalTrackSearchSdcInFiber( m_SdcInHC, PPInfoSdcIn, NPPInfoSdcIn, m_SdcInTC, MinLayer );
   return true;
 }
 
@@ -1264,6 +1272,7 @@ DCAnalyzer::TrackSearchKurama( double initial_momentum )
   return true;
 }
 
+#ifdef E40
 //______________________________________________________________________________
 bool
 DCAnalyzer::TrackSearchCFT( void )
@@ -1283,8 +1292,7 @@ DCAnalyzer::TrackSearchCFT16( void )
   track::LocalTrackSearchCFT( m_CFT16HC, PPInfoCFT16, NPPInfoCFT16, m_CFT16TC, MinLayer );//same with normal tracking
   return true;
 }
-
-
+#endif
 
 //______________________________________________________________________________
 void
@@ -1297,8 +1305,10 @@ DCAnalyzer::ClearDCHits( void )
   ClearSdcInHits();
   ClearSdcOutHits();
   ClearTOFHits();
+#ifdef E40
   ClearCFTHits();
   ClearCFT16Hits();
+#endif
 }
 
 //______________________________________________________________________________

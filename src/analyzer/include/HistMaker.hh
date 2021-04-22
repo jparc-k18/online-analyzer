@@ -184,6 +184,7 @@ public:
 
   // Beam Profile
   TList* createBeamProfile( Bool_t flag_ps=true );
+  TList* createBeamProfileE42( Bool_t flag_ps=true );
 
   // Old functions E40
   TList* createSFT( Bool_t flag_ps=true );

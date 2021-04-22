@@ -5638,12 +5638,13 @@ TList* HistMaker::createCorrelation_catch( Bool_t flag_ps )
   return top_dir;
 }
 */
+
 //_____________________________________________________________________________
 TList*
-HistMaker::createBeamProfile( Bool_t flag_ps )
+HistMaker::createBeamProfileE42( Bool_t flag_ps )
 {
   auto top_dir = new TList;
-  const char* top_name = "BcOut";
+  const char* top_name = "BeamProfile";
   top_dir->SetName(top_name);
   for( Int_t ip=0; ip<NParticleType; ++ip ){
     auto sub_dir = new TList;
@@ -5651,7 +5652,7 @@ HistMaker::createBeamProfile( Bool_t flag_ps )
     int unique_id = getUniqueID(kMisc, ip, kHitPat);
     // Profile X
     for(int i = 0; i<NProfile; ++i){
-      char* title = Form("%s FF %d X (%s)", top_name, (int)Profiles[i],
+      char* title = Form("%s FF %.0f X (%s)", top_name, Profiles[i],
 			 ParticleName[ip].Data());
       sub_dir->Add(createTH1(unique_id++, title,
 			     400,-200,200,

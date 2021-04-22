@@ -22,9 +22,19 @@ TObject* Get( TString name );
 // for HttpServer
 namespace http
 {
+const std::vector<Double_t>& GetEnvelopeXMean();
+const std::vector<Double_t>& GetEnvelopeXfitMean();
+const std::vector<Double_t>& GetEnvelopeXRMS();
+const std::vector<Double_t>& GetEnvelopeXfitSigma();
+const std::vector<Double_t>& GetEnvelopeYMean();
+const std::vector<Double_t>& GetEnvelopeYfitMean();
+const std::vector<Double_t>& GetEnvelopeYRMS();
+const std::vector<Double_t>& GetEnvelopeYfitSigma();
+
 TCanvas* Correlation( void );
 TCanvas* CorrelationFHT( void );
 TCanvas* HitPattern( void );
+TCanvas* HitPatternBeam( void );
 TCanvas* TriggerFlag( void );
 TCanvas* BH1ADC( void );
 TCanvas* BH1TDC( void );

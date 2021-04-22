@@ -52,6 +52,7 @@ HttpServer::Open( void )
   m_server = new THttpServer(Form("http:%d?loopback?thrds=5", m_port));
   m_server->Restrict("/", "allow=all");
   m_server->SetReadOnly(kTRUE);
+  m_server->SetJSROOT("https://root.cern.ch/js/latest/");
   m_server->RegisterCommand("/Reset", "HttpServer::GetInstance().ResetAll()");
   std::cout << "#D HttpServer::Open()" << std::endl
 	    << "   Port : " << m_port << std::endl;

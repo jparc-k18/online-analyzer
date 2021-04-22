@@ -28,6 +28,14 @@ namespace
 const auto& gUser = UserParamMan::GetInstance();
 enum eUorD { kU, kD, kUorD };
 enum eAorT { kA, kT, kAorT };
+std::vector<Double_t> envelope_x_mean(NProfile);
+std::vector<Double_t> envelope_xfit_mean(NProfile);
+std::vector<Double_t> envelope_x_rms(NProfile);
+std::vector<Double_t> envelope_xfit_sigma(NProfile);
+std::vector<Double_t> envelope_y_mean(NProfile);
+std::vector<Double_t> envelope_yfit_mean(NProfile);
+std::vector<Double_t> envelope_y_rms(NProfile);
+std::vector<Double_t> envelope_yfit_sigma(NProfile);
 
 void
 SetText( TLatex* text, Int_t align, Double_t size, Int_t ndc=1 )
@@ -62,6 +70,23 @@ Get( TString name )
 // For HttpServer
 namespace http
 {
+
+const std::vector<Double_t>&
+GetEnvelopeXMean() { return envelope_x_mean; }
+const std::vector<Double_t>&
+GetEnvelopeXfitMean() { return envelope_xfit_mean; }
+const std::vector<Double_t>&
+GetEnvelopeXRMS() { return envelope_x_rms; }
+const std::vector<Double_t>&
+GetEnvelopeXfitSigma() { return envelope_xfit_sigma; }
+const std::vector<Double_t>&
+GetEnvelopeYMean() { return envelope_y_mean; }
+const std::vector<Double_t>&
+GetEnvelopeYfitMean() { return envelope_yfit_mean; }
+const std::vector<Double_t>&
+GetEnvelopeYRMS() { return envelope_y_rms; }
+const std::vector<Double_t>&
+GetEnvelopeYfitSigma() { return envelope_yfit_sigma; }
 
 //_____________________________________________________________________________
 TCanvas*
@@ -1423,6 +1448,31 @@ SDC4HitMulti( void )
     }
   }
 
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+HitPatternBeam( void )
+{
+  std::vector<Int_t> hist_id = {
+    HistMaker::getUniqueID(kBH1,  0, kHitPat),
+    HistMaker::getUniqueID(kBFT,  0, kHitPat, 1),
+    HistMaker::getUniqueID(kBFT,  0, kHitPat, 2),
+    HistMaker::getUniqueID(kBC3,  0, kHitPat),
+    HistMaker::getUniqueID(kBC4,  0, kHitPat, 5),
+    HistMaker::getUniqueID(kBH2,  0, kHitPat)
+  };
+
+  TCanvas *c1 = new TCanvas(__func__, __func__);
+  c1->Divide(3, 2);
+  for (Int_t i=0, n=hist_id.size(); i<n; ++i) {
+    c1->cd(i + 1);
+    auto h1 = GHist::get(hist_id.at(i));
+    if (!h1) continue;
+    h1->SetMinimum(0);
+    h1->Draw();
+  }
   return c1;
 }
 
@@ -3240,7 +3290,7 @@ UpdateBeamProfile( ParticleType p )
     for( Int_t i=0; i<NProfile; ++i ){
       // raw
       c1->cd( i + 1 );
-      TString n1 = Form("BcOut FF %d X (%s)",
+      TString n1 = Form("BeamProfile FF %d X (%s)",
 			(Int_t)Profiles[i], ParticleName[p].Data());
       TH1 *h1 = (TH1*)gPad->FindObject( n1 );
       Int_t it = p*200 + i;
@@ -3257,17 +3307,21 @@ UpdateBeamProfile( ParticleType p )
       }
       Double_t p1 = h1->GetMean();
       Double_t p2  = h1->GetStdDev();
+      if (p == kAll) {
+        envelope_x_mean[i] = p1;
+        envelope_x_rms[i] = p2;
+      }
       if( tex1_raw[it] ) delete tex1_raw[it];
-      tex1_raw[it] = new TLatex(0.440, 0.770, Form("%.1f", p1));
+      tex1_raw[it] = new TLatex(0.400, 0.770, Form("%.1f", p1));
       SetText( tex1_raw[it], 32, 0.080 );
       tex1_raw[it]->Draw();
       if( tex2_raw[it] ) delete tex2_raw[it];
-      tex2_raw[it] = new TLatex(0.440, 0.640, Form("%.1f", p2));
+      tex2_raw[it] = new TLatex(0.400, 0.640, Form("%.1f", p2));
       SetText( tex2_raw[it], 32, 0.080 );
       tex2_raw[it]->Draw();
       // fit
       c1->cd( i + 1 + NProfile );
-      TString n2 = Form("BcOut FF %d X Fit (%s)",
+      TString n2 = Form("BeamProfile FF %d X Fit (%s)",
 			(Int_t)Profiles[i], ParticleName[p].Data());
       TH1 *h2 = (TH1*)gPad->FindObject( n2 );
       if( !h2 ) continue;
@@ -3284,21 +3338,23 @@ UpdateBeamProfile( ParticleType p )
       if( h2->GetEntries() == 0 )
 	continue;
       TF1 f("f", "gaus");
-      Double_t p = h2->GetBinCenter(h2->GetMaximumBin());
-      Double_t w = h2->GetStdDev();
+      p1 = h2->GetBinCenter(h2->GetMaximumBin());
+      p2 = h2->GetStdDev();
       for( Int_t ifit=0; ifit<3; ++ifit ){
-	h2->Fit("f", "Q", "", p-2*w, p+2*w );
-	p = f.GetParameter(1);
-	w = f.GetParameter(2);
+	h2->Fit("f", "Q", "", p1-2*p2, p1+2*p2 );
+	p1 = f.GetParameter(1);
+	p2 = f.GetParameter(2);
       }
-      p1 = p;
-      p2 = w;
+      if (p == kAll) {
+        envelope_xfit_mean[i] = p1;
+        envelope_xfit_sigma[i] = p2;
+      }
       if( tex1_fit[it] ) delete tex1_fit[it];
-      tex1_fit[it] = new TLatex(0.440, 0.770, Form("%.1f", p1));
+      tex1_fit[it] = new TLatex(0.400, 0.770, Form("%.1f", p1));
       SetText( tex1_fit[it], 32, 0.080 );
       tex1_fit[it]->Draw();
       if( tex2_fit[it] ) delete tex2_fit[it];
-      tex2_fit[it] = new TLatex(0.440, 0.640, Form("%.1f", p2));
+      tex2_fit[it] = new TLatex(0.400, 0.640, Form("%.1f", p2));
       SetText( tex2_fit[it], 32, 0.080 );
       tex2_fit[it]->Draw();
     }
@@ -3309,7 +3365,7 @@ UpdateBeamProfile( ParticleType p )
     for( Int_t i=0; i<NProfile; ++i ){
       // raw
       c1->cd( i + 1 );
-      TString n1 = Form("BcOut FF %d Y (%s)",
+      TString n1 = Form("BeamProfile FF %d Y (%s)",
 			(Int_t)Profiles[i], ParticleName[p].Data());
       TH1 *h1 = (TH1*)gPad->FindObject( n1 );
       Int_t it = p*200 + 100 + i;
@@ -3326,6 +3382,10 @@ UpdateBeamProfile( ParticleType p )
       }
       Double_t p1 = h1->GetMean();
       Double_t p2  = h1->GetStdDev();
+      if (p == kAll) {
+        envelope_y_mean[i] = p1;
+        envelope_y_rms[i] = p2;
+      }
       if( tex1_raw[it] ) delete tex1_raw[it];
       tex1_raw[it] = new TLatex(0.440, 0.770, Form("%.1f", p1));
       SetText( tex1_raw[it], 32, 0.080 );
@@ -3336,7 +3396,7 @@ UpdateBeamProfile( ParticleType p )
       tex2_raw[it]->Draw();
       // fit
       c1->cd( i + 1 + NProfile );
-      TString n2 = Form("BcOut FF %d Y Fit (%s)",
+      TString n2 = Form("BeamProfile FF %d Y Fit (%s)",
 			(Int_t)Profiles[i], ParticleName[p].Data());
       TH1 *h2 = (TH1*)gPad->FindObject( n2 );
       if( !h2 ) continue;
@@ -3353,15 +3413,17 @@ UpdateBeamProfile( ParticleType p )
       if( h2->GetEntries() == 0 )
 	continue;
       TF1 f("f", "gaus");
-      Double_t p = h2->GetBinCenter(h2->GetMaximumBin());
-      Double_t w = h2->GetStdDev();
+      p1 = h2->GetBinCenter(h2->GetMaximumBin());
+      p2 = h2->GetStdDev();
       for( Int_t ifit=0; ifit<3; ++ifit ){
-	h2->Fit("f", "Q", "", p-2*w, p+2*w );
-	p = f.GetParameter(1);
-	w = f.GetParameter(2);
+	h2->Fit("f", "Q", "", p1-2*p2, p1+2*p2 );
+	p1 = f.GetParameter(1);
+	p2 = f.GetParameter(2);
       }
-      p1 = p;
-      p2 = w;
+      if (p == kAll) {
+        envelope_yfit_mean[i] = p1;
+        envelope_yfit_sigma[i] = p2;
+      }
       if( tex1_fit[it] ) delete tex1_fit[it];
       tex1_fit[it] = new TLatex(0.440, 0.770, Form("%.1f", p1));
       SetText( tex1_fit[it], 32, 0.080 );

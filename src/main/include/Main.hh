@@ -31,6 +31,7 @@ namespace analyzer
     int                      m_count;
     bool                     m_is_overwrite;
     bool                     m_is_batch;
+    bool                     m_is_jsroot;
 
   public:
     static Main& getInstance();
@@ -45,6 +46,7 @@ namespace analyzer
     bool isBatch() const;
     bool isForceOverwrite() const;
     bool isIdle() const;
+    bool isJsRoot() const;
     bool isRunning() const;
     bool isZombie() const;
     int  join();

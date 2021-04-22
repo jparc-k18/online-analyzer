@@ -8,6 +8,7 @@
 
 #include <TROOT.h>
 
+#include "JsRootUpdater.hh"
 #include "Main.hh"
 #include "Sigwait.hh"
 #include "user_analyzer.hh"
@@ -24,6 +25,11 @@ int main(int argc, char* argv[])
   g_main.initialize(argV);
   Sigwait& g_sigwait = Sigwait::getInstance();
   g_sigwait.run();
+
+  if (g_main.isJsRoot()) {
+    JsRootUpdater& g_jsroot = JsRootUpdater::getInstance();
+    g_jsroot.start();
+  }
 
   g_main.setBatchMode(true);
   g_main.run();

@@ -4,6 +4,7 @@ my_dir  = $(src_top_dir)/$(my_name)
 
 need_dict = \
  $(my_dir)/src/Controller.cc \
+ $(my_dir)/src/JsRootUpdater.cc \
  $(my_dir)/src/Updater.cc \
  $(my_dir)/src/Main.cc \
  $(my_dir)/src/LexicalCast.cc \
@@ -44,6 +45,7 @@ $(lib_dir)/libMain.so: \
 
 $(lib_dir)/libNoGuiMain.so: \
  $(my_dir)/src/Main.o $(my_dir)/dict/Main_Dict.o \
+ $(my_dir)/src/JsRootUpdater.o $(my_dir)/dict/JsRootUpdater_Dict.o \
  $(my_dir)/src/Sigwait.o \
  $(my_dir)/src/user_analyzer.o
 	$(QUIET) $(ECHO) "$(yellow)=== create library with dict ($^ -> $@) ===$(default_color)"

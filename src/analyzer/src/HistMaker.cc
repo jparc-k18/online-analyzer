@@ -1386,29 +1386,29 @@ TList* HistMaker::createBH2( Bool_t flag_ps )
   }
 
   // MeanTimer (FPGA)----------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    TString strSubDir  = "FPGA_TDC_MeanTimer";
-    const char* nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
+  // {
+  //   // Declaration of the sub-directory
+  //   TString strSubDir  = "FPGA_TDC_MeanTimer";
+  //   const char* nameSubDir = strSubDir.Data();
+  //   TList *sub_dir = new TList;
+  //   sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
-    Int_t target_id = getUniqueID(kBH2, 0, kBH2MT, 0);
-    for(Int_t i = 0; i<NumOfSegBH2; ++i){
-      const char* title = NULL;
-      Int_t seg = i+1; // 1 origin
-      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+  //   // Make histogram and add it
+  //   Int_t target_id = getUniqueID(kBH2, 0, kBH2MT, 0);
+  //   for(Int_t i = 0; i<NumOfSegBH2; ++i){
+  //     const char* title = NULL;
+  //     Int_t seg = i+1; // 1 origin
+  //     title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
 
-      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     //			     10000, 0, 400000,
-			     50000, 0, 2000000,
-			     "TDC [ch]", ""));
-    }
+  //     sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+  // 			     //			     10000, 0, 400000,
+  // 			     50000, 0, 2000000,
+  // 			     "TDC [ch]", ""));
+  //   }
 
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
+  //   // insert sub directory
+  //   top_dir->Add(sub_dir);
+  // }
 
   // Hit parttern -----------------------------------------------
   {
@@ -1435,42 +1435,55 @@ TList* HistMaker::createBH2( Bool_t flag_ps )
 }
 
 // -------------------------------------------------------------------------
-// createBH2_E42
+// createHTOF
 // -------------------------------------------------------------------------
-TList* HistMaker::createBH2_E42( Bool_t flag_ps )
+TList* HistMaker::createHTOF( Bool_t flag_ps )
 {
-  TString strDet = CONV_STRING(kBH2_E42);   // Determine the detector name
-  name_created_detectors_.push_back(strDet);    // name list of crearted detector
-  if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
+  // Determine the detector name
+  TString strDet = CONV_STRING(kHTOF);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
 
+  // Declaration of the directory
+  // Just type conversion from TString to char*
   const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  { // ADC---------------------------------------------------------
-    TString strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
+  // ADC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kADC);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    Int_t target_id = getUniqueID(kBH2_E42, 0, kADC, 0);
-    for(Int_t i = 0; i<NumOfSegBH2_E42*2; ++i){
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kHTOF, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegHTOF*2; ++i){
       const char* title = NULL;
-      if(i < NumOfSegBH2_E42){
+      if(i < NumOfSegHTOF){
 	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	Int_t seg = i+1-NumOfSegBH2_E42; // 1 origin
+	Int_t seg = i+1-NumOfSegHTOF; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
-      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
     }
+
+    // insert sub directory
     top_dir->Add(sub_dir);
   }
 
-  // ADC w/TDC ---------------------------------------------------------
+  // ADCwTDC ---------------------------------------------------------
   {
     // Declaration of the sub-directory
     TString strSubDir  = CONV_STRING(kADCwTDC);
@@ -1479,18 +1492,18 @@ TList* HistMaker::createBH2_E42( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    Int_t target_id = getUniqueID(kBH2_E42, 0, kADCwTDC, 0);
-    for( Int_t i=0; i<NumOfSegBH2_E42*2; ++i ){
+    Int_t target_id = getUniqueID(kHTOF, 0, kADCwTDC, 0);
+    for( Int_t i=0; i<NumOfSegHTOF*2; ++i ){
       const char* title = NULL;
-      if( i<NumOfSegBH2_E42 ){
-	Int_t seg = i +1; // 1 origin
+      if( i<NumOfSegHTOF ){
+	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	Int_t seg = i +1 -NumOfSegBH2_E42; // 1 origin
+	Int_t seg = i+1-NumOfSegHTOF; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
-      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
     }
@@ -1499,7 +1512,7 @@ TList* HistMaker::createBH2_E42( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
-  // TDC ----------------------------------------------------
+  // TDC ---------------------------------------------------------
   {
     // Declaration of the sub-directory
     TString strSubDir  = CONV_STRING(kTDC);
@@ -1508,44 +1521,18 @@ TList* HistMaker::createBH2_E42( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
-    Int_t target_id = getUniqueID(kBH2_E42, 0, kTDC, 0);
-    for(Int_t i = 0; i<NumOfSegBH2_E42*2; ++i){
+    Int_t target_id = getUniqueID(kHTOF, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegHTOF*2; ++i){
       const char* title = NULL;
-      if(i < NumOfSegBH2_E42){
+      if(i < NumOfSegHTOF){
 	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
       }else{
-	Int_t seg = i+1-NumOfSegBH2_E42; // 1 origin
+	Int_t seg = i+1-NumOfSegHTOF; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     //			     10000, 0, 400000,
-			     50000, 0, 2000000,
-			     "TDC [ch]", ""));
-    }
-
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
-
-  // MeanTimer (FPGA)----------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    TString strSubDir  = "FPGA_TDC_MeanTimer";
-    const char* nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    // Make histogram and add it
-    Int_t target_id = getUniqueID(kBH2_E42, 0, kBH2_E42MT, 0);
-    for(Int_t i = 0; i<NumOfSegBH2_E42; ++i){
-      const char* title = NULL;
-      Int_t seg = i+1; // 1 origin
-      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-
-      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     //			     10000, 0, 400000,
 			     50000, 0, 2000000,
 			     "TDC [ch]", ""));
     }
@@ -1556,71 +1543,215 @@ TList* HistMaker::createBH2_E42( Bool_t flag_ps )
 
   // Hit parttern -----------------------------------------------
   {
-
-    TString strSubDir  = CONV_STRING(kHitPat);
-    const char* nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    Int_t target_id = getUniqueID(kBH2_E42, 0, kHitPat, 0);
-    TString Trig_flag[3] = {"No flag", "K-Beam", "pi-Beam"};
-    TString Hitpat_flag[3] = {"Unbias", "Corrected", "MaxADC"};
-    const char* Tf_name = NULL;
-    const char* Hp_name = NULL;
-
-    for(Int_t i = 0; i<3; ++i){//Trig flag
-      for(Int_t j = 0; j<3; ++j){//hitpat
-	const char* title = NULL;
-	Int_t ID = i*3+j+1; // 1 origin
-	Tf_name = Trig_flag[i].Data();
-	Hp_name = Hitpat_flag[j].Data();
-
-	title = Form("%s_%s_%s)", nameSubDir, Tf_name, Hp_name);
-
-
-	sub_dir->Add(createTH1(target_id + ID, title, // 1 origin
-			       NumOfSegBH2_E42, 0, NumOfSegBH2_E42,
-			       "Segment", ""));
-      }
-    }
-    // insert sub directory
-    top_dir->Add(sub_dir);
+    const char* title = "HTOF_hit_pattern";
+    Int_t target_id = getUniqueID(kHTOF, 0, kHitPat, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegHTOF, 0, NumOfSegHTOF,
+			   "Segment", ""));
   }
 
   // Multiplicity -----------------------------------------------
   {
-    TString strSubDir  = CONV_STRING(kMulti);
-    const char* nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    Int_t target_id = getUniqueID(kBH2_E42, 0, kMulti, 0);
-    TString Trig_flag[3] = {"No flag", "K-Beam", "pi-Beam"};
-    TString Hitpat_flag[2] = {"Unbias", "Corrected"};
-    const char* Tf_name = NULL;
-    const char* Hp_name = NULL;
-
-    for(Int_t i = 0; i<3; ++i){//Trig flag
-      for(Int_t j = 0; j<2; ++j){//Multi
-	const char* title = NULL;
-	Int_t ID = i*2+j+1; // 1 origin
-	Tf_name = Trig_flag[i].Data();
-	Hp_name = Hitpat_flag[j].Data();
-
-	title = Form("%s_%s_%s)", nameSubDir, Tf_name, Hp_name);
-
-
-	sub_dir->Add(createTH1(target_id + ID, title, // 1 origin
-			       NumOfSegBH2_E42, 0, NumOfSegBH2_E42,
-			       "Multiplicity", ""));
-      }
-    }
-    // insert sub directory
-    top_dir->Add(sub_dir);
+    const char* title = "HTOF_multiplicity";
+    Int_t target_id = getUniqueID(kHTOF, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegHTOF, 0, NumOfSegHTOF,
+			   "Multiplicity", ""));
   }
 
+  // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
+
+// -------------------------------------------------------------------------
+// createBH2_E42
+// -------------------------------------------------------------------------
+// TList* HistMaker::createBH2_E42( Bool_t flag_ps )
+// {
+//   TString strDet = CONV_STRING(kBH2_E42);   // Determine the detector name
+//   name_created_detectors_.push_back(strDet);    // name list of crearted detector
+//   if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
+
+//   const char* nameDetector = strDet.Data();
+//   TList *top_dir = new TList;
+//   top_dir->SetName(nameDetector);
+
+//   { // ADC---------------------------------------------------------
+//     TString strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
+//     const char* nameSubDir = strSubDir.Data();
+//     TList *sub_dir = new TList;
+//     sub_dir->SetName(nameSubDir);
+
+//     Int_t target_id = getUniqueID(kBH2_E42, 0, kADC, 0);
+//     for(Int_t i = 0; i<NumOfSegBH2_E42*2; ++i){
+//       const char* title = NULL;
+//       if(i < NumOfSegBH2_E42){
+// 	Int_t seg = i+1; // 1 origin
+// 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+//       }else{
+// 	Int_t seg = i+1-NumOfSegBH2_E42; // 1 origin
+// 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+//       }
+//       sub_dir->Add(createTH1(++target_id, title, // 1 origin
+// 			     0x1000, 0, 0x1000,
+// 			     "ADC [ch]", ""));
+//     }
+//     top_dir->Add(sub_dir);
+//   }
+
+//   // ADC w/TDC ---------------------------------------------------------
+//   {
+//     // Declaration of the sub-directory
+//     TString strSubDir  = CONV_STRING(kADCwTDC);
+//     const char* nameSubDir = strSubDir.Data();
+//     TList *sub_dir = new TList;
+//     sub_dir->SetName(nameSubDir);
+
+//     // Make histogram and add it
+//     Int_t target_id = getUniqueID(kBH2_E42, 0, kADCwTDC, 0);
+//     for( Int_t i=0; i<NumOfSegBH2_E42*2; ++i ){
+//       const char* title = NULL;
+//       if( i<NumOfSegBH2_E42 ){
+// 	Int_t seg = i +1; // 1 origin
+// 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+//       }else{
+// 	Int_t seg = i +1 -NumOfSegBH2_E42; // 1 origin
+// 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+//       }
+
+//       sub_dir->Add(createTH1(++target_id, title, // 1 origin
+// 			     0x1000, 0, 0x1000,
+// 			     "ADC [ch]", ""));
+//     }
+
+//     // insert sub directory
+//     top_dir->Add(sub_dir);
+//   }
+
+//   // TDC ----------------------------------------------------
+//   {
+//     // Declaration of the sub-directory
+//     TString strSubDir  = CONV_STRING(kTDC);
+//     const char* nameSubDir = strSubDir.Data();
+//     TList *sub_dir = new TList;
+//     sub_dir->SetName(nameSubDir);
+
+//     // Make histogram and add it
+//     Int_t target_id = getUniqueID(kBH2_E42, 0, kTDC, 0);
+//     for(Int_t i = 0; i<NumOfSegBH2_E42*2; ++i){
+//       const char* title = NULL;
+//       if(i < NumOfSegBH2_E42){
+// 	Int_t seg = i+1; // 1 origin
+// 	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+//       }else{
+// 	Int_t seg = i+1-NumOfSegBH2_E42; // 1 origin
+// 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+//       }
+
+//       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+// 			     //			     10000, 0, 400000,
+// 			     50000, 0, 2000000,
+// 			     "TDC [ch]", ""));
+//     }
+
+//     // insert sub directory
+//     top_dir->Add(sub_dir);
+//   }
+
+//   // MeanTimer (FPGA)----------------------------------------------------
+//   {
+//     // Declaration of the sub-directory
+//     TString strSubDir  = "FPGA_TDC_MeanTimer";
+//     const char* nameSubDir = strSubDir.Data();
+//     TList *sub_dir = new TList;
+//     sub_dir->SetName(nameSubDir);
+
+//     // Make histogram and add it
+//     Int_t target_id = getUniqueID(kBH2_E42, 0, kBH2_E42MT, 0);
+//     for(Int_t i = 0; i<NumOfSegBH2_E42; ++i){
+//       const char* title = NULL;
+//       Int_t seg = i+1; // 1 origin
+//       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+
+//       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+// 			     //			     10000, 0, 400000,
+// 			     50000, 0, 2000000,
+// 			     "TDC [ch]", ""));
+//     }
+
+//     // insert sub directory
+//     top_dir->Add(sub_dir);
+//   }
+
+//   // Hit parttern -----------------------------------------------
+//   {
+
+//     TString strSubDir  = CONV_STRING(kHitPat);
+//     const char* nameSubDir = strSubDir.Data();
+//     TList *sub_dir = new TList;
+//     sub_dir->SetName(nameSubDir);
+
+//     Int_t target_id = getUniqueID(kBH2_E42, 0, kHitPat, 0);
+//     TString Trig_flag[3] = {"No flag", "K-Beam", "pi-Beam"};
+//     TString Hitpat_flag[3] = {"Unbias", "Corrected", "MaxADC"};
+//     const char* Tf_name = NULL;
+//     const char* Hp_name = NULL;
+
+//     for(Int_t i = 0; i<3; ++i){//Trig flag
+//       for(Int_t j = 0; j<3; ++j){//hitpat
+// 	const char* title = NULL;
+// 	Int_t ID = i*3+j+1; // 1 origin
+// 	Tf_name = Trig_flag[i].Data();
+// 	Hp_name = Hitpat_flag[j].Data();
+
+// 	title = Form("%s_%s_%s)", nameSubDir, Tf_name, Hp_name);
+
+
+// 	sub_dir->Add(createTH1(target_id + ID, title, // 1 origin
+// 			       NumOfSegBH2_E42, 0, NumOfSegBH2_E42,
+// 			       "Segment", ""));
+//       }
+//     }
+//     // insert sub directory
+//     top_dir->Add(sub_dir);
+//   }
+
+//   // Multiplicity -----------------------------------------------
+//   {
+//     TString strSubDir  = CONV_STRING(kMulti);
+//     const char* nameSubDir = strSubDir.Data();
+//     TList *sub_dir = new TList;
+//     sub_dir->SetName(nameSubDir);
+
+//     Int_t target_id = getUniqueID(kBH2_E42, 0, kMulti, 0);
+//     TString Trig_flag[3] = {"No flag", "K-Beam", "pi-Beam"};
+//     TString Hitpat_flag[2] = {"Unbias", "Corrected"};
+//     const char* Tf_name = NULL;
+//     const char* Hp_name = NULL;
+
+//     for(Int_t i = 0; i<3; ++i){//Trig flag
+//       for(Int_t j = 0; j<2; ++j){//Multi
+// 	const char* title = NULL;
+// 	Int_t ID = i*2+j+1; // 1 origin
+// 	Tf_name = Trig_flag[i].Data();
+// 	Hp_name = Hitpat_flag[j].Data();
+
+// 	title = Form("%s_%s_%s)", nameSubDir, Tf_name, Hp_name);
+
+
+// 	sub_dir->Add(createTH1(target_id + ID, title, // 1 origin
+// 			       NumOfSegBH2_E42, 0, NumOfSegBH2_E42,
+// 			       "Multiplicity", ""));
+//       }
+//     }
+//     // insert sub directory
+//     top_dir->Add(sub_dir);
+//   }
+
+//   return top_dir;
+// }
 
 
 // -------------------------------------------------------------------------
@@ -5384,6 +5515,46 @@ TList* HistMaker::createTPC( Bool_t flag_ps )
   return top_dir;
 }
 
+//_____________________________________________________________________________
+TList*
+HistMaker::createBVH(Bool_t flag_ps)
+{
+  TString strDet("BVH");
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps)
+    name_ps_files_.push_back(strDet);
+  auto top_dir = new TList;
+  top_dir->SetName(strDet);
+  { ///// TDC
+    TString strSubDir("TDC");
+    auto sub_dir = new TList;
+    sub_dir->SetName(strSubDir);
+    const auto target_id = getUniqueID(kBVH, 0, kTDC);
+    for(Int_t i=0; i<NumOfSegBVH; ++i){
+      TString title = Form("%s_%s_%d", strDet.Data(), strSubDir.Data(), i+1);
+      sub_dir->Add(createTH1(target_id+i, title,
+			     0x1000, 0, 0x1000,
+			     "TDC [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+  { ///// Hit parttern
+    TString title("BVH_hit_pattern");
+    const auto target_id = getUniqueID(kBVH, 0, kHitPat);
+    top_dir->Add(createTH1(target_id, title,
+			   NumOfSegBVH, 0, NumOfSegBVH,
+			   "Segment", ""));
+  }
+  { ///// Multiplicity
+    TString title("BVH_multiplicity");
+    const auto target_id = getUniqueID(kBVH, 0, kMulti);
+    top_dir->Add(createTH1(target_id, title,
+			   NumOfSegBVH, 0, NumOfSegBVH,
+			   "Multiplicity", ""));
+  }
+  return top_dir;
+}
+
 // -------------------------------------------------------------------------
 // createTriggerFlag
 // -------------------------------------------------------------------------
@@ -5419,16 +5590,17 @@ TList* HistMaker::createTriggerFlag( Bool_t flag_ps )
 
   // Hit parttern -----------------------------------------------
   {
-    const char* title = "Trigger_Entry";
+    const char* title = "TriggerFlag_HitPat";
     Int_t target_id = getUniqueID(kTriggerFlag, 0, kHitPat, 0);
     // Add to the top directory
     auto h = createTH1(++target_id, title, // 1 origin
-		       NumOfSegTFlag+1, 0., NumOfSegTFlag+1,
-		       "Trigger flag", "");
-    // for( Int_t i=0, n=trigger::STriggerFlag.size(); i<n; ++i ){
-    //   h->GetXaxis()->SetBinLabel( i+1, trigger::STriggerFlag.at(i) );
-    // }
-    top_dir->Add( h );
+		       NumOfSegTFlag, 0., NumOfSegTFlag,
+		       "", "");
+    for( Int_t i=0, n=trigger::STriggerFlag.size(); i<n; ++i ){
+      h->GetXaxis()->SetBinLabel( i+1, trigger::STriggerFlag.at(i) );
+    }
+    h->SetStats(0);
+    top_dir->Add(h);
   }
 
   // Return the TList pointer which is added into TGFileBrowser
@@ -5737,35 +5909,38 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
   std::vector<Int_t> vme_fe_id;
   std::vector<Int_t> hul_fe_id;
   std::vector<Int_t> ea0c_fe_id;
+  std::vector<Int_t> cobo_fe_id;
   for( auto&& c : gUnpacker.get_root()->get_child_list() ){
     if( !c.second )
       continue;
     TString n = c.second->get_name();
     auto id = c.second->get_id();
-    if( n.Contains( "vme" ) )
-      vme_fe_id.push_back( id );
-    if( n.Contains( "hul" ) )
-      hul_fe_id.push_back( id );
-    if( n.Contains( "easiroc" ) )
-      ea0c_fe_id.push_back( id );
+    if(n.Contains("vme"))
+      vme_fe_id.push_back(id);
+    if(n.Contains("hul"))
+      hul_fe_id.push_back(id);
+    if(n.Contains("easiroc"))
+      ea0c_fe_id.push_back(id);
+    if(n.Contains("cobo"))
+      cobo_fe_id.push_back(id);
   }
 
   { //___ EB
-    top_dir->Add( createTH1( getUniqueID( kDAQ, kEB, kHitPat ),
-                             "Data size EB",
-                             2000, 0, 200000,
-                             "Data size [words]", "" ) );
+    top_dir->Add(createTH1(getUniqueID(kDAQ, kEB, kHitPat),
+			   "Data size EB",
+			   2000, 0, 200000,
+			   "Data size [words]", ""));
   }
   { //___ VME
-    auto h = createTH2( getUniqueID( kDAQ, kVME, kHitPat2D ),
-                        "Data size VME nodes",
-                        vme_fe_id.size(), 0, vme_fe_id.size(),
-                        100, 0, 1200,
-                        "VME node ID", "Data size [words]" );
-    for( Int_t i=0, n=vme_fe_id.size(); i<n; ++i ){
-      h->GetXaxis()->SetBinLabel( i+1, "0x"+TString::Itoa( vme_fe_id[i], 16 ) );
+    auto h = createTH2(getUniqueID(kDAQ, kVME, kHitPat2D),
+		       "Data size VME nodes",
+		       vme_fe_id.size(), 0, vme_fe_id.size(),
+		       100, 0, 1200,
+		       "VME node ID", "Data size [words]");
+    for(Int_t i=0, n=vme_fe_id.size(); i<n; ++i){
+      h->GetXaxis()->SetBinLabel( i+1, "0x"+TString::Itoa(vme_fe_id[i], 16));
     }
-    top_dir->Add( h );
+    top_dir->Add(h);
   }
   // {
   //   Int_t target_id = getUniqueID(kDAQ, kCLite, kHitPat2D, 0);
@@ -5776,26 +5951,26 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
   //   top_dir->Add( h );
   // }
   {
-    auto h = createTH2( getUniqueID( kDAQ, kEASIROC, kHitPat2D ),
-                        "Data size EASIROC nodes",
-                        ea0c_fe_id.size(), 0, ea0c_fe_id.size(),
-                        100, 0, 300,
-                        "EASIROC node ID", "Data size [words]" );
-    for( Int_t i=0, n=ea0c_fe_id.size(); i<n; ++i ){
-      h->GetXaxis()->SetBinLabel( i+1, "0x"+TString::Itoa( ea0c_fe_id[i], 16 ) );
+    auto h = createTH2(getUniqueID(kDAQ, kEASIROC, kHitPat2D),
+		       "Data size EASIROC nodes",
+		       ea0c_fe_id.size(), 0, ea0c_fe_id.size(),
+		       100, 0, 300,
+		       "EASIROC node ID", "Data size [words]");
+    for(Int_t i=0, n=ea0c_fe_id.size(); i<n; ++i){
+      h->GetXaxis()->SetBinLabel(i+1, "0x"+TString::Itoa(ea0c_fe_id[i], 16));
     }
-    top_dir->Add( h );
+    top_dir->Add(h);
   }
   {
-    auto h = createTH2( getUniqueID( kDAQ, kHUL, kHitPat2D ),
-                        "Data size HUL nodes", // 1 origin
-                        hul_fe_id.size(), 0, hul_fe_id.size(),
-                        200, 0, 400,
-                        "HUL node ID", "Data size [words]");
-    for( Int_t i=0, n=hul_fe_id.size(); i<n; ++i ){
-      h->GetXaxis()->SetBinLabel( i+1, "0x"+TString::Itoa( hul_fe_id[i], 16 ) );
+    auto h = createTH2(getUniqueID(kDAQ, kHUL, kHitPat2D),
+		       "Data size HUL nodes", // 1 origin
+		       hul_fe_id.size(), 0, hul_fe_id.size(),
+		       200, 0, 400,
+		       "HUL node ID", "Data size [words]");
+    for(Int_t i=0, n=hul_fe_id.size(); i<n; ++i){
+      h->GetXaxis()->SetBinLabel(i+1, "0x"+TString::Itoa(hul_fe_id[i], 16));
     }
-    top_dir->Add( h );
+    top_dir->Add(h);
   }
   // {
   //   Int_t target_id = getUniqueID(kDAQ, kCAMAC, kHitPat2D, 0);
@@ -5838,6 +6013,18 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
   //     top_dir->Add(sub_dir);
   //   }
   // }
+
+  { //___ CoBo
+    auto h = createTH2(getUniqueID( kDAQ, kCoBo, kHitPat2D),
+		       "Data size CoBo nodes",
+		       cobo_fe_id.size(), 0, cobo_fe_id.size(),
+		       100, 0, 200000,
+		       "CoBo node ID", "Data size [words]");
+    for(Int_t i=0, n=cobo_fe_id.size(); i<n; ++i){
+      h->GetXaxis()->SetBinLabel(i+1, "0x"+TString::Itoa(cobo_fe_id[i], 16));
+    }
+    top_dir->Add(h);
+  }
 
   return top_dir;
 }

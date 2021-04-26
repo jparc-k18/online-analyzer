@@ -12,6 +12,9 @@
 #include <TROOT.h>
 #include <TString.h>
 
+enum eUorD { kU, kD, kUorD };
+enum eAorT { kA, kT, kAorT };
+
 enum DetectorType {
   kDetectorZero,
   // Detector unique ID in the beam line
@@ -24,7 +27,7 @@ enum DetectorType {
   kVMEEASIROC,
   // E42
   kBH2_E42, kBH2_E42MT, kWC, kWCMT, kT1, kT1MT, kT2, kT2MT,
-  kTPC,
+  kHTOF, kTPC, kBVH,
   // Old detectors E07
   kFBH, kSSDT, kSSD1, kSSD2, kEMC,
   // Old detectors E40
@@ -56,7 +59,7 @@ enum SubDetectorType {
   kHul2DHitPat, kHul3DHitPat,
   kHul2D, kHul3D, kSelfCorr,
   // DAQ unique sub ID
-  kEB, kTKO, kVME, kCLite, kEASIROC, kCAMAC,
+  kEB, kTKO, kVME, kCLite, kEASIROC, kCAMAC, kCoBo,
   kMiscNode, kHUL, kOpt,
   sizeSubDetectorType,
   factorSubDetectorType = 100000
@@ -174,7 +177,9 @@ public:
   TList* createMsT( Bool_t flag_ps=true );
   TList* createMsT_T0( Bool_t flag_ps=true );
   TList* createMtx3D( Bool_t flag_ps=false );
+  TList* createHTOF( Bool_t flag_ps=true );
   TList* createTPC( Bool_t flag_ps=true );
+  TList* createBVH( Bool_t flag_ps=true );
   TList* createTriggerFlag( Bool_t flag_ps=true );
   TList* createCorrelation( Bool_t flag_ps=true );
   TList* createCorrelation_catch( Bool_t flag_ps=true );

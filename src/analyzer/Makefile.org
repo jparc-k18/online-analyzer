@@ -181,16 +181,13 @@ my_tgt_pwo	:= $(bin_dir)/pwo_hist
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_event_display) \
 	$(my_tgt_rawhist_e42) \
-	$(my_tgt_rawhist_e03) \
 	$(my_tgt_rawhist_hbx) \
 	$(my_tgt_rawhist_vmeeasiroc) \
 	$(my_tgt_beammonitor) \
-	$(my_tgt_beamprofile_e03) \
-	$(my_tgt_scaler_e03) \
 	$(my_tgt_scaler_e42) \
 	$(my_tgt_scaler_sch) \
 	$(my_tgt_scaler_daq) \
-	$(my_tgt_jsroot_e03) \
+	$(my_tgt_jsroot_beamprofile) \
 	$(my_tgt_jsroot_e42) \
 	$(my_tgt_jsroot_scaler) \
 	$(my_tgt_jsroot_scaler_hbx) \
@@ -216,8 +213,11 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 	$(my_tgt_rawhist_catch) \
 	$(my_tgt_scaler_e40) \
 	$(my_tgt_beamprofile_e40) \
-	$(my_tgt_jsroot_beamprofile) \
-        $(my_tgt_mstmonitorjs_e40)
+        $(my_tgt_mstmonitorjs_e40) \
+	$(my_tgt_rawhist_e03) \
+	$(my_tgt_beamprofile_e03) \
+	$(my_tgt_scaler_e03) \
+	$(my_tgt_jsroot_e03)
 
 #_______________________________________________________________________________
 $(my_dir)/dict/%_Dict.cc: $(my_dir)/include/%.hh $(my_dir)/linkdef/%_LinkDef.hh

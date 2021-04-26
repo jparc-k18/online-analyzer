@@ -276,7 +276,6 @@ Main::run()
 	  std::cout << "#D2 analyzer::process_event() return " << ret << std::endl;
 	  break;
 	}
-	break;
       }
       std::cout << "#D2 Main::run() exit loop"  << std::endl;
     }

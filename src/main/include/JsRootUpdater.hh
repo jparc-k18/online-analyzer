@@ -23,8 +23,10 @@ namespace analyzer
 
     static bool isUpdating();
     int    join();
+    void   lock();
     int    run();
     void   start();
+    void   unlock();
 
   private:
     JsRootUpdater();
@@ -33,6 +35,14 @@ namespace analyzer
 
     ClassDef(analyzer::JsRootUpdater, 0)
   };
+
+  //___________________________________________________________________________
+  inline JsRootUpdater&
+  JsRootUpdater::getInstance()
+  {
+    static JsRootUpdater g_updater;
+    return g_updater;
+  }
 }
 
 #endif

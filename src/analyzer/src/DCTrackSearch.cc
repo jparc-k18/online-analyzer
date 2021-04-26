@@ -83,7 +83,7 @@ namespace
   DeleteDuplicatedTracks( std::vector<DCLocalTrack*>& trackCont, double ChisqrCut=0. )
   {
     // evaluate container size in every iteration
-    for( std::size_t i=0; i<trackCont.size(); ++i ){
+    for( std::size_t i=0, n=trackCont.size(); i<n; ++i ){
       const DCLocalTrack* const tp = trackCont[i];
       if (!tp) continue;
       int nh = tp->GetNHit();
@@ -111,7 +111,7 @@ namespace
   {
     std::vector <int> delete_index;
     // evaluate container size in every iteration
-    for( std::size_t i=first; i<=second; ++i ){
+    for( int i=first; i<=second; ++i ){
 
       auto itr = std::find(delete_index.begin(), delete_index.end(), i);
       if (itr != delete_index.end())
@@ -123,7 +123,7 @@ namespace
       int nh = tp->GetNHit();
       for(int j=0; j<nh; ++j) tp->GetHit(j)->JoinTrack();
 
-      for( std::size_t i2=second; i2>i; --i2 ){
+      for( int i2=second; i2>i; --i2 ){
         auto itr = std::find(delete_index.begin(), delete_index.end(), i2);
         if (itr != delete_index.end())
           continue;
@@ -144,12 +144,12 @@ namespace
 
     // sort from bigger order
     std::sort(delete_index.begin(), delete_index.end(), std::greater<int>());
-    for (int i=0; i<delete_index.size(); i++) {
+    for (int i=0, n=delete_index.size(); i<n; i++) {
       trackCont.erase(trackCont.begin()+delete_index[i]);
     }
 
     // reset hit record of DCHit
-    for( std::size_t i=0; i<trackCont.size(); ++i ){
+    for( std::size_t i=0, n=trackCont.size(); i<n; ++i ){
       const DCLocalTrack* const tp = trackCont[i];
       if (!tp) continue;
       int nh = tp->GetNHit();
@@ -328,7 +328,7 @@ namespace
 
     std::vector <int> nhit_vec;
 
-    for (int i=0; i<trackCont.size(); i++) {
+    for (int i=0, n=trackCont.size(); i<n; i++) {
       int nhit = trackCont[i]->GetNHit();
       nhit_vec.push_back(nhit);
     }
@@ -350,7 +350,7 @@ namespace
       }
     }
 
-    for (int i=0; i<index_pair_vec.size(); i++) {
+    for (int i=0, n=index_pair_vec.size(); i<n; i++) {
       std::stable_sort( trackCont.begin() + index_pair_vec[i].first,
 			trackCont.begin() +  index_pair_vec[i].second + 1, DCLTrackComp_Chisqr() );
     }
@@ -1475,17 +1475,17 @@ namespace track
 
     {
 
-      for( int i=0; i<int(TrackContV.size()); ++i ){
+      for( int i=0, n=TrackContV.size(); i<n; ++i ){
 	DCLocalTrack *tp=TrackContV[i];
 	delete tp;
 	TrackContV.erase(TrackContV.begin()+i);
       }
-      for( int i=0; i<int(TrackContX.size()); ++i ){
+      for( int i=0, n=TrackContX.size(); i<n; ++i ){
 	DCLocalTrack *tp=TrackContX[i];
 	delete tp;
 	TrackContX.erase(TrackContX.begin()+i);
       }
-      for( int i=0; i<int(TrackContU.size()); ++i ){
+      for( int i=0, n=TrackContU.size(); i<n; ++i ){
 	DCLocalTrack *tp=TrackContU[i];
 	delete tp;
 	TrackContU.erase(TrackContU.begin()+i);
@@ -1499,7 +1499,7 @@ namespace track
 
 #if 1
     // Delete Tracks about  (Nhit1 > Nhit2+1) (Nhit1 > Nhit2  && chi1 < chi2)
-    for( int i=0; i<int(TrackCont.size()); ++i ){
+    for( int i=0, n=TrackCont.size(); i<n; ++i ){
       DCLocalTrack *tp=TrackCont[i];
       int nh=tp->GetNHit();
       double chi=tp->GetChiSquare();
@@ -1539,7 +1539,7 @@ namespace track
 
     // Delete Duplicated Tracks
 
-    for( int i=0; i<int(TrackCont.size()); ++i ){
+    for( int i=0, n=TrackCont.size(); i<n; ++i ){
       DCLocalTrack *tp=TrackCont[i];
       int nh=tp->GetNHit();
       for( int j=0; j<nh; ++j ) tp->GetHit(j)->JoinTrack();

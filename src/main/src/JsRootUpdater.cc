@@ -14,10 +14,6 @@
 #include <TThread.h>
 #include <TSystem.h>
 
-#include "Main.hh"
-#include "lexical_cast.hh"
-#include "Controller.hh"
-
 ClassImp(analyzer::JsRootUpdater)
 
 namespace analyzer
@@ -31,14 +27,6 @@ namespace analyzer
       JsRootUpdater::getInstance().run();
       return;
     }
-  }
-
-  //___________________________________________________________________________
-  JsRootUpdater&
-  JsRootUpdater::getInstance()
-  {
-    static JsRootUpdater g_updater;
-    return g_updater;
   }
 
   //___________________________________________________________________________
@@ -73,12 +61,23 @@ namespace analyzer
   }
 
   //___________________________________________________________________________
+  void
+  JsRootUpdater::lock()
+  {
+    TThread::Lock();
+    return;
+  }
+
+  //___________________________________________________________________________
   int
   JsRootUpdater::run()
   {
-    while (!gSystem->ProcessEvents()) {
-      // std::cout << "#D JsRootUpdater is running" << std::endl;
+    while(true){
+      TThread::Lock();
+      gSystem->ProcessEvents();
+      TThread::UnLock();
       gSystem->Sleep(200);
+      // std::cout << "#D JsRootUpdater is running" << std::endl;
     }
     std::cout << "#D JsRootUpdater exited loop" << std::endl;
     return 0;
@@ -95,6 +94,14 @@ namespace analyzer
 			     reinterpret_cast<void*>(0U));
       m_thread->Run();
     }
+    TThread::UnLock();
+    return;
+  }
+
+  //___________________________________________________________________________
+  void
+  JsRootUpdater::unlock()
+  {
     TThread::UnLock();
     return;
   }

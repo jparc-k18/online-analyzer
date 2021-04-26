@@ -1,7 +1,7 @@
 #!/bin/sh
 
 . $(dirname $(readlink -f $0))/setebhost
-program=jsroot_scaler
+program=scaler_e42.py
 
 #_______________________________________________________________________________
 # if [ -z $ROOTSYS ]; then
@@ -12,14 +12,14 @@ program=jsroot_scaler
 
 #_______________________________________________________________________________
 top_dir=$(dirname $(readlink -f $0))/..
-server=$top_dir/bin/$program
+server=$top_dir/script/$program
 
-conf=/param/conf/analyzer_jsroot_scaler.conf
-if [ -z "$1" ]; then
-    data=${ebhost}:8901
-else
-    data=$top_dir/data/run$1.dat.gz
-fi
+# conf=/param/conf/analyzer_jsroot_scaler.conf
+# if [ -z "$1" ]; then
+#     data=${ebhost}:8901
+# else
+#     data=$top_dir/data/run$1.dat.gz
+# fi
 
 # if [ -z "$1" ]; then
 #     conf=/param/conf/analyzer.conf
@@ -42,7 +42,7 @@ session=`tmux ls | grep $name`
 if [ -z "$session" ]; then
     echo "create new session $name"
     tmux new-session -d -s $name \
-	"while true; do $server $conf $data; done"
+	"while true; do $server $conf $data; sleep 1; done"
 else
     echo "reattach session $name"
     tmux a -t $name

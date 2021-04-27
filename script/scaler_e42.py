@@ -2,6 +2,7 @@
 
 import logging
 import os
+import subprocess
 import sys
 import time
 import ROOT
@@ -42,39 +43,39 @@ channel_map = {
   'BH2-07': [0, 70],
   'BH2-08': [0, 71],
   'BAC': [0, 18],
-  'HTOF': [0, 12],
-  'SCH': [0, 11],
-  'TOF': [0, 22],
-  '10M-Clock': [0, 0],
+  'HTOF': [0, 19],
+  'SCH': [0, 26],
   'BH1xBH2': [0, 39],
   'K-Beam': [0, 39],
   'Pi-Beam': [0, 40],
+  'TM': [0, 9],
+  'SY': [0, 10],
   'BH1-1/100-PS': [1, 11],
   'BH1-1/1e5-PS': [1, 12],
   'TOF-24': [0, 29],
-  'Mtx2D-1': [0, 32],
-  'Mtx2D-2': [0, 33],
-  'Mtx3D': [0, 34],
-  'Other1': [0, 25],
-  'Other2': [0, 26],
-  'Other3': [0, 27],
-  'Other4': [0, 28],
+  'HTOF-Cosmic': [0, 25],
+  # 'Other2': [0, 26],
+  # 'Other3': [0, 27],
+  # 'Other4': [0, 28],
   'BEAM-A': [0, 35],
   'BEAM-B': [0, 36],
   'BEAM-C': [0, 37],
   'BEAM-D': [0, 38],
   'BEAM-E': [0, 39],
   'BEAM-F': [0, 40],
+  'Mtx2D-1': [0, 32],
+  'Mtx2D-2': [0, 33],
+  'Mtx3D': [0, 34],
   'HTOF-Mp2': [0, 20],
   'HTOF-Mp3': [0, 21],
-  'HTOF-Mp4': [0, -1],
-  'HTOF-Mp5': [0, -1],
-  'BVH': [0, -1],
+  'HTOF-Mp4': [0, 27],
+  'HTOF-Mp5': [0, 28],
+  'BVH': [0, 13],
+  'TOF': [0, 22],
   'LAC': [0, 23],
   'WC': [0, 24],
   'Spill': [-1, -1],
-  'TM': [0, 9],
-  'SY': [0, 10],
+  '10M-Clock': [0, 0],
   'Real-Time': [0, 1],
   'Live-Time': [0, 2],
   'L1-Req': [0, 3],
@@ -102,7 +103,15 @@ channel_map = {
   'Level1-PS': [0, 58],
 }
 
-inverse_map = { str(v): k for k, v in channel_map.items() }
+#inverse_map = { str(v): k for k, v in channel_map.items() }
+
+#______________________________________________________________________________
+def find_key(val):
+  ret = list()
+  for k, v in channel_map.items():
+    if val == v:
+      ret.append(k)
+  return ret
 
 #______________________________________________________________________________
 def separate_comma(value):
@@ -123,14 +132,19 @@ class ScalerAnalyzer():
   def __init__(self, port=9090):
     ROOT.gROOT.SetBatch()
     ROOT.gErrorIgnoreLevel = ROOT.kFatal
+    ROOT.gSystem.Setenv('AUTO_SCALER_PRINT', '0')
     ROOT.gSystem.Setenv('SCALER_PRINT', '0')
     self.port = port
     self.server = ROOT.THttpServer(f'http:{self.port}?loopback?thrds=5')
     self.server.Restrict('/', 'allow=all')
     self.server.CreateItem('/', 'Online Scaler')
     self.server.SetJSROOT('https://root.cern.ch/js/latest/')
-    self.server.RegisterCommand('/Print10Spill',
-                                  'gSystem->Setenv("SCALER_PRINT", "1")')
+    command = ('if(TString(gSystem->Getenv("AUTO_SCALER_PRINT"))=="0")' +
+               '{gSystem->Setenv("AUTO_SCALER_PRINT", "1");}else{' +
+               'gSystem->Setenv("AUTO_SCALER_PRINT", "0");}')
+    self.server.RegisterCommand('/Switch_Auto_Print_Mode', command)
+    command = 'gSystem->Setenv("SCALER_PRINT", "1")'
+    self.server.RegisterCommand('/Print_10_Spill', command)
     self.server.SetItemField('/','_monitoring','100')
     self.server.SetItemField('/','_layout','vert2')
     self.server.SetItemField('/','_drawitem','[Spill,Canvases/Trend]')
@@ -155,15 +169,21 @@ class ScalerAnalyzer():
     self.prev_evno = 0
     self.scaler = dict()
     self.scaler_runsum = dict()
+    self.scaler_tmp = dict()
     for k, v in channel_map.items():
       self.scaler[k] = 0
       self.scaler_runsum[k] = 0
+      self.scaler_tmp[k] = 0
     self.footer = self.calculate_footer(self.scaler)
     self.footer_runsum = self.calculate_footer(self.scaler_runsum)
-    self.nraw = 27
+    self.footer_tmp = self.calculate_footer(self.scaler_tmp)
+    self.nraw = 26
     self.runnos = [-1, -2]
     self.evnos = [-1, -2]
-    self.print_flag = 0
+    self.auto_print_mode = False
+    self.print_flag = False
+    self.print_spill = 0
+    self.print_n_spill = 10
     ''' graph '''
     self.nplot = int(3600*24/5.2)
     self.plot_unixtime = list()
@@ -241,6 +261,13 @@ class ScalerAnalyzer():
     self.scaler_runsum['Spill'] = self.scaler['Spill']
     self.footer_runsum = self.calculate_footer(self.scaler_runsum)
 
+  #____________________________________________________________________________
+  def add_tmp(self):
+    for k, v in channel_map.items():
+      self.scaler_tmp[k] += self.scaler[k]
+    self.scaler_tmp['Spill'] = self.scaler['Spill']
+    self.footer_tmp = self.calculate_footer(self.scaler_tmp)
+
  #____________________________________________________________________________
   def calculate_footer(self, scaler_dict):
     ret = dict()
@@ -274,6 +301,8 @@ class ScalerAnalyzer():
   def draw_one_box(self, x, y, title, val):
     if title == 'Pi-Beam':
       title = '#pi-Beam'
+    if title == 'Spill':
+      title = 'Spill#'
     tex = ROOT.TLatex()
     tex.SetNDC()
     tex.SetTextSize(0.04)
@@ -290,14 +319,15 @@ class ScalerAnalyzer():
     ystep = 0.05
     y0 = 0.95
     if len(info_array) == 3 and footer:
-      self.draw_one_line(line_no,
-                           [info_array[0], f'{self.footer[info_array[0]]:.6f}',
-                            info_array[1], f'{self.footer[info_array[1]]:.6f}',
-                            info_array[2], f'{self.footer[info_array[2]]:.6f}'])
+      self.draw_one_line(
+        line_no,
+        [info_array[0], f'{self.footer_tmp[info_array[0]]:.6f}',
+         info_array[1], f'{self.footer_tmp[info_array[1]]:.6f}',
+         info_array[2], f'{self.footer_tmp[info_array[2]]:.6f}'])
     elif len(info_array) == 3 and not footer:
       self.draw_one_line(line_no, [info_array[0], self.get(info_array[0]),
-                                     info_array[1], self.get(info_array[1]),
-                                     info_array[2], self.get(info_array[2])])
+                                   info_array[1], self.get(info_array[1]),
+                                   info_array[2], self.get(info_array[2])])
     elif len(info_array) == 6:
       y = y0 - ystep*line_no
       x = [0.05, 0.35, 0.67]
@@ -314,11 +344,12 @@ class ScalerAnalyzer():
         line.DrawLine(0.05, y-0.5*ystep, 0.95, y-0.5*ystep)
 
   #____________________________________________________________________________
-  def print_scaler_sheet(self, file_name):
+  def print_scaler_sheet(self, file_name, lpr=True):
     c1 = ROOT.TCanvas('c1', 'c1', 1200, 800)
     self.draw_one_line(1, [self.now.AsString('s'), '',
                            'Event#', separate_comma(self.evno),
-                           'Run#', separate_comma(self.runno)])
+                           '#color[' + f'{ROOT.kRed+1}' + ']{Run#}',
+                           separate_comma(self.runno)])
     self.draw_one_line(2, ['Spill', 'TM', '10M-Clock'])
     self.draw_one_line(3, ['BH1xBH2', 'SY', 'BH1-1/100-PS'])
     self.draw_one_line(4, ['K-Beam', 'BH1-SUM', 'BH1-1/1e5-PS'])
@@ -338,11 +369,19 @@ class ScalerAnalyzer():
                        footer=True)
     output_path = os.path.join(output_dir, file_name)
     c1.Print(output_path)
+    if lpr:
+      subprocess.run(['lpr', output_path])
     logging.info(f'print {output_path}')
+    for k, v in channel_map.items():
+      self.scaler_tmp[k] = 0
+    self.print_spill = 0
+    self.print_flag = False
+    ROOT.gSystem.Setenv('SCALER_PRINT', '0')
 
   #____________________________________________________________________________
   def get(self, key):
-    return separate_comma(self.scaler[key]) if key in self.scaler else ''
+    return (separate_comma(self.scaler_tmp[key])
+            if key in self.scaler_tmp else '')
 
   #____________________________________________________________________________
   def make_summary(self, file_name, scaler_list, footer_list):
@@ -367,12 +406,14 @@ class ScalerAnalyzer():
     while not ROOT.gSystem.ProcessEvents():
       self.now = ROOT.TTimeStamp()
       self.now.Add(-self.now.GetZoneOffset())
+      self.auto_print_mode = (ROOT.gSystem.Getenv('AUTO_SCALER_PRINT') == '1')
+      self.print_flag = (ROOT.gSystem.Getenv('SCALER_PRINT') == '1')
       self.update_scaler()
+      self.update_summary()
+      self.update_tmp()
       self.update_content('/Spill', self.scaler, self.footer)
       self.update_content('/Run', self.scaler_runsum, self.footer_runsum)
-      if self.spill_end:
-        self.make_summary('spill_end.txt', self.scaler, self.footer)
-        self.update_graph()
+      self.update_graph()
       time.sleep(0.1)
 
   #____________________________________________________________________________
@@ -386,10 +427,14 @@ class ScalerAnalyzer():
     disp_left.append(['RUN', separate_comma(self.runno)])
     disp_center.append(['Event Number', separate_comma(self.evno)])
     disp_right.append(['', 'Spill End' if self.spill_end else ''])
-    disp_left.append(['', ''])
+    disp_left.append(['Auto Print Mode',
+                      'ON' if self.auto_print_mode else 'OFF'])
     disp_center.append(['', ''])
-    print_flag = ROOT.gSystem.Getenv('SCALER_PRINT')
-    disp_right.append(['Printing ...' if print_flag == '1' else '', ''])
+    if self.print_flag:
+      disp_right.append(['Printing ...',
+                         f'{self.print_spill}/{self.print_n_spill}'])
+    else:
+      disp_right.append(['', ''])
     for k, v in scaler_dict.items():
       if i < self.nraw:
         disp_left.append([k, separate_comma(v)])
@@ -448,6 +493,8 @@ class ScalerAnalyzer():
 
   #____________________________________________________________________________
   def update_graph(self):
+    if not self.spill_end:
+      return
     kpi = (self.scaler['K-Beam']/self.scaler['Pi-Beam']
            if self.scaler['Pi-Beam'] > 0 else ROOT.TMath.QuietNaN())
     self.legend_beam.SetHeader(f'K/#pi Ratio : {kpi:5.3f}')
@@ -497,8 +544,8 @@ class ScalerAnalyzer():
           if len(columns) != 2:
             continue
           index = [i, int(columns[0])]
-          if str(index) in inverse_map:
-            self.scaler[inverse_map[str(index)]] = int(columns[1])
+          for key in find_key(index):
+            self.scaler[key] = int(columns[1])
         if n_line != scaler_line[i]:
           logging.warning(f'{scaler_txt} is broken')
           self.spill_end = False
@@ -534,12 +581,24 @@ class ScalerAnalyzer():
       self.scaler['Spill'] += 1
       self.add_runsum()
     self.footer = self.calculate_footer(self.scaler)
-    if ROOT.gSystem.Getenv('SCALER_PRINT') == '1':
-      self.print_scaler_sheet('scaler_sheet_tmp.pdf')
-      ROOT.gSystem.Setenv('SCALER_PRINT', '0')
+    if self.auto_print_mode and self.scaler['Spill'] == 2:
+      ROOT.gSystem.Setenv('SCALER_PRINT', '1')
     self.prev_runno = self.runno
     self.prev_evno = self.evno
     self.ignore = False
+
+  #____________________________________________________________________________
+  def update_summary(self):
+    if self.spill_end:
+      self.make_summary('spill_end.txt', self.scaler, self.footer)
+
+  #____________________________________________________________________________
+  def update_tmp(self):
+    if self.spill_end and self.print_flag:
+      self.print_spill += 1
+      self.add_tmp()
+      if self.print_spill == self.print_n_spill:
+        self.print_scaler_sheet('scaler_sheet_tmp.pdf')
 
 #______________________________________________________________________________
 if __name__ == '__main__':

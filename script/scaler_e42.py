@@ -13,6 +13,7 @@ error_length = 100
 scaler_dir = os.path.abspath('/misc/scaler_e42_2021may')
 scaler_list = [os.path.join(scaler_dir, 'hul01scr-1.txt'),
                os.path.join(scaler_dir, 'hul01scr-2.txt')]
+scaler_line = [96, 32]
 output_dir = '/data3/E42SubData/scaler_2021may'
 
 channel_map = {
@@ -41,7 +42,7 @@ channel_map = {
   'BH2-07': [0, 70],
   'BH2-08': [0, 71],
   'BAC': [0, 18],
-  'HTOF': [0, 20],
+  'HTOF': [0, 12],
   'SCH': [0, 11],
   'TOF': [0, 22],
   '10M-Clock': [0, 0],
@@ -123,117 +124,125 @@ class ScalerAnalyzer():
     ROOT.gROOT.SetBatch()
     ROOT.gErrorIgnoreLevel = ROOT.kFatal
     ROOT.gSystem.Setenv('SCALER_PRINT', '0')
-    self.__port = port
-    self.__server = ROOT.THttpServer(f'http:{self.__port}?loopback?thrds=5')
-    self.__server.Restrict('/', 'allow=all')
-    self.__server.CreateItem('/', 'Online Scaler')
-    self.__server.SetJSROOT('https://root.cern.ch/js/latest/')
-    self.__server.RegisterCommand('/Print10Spill',
+    self.port = port
+    self.server = ROOT.THttpServer(f'http:{self.port}?loopback?thrds=5')
+    self.server.Restrict('/', 'allow=all')
+    self.server.CreateItem('/', 'Online Scaler')
+    self.server.SetJSROOT('https://root.cern.ch/js/latest/')
+    self.server.RegisterCommand('/Print10Spill',
                                   'gSystem->Setenv("SCALER_PRINT", "1")')
-    self.__server.SetItemField('/','_monitoring','100')
-    self.__server.SetItemField('/','_layout','vert2')
-    self.__server.SetItemField('/','_drawitem','[Spill,Canvases/Trend]')
-    # self.__server.SetItemField('/','_drawitem','Scaler')
-    self.__server.CreateItem('/Spill', 'Online Scaler')
-    self.__server.SetItemField('/Spill', '_kind', 'Text')
-    self.__server.CreateItem('/Run', 'Online Scaler')
-    self.__server.SetItemField('/Run', '_kind', 'Text')
-    # self.__server.CreateItem('/Tag', 'Tag Check')
-    # self.__server.SetItemField('/Tag', '_kind', 'Text')
+    self.server.SetItemField('/','_monitoring','100')
+    self.server.SetItemField('/','_layout','vert2')
+    self.server.SetItemField('/','_drawitem','[Spill,Canvases/Trend]')
+    # self.server.SetItemField('/','_drawitem','Scaler')
+    self.server.CreateItem('/Spill', 'Online Scaler')
+    self.server.SetItemField('/Spill', '_kind', 'Text')
+    self.server.CreateItem('/Run', 'Online Scaler')
+    self.server.SetItemField('/Run', '_kind', 'Text')
+    # self.server.CreateItem('/Tag', 'Tag Check')
+    # self.server.SetItemField('/Tag', '_kind', 'Text')
     # content = ('<div style="color: white; background-color: black;' +
     #            'width: 100%; height: 100%;">' +
     #            'Tag cheker is running' + '</div>')
-    # self.__server.SetItemField('/Tag', 'value', content)
-    self.__now = ROOT.TTimeStamp()
-    self.__now.Add(-self.__now.GetZoneOffset())
-    self.__spill_end = False
-    self.__ignore = False
-    self.__runno = 0
-    self.__evno = 0
-    self.__prev_runno = 0
-    self.__prev_evno = 0
-    self.__scaler = dict()
-    self.__scaler_runsum = dict()
+    # self.server.SetItemField('/Tag', 'value', content)
+    self.now = ROOT.TTimeStamp()
+    self.now.Add(-self.now.GetZoneOffset())
+    self.spill_end = False
+    self.ignore = False
+    self.runno = 0
+    self.evno = 0
+    self.prev_runno = 0
+    self.prev_evno = 0
+    self.scaler = dict()
+    self.scaler_runsum = dict()
     for k, v in channel_map.items():
-      self.__scaler[k] = 0
-      self.__scaler_runsum[k] = 0
-    self.__footer = self.__calculate_footer(self.__scaler)
-    self.__footer_runsum = self.__calculate_footer(self.__scaler_runsum)
-    self.__nraw = 27
-    self.__runnos = [-1, -2]
-    self.__evnos = [-1, -2]
+      self.scaler[k] = 0
+      self.scaler_runsum[k] = 0
+    self.footer = self.calculate_footer(self.scaler)
+    self.footer_runsum = self.calculate_footer(self.scaler_runsum)
+    self.nraw = 27
+    self.runnos = [-1, -2]
+    self.evnos = [-1, -2]
+    self.print_flag = 0
     ''' graph '''
-    self.__nplot = 200
-    self.__plot_unixtime = list()
-    for i in range(self.__nplot):
-      self.__plot_unixtime.append(self.__now.GetSec() + 5.2*(i - self.__nplot))
-    self.__graph_beam = list()
-    self.__plot_beam = list()
+    self.nplot = int(3600*24/5.2)
+    self.plot_unixtime = list()
+    for i in range(self.nplot):
+      self.plot_unixtime.append(self.now.GetSec() + 5.2*(i - self.nplot))
+    self.graph_beam = list()
+    self.plot_beam = list()
     canvas_trend = ROOT.TCanvas('Trend', 'Trend')
     canvas_trend.Divide(2, 1)
-    self.__server.Register('/', canvas_trend)
-    self.__server.Hide('/Trend')
+    self.server.Register('/', canvas_trend)
+    self.server.Hide('/Trend')
     canvas_trend.cd(1).SetGridy()
-    self.__legend_beam = ROOT.TLegend(0.130, 0.130, 0.280, 0.410)
-    self.__legend_beam.SetTextSize(0.05)
-    self.__legend_beam.SetFillColor(0)
-    self.__legend_beam.SetBorderSize(4)
+    self.legend_beam = ROOT.TLegend(0.130, 0.130, 0.280, 0.410)
+    self.legend_beam.SetTextSize(0.05)
+    self.legend_beam.SetFillColor(0)
+    self.legend_beam.SetBorderSize(4)
     for i, l in enumerate(['K-Beam', '#pi-Beam', 'BH1xBH2']):
-      self.__plot_beam.append([0 for i in range(self.__nplot)])
-      graph = ROOT.TGraph()
-      graph.SetName(l)
-      graph.SetTitle('Beam')
-      graph.SetMarkerStyle(8)
-      graph.SetMarkerSize(1.5)
-      graph.SetMarkerColor([ROOT.kGreen+1, ROOT.kBlue+1, ROOT.kBlack][i])
-      graph.SetLineWidth(3)
-      graph.SetLineColor([ROOT.kGreen+1, ROOT.kBlue+1, ROOT.kBlack][i])
-      graph.GetXaxis().SetTimeDisplay(1)
-      graph.GetXaxis().SetTimeFormat('%m/%d %H:%M')
-      # graph.GetXaxis().SetLabelOffset(0.04)
-      graph.GetXaxis().SetTimeOffset(0, 'jpn')
-      graph.SetPoint(0, 0, 0)
+      self.plot_beam.append([0 for i in range(self.nplot)])
+      g = ROOT.TGraph()
+      g.SetName(l)
+      g.SetTitle('Beam')
+      g.SetMarkerStyle(8)
+      g.SetMarkerSize(1.5)
+      g.SetMarkerColor([ROOT.kGreen+1, ROOT.kBlue+1, ROOT.kBlack][i])
+      g.SetLineWidth(3)
+      g.SetLineColor([ROOT.kGreen+1, ROOT.kBlue+1, ROOT.kBlack][i])
+      g.GetXaxis().SetTimeDisplay(1)
+      g.GetXaxis().SetTimeFormat('%m/%d %H:%M')
+      g.GetXaxis().SetTimeOffset(self.now.GetZoneOffset(), 'jpb')
+      # g.GetXaxis().SetLabelOffset(0.04)
+      g.SetPoint(0, 0, 0)
       if i == 0:
-        graph.Draw('AL')
+        g.Draw('AL')
       else:
-        graph.Draw('L')
-      self.__graph_beam.append(graph)
-      self.__legend_beam.AddEntry(graph, l, 'P')
-    self.__legend_beam.SetHeader(f'K/#pi Ratio : {0:5.3f}')
-    self.__legend_beam.Draw()
-    self.__graph_daq = list()
-    self.__plot_daq = list()
+        g.Draw('L')
+      self.graph_beam.append(g)
+      self.legend_beam.AddEntry(g, l, 'P')
+    self.legend_beam.SetHeader(f'K/#pi Ratio : {0:5.3f}')
+    self.legend_beam.Draw()
+    self.graph_daq = list()
+    self.plot_daq = list()
     canvas_trend.cd(2).SetGridy()
-    self.__legend_daq = ROOT.TLegend(0.130, 0.130, 0.280, 0.410)
-    self.__legend_daq.SetTextSize(0.05)
-    self.__legend_daq.SetFillColor(0)
-    self.__legend_daq.SetBorderSize(4)
+    self.legend_daq = ROOT.TLegend(0.130, 0.130, 0.280, 0.410)
+    self.legend_daq.SetTextSize(0.05)
+    self.legend_daq.SetFillColor(0)
+    self.legend_daq.SetBorderSize(4)
     for i, l in enumerate(['DAQ-Eff', 'L2-Eff', 'Duty']):
-      self.__plot_daq.append([0 for i in range(self.__nplot)])
-      graph = ROOT.TGraph()
-      graph.SetName(l)
-      graph.SetTitle('DAQ')
-      graph.SetMarkerStyle(8)
-      graph.SetMarkerSize(1.5)
-      graph.SetMarkerColor([ROOT.kRed+1, ROOT.kOrange+1, ROOT.kBlue+1][i])
-      graph.SetLineWidth(3)
-      graph.SetLineColor([ROOT.kRed+1, ROOT.kOrange+1, ROOT.kBlue+1][i])
-      graph.GetXaxis().SetTimeDisplay(1)
-      graph.GetXaxis().SetTimeFormat('%m/%d %H:%M')
-      # graph.GetXaxis().SetLabelOffset(0.04)
-      graph.GetXaxis().SetTimeOffset(0, 'jpn')
-      graph.SetPoint(0, 0, 0)
+      self.plot_daq.append([0 for i in range(self.nplot)])
+      g = ROOT.TGraph()
+      g.SetName(l)
+      g.SetTitle('DAQ')
+      g.SetMarkerStyle(8)
+      g.SetMarkerSize(1.5)
+      g.SetMarkerColor([ROOT.kRed+1, ROOT.kOrange+1, ROOT.kBlue+1][i])
+      g.SetLineWidth(3)
+      g.SetLineColor([ROOT.kRed+1, ROOT.kOrange+1, ROOT.kBlue+1][i])
+      g.GetXaxis().SetTimeDisplay(1)
+      g.GetXaxis().SetTimeFormat('%m/%d %H:%M')
+      g.GetXaxis().SetTimeOffset(self.now.GetZoneOffset(), 'jpb')
+      # g.GetXaxis().SetLabelOffset(0.04)
+      g.SetPoint(0, 0, 0)
       if i == 0:
-        graph.Draw('AL')
+        g.Draw('AL')
       else:
-        graph.Draw('L')
-      self.__graph_daq.append(graph)
-      self.__legend_daq.AddEntry(graph, l, 'P')
-    self.__legend_daq.SetHeader(f'DAQ Eff. : {0:5.3f}')
-    self.__legend_daq.Draw()
+        g.Draw('L')
+      self.graph_daq.append(g)
+      self.legend_daq.AddEntry(g, l, 'P')
+    self.legend_daq.SetHeader(f'DAQ Eff. : {0:5.3f}')
+    self.legend_daq.Draw()
+
+  #____________________________________________________________________________
+  def add_runsum(self):
+    for k, v in channel_map.items():
+      self.scaler_runsum[k] += self.scaler[k]
+    self.scaler_runsum['Spill'] = self.scaler['Spill']
+    self.footer_runsum = self.calculate_footer(self.scaler_runsum)
 
  #____________________________________________________________________________
-  def __calculate_footer(self, scaler_dict):
+  def calculate_footer(self, scaler_dict):
     ret = dict()
     ret['BH2/TM'] = (
       scaler_dict['BH2']/scaler_dict['TM'] if scaler_dict['TM'] > 0
@@ -262,7 +271,7 @@ class ScalerAnalyzer():
     return ret
 
   #____________________________________________________________________________
-  def __draw_one_box(self, x, y, title, val):
+  def draw_one_box(self, x, y, title, val):
     if title == 'Pi-Beam':
       title = '#pi-Beam'
     tex = ROOT.TLatex()
@@ -277,23 +286,23 @@ class ScalerAnalyzer():
       tex.DrawLatex(x + 0.280, y, val)
 
   #____________________________________________________________________________
-  def __draw_one_line(self, line_no, info_array, footer=False):
+  def draw_one_line(self, line_no, info_array, footer=False):
     ystep = 0.05
     y0 = 0.95
     if len(info_array) == 3 and footer:
-      self.__draw_one_line(line_no,
-                           [info_array[0], f'{self.__footer[info_array[0]]:.6f}',
-                            info_array[1], f'{self.__footer[info_array[1]]:.6f}',
-                            info_array[2], f'{self.__footer[info_array[2]]:.6f}'])
+      self.draw_one_line(line_no,
+                           [info_array[0], f'{self.footer[info_array[0]]:.6f}',
+                            info_array[1], f'{self.footer[info_array[1]]:.6f}',
+                            info_array[2], f'{self.footer[info_array[2]]:.6f}'])
     elif len(info_array) == 3 and not footer:
-      self.__draw_one_line(line_no, [info_array[0], self.get(info_array[0]),
+      self.draw_one_line(line_no, [info_array[0], self.get(info_array[0]),
                                      info_array[1], self.get(info_array[1]),
                                      info_array[2], self.get(info_array[2])])
     elif len(info_array) == 6:
       y = y0 - ystep*line_no
       x = [0.05, 0.35, 0.67]
       for i in range(3):
-        self.__draw_one_box(x[i], y, info_array[2*i], info_array[2*i + 1])
+        self.draw_one_box(x[i], y, info_array[2*i], info_array[2*i + 1])
       line = ROOT.TLine()
       line.SetNDC()
       line.SetLineColor(ROOT.kGray)
@@ -305,35 +314,35 @@ class ScalerAnalyzer():
         line.DrawLine(0.05, y-0.5*ystep, 0.95, y-0.5*ystep)
 
   #____________________________________________________________________________
-  def __print_scaler_sheet(self, file_name):
+  def print_scaler_sheet(self, file_name):
     c1 = ROOT.TCanvas('c1', 'c1', 1200, 800)
-    self.__draw_one_line(1, [self.__now.AsString('s'), '',
-                             'Event#', separate_comma(self.__evno),
-                             'Run#', separate_comma(self.__runno)])
-    self.__draw_one_line(2, ['Spill', 'TM', '10M-Clock'])
-    self.__draw_one_line(3, ['BH1xBH2', 'SY', 'BH1-1/100-PS'])
-    self.__draw_one_line(4, ['K-Beam', 'BH1-SUM', 'BH1-1/1e5-PS'])
-    self.__draw_one_line(5, ['Pi-Beam', 'BH2-SUM', 'TOF-24'])
-    self.__draw_one_line(6, ['BH1', 'TRIG-A-PS', 'L1-Req'])
-    self.__draw_one_line(7, ['BH2', 'TRIG-B-PS', 'L1-Acc'])
-    self.__draw_one_line(8, ['BAC', 'TRIG-C-PS', 'Clear'])
-    self.__draw_one_line(9, ['HTOF', 'TRIG-D-PS', 'L2-Req'])
-    self.__draw_one_line(10, ['SCH', 'TRIG-E-PS', 'L2-Acc'])
-    self.__draw_one_line(11, ['TOF', 'TRIG-F-PS', 'HTOF-Mp2'])
-    self.__draw_one_line(12, ['BVH', 'Mtx2D-1', 'HTOF-Mp3'])
-    self.__draw_one_line(13, ['LAC', 'Mtx2D-2', 'HTOF-Mp4'])
-    self.__draw_one_line(14, ['WC', 'Mtx3D', 'HTOF-Mp5'])
-    self.__draw_one_line(15, ['BH2/TM', 'Live/Real', 'DAQ-Eff'],
-                         footer=True)
-    self.__draw_one_line(16, ['L1Req/BH2', 'L2-Eff', 'Duty-Factor'],
-                         footer=True)
+    self.draw_one_line(1, [self.now.AsString('s'), '',
+                           'Event#', separate_comma(self.evno),
+                           'Run#', separate_comma(self.runno)])
+    self.draw_one_line(2, ['Spill', 'TM', '10M-Clock'])
+    self.draw_one_line(3, ['BH1xBH2', 'SY', 'BH1-1/100-PS'])
+    self.draw_one_line(4, ['K-Beam', 'BH1-SUM', 'BH1-1/1e5-PS'])
+    self.draw_one_line(5, ['Pi-Beam', 'BH2-SUM', 'TOF-24'])
+    self.draw_one_line(6, ['BH1', 'TRIG-A-PS', 'L1-Req'])
+    self.draw_one_line(7, ['BH2', 'TRIG-B-PS', 'L1-Acc'])
+    self.draw_one_line(8, ['BAC', 'TRIG-C-PS', 'Clear'])
+    self.draw_one_line(9, ['HTOF', 'TRIG-D-PS', 'L2-Req'])
+    self.draw_one_line(10, ['SCH', 'TRIG-E-PS', 'L2-Acc'])
+    self.draw_one_line(11, ['TOF', 'TRIG-F-PS', 'HTOF-Mp2'])
+    self.draw_one_line(12, ['BVH', 'Mtx2D-1', 'HTOF-Mp3'])
+    self.draw_one_line(13, ['LAC', 'Mtx2D-2', 'HTOF-Mp4'])
+    self.draw_one_line(14, ['WC', 'Mtx3D', 'HTOF-Mp5'])
+    self.draw_one_line(15, ['BH2/TM', 'Live/Real', 'DAQ-Eff'],
+                       footer=True)
+    self.draw_one_line(16, ['L1Req/BH2', 'L2-Eff', 'Duty-Factor'],
+                       footer=True)
     output_path = os.path.join(output_dir, file_name)
     c1.Print(output_path)
     logging.info(f'print {output_path}')
 
   #____________________________________________________________________________
   def get(self, key):
-    return separate_comma(self.__scaler[key]) if key in self.__scaler else ''
+    return separate_comma(self.scaler[key]) if key in self.scaler else ''
 
   #____________________________________________________________________________
   def make_summary(self, file_name, scaler_list, footer_list):
@@ -341,9 +350,9 @@ class ScalerAnalyzer():
     buf = str()
     with open(output_path, 'w') as f:
       buf += ('# Generated by ' + os.path.abspath(sys.argv[0]) +
-              ' on ' + self.__now.AsString('s') + '\n\n')
-      buf += f'{"Run":<20}{self.__prev_runno:>20}\n'
-      buf += f'{"Event":<20}{self.__prev_evno:>20}\n'
+              ' on ' + self.now.AsString('s') + '\n\n')
+      buf += f'{"Run":<20}{self.prev_runno:>20}\n'
+      buf += f'{"Event":<20}{self.prev_evno:>20}\n'
       for key, val in scaler_list.items():
         if key == 'n/a':
           continue
@@ -356,41 +365,43 @@ class ScalerAnalyzer():
   #____________________________________________________________________________
   def run(self):
     while not ROOT.gSystem.ProcessEvents():
+      self.now = ROOT.TTimeStamp()
+      self.now.Add(-self.now.GetZoneOffset())
       self.update_scaler()
-      self.update_content('/Spill', self.__scaler, self.__footer)
-      self.update_content('/Run', self.__scaler_runsum, self.__footer_runsum)
-      if self.__spill_end:
-        self.make_summary('spill_end.txt', self.__scaler, self.__footer)
+      self.update_content('/Spill', self.scaler, self.footer)
+      self.update_content('/Run', self.scaler_runsum, self.footer_runsum)
+      if self.spill_end:
+        self.make_summary('spill_end.txt', self.scaler, self.footer)
         self.update_graph()
       time.sleep(0.1)
 
   #____________________________________________________________________________
   def update_content(self, label, scaler_dict, footer_dict):
-    if self.__ignore:
+    if self.ignore:
       return
     i = 0
     disp_left = list()
     disp_center = list()
     disp_right = list()
-    disp_left.append(['RUN', separate_comma(self.__runno)])
-    disp_center.append(['Event Number', separate_comma(self.__evno)])
-    disp_right.append(['', 'Spill End' if self.__spill_end else ''])
+    disp_left.append(['RUN', separate_comma(self.runno)])
+    disp_center.append(['Event Number', separate_comma(self.evno)])
+    disp_right.append(['', 'Spill End' if self.spill_end else ''])
     disp_left.append(['', ''])
     disp_center.append(['', ''])
     print_flag = ROOT.gSystem.Getenv('SCALER_PRINT')
     disp_right.append(['Printing ...' if print_flag == '1' else '', ''])
     for k, v in scaler_dict.items():
-      if i < self.__nraw:
+      if i < self.nraw:
         disp_left.append([k, separate_comma(v)])
-      elif self.__nraw <= i and i < self.__nraw*2:
+      elif self.nraw <= i and i < self.nraw*2:
         disp_center.append([k, separate_comma(v)])
-      elif self.__nraw*2 <= i and i < self.__nraw*3:
+      elif self.nraw*2 <= i and i < self.nraw*3:
         disp_right.append([k, separate_comma(v)])
       i += 1
     content = ('<div style="color: white; background-color: black;' +
                'width: 100%; height: 100%;">' +
                '<table border="0" width="700" cellpadding="0">')
-    for i in range(self.__nraw+2):
+    for i in range(self.nraw+2):
       if i == len(disp_left):
         disp_left.append(['n/a', '0'])
       if i == len(disp_center):
@@ -433,87 +444,102 @@ class ScalerAnalyzer():
                 f'{footer_dict["Duty-Factor"]:.6f}</td>')
     content += '</tr>'
     content += '</table></div>'
-    self.__server.SetItemField(label, 'value', content)
+    self.server.SetItemField(label, 'value', content)
 
   #____________________________________________________________________________
   def update_graph(self):
-    kpi = (self.__scaler['K-Beam']/self.__scaler['Pi-Beam']
-           if self.__scaler['Pi-Beam'] > 0 else ROOT.TMath.QuietNaN())
-    self.__legend_beam.SetHeader(f'K/#pi Ratio : {kpi:5.3f}')
-    values = [self.__scaler['K-Beam'],
-              self.__scaler['Pi-Beam'],
-              self.__scaler['BH1xBH2']]
-    self.__plot_unixtime.pop(0)
-    self.__plot_unixtime.append(self.__now.GetSec())
+    kpi = (self.scaler['K-Beam']/self.scaler['Pi-Beam']
+           if self.scaler['Pi-Beam'] > 0 else ROOT.TMath.QuietNaN())
+    self.legend_beam.SetHeader(f'K/#pi Ratio : {kpi:5.3f}')
+    values = [self.scaler['K-Beam'],
+              self.scaler['Pi-Beam'],
+              self.scaler['BH1xBH2']]
+    self.plot_unixtime.pop(0)
+    self.plot_unixtime.append(self.now.GetSec())
     max_count = 1
-    for i, g in enumerate(self.__graph_beam):
-      self.__plot_beam[i].pop(0)
-      self.__plot_beam[i].append(values[i])
+    for i, g in enumerate(self.graph_beam):
+      self.plot_beam[i].pop(0)
+      self.plot_beam[i].append(values[i])
       g.Set(0)
-      for j in range(self.__nplot):
-        g.SetPoint(j, self.__plot_unixtime[j], self.__plot_beam[i][j])
-        max_count = max(self.__plot_beam[i][j], max_count)
+      for j in range(self.nplot):
+        g.SetPoint(j, self.plot_unixtime[j], self.plot_beam[i][j])
+        max_count = max(self.plot_beam[i][j], max_count)
       g.GetYaxis().SetRangeUser(0, max_count*1.1)
-    self.__legend_daq.SetHeader(f'DAQ Eff : {self.__footer["DAQ-Eff"]:5.3f}')
-    values = [self.__footer['DAQ-Eff'],
-              self.__footer['L2-Eff'],
-              self.__footer['Duty-Factor']]
-    for i, g in enumerate(self.__graph_daq):
-      self.__plot_daq[i].pop(0)
-      self.__plot_daq[i].append(values[i])
+      g.GetXaxis().SetLimits(self.plot_unixtime[-1]+600-7200,
+                             self.plot_unixtime[-1]+600)
+    self.legend_daq.SetHeader(f'DAQ Eff : {self.footer["DAQ-Eff"]:5.3f}')
+    values = [self.footer['DAQ-Eff'],
+              self.footer['L2-Eff'],
+              self.footer['Duty-Factor']]
+    for i, g in enumerate(self.graph_daq):
+      self.plot_daq[i].pop(0)
+      self.plot_daq[i].append(values[i])
       g.Set(0)
-      for j in range(self.__nplot):
-        g.SetPoint(j, self.__plot_unixtime[j], self.__plot_daq[i][j])
-      g.GetYaxis().SetRangeUser(0, 1.01)
+      for j in range(self.nplot):
+        g.SetPoint(j, self.plot_unixtime[j], self.plot_daq[i][j])
+      g.GetYaxis().SetRangeUser(0, 1.05)
+      g.GetXaxis().SetLimits(self.plot_unixtime[-1]+600-7200,
+                             self.plot_unixtime[-1]+600)
 
   #____________________________________________________________________________
   def update_scaler(self):
-    self.__now = ROOT.TTimeStamp()
-    self.__now.Add(-self.__now.GetZoneOffset())
     for i, scaler_txt in enumerate(scaler_list):
+      n_line = 0
       with open(scaler_txt, 'r') as f:
         columns = f.readline().split()
         if len(columns) != 2:
           continue
-        self.__runnos[i] = int(columns[0])
-        self.__evnos[i] = int(columns[1])
+        self.runnos[i] = int(columns[0])
+        self.evnos[i] = int(columns[1])
         for line in f.readlines():
+          n_line += 1
           columns = line.split()
           if len(columns) != 2:
             continue
           index = [i, int(columns[0])]
           if str(index) in inverse_map:
-            self.__scaler[inverse_map[str(index)]] = int(columns[1])
-    self.__runno = max(self.__runnos[0], self.__runnos[1])
-    self.__evno = max(self.__evnos[0], self.__evnos[1])
-    if self.__evno == self.__prev_evno:
-      self.__spill_end = False
-      self.__ignore = True
+            self.scaler[inverse_map[str(index)]] = int(columns[1])
+        if n_line != scaler_line[i]:
+          logging.warning(f'{scaler_txt} is broken')
+          self.spill_end = False
+          self.ignore = True
+          return
+    # BH1 SUM
+    self.scaler['BH1-SUM'] = 0
+    for i in range(11):
+      self.scaler['BH1-SUM'] += self.scaler[f'BH1-{i+1:02d}']
+    # BH2 SUM
+    self.scaler['BH2-SUM'] = 0
+    for i in range(8):
+      self.scaler['BH2-SUM'] += self.scaler[f'BH2-{i+1:02d}']
+    self.runno = max(self.runnos[0], self.runnos[1])
+    self.evno = max(self.evnos[0], self.evnos[1])
+    if self.evno == self.prev_evno:
+      self.spill_end = False
+      self.ignore = True
       return
-    if self.__runno != self.__prev_runno:
-      self.__scaler['Spill'] = 0
-      self.make_summary(f'scaler_{self.__prev_runno:05d}.txt',
-                        self.__scaler_runsum,
-                        self.__footer_runsum)
+    if self.runno != self.prev_runno and self.prev_runno != 0:
+      self.add_runsum()
+      self.make_summary(f'scaler_{self.prev_runno:05d}.txt',
+                        self.scaler_runsum,
+                        self.footer_runsum)
+      self.scaler['Spill'] = 0
       for k, v in channel_map.items():
-        self.__scaler_runsum[k] = 0
-    self.__spill_end = (
-      self.__runnos[0] == self.__runnos[1] and
-      self.__evnos[0] == self.__evnos[1] and
-      abs(self.__scaler['10M-Clock'] - spill_length) < error_length)
-    if self.__spill_end:
-      self.__scaler['Spill'] += 1
-      for k, v in channel_map.items():
-        self.__scaler_runsum[k] += self.__scaler[k]
-      self.__scaler_runsum['Spill'] = self.__scaler['Spill']
-      self.__footer_runsum = self.__calculate_footer(self.__scaler_runsum)
-    self.__footer = self.__calculate_footer(self.__scaler)
+        self.scaler_runsum[k] = 0
+    self.spill_end = (
+      self.runnos[0] == self.runnos[1] and
+      self.evnos[0] == self.evnos[1] and
+      abs(self.scaler['10M-Clock'] - spill_length) < error_length)
+    if self.spill_end:
+      self.scaler['Spill'] += 1
+      self.add_runsum()
+    self.footer = self.calculate_footer(self.scaler)
     if ROOT.gSystem.Getenv('SCALER_PRINT') == '1':
-      self.__print_scaler_sheet('scaler_sheet_tmp.pdf')
+      self.print_scaler_sheet('scaler_sheet_tmp.pdf')
       ROOT.gSystem.Setenv('SCALER_PRINT', '0')
-    self.__prev_runno = self.__runno
-    self.__prev_evno = self.__evno
-    self.__ignore = False
+    self.prev_runno = self.runno
+    self.prev_evno = self.evno
+    self.ignore = False
 
 #______________________________________________________________________________
 if __name__ == '__main__':

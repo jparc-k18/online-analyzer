@@ -3324,8 +3324,7 @@ UpdateT0PeakFitting( void )
     static std::vector<TText*> tex( NumOfSegBH2*2 );
     static const auto xmin = gUser.GetParameter( "BH2_TDC", 0 );
     static const auto xmax = gUser.GetParameter( "BH2_TDC", 1 );
-    for( Int_t i=0; i<5; ++i ){
-    // for( Int_t i=0; i<NumOfSegBH2; ++i ){
+    for( Int_t i=0; i<NumOfSegBH2; ++i ){
       c1->cd(i+1);
       auto h = dynamic_cast<TH1*>( gPad->FindObject( Form( "BH2_TDC_%dU", i+1 ) ) );
       if( !h || h->GetEntries() == 0 ) continue;

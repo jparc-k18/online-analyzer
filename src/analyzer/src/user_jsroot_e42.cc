@@ -98,6 +98,7 @@ process_begin( const std::vector<std::string>& argv )
 
   gHttp.SetPort( 9090 );
   gHttp.Open();
+  gHttp.CreateItem("/", "Online Analyzer");
   gHttp.Register(gHist.createBH1());
   gHttp.Register(gHist.createBFT());
   gHttp.Register(gHist.createBC3());
@@ -134,7 +135,7 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::BAC());
   gHttp.Register(http::BH2ADC());
   gHttp.Register(http::BH2TDC());
-  gHttp.Register(http::T0());
+  // gHttp.Register(http::T0());
   gHttp.Register(http::HTOFADCU());
   gHttp.Register(http::HTOFADCD());
   gHttp.Register(http::HTOFTDCU());
@@ -258,6 +259,7 @@ process_event( void )
   }
 #endif
 
+  UInt_t cobo_data_size = 0;
 #if FLAG_DAQ
   // DAQ -------------------------------------------------------------
   {
@@ -318,6 +320,7 @@ process_event( void )
       for(Int_t i=0, n=cobo_fe_id.size(); i<n; ++i){
         auto data_size = gUnpacker.get_node_header(cobo_fe_id[i], DAQNode::k_data_size);
         hptr_array[cobo_hid]->Fill(i, data_size);
+	cobo_data_size += data_size;
       }
     }
   }
@@ -2191,7 +2194,7 @@ process_event( void )
   }//BAC
 
   // TPC -----------------------------------------------------------
-  {
+  if(cobo_data_size > 0){
     static const Int_t k_device   = gUnpacker.get_device_id( "TPC" );
     static const Int_t k_adc      = gUnpacker.get_data_id( "TPC", "adc" );
     // static const Int_t k_tdc_high = gUnpacker.get_data_id( "TPC", "tdc_high" );
@@ -2280,7 +2283,7 @@ process_event( void )
     gErrorIgnoreLevel = kError;
     http::UpdateBcOutEfficiency();
     http::UpdateSdcInOutEfficiency();
-    http::UpdateT0PeakFitting();
+    // http::UpdateT0PeakFitting();
     http::UpdateTOTPeakFitting();
     gErrorIgnoreLevel = prev_level;
   }

@@ -179,33 +179,33 @@ BFT( void )
   {
     c1->cd( 1 )->Divide( 4, 2 );
     std::vector<Int_t> id = {
-      HistMaker::getUniqueID( kBFT, 0, kTDC, 11 ),
-      HistMaker::getUniqueID( kBFT, 0, kADC, 11 ),
-      HistMaker::getUniqueID( kBFT, 0, kHitPat, 11 ),
-      HistMaker::getUniqueID( kBFT, 0, kMulti, 11 )
+      HistMaker::getUniqueID(kBFT, 0, kTDC),
+      HistMaker::getUniqueID(kBFT, 0, kADC),
+      HistMaker::getUniqueID(kBFT, 0, kHitPat),
+      HistMaker::getUniqueID(kBFT, 0, kMulti)
     };
-    for( Int_t i=0, n=id.size(); i<n; ++i ){
-      for( Int_t j=0; j<kUorD; ++j ){
-	c1->cd( 1 )->cd( i+j*n+1 );
-	if( i == n-1 && j == kD ) continue;
-	auto h1 = GHist::get( id[i]+j );
-	if( !h1 ) continue;
+    for(Int_t i=0, n=id.size(); i<n; ++i){
+      for(Int_t j=0; j<kUorD; ++j){
+	c1->cd(1)->cd(i + j*n + 1);
+	if(i == n-1 && j == kD) continue;
+	auto h1 = GHist::get(id[i] + j);
+	if(!h1) continue;
 	h1->Draw();
       }
     }
   }
   {
-    c1->cd( 2 )->Divide( 2, 2 );
+    c1->cd(2)->Divide(2, 2);
     std::vector<Int_t> id = {
-      HistMaker::getUniqueID( kBFT, 0, kTDC2D ),
-      HistMaker::getUniqueID( kBFT, 0, kADC2D )
+      HistMaker::getUniqueID(kBFT, 0, kTDC2D),
+      HistMaker::getUniqueID(kBFT, 0, kADC2D)
     };
     for( Int_t i=0, n=id.size(); i<n; ++i ){
       for( Int_t j=0; j<kUorD; ++j ){
-	c1->cd( 2 )->cd( i+j*n+1 );
-	auto h1 = GHist::get( id[i]+j );
-	if( !h1 ) continue;
-	h1->Draw( "colz" );
+	c1->cd(2)->cd(i + j*n + 1);
+	auto h1 = GHist::get(id[i] + j);
+	if(!h1) continue;
+	h1->Draw("colz");
       }
     }
   }
@@ -240,7 +240,7 @@ BAC( void )
     if( !hh ) continue;
     hh->SetLineColor(kRed+1);
     hh->Draw("same");
-    c1->cd(i+1+n)->SetLogy();
+    c1->cd(i+1+n);//->SetLogy();
     TH1 *hhh = GHist::get( tdc_id[i] );
     if( !hhh ) continue;
     hhh->Draw();
@@ -352,7 +352,7 @@ ACs( void )
     if( !hh ) continue;
     hh->SetLineColor(kRed+1);
     hh->Draw("same");
-    c1->cd(i+1+n)->SetLogy();
+    c1->cd(i+1+n);//->SetLogy();
     TH1 *hhh = GHist::get( tdc_id[i] );
     if( !hhh ) continue;
     hhh->Draw();
@@ -1100,7 +1100,7 @@ TriggerFlagU( void )
   c1->Divide(4, 4);
   auto base_id = HistMaker::getUniqueID(kTriggerFlag, 0, kTDC);
   for(Int_t i=0; i<16; ++i){
-    c1->cd(i+1)->SetLogy();
+    c1->cd(i+1);//->SetLogy();
     auto h1 = GHist::get(base_id+i);
     if(!h1) continue;
     h1->Draw();
@@ -1116,7 +1116,7 @@ TriggerFlagD( void )
   c1->Divide(4, 4);
   auto base_id = HistMaker::getUniqueID(kTriggerFlag, 0, kTDC, 17);
   for(Int_t i=0; i<16; ++i){
-    c1->cd(i+1)->SetLogy();
+    c1->cd(i+1);//->SetLogy();
     auto h1 = GHist::get(base_id+i);
     if(!h1) continue;
     h1->Draw();
@@ -1751,7 +1751,7 @@ HitPatternE40( void )
 {
   std::vector<Int_t> id = {
     HistMaker::getUniqueID(kBH1,  0, kHitPat),
-    HistMaker::getUniqueID(kBFT,  0, kHitPat),
+    HistMaker::getUniqueID(kBFT,  0, kHitPat, 1),
     HistMaker::getUniqueID(kBFT,  0, kHitPat, 2),
 
     HistMaker::getUniqueID(kBC3,  0, kHitPat, 1),
@@ -3004,8 +3004,8 @@ BFTSCHTOT( void )
   auto c1 = new TCanvas( __func__, __func__ );
   c1->Divide( 3, 1 );
   std::vector<Int_t> hist_id = {
-    HistMaker::getUniqueID( kBFT, 0, kADC, 11 ),
-    HistMaker::getUniqueID( kBFT, 0, kADC, 12 ),
+    HistMaker::getUniqueID( kBFT, 0, kADC, 1),
+    HistMaker::getUniqueID( kBFT, 0, kADC, 2),
     HistMaker::getUniqueID( kSCH, 0, kADC, NumOfSegSCH+1 ),
   };
   for( Int_t i=0, n=hist_id.size(); i<n; ++i ){
@@ -3355,6 +3355,7 @@ void
 UpdateTOTPeakFitting( void )
 {
   UpdateTOTPeakFittingE03();
+  // UpdateTOTPeakFittingE03();
   // UpdateTOTPeakFittingE40();
 }
 
@@ -3366,7 +3367,7 @@ UpdateTOTPeakFittingE03( void )
   if( !c1 )
     return;
   static std::vector<TString> name = {
-    "BFT_CTOT_U", "BFT_CTOT_D", "SCH_TOT_ALL",
+    "BFT_TOT_U", "BFT_TOT_D", "SCH_TOT_ALL",
   };
   static std::vector<Double_t> optval = {
     gUser.GetParameter( "BFT_TOTREF" ),
@@ -3394,7 +3395,7 @@ UpdateTOTPeakFittingE03( void )
     tex[i] = new TText;
     tex[i]->SetNDC();
     tex[i]->SetTextSize( 0.100 );
-    tex[i]->SetText( 0.200, 0.750, Form( "%.2f", p ) );
+    tex[i]->SetText(0.200, 0.750, Form("%.2f", p));
     tex[i]->Draw();
     if( line[i] ) delete line[i];
     line[i] = new TLine( optval[i], 0., optval[i], h->GetMaximum() );

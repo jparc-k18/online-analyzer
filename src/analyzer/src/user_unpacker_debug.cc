@@ -27,8 +27,9 @@ namespace analyzer
     //std::vector<std::string> target = { "hul01", "hul03" };
     //std::vector<std::string> target = { "vme01" };
     std::vector<std::string> target = {
-				       // "vme01",
-				       "hul_hbx_scr",
+				       "vme01",
+				       "vme02",
+				       // "hul_hbx_scr",
 				       // "hul02lac",
 				       // "hul01hr-1",
 				       // "hul01hr-2",
@@ -46,7 +47,7 @@ process_begin(const std::vector<std::string>& argv)
     int node_id = gUnpacker.get_fe_id( target.at(i) );
     Unpacker *node = gUnpacker.get_root()->get_child(node_id);
     if( !node ) continue;
-    //node->set_dump_mode(defines::k_hex);
+    node->set_dump_mode(defines::k_hex);
   }
 
   // for( auto&& c : gUnpacker.get_root()->get_child_list() ){

@@ -276,36 +276,24 @@ HistMaker::createTimeStamp( Bool_t flag_ps )
   return top_dir;
 }
 
-// -------------------------------------------------------------------------
-// createBH1
-// -------------------------------------------------------------------------
-TList* HistMaker::createBH1( Bool_t flag_ps )
+//_____________________________________________________________________________
+TList*
+HistMaker::createBH1(Bool_t flag_ps)
 {
-  // Determine the detector name
   TString strDet = CONV_STRING(kBH1);
-  // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
-    // name list which are displayed in Ps tab
     name_ps_files_.push_back(strDet);
   }
-
-  // Declaration of the directory
-  // Just type conversion from TString to char*
   const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  // ADC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
+  { ///// ADC
     TString strSubDir  = CONV_STRING(kADC);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-
-    // Make histogram and add it
-    // Make unique ID
     Int_t target_id = getUniqueID(kBH1, 0, kADC, 0);
     for(Int_t i = 0; i<NumOfSegBH1*2; ++i){
       const char* title = NULL;
@@ -316,26 +304,17 @@ TList* HistMaker::createBH1( Bool_t flag_ps )
 	Int_t seg = i+1-NumOfSegBH1; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
-
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
-
-  // ADC w/TDC ---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
+  { ///// ADC w/TDC
     TString strSubDir  = CONV_STRING(kADCwTDC);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-
-    // Make histogram and add it
-    // Make unique ID
     Int_t target_id = getUniqueID(kBH1, 0, kADCwTDC, 0);
     for( Int_t i=0; i<NumOfSegBH1*2; ++i ){
       const char* title = NULL;
@@ -346,25 +325,17 @@ TList* HistMaker::createBH1( Bool_t flag_ps )
 	Int_t seg = i+1-NumOfSegBH1; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
-
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
-
-  // TDC ----------------------------------------------------
-  {
-    // Declaration of the sub-directory
+  { ///// TDC
     TString strSubDir  = CONV_STRING(kTDC);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
-
-    // Make histogram and add it
     Int_t target_id = getUniqueID(kBH1, 0, kTDC, 0);
     for(Int_t i = 0; i<NumOfSegBH1*2; ++i){
       const char* title = NULL;
@@ -375,153 +346,72 @@ TList* HistMaker::createBH1( Bool_t flag_ps )
 	Int_t seg = i+1-NumOfSegBH1; // 1 origin
 	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
       }
-
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     //			     10000, 0, 400000,
      			     50000, 0, 2000000,
 			     "TDC [ch]", ""));
     }
-
-    // insert sub directory
     top_dir->Add(sub_dir);
   }
-
-  // Hit parttern -----------------------------------------------
-  {
+  { ///// Hit parttern
     Int_t target_id = getUniqueID(kBH1, 0, kHitPat, 0);
-    // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BH1_hit_pattern", // 1 origin
 			   NumOfSegBH1, 0, NumOfSegBH1,
 			   "Segment", ""));
   }
-
-  // Multiplicity -----------------------------------------------
-  {
+  { ///// Multiplicity
     Int_t target_id = getUniqueID(kBH1, 0, kMulti, 0);
-    // Add to the top directory
     top_dir->Add(createTH1(++target_id, "BH1_multiplicity", // 1 origin
 			   NumOfSegBH1, 0, NumOfSegBH1,
 			   "Multiplicity", ""));
   }
-
-  // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
 
-// -------------------------------------------------------------------------
-// createBFT
-// -------------------------------------------------------------------------
-TList* HistMaker::createBFT( Bool_t flag_ps )
+//_____________________________________________________________________________
+TList*
+HistMaker::createBFT(Bool_t flag_ps)
 {
-  // Determine the detector name
   TString strDet = CONV_STRING(kBFT);
-  // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
-    // name list which are displayed in Ps tab
     name_ps_files_.push_back(strDet);
   }
-
-  // Declaration of the directory
-  // Just type conversion from TString to char*
   const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
-
-  // TDC---------------------------------------------------------
-  {
+  { ///// TDC
     Int_t target_id = getUniqueID(kBFT, 0, kTDC, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, "BFT_TDC_U", // 1 origin
+    top_dir->Add(createTH1(++target_id, "BFT_TDC_U",
 			   1024, 0, 1024,
 			   "TDC [ch]", ""));
-
-    top_dir->Add(createTH1(++target_id, "BFT_TDC_D", // 1 origin
-			   1024, 0, 1024,
-			   "TDC [ch]", ""));
-  }
-
-  // TDC (after cut) --------------------------------------------
-  {
-    Int_t target_id = getUniqueID(kBFT, 0, kTDC, 10);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, "BFT_CTDC_U", // 1 origin
-			   1024, 0, 1024,
-			   "TDC [ch]", ""));
-
-    top_dir->Add(createTH1(++target_id, "BFT_CTDC_D", // 1 origin
+    top_dir->Add(createTH1(++target_id, "BFT_TDC_D",
 			   1024, 0, 1024,
 			   "TDC [ch]", ""));
   }
-
-  // TOT---------------------------------------------------------
-  {
+  { ///// TOT
     Int_t target_id = getUniqueID(kBFT, 0, kADC, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, "BFT_TOT_U", // 1 origin
+    top_dir->Add(createTH1(++target_id, "BFT_TOT_U",
 			   200, -50, 150,
 			   "TOT [ch]", ""));
 
-    top_dir->Add(createTH1(++target_id, "BFT_TOT_D", // 1 origin
-			   200, -50, 150,
-			   "TOT [ch]", ""));
-  }
-
-  // TOT (after cut) --------------------------------------------
-  {
-    Int_t target_id = getUniqueID(kBFT, 0, kADC, 10);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, "BFT_CTOT_U", // 1 origin
-			   200, -50, 150,
-			   "TOT [ch]", ""));
-
-    top_dir->Add(createTH1(++target_id, "BFT_CTOT_D", // 1 origin
+    top_dir->Add(createTH1(++target_id, "BFT_TOT_D",
 			   200, -50, 150,
 			   "TOT [ch]", ""));
   }
-
-  // Hit parttern -----------------------------------------------
-  {
+  { ///// Hit parttern
     Int_t target_id = getUniqueID(kBFT, 0, kHitPat, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, "BFT_HitPat_U", // 1 origin
+    top_dir->Add(createTH1(++target_id, "BFT_HitPat_U",
 			   NumOfSegBFT, 0, NumOfSegBFT,
 			   "Segment", ""));
-
-    top_dir->Add(createTH1(++target_id, "BFT_HitPat_D", // 1 origin
-			   NumOfSegBFT, 0, NumOfSegBFT,
-			   "Segment", ""));
-  }
-
-  // Hit parttern (after cut) -----------------------------------
-  {
-    Int_t target_id = getUniqueID(kBFT, 0, kHitPat, 10);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, "BFT_CHitPat_U", // 1 origin
-			   NumOfSegBFT, 0, NumOfSegBFT,
-			   "Segment", ""));
-
-    top_dir->Add(createTH1(++target_id, "BFT_CHitPat_D", // 1 origin
+    top_dir->Add(createTH1(++target_id, "BFT_HitPat_D",
 			   NumOfSegBFT, 0, NumOfSegBFT,
 			   "Segment", ""));
   }
-
-  // Multiplicity -----------------------------------------------
-  {
+  { ///// Multiplicity
     const char* title = "BFT_multiplicity";
     Int_t target_id = getUniqueID(kBFT, 0, kMulti, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, title, // 1 origin
-			   30, 0, 30,
-			   "Multiplicity", ""));
-  }
-
-  // Multiplicity (after cut)------------------------------------
-  {
-    const char* title = "BFT_CMulti";
-    Int_t target_id = getUniqueID(kBFT, 0, kMulti, 10);
-    // Add to the top directory
-    top_dir->Add(createTH1(++target_id, title, // 1 origin
+    top_dir->Add(createTH1(++target_id, title,
 			   30, 0, 30,
 			   "Multiplicity", ""));
   }
@@ -5425,10 +5315,9 @@ TList* HistMaker::createMtx3D( Bool_t flag_ps )
   return top_dir;
 }
 
-// -------------------------------------------------------------------------
-// createTPC
-// -------------------------------------------------------------------------
-TList* HistMaker::createTPC( Bool_t flag_ps )
+//_____________________________________________________________________________
+TList*
+HistMaker::createTPC(Bool_t flag_ps)
 {
   TString strDet = CONV_STRING(kTPC);
   name_created_detectors_.push_back(strDet);
@@ -5436,8 +5325,6 @@ TList* HistMaker::createTPC( Bool_t flag_ps )
   const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
-
-  // PAD Display ---------------------------------------------------------
   {
     Int_t target_id = getUniqueID( kTPC, 0, kADC2D );
     auto title = Form( "%s_ADC2D", nameDetector );
@@ -5491,27 +5378,28 @@ TList* HistMaker::createTPC( Bool_t flag_ps )
     top_dir->Add( h_rms );
     top_dir->Add( h_loc );
   }
-
   // ADC
   top_dir->Add( createTH1( getUniqueID( kTPC, 0, kADC ),
                            "TPC_ADC", 4000, 0, 4000 ) );
   top_dir->Add( createTH1( getUniqueID( kTPC, 0, kPede ),
                            "TPC_RMS", 1000, 0, 1000 ) );
-
   // TDC
   top_dir->Add( createTH1( getUniqueID( kTPC, 0, kTDC ),
                            "TPC_TDC", 200, 0, 200 ) );
-
   // FADC
   top_dir->Add( createTH2( getUniqueID( kTPC, 0, kFADC ),
                            "TPC_FADC",
                            200, 0, 200, 200, 0, 0x1000,
                            "Time bucket", "ADC" ) );
-
   // Multiplicity
   top_dir->Add( createTH1( getUniqueID( kTPC, 0, kMulti ),
                            "TPC_multiplicity", 600, 0, 6000 ) );
-
+  // TPC-CLOCK
+  top_dir->Add(createTH1(getUniqueID(kTPC, 1, kTDC),
+			 "TPC_CLOCK", 50000, 0, 2000000,
+			 "TDC", ""));
+  top_dir->Add(createTH1(getUniqueID(kTPC, 1, kMulti),
+			 "TPC_CLOCK_multiplicity", 10, 0, 10));
   return top_dir;
 }
 

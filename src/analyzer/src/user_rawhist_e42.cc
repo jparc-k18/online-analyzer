@@ -114,12 +114,6 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispTOF"));
   tab_macro->Add(macro::Get("dispLAC"));
   tab_macro->Add(macro::Get("dispWC"));
-  tab_macro->Add(macro::Get("dispGeAdc"));
-  tab_macro->Add(macro::Get("dispGeTdc"));
-  tab_macro->Add(macro::Get("dispGe2dhist"));
-  tab_macro->Add(macro::Get("dispGeAdc_60Co"));
-  tab_macro->Add(macro::Get("dispGeAdc_LSO"));
-  tab_macro->Add(macro::Get("dispBGO"));
   tab_macro->Add(macro::Get("dispMatrix"));
   tab_macro->Add(macro::Get("dispTriggerFlag"));
   tab_macro->Add(macro::Get("dispHitPat"));

@@ -854,9 +854,9 @@ process_event( void )
 #endif
 
   { ///// HTOF
-    static const auto k_device = gUnpacker.get_device_id("HTOF");
-    static const auto k_adc = gUnpacker.get_data_id("HTOF", "adc");
-    static const auto k_tdc = gUnpacker.get_data_id("HTOF", "fpga_leading");
+    static const auto device_id = gUnpacker.get_device_id("HTOF");
+    static const auto adc_id = gUnpacker.get_data_id("HTOF", "adc");
+    static const auto tdc_id = gUnpacker.get_data_id("HTOF", "fpga_leading");
     static const auto tdc_min = gUser.GetParameter("HTOF_TDC", 0);
     static const auto tdc_max = gUser.GetParameter("HTOF_TDC", 1);
     static const auto htofa_id = gHist.getSequentialID(kHTOF, 0, kADC);
@@ -872,15 +872,15 @@ process_event( void )
 	hit_flag[seg][ud] = 0;
 	///// ADC
 	UInt_t adc = 0;
-	auto nhit = gUnpacker.get_entries(k_device, 0, seg, ud, k_adc);
+	auto nhit = gUnpacker.get_entries(device_id, 0, seg, ud, adc_id);
 	if(nhit != 0){
-	  adc = gUnpacker.get(k_device, 0, seg, ud, k_adc);
+	  adc = gUnpacker.get(device_id, 0, seg, ud, adc_id);
 	  hptr_array[htofa_id + seg + ud*NumOfSegHTOF]->Fill(adc);
 	}
 	///// TDC
-	for(Int_t m=0, n=gUnpacker.get_entries(k_device, 0, seg, ud, k_tdc);
+	for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, seg, ud, tdc_id);
 	    m<n; ++m){
-	  auto tdc = gUnpacker.get(k_device, 0, seg, ud, k_tdc, m);
+	  auto tdc = gUnpacker.get(device_id, 0, seg, ud, tdc_id, m);
 	  if(tdc != 0){
 	    hptr_array[htoft_id + seg + ud*NumOfSegHTOF]->Fill(tdc);
 	    // ADC w/TDC
@@ -1575,20 +1575,20 @@ process_event( void )
 	auto nhit = gUnpacker.get_entries(device_id, 0, seg, ud, adc_id);
 	if(nhit != 0){
 	  adc = gUnpacker.get(device_id, 0, seg, ud, adc_id);
-	  hptr_array[adc_hid + seg]->Fill(adc);
+	  hptr_array[adc_hid + ud*NumOfSegTOF + seg]->Fill(adc);
 	}
 	// TDC
 	for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, seg, ud, tdc_id);
 	    m<n; ++m){
 	  auto tdc = gUnpacker.get(device_id, 0, seg, ud, tdc_id, m);
 	  if(tdc != 0){
-	    hptr_array[tdc_hid + seg]->Fill(tdc);
+	    hptr_array[tdc_hid + ud*NumOfSegTOF + seg]->Fill(tdc);
 	    if(tdc_min<tdc && tdc<tdc_max && adc > 0){
 	      hit_flag[seg][ud] = 1;
 	    }
 	  }
 	  if(hit_flag[seg][ud] == 1){
-	    hptr_array[awt_hid + seg]->Fill( adc );
+	    hptr_array[awt_hid + ud*NumOfSegTOF + seg]->Fill(adc);
 	  }
 	}
       }

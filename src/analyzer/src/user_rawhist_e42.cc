@@ -104,13 +104,15 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispBFT"));
   tab_macro->Add(macro::Get("dispBC3"));
   tab_macro->Add(macro::Get("dispBC4"));
+  tab_macro->Add(macro::Get("dispBAC"));
   tab_macro->Add(macro::Get("dispBH2"));
-  tab_macro->Add(macro::Get("dispACs"));
+  tab_macro->Add(macro::Get("dispHTOF"));
   tab_macro->Add(macro::Get("dispSDC1"));
   tab_macro->Add(macro::Get("dispSDC2"));
   tab_macro->Add(macro::Get("dispSCH"));
   tab_macro->Add(macro::Get("dispSDC3"));
   tab_macro->Add(macro::Get("dispSDC4"));
+  tab_macro->Add(macro::Get("dispBVH"));
   tab_macro->Add(macro::Get("dispTOF"));
   tab_macro->Add(macro::Get("dispLAC"));
   tab_macro->Add(macro::Get("dispWC"));
@@ -154,16 +156,8 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createDCEff());
 
   //misc tab
-  Int_t btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
-  tab_misc->Add(gHist.createTH1(btof_id, "BTOF",
-                               300, -10, 5,
-                               "BTOF [ns]", ""
-                               ));
-
-  tab_misc->Add( gHist.createTH1( btof_id + 1, "BH1-6_BH2-3",
-                                  600, 50000, 350000,
-                                  "[ch]", "" ) );
-  tab_misc->Add( macro::Get("dispTPC") );
+  tab_misc->Add(gHist.createBTOF());
+  tab_misc->Add(macro::Get("dispTPC"));
   //___ Matrix ___
   // gMatrix.Print2D1();
   // gMatrix.Print2D2();

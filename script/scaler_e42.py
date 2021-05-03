@@ -84,7 +84,7 @@ channel_map = {
   # 'Clear': [0, 6],
   'L2-Req': [0, 7],
   'L2-Acc': [0, 8],
-  'Mutant-Busy': [0, 14],
+  'GET-Busy': [0, 14],
   'TRIG-A': [0, 41],
   'TRIG-B': [0, 42],
   'TRIG-C': [0, 43],

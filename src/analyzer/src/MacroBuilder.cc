@@ -748,11 +748,11 @@ TOFADCU( void )
     c1->cd( i+1 )->SetLogy();
     auto h1 = GHist::get( HistMaker::getUniqueID( kTOF, 0, kADC, i+1 ) );
     if( !h1 ) continue;
-    h1->GetXaxis()->SetRangeUser( 0, 4000 );
+    // h1->GetXaxis()->SetRangeUser( 0, 4000 );
     h1->Draw();
     auto h2 = GHist::get( HistMaker::getUniqueID( kTOF, 0, kADCwTDC, i+1 ) );
     if( !h2 ) continue;
-    h2->GetXaxis()->SetRangeUser( 0, 4000 );
+    // h2->GetXaxis()->SetRangeUser( 0, 4000 );
     h2->SetLineColor( kRed+1 );
     h2->Draw( "same" );
   }
@@ -769,11 +769,11 @@ TOFADCD( void )
     c1->cd( i+1 )->SetLogy();
     auto h1 = GHist::get( HistMaker::getUniqueID( kTOF, 0, kADC, i+NumOfSegTOF+1 ) );
     if( !h1 ) continue;
-    h1->GetXaxis()->SetRangeUser( 0, 4000 );
+    // h1->GetXaxis()->SetRangeUser( 0, 4000 );
     h1->Draw();
     auto h2 = GHist::get( HistMaker::getUniqueID( kTOF, 0, kADCwTDC, i+NumOfSegTOF+1 ) );
     if( !h2 ) continue;
-    h2->GetXaxis()->SetRangeUser( 0, 4000 );
+    // h2->GetXaxis()->SetRangeUser( 0, 4000 );
     h2->SetLineColor( kRed+1 );
     h2->Draw( "same" );
   }
@@ -869,11 +869,11 @@ WCADCU( void )
     c1->cd( i+1 )->SetLogy();
     auto h1 = GHist::get( HistMaker::getUniqueID( kWC, 0, kADC, i+1 ) );
     if( !h1 ) continue;
-    h1->GetXaxis()->SetRangeUser( 0, 4000 );
+    // h1->GetXaxis()->SetRangeUser( 0, 4000 );
     h1->Draw();
     auto h2 = GHist::get( HistMaker::getUniqueID( kWC, 0, kADCwTDC, i+1 ) );
     if( !h2 ) continue;
-    h2->GetXaxis()->SetRangeUser( 0, 4000 );
+    // h2->GetXaxis()->SetRangeUser( 0, 4000 );
     h2->SetLineColor( kRed+1 );
     h2->Draw( "same" );
   }
@@ -890,11 +890,11 @@ WCADCD( void )
     c1->cd( i+1 )->SetLogy();
     auto h1 = GHist::get( HistMaker::getUniqueID( kWC, 0, kADC, i+1+NumOfSegWC ) );
     if( !h1 ) continue;
-    h1->GetXaxis()->SetRangeUser( 0, 4000 );
+    // h1->GetXaxis()->SetRangeUser( 0, 4000 );
     h1->Draw();
     auto h2 = GHist::get( HistMaker::getUniqueID( kWC, 0, kADCwTDC, i+1+NumOfSegWC ) );
     if( !h2 ) continue;
-    h2->GetXaxis()->SetRangeUser( 0, 4000 );
+    // h2->GetXaxis()->SetRangeUser( 0, 4000 );
     h2->SetLineColor( kRed+1 );
     h2->Draw( "same" );
   }
@@ -911,11 +911,11 @@ WCADCSUM( void )
     c1->cd( i+1 )->SetLogy();
     auto h1 = GHist::get( HistMaker::getUniqueID( kWC, 0, kADC, i+1+NumOfSegWC*2 ) );
     if( !h1 ) continue;
-    h1->GetXaxis()->SetRangeUser( 0, 4000 );
+    // h1->GetXaxis()->SetRangeUser( 0, 4000 );
     h1->Draw();
     auto h2 = GHist::get( HistMaker::getUniqueID( kWC, 0, kADCwTDC, i+1+NumOfSegWC*2 ) );
     if( !h2 ) continue;
-    h2->GetXaxis()->SetRangeUser( 0, 4000 );
+    // h2->GetXaxis()->SetRangeUser( 0, 4000 );
     h2->SetLineColor( kRed+1 );
     h2->Draw( "same" );
   }

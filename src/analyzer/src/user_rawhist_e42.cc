@@ -1587,10 +1587,10 @@ process_event( void )
 	      hit_flag[seg][ud] = 1;
 	    }
 	  }
-	  if(hit_flag[seg][ud] == 1){
-	    hptr_array[awt_hid + ud*NumOfSegTOF + seg]->Fill(adc);
-	  }
 	}
+        if(hit_flag[seg][ud] == 1){
+          hptr_array[awt_hid + ud*NumOfSegTOF + seg]->Fill(adc);
+        }
       }
       if(hit_flag[seg][kU] == 1 && hit_flag[seg][kD] == 1){
 	++multiplicity;

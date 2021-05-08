@@ -2096,6 +2096,23 @@ process_event( void )
       gUnpacker.dump_data_device(k_device);
 #endif
     }
+    { ///// TPC-CLOCK
+      static const auto device_id = gUnpacker.get_device_id("HTOF");
+      static const auto leading_id = gUnpacker.get_data_id("HTOF", "fpga_leading");
+      static const auto tdc_hid = gHist.getSequentialID(kTPC, 1, kTDC);
+      static const auto mul_hid = gHist.getSequentialID(kTPC, 1, kMulti);
+      static const Int_t seg = 34;
+      UInt_t multiplicity = 0;
+      for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, seg, 0, leading_id);
+          m<n; ++m){
+        auto tdc = gUnpacker.get(device_id, 0, seg, 0, leading_id, m);
+        if(tdc != 0){
+          hptr_array[tdc_hid]->Fill(tdc);
+          ++multiplicity;
+	}
+      }
+      hptr_array[mul_hid]->Fill(multiplicity);
+    }
   } // TPC
 
 #if DEBUG

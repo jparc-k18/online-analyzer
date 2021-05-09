@@ -5400,6 +5400,10 @@ HistMaker::createTPC(Bool_t flag_ps)
 			 "TDC", ""));
   top_dir->Add(createTH1(getUniqueID(kTPC, 1, kMulti),
 			 "TPC_CLOCK_multiplicity", 10, 0, 10));
+  // TPC-BeamProfile
+  top_dir->Add(createTH1(getUniqueID(kTPC, 2, kTDC),
+			 "TPC_BeamProfile", 34, 0, 34,
+			 "Pad", ""));
   return top_dir;
 }
 

@@ -933,6 +933,7 @@ process_event( void )
       if(is_in_gate){
 	++multiplicity;
 	hptr_array[hit_hid]->Fill(i);
+	hitseg_sch.push_back(i);
       }
     }
     hptr_array[mul_hid]->Fill(multiplicity);

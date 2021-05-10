@@ -2051,7 +2051,6 @@ process_event( void )
       hptr_array[tpca2d_id]->Reset();
       hptr_array[tpca2d_id+1]->Reset();
       hptr_array[tpca2d_id+2]->Reset();
-      hptr_array[tpca2d_id+3]->Reset();
 
       Int_t n_active_pad = 0;
       std::vector<Double_t> max_fadc( NumOfTimeBucket );

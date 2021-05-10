@@ -5,6 +5,7 @@
 
 #include <map>
 #include <TString.h>
+#include <TVector3.h>
 
 #include "DetectorID.hh"
 
@@ -82,6 +83,7 @@ public:
   TpcPadParam* GetParam( Int_t asad, Int_t aget, Int_t ch ) const;
   TpcPadParam* GetParam( Int_t layer, Int_t row ) const;
   TpcPadParam* GetParam( Int_t pad ) const;
+  TVector3     GetPoint( Int_t pad ) const;
   Int_t        GetPadId( Int_t asad, Int_t aget, Int_t ch ) const;
   Int_t        GetPadId( Int_t layer, Int_t row ) const;
   Int_t        GetLayerId( Int_t asad, Int_t aget, Int_t ch ) const;

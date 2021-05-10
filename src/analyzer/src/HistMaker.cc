@@ -5336,6 +5336,9 @@ HistMaker::createTPC(Bool_t flag_ps)
     title = Form( "%s_TDC2D", nameDetector );
     auto h_loc = dynamic_cast<TH2Poly*>
       ( createTH2Poly( target_id++, title, -300, 300, -300, 300 ) );
+    title = Form( "%s_Hit2D", nameDetector );
+    auto h_hit = dynamic_cast<TH2Poly*>
+      ( createTH2Poly( target_id++, title, -300, 300, -300, 300 ) );
     Double_t X[5];
     Double_t Y[5];
     for( Int_t i=0; i<32; i++ ){
@@ -5363,6 +5366,7 @@ HistMaker::createTPC(Bool_t flag_ps)
         h_adc->AddBin( 5, X, Y );
         h_rms->AddBin( 5, X, Y );
         h_loc->AddBin( 5, X, Y );
+        h_hit->AddBin( 5, X, Y );
       }
     }
     h_adc->SetStats( 0 );
@@ -5377,6 +5381,7 @@ HistMaker::createTPC(Bool_t flag_ps)
     top_dir->Add( h_adc );
     top_dir->Add( h_rms );
     top_dir->Add( h_loc );
+    top_dir->Add( h_hit );
   }
   // ADC
   top_dir->Add( createTH1( getUniqueID( kTPC, 0, kADC ),

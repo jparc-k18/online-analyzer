@@ -19,6 +19,7 @@
 #include <TSystem.h>
 #include <TText.h>
 #include <TTimeStamp.h>
+#include <TVector3.h>
 
 #include <TEveManager.h>
 #include <TEveBox.h>
@@ -2038,18 +2039,19 @@ process_event( void )
       static const Int_t tpcmul_id = gHist.getSequentialID( kTPC, 0, kMulti );
       static const Int_t tpcbp_id  = gHist.getSequentialID( kTPC, 2, kTDC );
 
-      const int tpcbp_padid[34] = {2641, 2431, 2226, 2020, 1806,
-	      			   1589, 1384, 1160,  938,  740,
-				    566,  416,  290,  188,  110,
-				     56,    6,   41,   87,  153,
-				    243,  357,  495,  657,  843,
-				   1053, 1287, 1511, 1732, 1963,
-				   2193, 2413, 2634, 2858};
+      const Int_t tpcbp_padid[34] = {2641, 2431, 2226, 2020, 1806,
+	      			     1589, 1384, 1160,  938,  740,
+				      566,  416,  290,  188,  110,
+				       56,    6,   41,   87,  153,
+				      243,  357,  495,  657,  843,
+				     1053, 1287, 1511, 1732, 1963,
+				     2193, 2413, 2634, 2858};
 
       // FADC
       hptr_array[tpca2d_id]->Reset();
       hptr_array[tpca2d_id+1]->Reset();
       hptr_array[tpca2d_id+2]->Reset();
+      hptr_array[tpca2d_id+3]->Reset();
 
       Int_t n_active_pad = 0;
       std::vector<Double_t> max_fadc( NumOfTimeBucket );
@@ -2090,6 +2092,8 @@ process_event( void )
 	  hptr_array[tpca2d_id]->SetBinContent( pad + 1, max_adc - mean );
 	  hptr_array[tpca2d_id+1]->SetBinContent( pad + 1, rms );
 	  hptr_array[tpca2d_id+2]->SetBinContent( pad + 1, loc_max );
+	  hptr_array[tpca2d_id+3]->Fill( gTpcPad.GetPoint( pad ).Z(),
+			  		 gTpcPad.GetPoint( pad ).X() );
 	  if( max_adc - mean > 0 ){
 	    ++n_active_pad;
 	    for( Int_t i=0; i<34; ++i ){

@@ -164,6 +164,31 @@ TpcPadHelper::GetParam( Int_t pad ) const
 }
 
 //_____________________________________________________________________________
+TVector3
+TpcPadHelper::GetPoint( Int_t pad ) const
+{
+  TVector3 vec;
+  Int_t layer, row;
+  Int_t sum=0;
+  for( layer=0; layer<=30 && sum+TpcPadHelper::PadParameter[layer][1]<=pad; layer++ ){
+    sum += TpcPadHelper::PadParameter[layer][1];
+  }
+  row = pad - sum;
+
+  if( row>TpcPadHelper::PadParameter[layer][1] ) {
+    vec.SetXYZ(0,-1,0);
+  } else {
+    Double_t stheta = 180.-(360./TpcPadHelper::PadParameter[layer][3])*TpcPadHelper::PadParameter[layer][1]/2.;
+    Double_t theta = stheta+(row+0.5)*360./TpcPadHelper::PadParameter[layer][3]-180.;
+
+    Double_t x = TpcPadHelper::PadParameter[layer][2]*sin(theta*acos(-1)/180.);
+    Double_t z = TpcPadHelper::PadParameter[layer][2]*cos(theta*acos(-1)/180.)-143.;
+    vec.SetXYZ(x,0,z);
+  }
+  return vec;
+}
+
+//_____________________________________________________________________________
 Bool_t
 TpcPadHelper::Initialize( const TString &file_name )
 {

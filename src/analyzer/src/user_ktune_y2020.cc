@@ -79,14 +79,25 @@ namespace analyzer
     // 	// Detectors
     // 	"E03 TGT", "End guard", "DC1", "KbAC"
     //   };
+    // enum HistName
+    // {
+    //   FF_000, FF_200, FF_400, FF_550, FF_800, FF_1000,
+    //   NHist
+    // };
+    // static const double FF_plus[NHist] =
+    //   {
+    // 	0., 200., 400, 550., 800., 1000.
+    //   };
+
+
     enum HistName
     {
-      FF_000, FF_200, FF_400, FF_550, FF_800, FF_1000,
+      FF_m400, FF_m200, FF_0, FF_200, FF_400, FF_600,
       NHist
     };
     static const double FF_plus[NHist] =
       {
-	0., 200., 400, 550., 800., 1000.
+       -400., -200., 0, 200., 400., 600.
       };
     //static Double_t FF_plus = 0;
   }
@@ -143,9 +154,9 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispKtune202006"));
   tab_macro->Add(macro::Get("dispHitPat_y2020"));
   tab_macro->Add(macro::Get("dispHitPat_y2020kaon"));
-  tab_macro->Add(macro::Get("dispBeamProfile_e03_2020"));
-  tab_macro->Add(macro::Get("dispBeamProfile_e03_2020kaon"));
- 
+  tab_macro->Add(macro::Get("dispBeamProfile_e42_2021"));
+  tab_macro->Add(macro::Get("dispBeamProfile_e42_2021kaon"));
+
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
   //tab_hist->Add(gHist.createBH2());
@@ -530,7 +541,7 @@ process_begin( const std::vector<std::string>& argv )
                                "segment", ""
                                ));
 
- 
+
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -648,7 +659,7 @@ process_event( void )
       }// if(nhit)
     }
 
-    
+
     // BH1
     for(int seg = 0; seg<NumOfSegBH1; ++seg){
       int nhitu = gUnpacker.get_entries(k_d_bh1, 0, seg, k_u, k_tdc);
@@ -677,7 +688,7 @@ process_event( void )
 	}// for(m2)
       }// for(m1)
     }// for(seg)
-    
+
     if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 ){
       hptr_array[btof_id]->Fill(btof);
     }
@@ -710,7 +721,7 @@ process_event( void )
       hptr_array[btof_id+6+19+8]->Fill(0); //PVACeff
       hptr_array[btof_id+6+19+8]->Fill(0); //FACeff
     }
- 
+
   } // btof
   //-------------------------------------------------------------------
 
@@ -1692,7 +1703,7 @@ process_event( void )
     //static const Int_t hit_id = gHist.getSequentialID(kBH2, 0, kHitPat);
     //hptr_array[hit_id]->Fill( seg );
   }
-  
+
 
   // BH2 % BcOut Hit
   //  if( segBh2 >= 0 && TMath::Abs( bh2mt ) < 0.1 ){

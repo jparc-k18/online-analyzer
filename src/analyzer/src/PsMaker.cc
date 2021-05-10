@@ -1532,9 +1532,8 @@ PsMaker::create( TString& name )
     id_list.push_back( HistMaker::getUniqueID(kTPC, 2, kTDC) );
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
     par_list[kXdiv] = 2; par_list[kYdiv] = 2;
-    // FADC
-    id_list.push_back( HistMaker::getUniqueID(kTPC, 0, kFADC) );
     Int_t target_id = HistMaker::getUniqueID(kTPC, 0, kADC2D);
+    id_list.push_back( target_id++ );
     id_list.push_back( target_id++ );
     id_list.push_back( target_id++ );
     id_list.push_back( target_id++ );
@@ -1545,7 +1544,9 @@ PsMaker::create( TString& name )
     id_list.push_back(HistMaker::getUniqueID(kTPC, 1, kMulti));
     // Multiplicity
     id_list.push_back(HistMaker::getUniqueID(kTPC, 0, kMulti));
-    drawOneCanvas(id_list, par_list, false, false);
+    // FADC
+    id_list.push_back( HistMaker::getUniqueID(kTPC, 0, kFADC) );
+    drawOneCanvas(id_list, par_list, false, false, "colz");
   }
 
   //___ Ge

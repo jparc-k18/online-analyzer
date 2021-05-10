@@ -125,6 +125,8 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("effWC"));
   tab_macro->Add(macro::Get("dispBH2Fit"));
   tab_macro->Add(macro::Get("dispDAQ"));
+  //  tab_macro->Add(macro::Get("dispAcEfficiency"));
+
 
   // Add histograms to the Hist tab
   tab_hist->Add(gHist.createBH1());

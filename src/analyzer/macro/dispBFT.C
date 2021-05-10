@@ -18,18 +18,18 @@ dispBFT( void )
     HistMaker::getUniqueID( kBFT, 0, kTDC, 2 ),
     HistMaker::getUniqueID( kBFT, 0, kADC, 1 ),
     HistMaker::getUniqueID( kBFT, 0, kADC, 2 ),
-    HistMaker::getUniqueID( kBFT, 0, kTDC, 11 ),
-    HistMaker::getUniqueID( kBFT, 0, kTDC, 12 ),
-    HistMaker::getUniqueID( kBFT, 0, kADC, 11 ),
-    HistMaker::getUniqueID( kBFT, 0, kADC, 12 ),
+    //HistMaker::getUniqueID( kBFT, 0, kTDC, 11 ),
+    //HistMaker::getUniqueID( kBFT, 0, kTDC, 12 ),
+    //HistMaker::getUniqueID( kBFT, 0, kADC, 11 ),
+    //HistMaker::getUniqueID( kBFT, 0, kADC, 12 ),
   };
   std::vector<Int_t> hid_c2 = {
     HistMaker::getUniqueID( kBFT, 0, kHitPat, 1 ),
     HistMaker::getUniqueID( kBFT, 0, kHitPat, 2 ),
     HistMaker::getUniqueID( kBFT, 0, kMulti, 1 ),
-    HistMaker::getUniqueID( kBFT, 0, kHitPat, 11 ),
-    HistMaker::getUniqueID( kBFT, 0, kHitPat, 12 ),
-    HistMaker::getUniqueID( kBFT, 0, kMulti, 11 ),
+    //HistMaker::getUniqueID( kBFT, 0, kHitPat, 11 ),
+    //HistMaker::getUniqueID( kBFT, 0, kHitPat, 12 ),
+    //HistMaker::getUniqueID( kBFT, 0, kMulti, 11 ),
   };
 
   std::vector<Int_t> hid_c3 = {
@@ -43,7 +43,7 @@ dispBFT( void )
   {
     auto c = dynamic_cast<TCanvas*>( gROOT->FindObject("c1") );
     c->Clear();
-    c->Divide( 4, 2 );
+    c->Divide( 2, 2 );
     for( Int_t i=0, n=hid_c1.size(); i<n; ++i ){
       c->cd( i+1 ); //->SetGrid(2,2);
       auto h = GHist::get( hid_c1[i] );
@@ -65,7 +65,7 @@ dispBFT( void )
   {
     auto c = dynamic_cast<TCanvas*>( gROOT->FindObject("c2") );
     c->Clear();
-    c->Divide( 3, 2 );
+    c->Divide( 2, 2 );
     for( Int_t i=0, n=hid_c2.size(); i<n; ++i ){
       c->cd( i+1 ); //->SetGrid();
       auto h = GHist::get( hid_c2[i] );

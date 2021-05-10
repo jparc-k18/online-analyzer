@@ -7,8 +7,8 @@ import sys
 import time
 import ROOT
 
-spill_length = 48406790
-error_length = 100
+spill_length = 22406920
+error_length = 1000
 
 #scaler_dir = os.path.abspath('/data3/E42SubData/scaler_2021may')
 scaler_dir = os.path.abspath('/misc/scaler_e42_2021may')
@@ -45,7 +45,7 @@ channel_map = {
   'BAC': [0, 18],
   'HTOF': [0, 19],
   'SCH': [0, 26],
-  'BH1xBH2': [0, 38],
+  'Beam': [0, 38],
   'K-Beam': [0, 35],
   'Pi-Beam': [0, 40],
   'TM': [0, 9],
@@ -169,10 +169,12 @@ class ScalerAnalyzer():
     self.prev_runno = 0
     self.prev_evno = 0
     self.scaler = dict()
+    self.scaler_prev = dict()
     self.scaler_runsum = dict()
     self.scaler_tmp = dict()
     for k, v in channel_map.items():
       self.scaler[k] = 0
+      self.scaler_prev[k] = 0
       self.scaler_runsum[k] = 0
       self.scaler_tmp[k] = 0
     self.footer = self.calculate_footer(self.scaler)
@@ -201,7 +203,7 @@ class ScalerAnalyzer():
     self.legend_beam.SetTextSize(0.05)
     self.legend_beam.SetFillColor(0)
     self.legend_beam.SetBorderSize(4)
-    for i, l in enumerate(['K-Beam', '#pi-Beam', 'BH1xBH2']):
+    for i, l in enumerate(['K-Beam', '#pi-Beam', 'Beam']):
       self.plot_beam.append([0 for i in range(self.nplot)])
       g = ROOT.TGraph()
       g.SetName(l)
@@ -256,10 +258,10 @@ class ScalerAnalyzer():
     self.legend_daq.Draw()
 
   #____________________________________________________________________________
-  def add_runsum(self):
+  def add_runsum(self, scaler):
     for k, v in channel_map.items():
-      self.scaler_runsum[k] += self.scaler[k]
-    self.scaler_runsum['Spill'] = self.scaler['Spill']
+      self.scaler_runsum[k] += scaler[k]
+    self.scaler_runsum['Spill'] = scaler['Spill']
     self.footer_runsum = self.calculate_footer(self.scaler_runsum)
 
   #____________________________________________________________________________
@@ -272,8 +274,8 @@ class ScalerAnalyzer():
  #____________________________________________________________________________
   def calculate_footer(self, scaler_dict):
     ret = dict()
-    ret['BH2/TM'] = (
-      scaler_dict['BH2']/scaler_dict['TM'] if scaler_dict['TM'] > 0
+    ret['Beam/TM'] = (
+      scaler_dict['Beam']/scaler_dict['TM'] if scaler_dict['TM'] > 0
       else ROOT.TMath.QuietNaN())
     ret['Live/Real'] = (
       scaler_dict['Live-Time']/scaler_dict['Real-Time']
@@ -283,9 +285,9 @@ class ScalerAnalyzer():
       scaler_dict['L1-Acc']/scaler_dict['L1-Req']
       if scaler_dict['L1-Req'] > 0
       else ROOT.TMath.QuietNaN())
-    ret['L1Req/BH2'] = (
-      scaler_dict['L1-Req']/scaler_dict['BH2']
-      if scaler_dict['BH2'] > 0
+    ret['L1Req/Beam'] = (
+      scaler_dict['L1-Req']/scaler_dict['Beam']
+      if scaler_dict['Beam'] > 0
       else ROOT.TMath.QuietNaN())
     ret['L2-Eff'] = (
       scaler_dict['L2-Acc']/scaler_dict['L1-Acc']
@@ -352,7 +354,7 @@ class ScalerAnalyzer():
                            '#color[' + f'{ROOT.kRed+1}' + ']{Run#}',
                            separate_comma(self.runno)])
     self.draw_one_line(2, ['Spill', 'TM', '10M-Clock'])
-    self.draw_one_line(3, ['BH1xBH2', 'SY', 'BH1-1/100-PS'])
+    self.draw_one_line(3, ['Beam', 'SY', 'BH1-1/100-PS'])
     self.draw_one_line(4, ['K-Beam', 'BH1-SUM', 'BH1-1/1e5-PS'])
     self.draw_one_line(5, ['Pi-Beam', 'BH2-SUM', 'TOF-24'])
     self.draw_one_line(6, ['BH1', 'TRIG-A-PS', 'L1-Req'])
@@ -364,9 +366,9 @@ class ScalerAnalyzer():
     self.draw_one_line(12, ['BVH', 'Mtx2D-1', 'HTOF-Mp3'])
     self.draw_one_line(13, ['LAC', 'Mtx2D-2', 'HTOF-Mp4'])
     self.draw_one_line(14, ['WC', 'Mtx3D', 'HTOF-Mp5'])
-    self.draw_one_line(15, ['BH2/TM', 'Live/Real', 'DAQ-Eff'],
+    self.draw_one_line(15, ['Beam/TM', 'Live/Real', 'DAQ-Eff'],
                        footer=True)
-    self.draw_one_line(16, ['L1Req/BH2', 'L2-Eff', 'Duty-Factor'],
+    self.draw_one_line(16, ['L1Req/Beam', 'L2-Eff', 'Duty-Factor'],
                        footer=True)
     output_path = os.path.join(output_dir, file_name)
     c1.Print(output_path)
@@ -468,9 +470,9 @@ class ScalerAnalyzer():
     content += '<td width="100"> : </td><td align="right" width="100"></td>'
     content += '</tr>'
     content += '<tr>'
-    content += ('<td width="100">BH2/TM</td>' +
+    content += ('<td width="100">Beam/TM</td>' +
                 '<td align="right" width="100">' +
-                f'{footer_dict["BH2/TM"]:.6f}</td>')
+                f'{footer_dict["Beam/TM"]:.6f}</td>')
     content += ('<td width="100"> : Live/Real</td>' +
                 '<td align="right" width="100">' +
                 f'{footer_dict["Live/Real"]:.6f}</td>')
@@ -479,9 +481,9 @@ class ScalerAnalyzer():
                 f'{footer_dict["DAQ-Eff"]:.6f}</td>')
     content += '</tr>'
     content += '<tr>'
-    content += ('<td width="100">L1Req/BH2</td>' +
+    content += ('<td width="100">L1Req/Beam</td>' +
                 '<td align="right" width="100">' +
-                f'{footer_dict["L1Req/BH2"]:.6f}</td>')
+                f'{footer_dict["L1Req/Beam"]:.6f}</td>')
     content += ('<td width="100"> : L2-Eff</td>' +
                 '<td align="right" width="100">' +
                 f'{footer_dict["L2-Eff"]:.6f}</td>')
@@ -501,7 +503,7 @@ class ScalerAnalyzer():
     self.legend_beam.SetHeader(f'K/#pi Ratio : {kpi:5.3f}')
     values = [self.scaler['K-Beam'],
               self.scaler['Pi-Beam'],
-              self.scaler['BH1xBH2']]
+              self.scaler['Beam']]
     self.plot_unixtime.pop(0)
     self.plot_unixtime.append(self.now.GetSec())
     max_count = 1
@@ -561,13 +563,13 @@ class ScalerAnalyzer():
     for i in range(8):
       self.scaler['BH2-SUM'] += self.scaler[f'BH2-{i+1:02d}']
     self.runno = max(self.runnos[0], self.runnos[1])
-    self.evno = max(self.evnos[0], self.evnos[1])
+    self.evno = max(self.evnos[0], self.evnos[1]) + 1
     if self.evno == self.prev_evno:
       self.spill_end = False
       self.ignore = True
       return
     if self.runno != self.prev_runno and self.prev_runno != 0:
-      self.add_runsum()
+      self.add_runsum(self.scaler_prev)
       self.make_summary(f'scaler_{self.prev_runno:05d}.txt',
                         self.scaler_runsum,
                         self.footer_runsum)
@@ -580,12 +582,13 @@ class ScalerAnalyzer():
       abs(self.scaler['10M-Clock'] - spill_length) < error_length)
     if self.spill_end:
       self.scaler['Spill'] += 1
-      self.add_runsum()
+      self.add_runsum(self.scaler)
     self.footer = self.calculate_footer(self.scaler)
     if self.auto_print_mode and self.scaler['Spill'] == 2:
       ROOT.gSystem.Setenv('SCALER_PRINT', '1')
     self.prev_runno = self.runno
     self.prev_evno = self.evno
+    self.scaler_prev = self.scaler
     self.ignore = False
 
   #____________________________________________________________________________

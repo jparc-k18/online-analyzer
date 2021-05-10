@@ -15,7 +15,6 @@ ana_dir=$(dirname $(readlink -f $0))/..
 bin_dir=$ana_dir/bin
 
 ##### execute file
-#exe_file=$bin_dir/beammonitor
 exe_file=$bin_dir/ktune_y2020
 
 ##### data directory

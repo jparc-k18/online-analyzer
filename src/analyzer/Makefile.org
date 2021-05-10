@@ -177,6 +177,11 @@ my_tgt_hbj_ana	:= $(bin_dir)/hbj_ana
 my_obj_pwo	:= $(core_obj) user_pwo.o
 my_tgt_pwo	:= $(bin_dir)/pwo_hist
 
+my_obj_ktune_y2020      := $(core_obj) user_ktune_y2020.o $(gui_obj)
+my_tgt_ktune_y2020      := $(bin_dir)/ktune_y2020
+
+
+
 #_______________________________________________________________________________
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_event_display) \
@@ -194,6 +199,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_jsroot_beammonitor) \
 	$(my_tgt_jsroot_totmonitor) \
 	$(my_tgt_vme01debug) \
+	$(my_tgt_ktune_y2020) \
 	$(core_dict_lib)
 #	$(my_old_tgt)
 
@@ -547,3 +553,12 @@ my_obj_pwo	:= $(my_obj_pwo)
 my_lib_pwo	:= libmypwo.so
 $(eval $(call make-lib,$(my_lib_pwo),$(my_obj_pwo)))
 $(eval $(call make-gui-target,$(my_tgt_pwo),$(my_lib_pwo)))
+
+
+#_______________________________________________________________________________
+my_obj_ktune_y2020      := $(addprefix $(my_dir)/src/,$(my_obj_ktune_y2020))
+my_obj_ktune_y2020      := $(my_obj_ktune_y2020) \
+		        $(my_dir)/dict/GuiPs_Dict.o
+my_lib_ktune_y2020      := libmyktune_y2020.so
+$(eval $(call make-lib,$(my_lib_ktune_y2020),$(my_obj_ktune_y2020)))
+$(eval $(call make-gui-target,$(my_tgt_ktune_y2020),$(my_lib_ktune_y2020)))

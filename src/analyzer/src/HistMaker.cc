@@ -5177,140 +5177,151 @@ TList* HistMaker::createMsT_T0( Bool_t flag_ps )
   return top_dir;
 }
 
-// -------------------------------------------------------------------------
-// createMtx3D
-// -------------------------------------------------------------------------
-TList* HistMaker::createMtx3D( Bool_t flag_ps )
+//_____________________________________________________________________________
+TList*
+HistMaker::createMatrix(Bool_t flag_ps)
 {
-  // Determine the detector name
   TString strDet = CONV_STRING(kMtx3D);
-  // name list of crearted detector
   name_created_detectors_.push_back(strDet);
   if(flag_ps){
-    // name list which are displayed in Ps tab
     name_ps_files_.push_back(strDet);
   }
 
-  // Declaration of the directory
-  // Just type conversion from TString to char*
   const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  // TDC TOF ---------------------------------------------------------------
-  {
-    TList *sub_dir = new TList;
-    sub_dir->SetName("Mtx_TOF_TDC");
-    Int_t target_id = getUniqueID(kMtx3D, kHulTOF, kTDC, 0);
-    for(Int_t seg=0; seg<NumOfSegTOF; ++seg){
-      sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d", nameDetector, seg+1),
-			     0xff, 0, 0xff,
-			     "TDC [5ns/bin]", ""));
-    }
-    top_dir->Add(sub_dir);
-  }
-
-  // TDC FBH ---------------------------------------------------------------
-  {
-    TList *sub_dir = new TList;
-    sub_dir->SetName("Mtx_FBH_TDC");
-    Int_t target_id = getUniqueID(kMtx3D, kHulFBH, kTDC, 0);
-    for(Int_t seg=0; seg<NumOfSegClusteredFBH; ++seg){
-      sub_dir->Add(createTH1(++target_id, Form("%s_FBH_TDC_%d", nameDetector, seg+1),
-			     0xff, 0, 0xff,
-			     "TDC [5ns/bin]", ""));
-    }
-    top_dir->Add(sub_dir);
-  }
-
-  // TDC SCH ---------------------------------------------------------------
-  {
-    TList *sub_dir = new TList;
-    sub_dir->SetName("Mtx_SCH_TDC");
-    Int_t target_id = getUniqueID(kMtx3D, kHulSCH, kTDC, 0);
-    for(Int_t seg=0; seg<NumOfSegSCH; ++seg){
-      sub_dir->Add(createTH1(++target_id, Form("%s_SCH_TDC_%d", nameDetector, seg+1),
-			     0xff, 0, 0xff,
-			     "TDC [5ns/bin]", ""));
-    }
-    top_dir->Add(sub_dir);
-  }
-
-  // Hit parttern 2D (TOFxFBH) --------------------------------------------
-  {
-    Int_t target_id = getUniqueID(kMtx3D, kHulTOFxFBH, kHitPat2D, 0);
-    top_dir->Add(createTH2(++target_id, "Mtx_TOFxFBH", // 1 origin
-			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,
-			   NumOfSegTOF,          0, NumOfSegTOF,
-			   "Clustered FBH seg", "TOF seg"));
-    GHist::get(target_id)->SetMarkerSize(6);
-  }
-
-  // Hit parttern 2D (TOFxSCH) --------------------------------------------
-  {
-    Int_t target_id = getUniqueID(kMtx3D, kHulTOFxSCH, kHitPat2D, 0);
-    top_dir->Add(createTH2(++target_id, "Mtx_TOFxSCH", // 1 origin
+  ///// Mtx2D
+  Int_t mtx2d_id = getUniqueID(kMisc, kHul2D, kHitPat2D);
+  for(Int_t i=0; i<2; ++i){
+    top_dir->Add(createTH2(mtx2d_id + i, Form("Mtx2D pattern #%d", i+1),
 			   NumOfSegSCH, 0, NumOfSegSCH,
 			   NumOfSegTOF, 0, NumOfSegTOF,
 			   "SCH seg", "TOF seg"));
-    GHist::get(target_id)->SetMarkerSize(6);
   }
-
-  // Hit parttern 2D (FBHxSCH) --------------------------------------------
-  {
-    Int_t target_id = getUniqueID(kMtx3D, kHulFBHxSCH, kHitPat2D, 0);
-    top_dir->Add(createTH2(++target_id, "Mtx_FBHxSCH", // 1 origin
-			   NumOfSegSCH,          0, NumOfSegSCH,
-			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,
-			   "SCH seg","Clustered FBH seg"));
-    GHist::get(target_id)->SetMarkerSize(6);
-  }
-
-  // Hit parttern 2D (TOFxSCH FBH required) ----------------------------
-  {
-    TList *sub_dir = new TList;
-    sub_dir->SetName("Mtx2D_TOF_FBH");
-    Int_t target_id = getUniqueID(kMtx3D, kHul2DHitPat, kHitPat2D, 0);
-    sub_dir->Add(createTH2(++target_id, "Mtx2D_TOFxSCH", // 1 origin
+  ///// Mtx3D
+  Int_t mtx3d_id = getUniqueID(kMisc, kHul3D, kHitPat2D);
+  for(Int_t i=0; i<NumOfSegBH2; ++i){
+    top_dir->Add(createTH2(mtx3d_id+i, Form("Mtx3D pattern BH2-%d", i),
 			   NumOfSegSCH, 0, NumOfSegSCH,
-			   NumOfSegTOF, 0, NumOfSegTOF,
+			   NumOfSegTOF+NumOfSegBVH, 0, NumOfSegTOF+NumOfSegBVH,
 			   "SCH seg", "TOF seg"));
-    GHist::get(target_id)->SetMarkerSize(6);
-    top_dir->Add(sub_dir);
   }
 
-  // Hit parttern 3D (TOFxSCH FBH required) ----------------------------
-  {
-    TList *sub_dir = new TList;
-    sub_dir->SetName("Mtx3D_TOF_FBH");
-    Int_t target_id = getUniqueID(kMtx3D, kHul3DHitPat, kHitPat2D, 0);
-    for(Int_t i = 0; i<NumOfSegClusteredFBH; ++i){
-      sub_dir->Add(createTH2(++target_id, Form("Mtx3D_TOFxSCH_FBH%d",i), // 1 origin
-			     NumOfSegSCH, 0, NumOfSegSCH,
-			     NumOfSegTOF, 0, NumOfSegTOF,
-			     "SCH seg", "TOF seg"));
-      GHist::get(target_id)->SetMarkerSize(6);
-    }// for(i)
-    top_dir->Add(sub_dir);
-  }
+  // // TDC TOF ---------------------------------------------------------------
+  // {
+  //   TList *sub_dir = new TList;
+  //   sub_dir->SetName("Mtx_TOF_TDC");
+  //   Int_t target_id = getUniqueID(kMtx3D, kHulTOF, kTDC, 0);
+  //   for(Int_t seg=0; seg<NumOfSegTOF; ++seg){
+  //     sub_dir->Add(createTH1(++target_id, Form("%s_TOF_TDC_%d", nameDetector, seg+1),
+  // 			     0xff, 0, 0xff,
+  // 			     "TDC [5ns/bin]", ""));
+  //   }
+  //   top_dir->Add(sub_dir);
+  // }
 
-  // Hit parttern 2D (Flag) --------------------------------------------
-  {
-    Int_t target_id = getUniqueID(kMtx3D, kHul2D, kHitPat2D, 0);
-    top_dir->Add(createTH2(++target_id, "Mtx_2D_FLAG", // 1 origin
-			   3, 0., 3., 3, 0., 3.,
-			   "Trigger Flag", "HUL Accept"));
-    GHist::get(target_id)->SetMarkerSize(6);
-  }
+  // // TDC FBH ---------------------------------------------------------------
+  // {
+  //   TList *sub_dir = new TList;
+  //   sub_dir->SetName("Mtx_FBH_TDC");
+  //   Int_t target_id = getUniqueID(kMtx3D, kHulFBH, kTDC, 0);
+  //   for(Int_t seg=0; seg<NumOfSegClusteredFBH; ++seg){
+  //     sub_dir->Add(createTH1(++target_id, Form("%s_FBH_TDC_%d", nameDetector, seg+1),
+  // 			     0xff, 0, 0xff,
+  // 			     "TDC [5ns/bin]", ""));
+  //   }
+  //   top_dir->Add(sub_dir);
+  // }
 
-  // Hit parttern 3D (Flag) --------------------------------------------
-  {
-    Int_t target_id = getUniqueID(kMtx3D, kHul3D, kHitPat2D, 0);
-    top_dir->Add(createTH2(++target_id, "Mtx_3D_FLAG", // 1 origin
-			   3, 0., 3., 3, 0., 3.,
-			   "Trigger Flag", "HUL Accept"));
-    GHist::get(target_id)->SetMarkerSize(6);
-  }
+  // // TDC SCH ---------------------------------------------------------------
+  // {
+  //   TList *sub_dir = new TList;
+  //   sub_dir->SetName("Mtx_SCH_TDC");
+  //   Int_t target_id = getUniqueID(kMtx3D, kHulSCH, kTDC, 0);
+  //   for(Int_t seg=0; seg<NumOfSegSCH; ++seg){
+  //     sub_dir->Add(createTH1(++target_id, Form("%s_SCH_TDC_%d", nameDetector, seg+1),
+  // 			     0xff, 0, 0xff,
+  // 			     "TDC [5ns/bin]", ""));
+  //   }
+  //   top_dir->Add(sub_dir);
+  // }
+
+  // // Hit parttern 2D (TOFxFBH) --------------------------------------------
+  // {
+  //   Int_t target_id = getUniqueID(kMtx3D, kHulTOFxFBH, kHitPat2D, 0);
+  //   top_dir->Add(createTH2(++target_id, "Mtx_TOFxFBH", // 1 origin
+  // 			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,
+  // 			   NumOfSegTOF,          0, NumOfSegTOF,
+  // 			   "Clustered FBH seg", "TOF seg"));
+  //   GHist::get(target_id)->SetMarkerSize(6);
+  // }
+
+  // // Hit parttern 2D (TOFxSCH) --------------------------------------------
+  // {
+  //   Int_t target_id = getUniqueID(kMtx3D, kHulTOFxSCH, kHitPat2D, 0);
+  //   top_dir->Add(createTH2(++target_id, "Mtx_TOFxSCH", // 1 origin
+  // 			   NumOfSegSCH, 0, NumOfSegSCH,
+  // 			   NumOfSegTOF, 0, NumOfSegTOF,
+  // 			   "SCH seg", "TOF seg"));
+  //   GHist::get(target_id)->SetMarkerSize(6);
+  // }
+
+  // // Hit parttern 2D (FBHxSCH) --------------------------------------------
+  // {
+  //   Int_t target_id = getUniqueID(kMtx3D, kHulFBHxSCH, kHitPat2D, 0);
+  //   top_dir->Add(createTH2(++target_id, "Mtx_FBHxSCH", // 1 origin
+  // 			   NumOfSegSCH,          0, NumOfSegSCH,
+  // 			   NumOfSegClusteredFBH, 0, NumOfSegClusteredFBH,
+  // 			   "SCH seg","Clustered FBH seg"));
+  //   GHist::get(target_id)->SetMarkerSize(6);
+  // }
+
+  // // Hit parttern 2D (TOFxSCH FBH required) ----------------------------
+  // {
+  //   TList *sub_dir = new TList;
+  //   sub_dir->SetName("Mtx2D_TOF_FBH");
+  //   Int_t target_id = getUniqueID(kMtx3D, kHul2DHitPat, kHitPat2D, 0);
+  //   sub_dir->Add(createTH2(++target_id, "Mtx2D_TOFxSCH", // 1 origin
+  // 			   NumOfSegSCH, 0, NumOfSegSCH,
+  // 			   NumOfSegTOF, 0, NumOfSegTOF,
+  // 			   "SCH seg", "TOF seg"));
+  //   GHist::get(target_id)->SetMarkerSize(6);
+  //   top_dir->Add(sub_dir);
+  // }
+
+  // // Hit parttern 3D (TOFxSCH FBH required) ----------------------------
+  // {
+  //   TList *sub_dir = new TList;
+  //   sub_dir->SetName("Mtx3D_TOF_FBH");
+  //   Int_t target_id = getUniqueID(kMtx3D, kHul3DHitPat, kHitPat2D, 0);
+  //   for(Int_t i = 0; i<NumOfSegClusteredFBH; ++i){
+  //     sub_dir->Add(createTH2(++target_id, Form("Mtx3D_TOFxSCH_FBH%d",i), // 1 origin
+  // 			     NumOfSegSCH, 0, NumOfSegSCH,
+  // 			     NumOfSegTOF, 0, NumOfSegTOF,
+  // 			     "SCH seg", "TOF seg"));
+  //     GHist::get(target_id)->SetMarkerSize(6);
+  //   }// for(i)
+  //   top_dir->Add(sub_dir);
+  // }
+
+  // // Hit parttern 2D (Flag) --------------------------------------------
+  // {
+  //   Int_t target_id = getUniqueID(kMtx3D, kHul2D, kHitPat2D, 0);
+  //   top_dir->Add(createTH2(++target_id, "Mtx_2D_FLAG", // 1 origin
+  // 			   3, 0., 3., 3, 0., 3.,
+  // 			   "Trigger Flag", "HUL Accept"));
+  //   GHist::get(target_id)->SetMarkerSize(6);
+  // }
+
+  // // Hit parttern 3D (Flag) --------------------------------------------
+  // {
+  //   Int_t target_id = getUniqueID(kMtx3D, kHul3D, kHitPat2D, 0);
+  //   top_dir->Add(createTH2(++target_id, "Mtx_3D_FLAG", // 1 origin
+  // 			   3, 0., 3., 3, 0., 3.,
+  // 			   "Trigger Flag", "HUL Accept"));
+  //   GHist::get(target_id)->SetMarkerSize(6);
+  // }
 
   return top_dir;
 }
@@ -5589,7 +5600,7 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
     // SCH vs TOF -----------------------------------------------
     top_dir->Add( createTH2( ++target_id, "SCH_TOF", // 1 origin
                              NumOfSegSCH, 0, NumOfSegSCH,
-                             NumOfSegTOF, 0, NumOfSegTOF,
+                             NumOfSegTOF+NumOfSegBVH, 0, NumOfSegTOF+NumOfSegBVH,
                              "SCH seg", "TOF seg" ) );
 
     // BC4 vs BC3 ----------------------------------------------
@@ -5650,7 +5661,7 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
     for( Int_t i=0; i<NumOfSegBH2; ++i ){
       top_dir->Add(createTH2( ++target_id, Form( "SCH_TOF_Mtx3D_BH2-%d", i+1 ),
                               NumOfSegSCH, 0, NumOfSegSCH,
-                              NumOfSegTOF, 0, NumOfSegTOF,
+                              NumOfSegTOF+NumOfSegBVH, 0, NumOfSegTOF+NumOfSegBVH,
                               "SCH seg", "TOF seg" ) );
     }
   }

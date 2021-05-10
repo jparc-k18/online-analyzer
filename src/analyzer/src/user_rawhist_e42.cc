@@ -71,9 +71,9 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.InitializeParameter<DCGeomMan>("DCGEO");
   gConfMan.InitializeParameter<DCTdcCalibMan>("DCTDC");
   gConfMan.InitializeParameter<DCDriftParamMan>("DCDRFT");
-  gConfMan.InitializeParameter<MatrixParamMan>( "MATRIX2D1",
-                                                "MATRIX2D2",
-                                                "MATRIX3D" );
+  gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D1",
+					       "MATRIX2D2",
+					       "MATRIX3D");
   gConfMan.InitializeParameter<TpcPadHelper>("TPCPAD");
   gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
@@ -159,29 +159,12 @@ process_begin( const std::vector<std::string>& argv )
 
   //misc tab
   tab_misc->Add(gHist.createBTOF());
-  tab_misc->Add(macro::Get("dispTPC"));
+  // tab_misc->Add(macro::Get("dispTPC"));
   //___ Matrix ___
   // gMatrix.Print2D1();
   // gMatrix.Print2D2();
   // gMatrix.Print3D();
-  { // Mtx2D
-    Int_t mtx2d_id = gHist.getUniqueID( kMisc, kHul2D, kHitPat2D );
-    for( Int_t i=0; i<2; ++i ){
-      gHist.createTH2( mtx2d_id + i, Form( "Mtx2D pattern #%d", i+1 ),
-                       NumOfSegSCH, 0, NumOfSegSCH,
-                       NumOfSegTOF, 0, NumOfSegTOF,
-                       "SCH seg", "TOF seg" );
-    }
-  }
-  { // Mtx3D
-    Int_t mtx3d_id = gHist.getUniqueID( kMisc, kHul3D, kHitPat2D );
-    for( Int_t i=0; i<NumOfSegBH2; ++i ){
-      gHist.createTH2( mtx3d_id+i, Form( "Mtx3D pattern BH2-%d", i ),
-                       NumOfSegSCH, 0, NumOfSegSCH,
-                       NumOfSegTOF, 0, NumOfSegTOF,
-                       "SCH seg", "TOF seg" );
-    }
-  }
+  tab_misc->Add(gHist.createMatrix());
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -1520,26 +1503,28 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+  std::vector<Int_t> hitseg_bvh;
   { ///// BVH
-    static const Int_t k_device = gUnpacker.get_device_id("BVH");
-    static const Int_t k_tdc    = gUnpacker.get_data_id("BVH", "tdc");
-    static const Int_t tdc_hid = gHist.getSequentialID(kBVH, 0, kTDC);
-    static const Int_t hit_hid = gHist.getSequentialID(kBVH, 0, kHitPat);
-    static const Int_t mul_hid = gHist.getSequentialID(kBVH, 0, kMulti);
+    static const auto device_id = gUnpacker.get_device_id("BVH");
+    static const auto tdc_id    = gUnpacker.get_data_id("BVH", "tdc");
+    static const auto tdc_hid = gHist.getSequentialID(kBVH, 0, kTDC);
+    static const auto hit_hid = gHist.getSequentialID(kBVH, 0, kHitPat);
+    static const auto mul_hid = gHist.getSequentialID(kBVH, 0, kMulti);
     static const auto tdc_min = gUser.GetParameter("BVH_TDC", 0);
     static const auto tdc_max = gUser.GetParameter("BVH_TDC", 1);
     Int_t multiplicity = 0;
     for(Int_t seg=0; seg<NumOfSegBVH; ++seg){
       Bool_t is_in_gate = false;
-      for(Int_t m=0, n=gUnpacker.get_entries(k_device, 0, seg, kU, k_tdc);
+      for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, seg, kU, tdc_id);
 	  m<n; ++m){
-	auto tdc = gUnpacker.get(k_device, 0, seg, kU, k_tdc, m);
+	auto tdc = gUnpacker.get(device_id, 0, seg, kU, tdc_id, m);
 	hptr_array[tdc_hid + seg]->Fill(tdc);
 	if(tdc_min < tdc && tdc < tdc_max) is_in_gate = true;
       }
       if(is_in_gate){
 	hptr_array[hit_hid]->Fill(seg);
 	++multiplicity;
+	hitseg_bvh.push_back(seg);
       }
     }
     hptr_array[mul_hid]->Fill(multiplicity);
@@ -1779,7 +1764,9 @@ process_event( void )
     static const Int_t k_device_sdc4 = gUnpacker.get_device_id("SDC4");
 
     // sequential id
-    Int_t cor_id= gHist.getSequentialID(kCorrelation, 0, 0, 1);
+    Int_t cor_id = gHist.getSequentialID(kCorrelation, 0, 0, 1);
+    Int_t mtx2d_id = gHist.getSequentialID(kCorrelation, 1, 0, 1);
+    Int_t mtx3d_id = gHist.getSequentialID(kCorrelation, 2, 0, 1);
 
     // BH1 vs BFT
     TH2* hcor_bh1bft = dynamic_cast<TH2*>(hptr_array[cor_id++]);
@@ -1810,11 +1797,33 @@ process_event( void )
       }
     }
 
-    // TOF vs SCH
+    // TOF,BVH vs SCH
     auto hcor_tofsch = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+    auto hmtx2d1 = dynamic_cast<TH2*>(hptr_array[mtx2d_id]);
+    // auto hmtx2d2 = dynamic_cast<TH2*>(hptr_array[mtx2d_id+1]);
     for(const auto& seg_sch: hitseg_sch){
+      // TOF
       for(const auto& seg_tof: hitseg_tof){
 	hcor_tofsch->Fill(seg_sch, seg_tof);
+	if(trigger_flag[trigger::kTrigAPS]){
+	  hmtx2d1->Fill(seg_sch, seg_tof);
+	  for(const auto& seg_bh2: hitseg_bh2){
+	    auto hmtx3d = dynamic_cast<TH2*>(hptr_array[mtx3d_id+seg_bh2]);
+	    hmtx3d->Fill(seg_sch, seg_tof);
+	  }
+	}
+      }
+      // BVH
+      for(const auto& seg_bvh: hitseg_bvh){
+	Int_t seg_tof = seg_bvh + NumOfSegTOF;
+	hcor_tofsch->Fill(seg_sch, seg_tof);
+	if(trigger_flag[trigger::kTrigAPS]){
+	  hmtx2d1->Fill(seg_sch, seg_tof);
+	  for(const auto& seg_bh2: hitseg_bh2){
+	    auto hmtx3d = dynamic_cast<TH2*>(hptr_array[mtx3d_id+seg_bh2]);
+	    hmtx3d->Fill(seg_sch, seg_tof);
+	  }
+	}
       }
     }
 

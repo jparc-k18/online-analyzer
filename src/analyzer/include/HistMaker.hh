@@ -176,7 +176,7 @@ public:
   TList* createLAC( Bool_t flag_ps=true );
   TList* createMsT( Bool_t flag_ps=true );
   TList* createMsT_T0( Bool_t flag_ps=true );
-  TList* createMtx3D( Bool_t flag_ps=false );
+  TList* createMatrix( Bool_t flag_ps=false );
   TList* createHTOF( Bool_t flag_ps=true );
   TList* createTPC( Bool_t flag_ps=true );
   TList* createBVH( Bool_t flag_ps=true );

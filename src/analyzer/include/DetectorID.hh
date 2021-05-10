@@ -201,7 +201,7 @@ namespace trigger
     kClockPS,
     kReserve2PS,
     kLevel1OR,
-    kEssDischarge,
+    kTpcDischarge,
     NTriggerFlag
   };
 
@@ -238,7 +238,7 @@ namespace trigger
      "Clock-PS",
      "Reserve2-PS",
      "Level1OR",
-     "EssDischarge",
+     "TpcDischarge",
     };
 }
 const Int_t NumOfSegTFlag = trigger::NTriggerFlag;

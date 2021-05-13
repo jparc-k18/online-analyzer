@@ -1032,6 +1032,27 @@ TPC( void )
 
 //_____________________________________________________________________________
 TCanvas*
+TPC2D( void )
+{
+  std::vector<Int_t> id = {
+    HistMaker::getUniqueID( kTPC, 0, kADC2D, 3 ),
+    HistMaker::getUniqueID( kTPC, 0, kADC2D, 4 ),
+    HistMaker::getUniqueID( kTPC, 0, kFADC ),
+    HistMaker::getUniqueID( kTPC, 2, kTDC )
+  };
+
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 2, 2 );
+  for( Int_t i=0, n=id.size(); i<n; ++i ){
+    c1->cd( i+1 );
+    auto h = GHist::get( id[i] );
+    if( h ) h->Draw( "colz" );
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
 TPCADCPAD( void )
 {
   auto id = HistMaker::getUniqueID( kTPC, 0, kADC2D );

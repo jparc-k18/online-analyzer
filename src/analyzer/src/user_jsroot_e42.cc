@@ -183,6 +183,7 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::WCTDCSUM());
   gHttp.Register(http::ScatHitMulti());
   gHttp.Register(http::TPC());
+  gHttp.Register(http::TPC2D());
   gHttp.Register(http::TPCADCPAD());
   gHttp.Register(http::TPCTDCPAD());
   gHttp.Register(http::TPCFADC());

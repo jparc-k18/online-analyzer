@@ -2126,7 +2126,7 @@ process_event( void )
 	  hptr_array[tpca2d_id+3]->Fill( pad_z, pad_x );
 	  if( max_adc - mean > 0 ){
 	    ++n_active_pad;
-	    if( max_tb >= 60 && max_tb < 100 
+	    if( max_tb >= 60 && max_tb < 100
    		&& pad_z >= -153-40 && pad_z <= -153 ){
 		    hptr_array[tpcbp_id]->Fill( pad_x );
 	    }
@@ -2186,6 +2186,18 @@ process_event( void )
     // http::UpdateT0PeakFitting();
     http::UpdateTOTPeakFitting();
     gErrorIgnoreLevel = prev_level;
+  }
+
+  if(!gUnpacker.is_good()){
+    static const TString host(gSystem->Getenv("HOSTNAME"));
+    static auto prev_time = std::time(0);
+    auto        curr_time = std::time(0);
+    if(host.Contains("k18term4") &&
+       event_number > 1 && curr_time - prev_time > 5){
+      cout << "exec tagslip sound!" << std::endl;
+      gSystem->Exec("ssh axis@eb0 \"aplay ~/sound/tagslip.wav\" &");
+    }
+    prev_time = curr_time;
   }
 
   return 0;

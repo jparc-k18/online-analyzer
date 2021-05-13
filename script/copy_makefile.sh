@@ -12,9 +12,9 @@ function copy()
     fi
 
     if [ -f $2 ]; then
-	diff $1 $2
+	diff $1 $2 || cp -iv $1 $2
     else
-	cp -i $1 $2
+	cp -iv $1 $2
     fi
 }
 

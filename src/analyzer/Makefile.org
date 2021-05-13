@@ -75,6 +75,9 @@ my_tgt_rawhist_e03	:= $(bin_dir)/raw_hist_e03
 my_obj_rawhist_e42	:= $(core_obj) user_rawhist_e42.o $(gui_obj)
 my_tgt_rawhist_e42	:= $(bin_dir)/raw_hist_e42
 
+my_obj_rawhist_e42_woTPC	:= $(core_obj) user_rawhist_e42_woTPC.o $(gui_obj)
+my_tgt_rawhist_e42_woTPC	:= $(bin_dir)/raw_hist_e42_woTPC
+
 my_obj_rawhist_hbx	:= $(core_obj) user_rawhist_hbx.o $(gui_obj)
 my_tgt_rawhist_hbx	:= $(bin_dir)/raw_hist_hbx
 
@@ -186,6 +189,7 @@ my_tgt_ktune_y2020      := $(bin_dir)/ktune_y2020
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_event_display) \
 	$(my_tgt_rawhist_e42) \
+	$(my_tgt_rawhist_e42_woTPC) \
 	$(my_tgt_rawhist_hbx) \
 	$(my_tgt_rawhist_vmeeasiroc) \
 	$(my_tgt_beammonitor) \
@@ -324,6 +328,14 @@ my_obj_rawhist_e42	:= $(my_obj_rawhist_e42) \
 my_lib_rawhist_e42	:= libmyrawhist_e42.so
 $(eval $(call make-lib,$(my_lib_rawhist_e42),$(my_obj_rawhist_e42)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e42),$(my_lib_rawhist_e42)))
+
+#_______________________________________________________________________________
+my_obj_rawhist_e42_woTPC	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e42_woTPC))
+my_obj_rawhist_e42_woTPC	:= $(my_obj_rawhist_e42_woTPC) \
+		$(my_dir)/dict/GuiPs_Dict.o
+my_lib_rawhist_e42_woTPC	:= libmyrawhist_e42_woTPC.so
+$(eval $(call make-lib,$(my_lib_rawhist_e42_woTPC),$(my_obj_rawhist_e42_woTPC)))
+$(eval $(call make-gui-target,$(my_tgt_rawhist_e42_woTPC),$(my_lib_rawhist_e42_woTPC)))
 
 #______________________________________________________________________________
 

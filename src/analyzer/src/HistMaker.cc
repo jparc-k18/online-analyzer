@@ -1436,9 +1436,44 @@ TList* HistMaker::createHTOF( Bool_t flag_ps )
     const char* title = "HTOF_hit_pattern";
     Int_t target_id = getUniqueID(kHTOF, 0, kHitPat, 0);
     // Add to the top directory
-    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+    top_dir->Add(createTH1(++target_id, title, // 1 origin
 			   NumOfSegHTOF, 0, NumOfSegHTOF,
 			   "Segment", ""));
+    title = Form( "%s_HitPatternPoly", nameDetector );
+    auto h_hit_poly = dynamic_cast<TH2Poly*>
+      ( createTH2Poly( ++target_id, title, -400, 400, -400, 400 ) );
+    const Double_t L = 337;
+    const Double_t t = 10;
+    const Double_t w = 68;
+    Double_t theta[8];
+    Double_t X[5];
+    Double_t Y[5];
+    Double_t seg_X[5];
+    Double_t seg_Y[5];
+    for( Int_t i=0; i<8; i++ ){
+      theta[i] = (-180+45*i)*acos(-1)/180.;
+      for( Int_t j=0; j<4; j++ ){
+	seg_X[1] = L-t/2.;
+	seg_X[2] = L+t/2.;
+	seg_X[3] = L+t/2.;
+	seg_X[4] = L-t/2.;
+	seg_X[0] = seg_X[4];
+	seg_Y[1] = w*j-2*w;
+	seg_Y[2] = w*j-2*w;
+	seg_Y[3] = w*j-1*w;
+	seg_Y[4] = w*j-1*w;
+	seg_Y[0] = seg_Y[4];
+	for( Int_t k=0; k<5; k++ ){
+	  X[k] = cos(theta[i])*seg_X[k]-sin(theta[i])*seg_Y[k];
+	  Y[k] = sin(theta[i])*seg_X[k]+cos(theta[i])*seg_Y[k];
+	}
+	h_hit_poly->AddBin( 5, X, Y );
+      }
+    }
+    h_hit_poly->SetStats( 0 );
+    h_hit_poly->SetMinimum( 0. );
+    h_hit_poly->SetMaximum( 200. );
+    top_dir->Add( h_hit_poly );
   }
 
   // Multiplicity -----------------------------------------------
@@ -5402,6 +5437,22 @@ HistMaker::createTPC(Bool_t flag_ps)
   // TDC
   top_dir->Add( createTH1( getUniqueID( kTPC, 0, kTDC ),
                            "TPC_TDC", 200, 0, 200 ) );
+  top_dir->Add( createTH2( getUniqueID( kTPC, 0, kTDC2D ),
+                           "TPC_Hit_ZY", 100, -300, 300,
+			             140, 0, 140,
+			   "z [mm]", "tb" ) );
+  top_dir->Add( createTH2( getUniqueID( kTPC, 1, kTDC2D ),
+                           "TPC_Hit_XY", 100, -300, 300,
+			             140, 0, 140,
+			   "x [mm]", "tb" ) );
+  top_dir->Add( createTH2( getUniqueID( kTPC, 2, kTDC2D ),
+                           "TPC_ZY", 100, -300, 300,
+			             140, 0, 140,
+			   "z [mm]", "tb" ) );
+  top_dir->Add( createTH2( getUniqueID( kTPC, 3, kTDC2D ),
+                           "TPC_XY", 100, -300, 300,
+			             140, 0, 140,
+			   "x [mm]", "tb" ) );
   // FADC
   top_dir->Add( createTH2( getUniqueID( kTPC, 0, kFADC ),
                            "TPC_FADC",
@@ -5410,19 +5461,23 @@ HistMaker::createTPC(Bool_t flag_ps)
   // Multiplicity
   top_dir->Add( createTH1( getUniqueID( kTPC, 0, kMulti ),
                            "TPC_multiplicity", 600, 0, 6000 ) );
+  // ClusterSize
+  top_dir->Add( createTH2( getUniqueID( kTPC, 2, kMulti ),
+                           "TPC_ClusterSize", 42, -10, 32, 10, 0, 10,
+			   "Layer ID", "Cluster size") );
   // TPC-CLOCK
-  top_dir->Add(createTH1(getUniqueID(kTPC, 1, kTDC),
-			 "TPC_CLOCK", 50000, 0, 2000000,
-			 "TDC", ""));
-  top_dir->Add(createTH1(getUniqueID(kTPC, 1, kMulti),
-			 "TPC_CLOCK_multiplicity", 10, 0, 10));
+  top_dir->Add( createTH1( getUniqueID( kTPC, 1, kTDC ),
+			   "TPC_CLOCK", 50000, 0, 2000000,
+			   "TDC", "") );
+  top_dir->Add( createTH1( getUniqueID( kTPC, 1, kMulti ),
+			  "TPC_CLOCK_multiplicity", 10, 0, 10) );
   // TPC-BeamProfile
-//  top_dir->Add(createTH1(getUniqueID(kTPC, 2, kTDC),
-//			 "TPC_BeamProfile", 34, 0, 34,
-//			 "Pad", ""));
-  top_dir->Add(createTH1(getUniqueID(kTPC, 2, kTDC),
-			 "TPC_BeamProfile", 20, -100, 100,
-			 "x [mm]", ""));
+//  top_dir->Add( createTH1( getUniqueID( kTPC, 2, kTDC ),
+//		 	  "TPC_BeamProfile", 34, 0, 34,
+//		 	  "Pad", "") );
+  top_dir->Add( createTH1( getUniqueID( kTPC, 2, kTDC ),
+			   "TPC_BeamProfile", 20, -100, 100,
+			   "x [mm]", "") );
   return top_dir;
 }
 

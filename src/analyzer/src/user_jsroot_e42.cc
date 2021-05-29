@@ -184,8 +184,10 @@ process_begin( const std::vector<std::string>& argv )
   gHttp.Register(http::ScatHitMulti());
   gHttp.Register(http::TPC());
   gHttp.Register(http::TPC2D());
+  gHttp.Register(http::TPC3D());
   gHttp.Register(http::TPCADCPAD());
   gHttp.Register(http::TPCTDCPAD());
+  gHttp.Register(http::TPCHTOFPAD());
   gHttp.Register(http::TPCFADC());
   gHttp.Register(http::TriggerFlagU());
   gHttp.Register(http::TriggerFlagD());
@@ -888,6 +890,9 @@ process_event( void )
     static const auto htofawt_id = gHist.getSequentialID(kHTOF, 0, kADCwTDC);
     static const auto htofhit_id = gHist.getSequentialID(kHTOF, 0, kHitPat);
     static const auto htofmul_id = gHist.getSequentialID(kHTOF, 0, kMulti);
+
+    hptr_array[htofhit_id+1]->Reset();
+
     std::vector<std::vector<Int_t>> hit_flag(NumOfSegHTOF);
     UInt_t multiplicity = 0;
     for(Int_t seg=0; seg<NumOfSegHTOF; ++seg){
@@ -919,6 +924,12 @@ process_event( void )
       }//ud
       if(hit_flag[seg][kU] == 1 && hit_flag[seg][kD] == 1){
 	hptr_array[htofhit_id]->Fill(seg);
+	Int_t binid=0;
+	if( seg==0 ) binid=1;
+	else if( seg==1 || seg==2 ) binid=2;
+	else if( seg==3 || seg==4 ) binid=3;
+	else binid=seg-1;
+	hptr_array[htofhit_id+1]->SetBinContent( binid, 1 );
 	++multiplicity;
       }
     }//seg
@@ -2067,6 +2078,9 @@ process_event( void )
       static const Int_t tpca2d_id = gHist.getSequentialID( kTPC, 0, kADC2D );
       static const Int_t tpcmul_id = gHist.getSequentialID( kTPC, 0, kMulti );
       static const Int_t tpcbp_id  = gHist.getSequentialID( kTPC, 2, kTDC );
+      static const Int_t tpccs_id  = gHist.getSequentialID( kTPC, 2, kMulti );
+      static const Int_t tpczy_id  = gHist.getSequentialID( kTPC, 0, kTDC2D );
+      static const Int_t tpcxy_id  = gHist.getSequentialID( kTPC, 1, kTDC2D );
 
 //      const Int_t tpcbp_padid[34] = {2641, 2431, 2226, 2020, 1806,
 //	      			     1589, 1384, 1160,  938,  740,
@@ -2080,12 +2094,15 @@ process_event( void )
       hptr_array[tpca2d_id]->Reset();
       hptr_array[tpca2d_id+1]->Reset();
       hptr_array[tpca2d_id+2]->Reset();
+      hptr_array[tpczy_id+2]->Reset();
+      hptr_array[tpcxy_id+2]->Reset();
 
       Int_t n_active_pad = 0;
       std::vector<Double_t> max_fadc( NumOfTimeBucket );
       Int_t max_adc = -1;
       Int_t max_tb  = -1;
       Int_t max_pad = -1;
+      Int_t cluster_size[42] = {0};
       for( Int_t layer=0; layer<NumOfLayersTPC; ++layer ){
 	for( Int_t ch=0; ch<272; ++ch ){
 	  Int_t pad = gTpcPad.GetPadId( layer, ch );
@@ -2124,12 +2141,29 @@ process_event( void )
 	  hptr_array[tpca2d_id+2]->SetBinContent( pad + 1, loc_max );
 	  Double_t pad_z = gTpcPad.GetPoint( pad ).Z();
 	  Double_t pad_x = gTpcPad.GetPoint( pad ).X();
-	  hptr_array[tpca2d_id+3]->Fill( pad_z, pad_x );
+	  Double_t pad_y = (max_tb+6)*4.-312;
 	  if( max_adc - mean > 0 ){
+	    hptr_array[tpca2d_id+3]->Fill( pad_z, pad_x );
+	   // hptr_array[tpczy_id]->Fill( pad_z, pad_y );
+	   // hptr_array[tpcxy_id]->Fill( pad_x, pad_y );
+	    hptr_array[tpczy_id]->Fill( pad_z, max_tb );
+	    hptr_array[tpcxy_id]->Fill( pad_x, max_tb );
+	    hptr_array[tpczy_id+2]->Fill( pad_z, max_tb );
+	    hptr_array[tpcxy_id+2]->Fill( pad_x, max_tb );
 	    ++n_active_pad;
 	    if( max_tb >= 60 && max_tb < 100
-   		&& pad_z >= -153-40 && pad_z <= -153 ){
+   		&& pad_z >= -153-40 && pad_z <= -153 
+		&& max_adc - mean > 100
+		){
 		    hptr_array[tpcbp_id]->Fill( pad_x );
+	    }
+
+	    if( max_tb >= 70 && max_tb < 85 ){
+	      if( layer < 10 && pad_z < -143 ){
+		  cluster_size[-layer-1+10]++;
+	      } else {
+		cluster_size[layer+10]++;
+	      }
 	    }
 
 	    //for( Int_t i=0; i<34; ++i ){
@@ -2138,12 +2172,17 @@ process_event( void )
 	  }
 	}
       }
+	for( Int_t i=0; i<42; i++ ){
+	  if(cluster_size[i]) 
+	    hptr_array[tpccs_id]->Fill( i-10, cluster_size[i] );
+	}
       if( max_adc > 0 ){
 	for( Int_t i=0; i<NumOfTimeBucket; ++i ){
 	  hptr_array[tpcfa_id]->Fill( i, max_fadc[i] );
 	}
       }
-      std::cout << "active pad = " << n_active_pad << std::endl;
+      std::cout << "run# " << run_number << "  ev# " << event_number
+		<< "  active pad = " << n_active_pad << std::endl;
       hptr_array[tpcmul_id]->Fill( n_active_pad );
 
       // TDC (Time Stamp)
@@ -2195,7 +2234,7 @@ process_event( void )
     auto        curr_time = std::time(0);
     if(host.Contains("k18term4") &&
        event_number > 1 && curr_time - prev_time > 5){
-      cout << "exec tagslip sound!" << std::endl;
+      std::cout << "exec tagslip sound!" << std::endl;
       gSystem->Exec("ssh axis@eb0 \"aplay ~/sound/tagslip.wav\" &");
     }
     prev_time = curr_time;

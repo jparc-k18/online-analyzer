@@ -101,8 +101,10 @@ TCanvas* BeamEnvelope( ParticleType p );
 // E42
 TCanvas* TPC( void );
 TCanvas* TPC2D( void );
+TCanvas* TPC3D( void );
 TCanvas* TPCADCPAD( void );
 TCanvas* TPCTDCPAD( void );
+TCanvas* TPCHTOFPAD( void );
 TCanvas* TPCFADC( void );
 
 // E03

@@ -1045,12 +1045,35 @@ TPC2D( void )
   c1->Divide( 2, 2 );
   for( Int_t i=0, n=id.size(); i<n; ++i ){
     c1->cd( i+1 );
+    if( i==1 ) c1->cd( i+1 )->SetLogz();
     auto h = GHist::get( id[i] );
     if( h ) h->Draw( "colz" );
   }
   return c1;
 }
 
+//_____________________________________________________________________________
+TCanvas*
+TPC3D( void )
+{
+  std::vector<Int_t> id = {
+    HistMaker::getUniqueID( kTPC, 2, kTDC2D ),
+    HistMaker::getUniqueID( kTPC, 3, kTDC2D ),
+    HistMaker::getUniqueID( kTPC, 0, kADC2D ),
+    HistMaker::getUniqueID( kTPC, 0, kTDC2D ),
+    HistMaker::getUniqueID( kTPC, 1, kTDC2D ),
+    HistMaker::getUniqueID( kTPC, 0, kADC2D, 4 )
+  };
+
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->Divide( 3, 2 );
+  for( Int_t i=0, n=id.size(); i<n; ++i ){
+    c1->cd( i+1 );
+    auto h = GHist::get( id[i] );
+    if( h ) h->Draw( "colz" );
+  }
+  return c1;
+}
 //_____________________________________________________________________________
 TCanvas*
 TPCADCPAD( void )
@@ -1060,6 +1083,47 @@ TPCADCPAD( void )
   c1->cd()->SetLogz();
   auto h = GHist::get( id );
   if( h ) h->Draw( "colz" );
+
+  Double_t l = (500./2.)/(1+sqrt(2.));
+  Double_t px[9]={-l*(1+sqrt(2.)),-l,l,l*(1+sqrt(2.)),
+    l*(1+sqrt(2.)),l,-l,-l*(1+sqrt(2.)),
+    -l*(1+sqrt(2.))};
+  Double_t py[9]={l,l*(1+sqrt(2.)),l*(1+sqrt(2.)),l,
+    -l,-l*(1+sqrt(2.)),-l*(1+sqrt(2.)),-l,
+    l};
+  TPolyLine* pLine = new TPolyLine( 9, px, py );
+  pLine->SetLineColor(1);
+  pLine->SetFillColorAlpha(kWhite, 0);
+  pLine->Draw();
+
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+TPCHTOFPAD( void )
+{
+  auto id = HistMaker::getUniqueID( kTPC, 0, kADC2D, 3 );
+  auto id_htof = HistMaker::getUniqueID( kHTOF, 0, kHitPat, 2 );
+  auto c1 = new TCanvas( __func__, __func__ );
+  c1->cd();
+  
+  auto h_htof = GHist::get( id_htof );
+  if( h_htof ){
+    h_htof->SetMaximum( 200 );
+    h_htof->Draw( "colz same" );
+  }
+  else 
+  {std::cout << " no h_tof " << std::endl; getchar();}
+  
+  auto h = GHist::get( id );
+  if( h ){
+    h->SetLineWidth( 0 );
+    h->GetXaxis()->SetRangeUser(-400,400);
+    h->GetYaxis()->SetRangeUser(-400,400);
+    h->SetMaximum( 200 );
+    h->Draw( "col same" );
+  }
 
   Double_t l = (500./2.)/(1+sqrt(2.));
   Double_t px[9]={-l*(1+sqrt(2.)),-l,l,l*(1+sqrt(2.)),
@@ -1705,7 +1769,7 @@ HitPatternScat( void )
     HistMaker::getUniqueID(kLAC, 0, kHitPat),
     HistMaker::getUniqueID(kWC, 0, kHitPat)
   };
-
+  
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 3);
   for (Int_t i=0, n=hist_id.size(); i<n; ++i) {

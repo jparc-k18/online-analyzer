@@ -2058,7 +2058,11 @@ process_event( void )
       static const Int_t rms_id    = gHist.getSequentialID( kTPC, 0, kPede );
       static const Int_t tpca2d_id = gHist.getSequentialID( kTPC, 0, kADC2D );
       static const Int_t tpcmul_id = gHist.getSequentialID( kTPC, 0, kMulti );
-
+      static const Int_t agetmul_id = gHist.getSequentialID( kTPC, 3, kMulti );
+      static const Int_t amulmax_id = gHist.getSequentialID( kTPC, 4, kMulti );
+      
+      hptr_array[agetmul_id]->Reset();
+      
       // FADC
       Int_t n_active_pad = 0;
       for( Int_t layer=0; layer<32; ++layer ){
@@ -2086,17 +2090,29 @@ process_event( void )
 	  Double_t rms = TMath::RMS( nhit, fadc.data() );
 	  Double_t max_adc = TMath::MaxElement( nhit, fadc.data() );
 	  Int_t loc_max = TMath::LocMax( nhit, fadc.data() );
-	  hptr_array[tpca_id]->Fill( max_adc );
+
+	  if( max_adc - mean <= 0 ) continue;
+	  Int_t aget = gTpcPad.GetParam( layer, ch )->AGetId();
+	  Int_t asad = gTpcPad.GetParam( layer, ch )->AsAdId();
+	  hptr_array[agetmul_id]->Fill( asad*4+aget );
+
+	  hptr_array[tpca_id]->Fill( max_adc - mean );
 	  hptr_array[tpct_id]->Fill( loc_max );
 	  hptr_array[rms_id]->Fill( rms );
 	  hptr_array[tpca2d_id]->SetBinContent( pad+1, max_adc - mean );
 	  hptr_array[tpca2d_id+1]->SetBinContent( pad+1, rms );
 	  hptr_array[tpca2d_id+2]->SetBinContent( pad+1, loc_max );
-	  if( max_adc - mean > 0 ) ++n_active_pad;
+	  Double_t pad_z = gTpcPad.GetPoint( pad ).Z();
+	  Double_t pad_x = gTpcPad.GetPoint( pad ).X();
+	  if( max_adc - mean > 0 ){
+	    ++n_active_pad;
+	    hptr_array[tpca2d_id+3]->Fill( pad_z, pad_x );
+	  }
 	}
       }
       // std::cout << "active pad = " << n_active_pad << std::endl;
       hptr_array[tpcmul_id]->Fill( n_active_pad );
+      hptr_array[amulmax_id]->Fill( hptr_array[agetmul_id]->GetMaximum() );
 
       // TDC (Time Stamp)
       // UInt_t tdc_h = gUnpacker.get( k_device, 0, 0, 0, k_tdc_high );

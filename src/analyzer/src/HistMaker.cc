@@ -5423,7 +5423,7 @@ HistMaker::createTPC(Bool_t flag_ps)
     h_rms->SetMaximum(  200. );
     h_loc->SetStats( 0 );
     h_loc->SetMinimum(    0. );
-    h_loc->SetMaximum(  200. );
+    h_loc->SetMaximum(  NumOfTimeBucket );
     top_dir->Add( h_adc );
     top_dir->Add( h_rms );
     top_dir->Add( h_loc );
@@ -5436,31 +5436,37 @@ HistMaker::createTPC(Bool_t flag_ps)
                            "TPC_RMS", 1000, 0, 1000 ) );
   // TDC
   top_dir->Add( createTH1( getUniqueID( kTPC, 0, kTDC ),
-                           "TPC_TDC", 200, 0, 200 ) );
+                           "TPC_TDC", NumOfTimeBucket, 0, NumOfTimeBucket ) );
   top_dir->Add( createTH2( getUniqueID( kTPC, 0, kTDC2D ),
                            "TPC_Hit_ZY", 100, -300, 300,
-			             140, 0, 140,
+			   NumOfTimeBucket, 0, NumOfTimeBucket,
 			   "z [mm]", "tb" ) );
   top_dir->Add( createTH2( getUniqueID( kTPC, 1, kTDC2D ),
                            "TPC_Hit_XY", 100, -300, 300,
-			             140, 0, 140,
+			   NumOfTimeBucket, 0, NumOfTimeBucket,
 			   "x [mm]", "tb" ) );
   top_dir->Add( createTH2( getUniqueID( kTPC, 2, kTDC2D ),
                            "TPC_ZY", 100, -300, 300,
-			             140, 0, 140,
+			   NumOfTimeBucket, 0, NumOfTimeBucket,
 			   "z [mm]", "tb" ) );
   top_dir->Add( createTH2( getUniqueID( kTPC, 3, kTDC2D ),
                            "TPC_XY", 100, -300, 300,
-			             140, 0, 140,
+			   NumOfTimeBucket, 0, NumOfTimeBucket,
 			   "x [mm]", "tb" ) );
   // FADC
   top_dir->Add( createTH2( getUniqueID( kTPC, 0, kFADC ),
                            "TPC_FADC",
-                           200, 0, 200, 200, 0, 0x1000,
+                           NumOfTimeBucket, 0, NumOfTimeBucket,
+			   200, 0, 0x1000,
                            "Time bucket", "ADC" ) );
   // Multiplicity
   top_dir->Add( createTH1( getUniqueID( kTPC, 0, kMulti ),
                            "TPC_multiplicity", 600, 0, 6000 ) );
+  top_dir->Add( createTH1( getUniqueID( kTPC, 3, kMulti ),
+                           "TPC_AGET_multiplicity", 124, 0, 124,
+			   "AsAdID#times4+AGETID", "Multiplicity/AGET/Event" ) );
+  top_dir->Add( createTH1( getUniqueID( kTPC, 4, kMulti ),
+                           "TPC_AGET_multiplicity_Max", 64, 0, 64 ) );
   // ClusterSize
   top_dir->Add( createTH2( getUniqueID( kTPC, 2, kMulti ),
                            "TPC_ClusterSize", 42, -10, 32, 10, 0, 10,

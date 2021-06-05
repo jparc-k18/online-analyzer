@@ -1531,19 +1531,21 @@ PsMaker::create( TString& name )
     // BeamProfile
     id_list.push_back( HistMaker::getUniqueID(kTPC, 2, kTDC) );
     drawOneCanvas(id_list, par_list, flag_xaxis, flag_log);
-    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
-    Int_t target_id = HistMaker::getUniqueID(kTPC, 0, kADC2D);
-    id_list.push_back( target_id++ );
-    id_list.push_back( target_id++ );
-    id_list.push_back( target_id++ );
-    id_list.push_back( target_id++ );
-    drawOneCanvas(id_list, par_list, false, false, "colz");
+    
     par_list[kXdiv] = 2; par_list[kYdiv] = 2;
     // TPC-CLOCK
     id_list.push_back(HistMaker::getUniqueID(kTPC, 1, kTDC));
     id_list.push_back(HistMaker::getUniqueID(kTPC, 1, kMulti));
     // Multiplicity
     id_list.push_back(HistMaker::getUniqueID(kTPC, 0, kMulti));
+    // AGET Multiplicity
+    id_list.push_back(HistMaker::getUniqueID(kTPC, 4, kMulti));
+    drawOneCanvas(id_list, par_list, false, false, "");
+    
+    par_list[kXdiv] = 2; par_list[kYdiv] = 2;
+    // Hit2D
+    Int_t target_id = HistMaker::getUniqueID(kTPC, 0, kADC2D)+3;
+    id_list.push_back( target_id ); 
     // FADC
     id_list.push_back( HistMaker::getUniqueID(kTPC, 0, kFADC) );
     drawOneCanvas(id_list, par_list, false, false, "colz");

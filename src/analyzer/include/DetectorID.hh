@@ -158,7 +158,7 @@ const Int_t NumOfScaler  = 2;
 // E42
 const Int_t DetIdTPC       = 70;
 const Int_t NumOfLayersTPC = 32;
-const Int_t NumOfTimeBucket = 140;
+const Int_t NumOfTimeBucket = 170;
 
 // VMEEASIROC Board
 const Int_t DetIdVEASIROC         = 116;

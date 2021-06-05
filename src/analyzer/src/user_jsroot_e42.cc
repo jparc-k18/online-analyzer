@@ -2071,16 +2071,18 @@ process_event( void )
       // static const Int_t k_tdc_high = gUnpacker.get_data_id( "TPC", "tdc_high" );
       // static const Int_t k_tdc_low  = gUnpacker.get_data_id( "TPC", "tdc_low" );
       // sequential id
-      static const Int_t tpca_id   = gHist.getSequentialID( kTPC, 0, kADC );
-      static const Int_t tpct_id   = gHist.getSequentialID( kTPC, 0, kTDC );
-      static const Int_t rms_id    = gHist.getSequentialID( kTPC, 0, kPede );
-      static const Int_t tpcfa_id  = gHist.getSequentialID( kTPC, 0, kFADC );
-      static const Int_t tpca2d_id = gHist.getSequentialID( kTPC, 0, kADC2D );
-      static const Int_t tpcmul_id = gHist.getSequentialID( kTPC, 0, kMulti );
-      static const Int_t tpcbp_id  = gHist.getSequentialID( kTPC, 2, kTDC );
-      static const Int_t tpccs_id  = gHist.getSequentialID( kTPC, 2, kMulti );
-      static const Int_t tpczy_id  = gHist.getSequentialID( kTPC, 0, kTDC2D );
-      static const Int_t tpcxy_id  = gHist.getSequentialID( kTPC, 1, kTDC2D );
+      static const Int_t tpca_id    = gHist.getSequentialID( kTPC, 0, kADC );
+      static const Int_t tpct_id    = gHist.getSequentialID( kTPC, 0, kTDC );
+      static const Int_t rms_id     = gHist.getSequentialID( kTPC, 0, kPede );
+      static const Int_t tpcfa_id   = gHist.getSequentialID( kTPC, 0, kFADC );
+      static const Int_t tpca2d_id  = gHist.getSequentialID( kTPC, 0, kADC2D );
+      static const Int_t tpcmul_id  = gHist.getSequentialID( kTPC, 0, kMulti );
+      static const Int_t tpcbp_id   = gHist.getSequentialID( kTPC, 2, kTDC );
+      static const Int_t tpccs_id   = gHist.getSequentialID( kTPC, 2, kMulti );
+      static const Int_t tpczy_id   = gHist.getSequentialID( kTPC, 0, kTDC2D );
+      static const Int_t tpcxy_id   = gHist.getSequentialID( kTPC, 1, kTDC2D );
+      static const Int_t agetmul_id = gHist.getSequentialID( kTPC, 3, kMulti );
+      static const Int_t amulmax_id = gHist.getSequentialID( kTPC, 4, kMulti );
 
 //      const Int_t tpcbp_padid[34] = {2641, 2431, 2226, 2020, 1806,
 //	      			     1589, 1384, 1160,  938,  740,
@@ -2096,6 +2098,7 @@ process_event( void )
       hptr_array[tpca2d_id+2]->Reset();
       hptr_array[tpczy_id+2]->Reset();
       hptr_array[tpcxy_id+2]->Reset();
+      hptr_array[agetmul_id]->Reset();
 
       Int_t n_active_pad = 0;
       std::vector<Double_t> max_fadc( NumOfTimeBucket );
@@ -2133,6 +2136,9 @@ process_event( void )
 	  Double_t max_adc = TMath::MaxElement( nhit, fadc.data() );
 	  Int_t loc_max = TMath::LocMax( nhit, fadc.data() );
 	  if( max_adc - mean <= 0 ) continue;
+	  Int_t aget = gTpcPad.GetParam( layer, ch )->AGetId();
+	  Int_t asad = gTpcPad.GetParam( layer, ch )->AsAdId();
+	  hptr_array[agetmul_id]->Fill( asad*4+aget );
 	  hptr_array[tpca_id]->Fill( max_adc - mean );
 	  hptr_array[rms_id]->Fill( rms );
 	  hptr_array[tpct_id]->Fill( loc_max );
@@ -2141,7 +2147,7 @@ process_event( void )
 	  hptr_array[tpca2d_id+2]->SetBinContent( pad + 1, loc_max );
 	  Double_t pad_z = gTpcPad.GetPoint( pad ).Z();
 	  Double_t pad_x = gTpcPad.GetPoint( pad ).X();
-	  Double_t pad_y = (max_tb+6)*4.-312;
+	  //Double_t pad_y = (max_tb+6)*4.-312;
 	  if( max_adc - mean > 0 ){
 	    hptr_array[tpca2d_id+3]->Fill( pad_z, pad_x );
 	   // hptr_array[tpczy_id]->Fill( pad_z, pad_y );
@@ -2172,6 +2178,7 @@ process_event( void )
 	  }
 	}
       }
+	hptr_array[amulmax_id]->Fill( hptr_array[agetmul_id]->GetMaximum() );
 	for( Int_t i=0; i<42; i++ ){
 	  if(cluster_size[i]) 
 	    hptr_array[tpccs_id]->Fill( i-10, cluster_size[i] );
@@ -2239,6 +2246,8 @@ process_event( void )
     }
     prev_time = curr_time;
   }
+
+  gSystem->ProcessEvents();
 
   return 0;
 }

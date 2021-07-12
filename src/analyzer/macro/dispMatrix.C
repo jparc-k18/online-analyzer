@@ -52,6 +52,7 @@ dispMatrix()
   // Mtx3D
   auto c3 = dynamic_cast<TCanvas*>(gROOT->FindObject("c3"));
   if(c3){
+    c3->Clear();
     c3->Divide(4, 2);
     for(Int_t i=0; i<NumOfSegBH2; ++i){
       c3->cd(i+1);

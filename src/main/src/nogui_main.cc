@@ -26,10 +26,10 @@ int main(int argc, char* argv[])
   Sigwait& g_sigwait = Sigwait::getInstance();
   g_sigwait.run();
 
-  if (g_main.isJsRoot()) {
-    JsRootUpdater& g_jsroot = JsRootUpdater::getInstance();
-    g_jsroot.start();
-  }
+//  if (g_main.isJsRoot()) {
+//    JsRootUpdater& g_jsroot = JsRootUpdater::getInstance();
+//    g_jsroot.start();
+//  }
 
   g_main.setBatchMode(true);
   g_main.run();

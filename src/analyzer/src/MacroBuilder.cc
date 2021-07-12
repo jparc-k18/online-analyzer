@@ -1045,7 +1045,7 @@ TPC2D( void )
   c1->Divide( 2, 2 );
   for( Int_t i=0, n=id.size(); i<n; ++i ){
     c1->cd( i+1 );
-    if( i==1 ) c1->cd( i+1 )->SetLogz();
+    if( i==1 || i==2 ) c1->cd( i+1 )->SetLogz();
     auto h = GHist::get( id[i] );
     if( h ) h->Draw( "colz" );
   }

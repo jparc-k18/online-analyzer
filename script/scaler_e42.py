@@ -7,8 +7,9 @@ import sys
 import time
 import ROOT
 
-spill_length = 22406920
-error_length = 1000
+# spill_length = 22406920
+spill_length = 55406920
+error_length =    10000
 
 #scaler_dir = os.path.abspath('/data3/E42SubData/scaler_2021may')
 scaler_dir = os.path.abspath('/misc/scaler_e42_2021may')
@@ -146,9 +147,10 @@ class ScalerAnalyzer():
     self.server.RegisterCommand('/Switch_Auto_Print_Mode', command)
     command = 'gSystem->Setenv("SCALER_PRINT", "1")'
     self.server.RegisterCommand('/Print_10_Spill', command)
-    self.server.SetItemField('/','_monitoring','100')
-    self.server.SetItemField('/','_layout','vert2')
-    self.server.SetItemField('/','_drawitem','[Spill,Canvases/Trend]')
+    self.server.SetItemField('/','_monitoring','200')
+    # self.server.SetItemField('/','_layout','vert2')
+    # self.server.SetItemField('/','_drawitem','[Spill,Canvases/Trend]')
+    self.server.SetItemField('/','_drawitem','Spill')
     # self.server.SetItemField('/','_drawitem','Scaler')
     self.server.CreateItem('/Spill', 'Online Scaler')
     self.server.SetItemField('/Spill', '_kind', 'Text')
@@ -203,16 +205,16 @@ class ScalerAnalyzer():
     self.legend_beam.SetTextSize(0.05)
     self.legend_beam.SetFillColor(0)
     self.legend_beam.SetBorderSize(4)
-    for i, l in enumerate(['K-Beam', '#pi-Beam', 'Beam']):
+    for i, l in enumerate(['Beam', 'K-Beam', '#pi-Beam']):
       self.plot_beam.append([0 for i in range(self.nplot)])
       g = ROOT.TGraph()
       g.SetName(l)
       g.SetTitle('Beam')
       g.SetMarkerStyle(8)
       g.SetMarkerSize(1.5)
-      g.SetMarkerColor([ROOT.kGreen+1, ROOT.kBlue+1, ROOT.kBlack][i])
+      g.SetMarkerColor([ROOT.kBlack, ROOT.kGreen+1, ROOT.kBlue+1][i])
       g.SetLineWidth(3)
-      g.SetLineColor([ROOT.kGreen+1, ROOT.kBlue+1, ROOT.kBlack][i])
+      g.SetLineColor([ROOT.kBlack, ROOT.kGreen+1, ROOT.kBlue+1][i])
       g.GetXaxis().SetTimeDisplay(1)
       g.GetXaxis().SetTimeFormat('%m/%d %H:%M')
       g.GetXaxis().SetTimeOffset(self.now.GetZoneOffset(), 'jpb')
@@ -501,9 +503,9 @@ class ScalerAnalyzer():
     kpi = (self.scaler['K-Beam']/self.scaler['Pi-Beam']
            if self.scaler['Pi-Beam'] > 0 else ROOT.TMath.QuietNaN())
     self.legend_beam.SetHeader(f'K/#pi Ratio : {kpi:5.3f}')
-    values = [self.scaler['K-Beam'],
-              self.scaler['Pi-Beam'],
-              self.scaler['Beam']]
+    values = [self.scaler['Beam'],
+              self.scaler['K-Beam'],
+              self.scaler['Pi-Beam']]
     self.plot_unixtime.pop(0)
     self.plot_unixtime.append(self.now.GetSec())
     max_count = 1

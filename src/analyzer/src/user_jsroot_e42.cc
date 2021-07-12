@@ -2149,7 +2149,8 @@ process_event( void )
 	  Double_t pad_x = gTpcPad.GetPoint( pad ).X();
 	  //Double_t pad_y = (max_tb+6)*4.-312;
 	  if( max_adc - mean > 0 ){
-	    hptr_array[tpca2d_id+3]->Fill( pad_z, pad_x );
+            if(max_adc-mean>300 && max_tb>35 && max_tb<155)
+              hptr_array[tpca2d_id+3]->Fill( pad_z, pad_x );
 	   // hptr_array[tpczy_id]->Fill( pad_z, pad_y );
 	   // hptr_array[tpcxy_id]->Fill( pad_x, pad_y );
 	    hptr_array[tpczy_id]->Fill( pad_z, max_tb );
@@ -2158,10 +2159,10 @@ process_event( void )
 	    hptr_array[tpcxy_id+2]->Fill( pad_x, max_tb );
 	    ++n_active_pad;
 	    if( max_tb >= 60 && max_tb < 100
-   		&& pad_z >= -153-40 && pad_z <= -153 
-		&& max_adc - mean > 100
+   		&& pad_z >= -153-40 && pad_z <= -153
+		&& max_adc - mean > 300
 		){
-		    hptr_array[tpcbp_id]->Fill( pad_x );
+              hptr_array[tpcbp_id]->Fill( pad_x );
 	    }
 
 	    if( max_tb >= 70 && max_tb < 85 ){
@@ -2180,7 +2181,7 @@ process_event( void )
       }
 	hptr_array[amulmax_id]->Fill( hptr_array[agetmul_id]->GetMaximum() );
 	for( Int_t i=0; i<42; i++ ){
-	  if(cluster_size[i]) 
+	  if(cluster_size[i])
 	    hptr_array[tpccs_id]->Fill( i-10, cluster_size[i] );
 	}
       if( max_adc > 0 ){
@@ -2236,6 +2237,7 @@ process_event( void )
   }
 
   if(!gUnpacker.is_good()){
+    std::cout << "[Warning] Tag is not good." << std::endl;
     static const TString host(gSystem->Getenv("HOSTNAME"));
     static auto prev_time = std::time(0);
     auto        curr_time = std::time(0);

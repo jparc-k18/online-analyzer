@@ -60,8 +60,9 @@ root_glibs += \
 # -lEve
 # -lRGL
 
-rootcint	:= rootcint
+rootcint	:= rootcling
 CXXFLAGS	+= $(root_cflags)
+ROOTCINTFLAGS	+= -I$(shell $(root_config) --incdir)
 
 #### HD DAQ Unpacker ####
 unpacker_config		:= unpacker-config
@@ -69,6 +70,7 @@ unpacker_cflags		:= $(shell $(unpacker_config) --include)
 unpacker_lib_dir	:= $(shell $(unpacker_config) --libdir)
 unpacker_libs		:= $(shell $(unpacker_config) --libs)
 CXXFLAGS		+= $(unpacker_cflags)
+ROOTCINTFLAGS	+= $(unpacker_cflags)
 
 #my_name	:=
 headers		:= $(filter %.hh,$(wildcard $(CURDIR)/include/*))

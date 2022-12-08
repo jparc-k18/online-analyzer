@@ -78,6 +78,9 @@ my_tgt_rawhist_e42	:= $(bin_dir)/raw_hist_e42
 my_obj_rawhist_e42_woTPC	:= $(core_obj) user_rawhist_e42_woTPC.o $(gui_obj)
 my_tgt_rawhist_e42_woTPC	:= $(bin_dir)/raw_hist_e42_woTPC
 
+my_obj_rawhist_e70	:= $(core_obj) user_rawhist_e70.o $(gui_obj)
+my_tgt_rawhist_e70	:= $(bin_dir)/raw_hist_e70
+
 my_obj_rawhist_hbx	:= $(core_obj) user_rawhist_hbx.o $(gui_obj)
 my_tgt_rawhist_hbx	:= $(bin_dir)/raw_hist_hbx
 
@@ -190,6 +193,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_event_display) \
 	$(my_tgt_rawhist_e42) \
 	$(my_tgt_rawhist_e42_woTPC) \
+	$(my_tgt_rawhist_e70) \
 	$(my_tgt_rawhist_hbx) \
 	$(my_tgt_rawhist_vmeeasiroc) \
 	$(my_tgt_beammonitor) \
@@ -232,14 +236,14 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 #_______________________________________________________________________________
 $(my_dir)/dict/%_Dict.cc: $(my_dir)/include/%.hh $(my_dir)/linkdef/%_LinkDef.hh
 	$(QUIET) $(ECHO) "$(blue)=== Generating dictionary $^ - > $@$(default_color)"
-	$(rootcint) -f $@ $(ROOTCINTFLAGS) $^
+	$(rootcint) -f $@ $(CXXFLAGS) $^
 	$(QUIET) if [ -f $(subst .cc,_rdict.pcm,$@) ]; then \
 	$(CP) $(subst .cc,_rdict.pcm,$@) $(lib_dir); fi
 
 #_______________________________________________________________________________
 $(core_dict_src): $(core_heads) $(core_linkdef)
 	$(QUIET) $(ECHO) "$(blue)=== Generating dictionary $^ - > $@$(default_color)"
-	$(rootcint) -f $@ $(ROOTCINTFLAGS) $^
+	$(rootcint) -f $@ $(CXXFLAGS) $^
 
 $(core_dict_lib): $(core_dict_pcm) $(core_dict_src)
 	$(QUIET) $(CP) $< $@
@@ -338,6 +342,14 @@ $(eval $(call make-lib,$(my_lib_rawhist_e42_woTPC),$(my_obj_rawhist_e42_woTPC)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e42_woTPC),$(my_lib_rawhist_e42_woTPC)))
 
 #______________________________________________________________________________
+my_obj_rawhist_e70	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e70))
+my_obj_rawhist_e70	:= $(my_obj_rawhist_e70) \
+		$(my_dir)/dict/GuiPs_Dict.o
+my_lib_rawhist_e70	:= libmyrawhist_e70.so
+$(eval $(call make-lib,$(my_lib_rawhist_e70),$(my_obj_rawhist_e70)))
+$(eval $(call make-gui-target,$(my_tgt_rawhist_e70),$(my_lib_rawhist_e70)))
+
+#_______________________________________________________________________________
 
 my_obj_rawhist_hbx	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_hbx))
 my_obj_rawhist_hbx	:= $(my_obj_rawhist_hbx) \

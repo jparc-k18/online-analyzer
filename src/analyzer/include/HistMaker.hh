@@ -22,7 +22,7 @@ enum DetectorType {
   kMsT, kMsT_T0, kMtx3D,
   // Detector unique ID in the KURAMA system
   kPVAC, kFAC, kSDC1, kSDC2, kSCH,
-  kSDC3, kSDC4, kTOF, kLAC,
+  kSDC3, kSDC4, kSDC5, kTOF, kLAC,
   // VMEEASIROC unique ID
   kVMEEASIROC,
   // E42
@@ -172,6 +172,7 @@ public:
   TList* createSCH( Bool_t flag_ps=true );
   TList* createSDC3( Bool_t flag_ps=true );
   TList* createSDC4( Bool_t flag_ps=true );
+  TList* createSDC5( Bool_t flag_ps=true );
   TList* createTOF( Bool_t flag_ps=true );
   TList* createLAC( Bool_t flag_ps=true );
   TList* createMsT( Bool_t flag_ps=true );

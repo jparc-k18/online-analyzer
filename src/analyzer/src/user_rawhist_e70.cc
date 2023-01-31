@@ -1130,13 +1130,14 @@ process_event( void )
       Int_t multiplicity_wt      = 0;
       Int_t multiplicity_ctot    = 0;
       Int_t multiplicity_wt_ctot = 0;
-      Int_t sdc2_nwire = 0;
-      if( l==0 || l==1 )
-	sdc2_nwire = NumOfWireSDC2X;
-      if( l==2 || l==3 )
-	sdc2_nwire = NumOfWireSDC2Y;
+      // Int_t sdc2_nwire = 0;
+      // if( l==0 || l==1 )
+      // 	sdc2_nwire = NumOfWireSDC2X;
+      // if( l==2 || l==3 )
+      // 	sdc2_nwire = NumOfWireSDC2Y;
 
-      for( Int_t w=0; w<sdc2_nwire; ++w ){
+      // for( Int_t w=0; w<sdc2_nwire; ++w ){
+      for( Int_t w=0; w<NumOfWireSDC2; ++w ){
 	Int_t nhit_l = gUnpacker.get_entries(k_device, l, 0, w, k_leading);
 	Int_t nhit_t = gUnpacker.get_entries(k_device, l, 0, w, k_trailing);
 	if( nhit_l == 0 ) continue;

@@ -1550,9 +1550,9 @@ process_event( void )
       Int_t multiplicity_wt_ctot = 0;
       Int_t sdc5_nwire = 0;
       if( l==0 || l==1 )
-	sdc5_nwire = NumOfWireSDC5X;
-      if( l==2 || l==3 )
 	sdc5_nwire = NumOfWireSDC5Y;
+      if( l==2 || l==3 )
+	sdc5_nwire = NumOfWireSDC5X;
 
       for( Int_t w=0; w<sdc5_nwire; ++w ){
 	Int_t nhit_l = gUnpacker.get_entries(k_device, l, 0, w, k_leading);
@@ -2132,6 +2132,17 @@ process_event( void )
 	Int_t hitSDC3 = gUnpacker.get_entries(k_device_sdc3, 0, 0, wire3, 0);
 	if( hitSDC1 == 0 || hitSDC3 == 0 ) continue;
 	hcor_sdc1sdc3->Fill( wire1, wire3 );
+      }
+    }
+
+    // SDC3 vs SDC4
+    TH2* hcor_sdc3sdc4 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+    for(Int_t wire3 = 0; wire3<NumOfWireSDC3; ++wire3){
+      for(Int_t wire4 = 0; wire4<NumOfWireSDC4; ++wire4){
+	Int_t hitSDC3 = gUnpacker.get_entries(k_device_sdc3, 0, 0, wire3, 0);
+	Int_t hitSDC4 = gUnpacker.get_entries(k_device_sdc4, 0, 0, wire4, 0);
+	if( hitSDC3 == 0 || hitSDC4 == 0 ) continue;
+	hcor_sdc3sdc4->Fill( wire3, wire4 );
       }
     }
 

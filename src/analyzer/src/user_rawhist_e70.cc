@@ -409,8 +409,8 @@ process_event( void )
     static const auto device_id = gUnpacker.get_device_id("BH1");
     static const auto adc_id = gUnpacker.get_data_id("BH1", "adc");
     static const auto tdc_id = gUnpacker.get_data_id("BH1", "fpga_leading");
-    static const auto tdc_min = gUser.GetParameter("BH1_TDC", 0);
-    static const auto tdc_max = gUser.GetParameter("BH1_TDC", 1);
+    static const auto tdc_min = gUser.GetParameter("TdcBH1", 0);
+    static const auto tdc_max = gUser.GetParameter("TdcBH1", 1);
     static const auto adc_hid = gHist.getSequentialID(kBH1, 0, kADC);
     static const auto tdc_hid = gHist.getSequentialID(kBH1, 0, kTDC);
     static const auto awt_hid = gHist.getSequentialID(kBH1, 0, kADCwTDC);
@@ -468,8 +468,8 @@ process_event( void )
     static const auto device_id = gUnpacker.get_device_id("BFT");
     static const auto leading_id = gUnpacker.get_data_id("BFT", "leading");
     static const auto trailing_id = gUnpacker.get_data_id("BFT", "trailing");
-    static const auto tdc_min = gUser.GetParameter("BFT_TDC", 0);
-    static const auto tdc_max = gUser.GetParameter("BFT_TDC", 1);
+    static const auto tdc_min = gUser.GetParameter("TdcBFT", 0);
+    static const auto tdc_max = gUser.GetParameter("TdcBFT", 1);
     static const auto tdc_hid = gHist.getSequentialID(kBFT, 0, kTDC);
     static const auto tot_hid = gHist.getSequentialID(kBFT, 0, kADC);
     static const auto hit_hid = gHist.getSequentialID(kBFT, 0, kHitPat);
@@ -525,11 +525,11 @@ process_event( void )
     static const Int_t k_trailing = gUnpacker.get_data_id("BC3", "trailing");
 
     // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("BC3_TDC", 0);
-    static const Int_t tdc_max = gUser.GetParameter("BC3_TDC", 1);
+    static const Int_t tdc_min = gUser.GetParameter("TdcBC3", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcBC3", 1);
     // TOT gate range
-    static const Int_t tot_min = gUser.GetParameter("BC3_TOT", 0);
-    // static const Int_t tot_max = gUser.GetParameter("BC3_TOT", 1);
+    static const Int_t tot_min = gUser.GetParameter("MinTotBcOut", 0);
+    // static const Int_t tot_max = gUser.GetParameter("MinTotBcOut", 1);
 
     // sequential id
     static const Int_t bc3t_id    = gHist.getSequentialID(kBC3, 0, kTDC);
@@ -660,11 +660,11 @@ process_event( void )
     static const Int_t k_trailing = gUnpacker.get_data_id("BC4", "trailing");
 
     // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("BC4_TDC", 0);
-    static const Int_t tdc_max = gUser.GetParameter("BC4_TDC", 1);
+    static const Int_t tdc_min = gUser.GetParameter("TdcBC4", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcBC4", 1);
     // TOT gate range
-    static const Int_t tot_min = gUser.GetParameter("BC4_TOT", 0);
-    // static const Int_t tot_max = gUser.GetParameter("BC4_TOT", 1);
+    static const Int_t tot_min = gUser.GetParameter("MinTotBcOut", 0);
+    // static const Int_t tot_max = gUser.GetParameter("MinTotBcOut", 1);
 
     // sequential id
     static const Int_t bc4t_id    = gHist.getSequentialID(kBC4, 0, kTDC);
@@ -790,8 +790,8 @@ process_event( void )
     static const auto device_id = gUnpacker.get_device_id("BH2");
     static const auto adc_id = gUnpacker.get_data_id("BH2", "adc");
     static const auto tdc_id = gUnpacker.get_data_id("BH2", "fpga_leading");
-    static const auto tdc_min = gUser.GetParameter("BH2_TDC", 0);
-    static const auto tdc_max = gUser.GetParameter("BH2_TDC", 1);
+    static const auto tdc_min = gUser.GetParameter("TdcBH2", 0);
+    static const auto tdc_max = gUser.GetParameter("TdcBH2", 1);
     static const auto adc_hid = gHist.getSequentialID(kBH2, 0, kADC);
     static const auto tdc_hid = gHist.getSequentialID(kBH2, 0, kTDC);
     static const auto awt_hid = gHist.getSequentialID(kBH2, 0, kADCwTDC);
@@ -845,8 +845,8 @@ process_event( void )
     static const auto device_id = gUnpacker.get_device_id("HTOF");
     static const auto adc_id = gUnpacker.get_data_id("HTOF", "adc");
     static const auto tdc_id = gUnpacker.get_data_id("HTOF", "fpga_leading");
-    static const auto tdc_min = gUser.GetParameter("HTOF_TDC", 0);
-    static const auto tdc_max = gUser.GetParameter("HTOF_TDC", 1);
+    static const auto tdc_min = gUser.GetParameter("TdcHTOF", 0);
+    static const auto tdc_max = gUser.GetParameter("TdcHTOF", 1);
     static const auto htofa_id = gHist.getSequentialID(kHTOF, 0, kADC);
     static const auto htoft_id = gHist.getSequentialID(kHTOF, 0, kTDC);
     static const auto htofawt_id = gHist.getSequentialID(kHTOF, 0, kADCwTDC);
@@ -901,8 +901,8 @@ process_event( void )
     static const auto device_id = gUnpacker.get_device_id("SCH");
     static const auto leading_id = gUnpacker.get_data_id("SCH", "leading");
     static const auto trailing_id = gUnpacker.get_data_id("SCH", "trailing");
-    static const auto tdc_min = gUser.GetParameter("SCH_TDC", 0);
-    static const auto tdc_max = gUser.GetParameter("SCH_TDC", 1);
+    static const auto tdc_min = gUser.GetParameter("TdcSCH", 0);
+    static const auto tdc_max = gUser.GetParameter("TdcSCH", 1);
     static const auto tdc_hid = gHist.getSequentialID(kSCH, 0, kTDC, 1);
     static const auto tot_hid = gHist.getSequentialID(kSCH, 0, kADC, 1);
     static const auto tdcall_hid = gHist.getSequentialID(kSCH, 0, kTDC, NumOfSegSCH+1);
@@ -959,11 +959,11 @@ process_event( void )
     static const Int_t k_trailing = gUnpacker.get_data_id("SDC1", "trailing");
 
     // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("SDC1_TDC", 0);
-    static const Int_t tdc_max = gUser.GetParameter("SDC1_TDC", 1);
+    static const Int_t tdc_min = gUser.GetParameter("TdcSDC1", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcSDC1", 1);
     // TOT gate range
-    static const Int_t tot_min = gUser.GetParameter("SDC1_TOT", 0);
-    // static const Int_t tot_max = gUser.GetParameter("SDC1_TOT", 1);
+    static const Int_t tot_min = gUser.GetParameter("MinTotSDC1", 0);
+    // static const Int_t tot_max = gUser.GetParameter("MinTotSDC1", 1);
 
     // sequential id
     static const Int_t sdc1t_id    = gHist.getSequentialID(kSDC1, 0, kTDC);
@@ -1095,11 +1095,11 @@ process_event( void )
     static const Int_t k_trailing = gUnpacker.get_data_id("SDC2", "trailing");
 
     // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("SDC2_TDC", 0);
-    static const Int_t tdc_max = gUser.GetParameter("SDC2_TDC", 1);
+    static const Int_t tdc_min = gUser.GetParameter("TdcSDC2", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcSDC2", 1);
     // TOT gate range
-    static const Int_t tot_min = gUser.GetParameter("SDC2_TOT", 0);
-    // static const Int_t tot_max = gUser.GetParameter("SDC2_TOT", 1);
+    static const Int_t tot_min = gUser.GetParameter("MinTotSDC2", 0);
+    // static const Int_t tot_max = gUser.GetParameter("MinTotSDC2", 1);
 
     // sequential id
     static const Int_t sdc2t_id    = gHist.getSequentialID(kSDC2, 0, kTDC);
@@ -1241,11 +1241,11 @@ process_event( void )
     static const Int_t k_trailing = gUnpacker.get_data_id("SDC3", "trailing");
 
     // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("SDC3_TDC", 0);
-    static const Int_t tdc_max = gUser.GetParameter("SDC3_TDC", 1);
+    static const Int_t tdc_min = gUser.GetParameter("TdcSDC3", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcSDC3", 1);
     // TOT gate range
-    static const Int_t tot_min = gUser.GetParameter("SDC3_TOT", 0);
-    // static const Int_t tot_max = gUser.GetParameter("SDC3_TOT", 1);
+    static const Int_t tot_min = gUser.GetParameter("MinTotSDC3", 0);
+    // static const Int_t tot_max = gUser.GetParameter("MinTotSDC3", 1);
 
     // sequential id
     static const Int_t sdc3t_id    = gHist.getSequentialID(kSDC3, 0, kTDC);
@@ -1377,11 +1377,11 @@ process_event( void )
     static const Int_t k_trailing = gUnpacker.get_data_id("SDC4", "trailing");
 
     // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("SDC4_TDC", 0);
-    static const Int_t tdc_max = gUser.GetParameter("SDC4_TDC", 1);
+    static const Int_t tdc_min = gUser.GetParameter("TdcSDC4", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcSDC4", 1);
     // TOT gate range
-    static const Int_t tot_min = gUser.GetParameter("SDC4_TOT", 0);
-    // static const Int_t tot_max = gUser.GetParameter("SDC4_TOT", 1);
+    static const Int_t tot_min = gUser.GetParameter("MinTotSDC4", 0);
+    // static const Int_t tot_max = gUser.GetParameter("MinTotSDC4", 1);
 
     // sequential id
     static const Int_t sdc4t_id    = gHist.getSequentialID(kSDC4, 0, kTDC);
@@ -1513,11 +1513,11 @@ process_event( void )
     static const Int_t k_trailing = gUnpacker.get_data_id("SDC5", "trailing");
 
     // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("SDC5_TDC", 0);
-    static const Int_t tdc_max = gUser.GetParameter("SDC5_TDC", 1);
+    static const Int_t tdc_min = gUser.GetParameter("TdcSDC5", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcSDC5", 1);
     // TOT gate range
-    static const Int_t tot_min = gUser.GetParameter("SDC5_TOT", 0);
-    static const Int_t tot_max = gUser.GetParameter("SDC5_TOT", 1);
+    static const Int_t tot_min = gUser.GetParameter("MinTotSDC5", 0);
+    // static const Int_t tot_max = gUser.GetParameter("MinTotSDC5", 1);
 
 
     // sequential id
@@ -1600,7 +1600,7 @@ process_event( void )
             tdc_t = gUnpacker.get(k_device, l, 0, w, k_trailing, m);
             tot = tdc - tdc_t;
             hptr_array[sdc5tot_id+l]->Fill(tot);
-            if(tot < tot_min || tot >tot_max) continue;
+            if(tot < tot_min) continue;
 	    hptr_array[sdc5t_ctot_id + l]->Fill(tdc);
 	    hptr_array[sdc5tot_ctot_id+l]->Fill(tot);
 	    if( tdc1st<tdc ) tdc1st = tdc;
@@ -1656,11 +1656,11 @@ process_event( void )
     static const Int_t k_trailing = gUnpacker.get_data_id("SDC4", "trailing");
 
     // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("SDC4_TDC", 0);
-    static const Int_t tdc_max = gUser.GetParameter("SDC4_TDC", 1);
+    static const Int_t tdc_min = gUser.GetParameter("TdcSDC4", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcSDC4", 1);
     // TOT gate range
-    static const Int_t tot_min = gUser.GetParameter("SDC4_TOT", 0);
-    static const Int_t tot_max = gUser.GetParameter("SDC4_TOT", 1);
+    static const Int_t tot_min = gUser.GetParameter("MinTotSDC4", 0);
+    static const Int_t tot_max = gUser.GetParameter("MinTotSDC4", 1);
 
 
     // sequential id
@@ -1796,8 +1796,8 @@ process_event( void )
     static const auto tdc_hid = gHist.getSequentialID(kBVH, 0, kTDC);
     static const auto hit_hid = gHist.getSequentialID(kBVH, 0, kHitPat);
     static const auto mul_hid = gHist.getSequentialID(kBVH, 0, kMulti);
-    static const auto tdc_min = gUser.GetParameter("BVH_TDC", 0);
-    static const auto tdc_max = gUser.GetParameter("BVH_TDC", 1);
+    static const auto tdc_min = gUser.GetParameter("TdcBVH", 0);
+    static const auto tdc_max = gUser.GetParameter("TdcBVH", 1);
     Int_t multiplicity = 0;
     for(Int_t seg=0; seg<NumOfSegBVH; ++seg){
       Bool_t is_in_gate = false;
@@ -1830,8 +1830,8 @@ process_event( void )
     static const auto device_id = gUnpacker.get_device_id("TOF");
     static const auto adc_id = gUnpacker.get_data_id("TOF", "adc");
     static const auto tdc_id = gUnpacker.get_data_id("TOF", "fpga_leading");
-    static const auto tdc_min = gUser.GetParameter("TOF_TDC", 0);
-    static const auto tdc_max = gUser.GetParameter("TOF_TDC", 1);
+    static const auto tdc_min = gUser.GetParameter("TdcTOF", 0);
+    static const auto tdc_max = gUser.GetParameter("TdcTOF", 1);
     static const auto adc_hid = gHist.getSequentialID(kTOF, 0, kADC);
     static const auto tdc_hid = gHist.getSequentialID(kTOF, 0, kTDC);
     static const auto awt_hid = gHist.getSequentialID(kTOF, 0, kADCwTDC);
@@ -1895,8 +1895,8 @@ process_event( void )
     static const Int_t lacmul_id = gHist.getSequentialID(kLAC, 0, kMulti);
 
     // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("LAC_TDC", 0);
-    static const Int_t tdc_max = gUser.GetParameter("LAC_TDC", 1);
+    static const Int_t tdc_min = gUser.GetParameter("TdcLAC", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcLAC", 1);
 
     Int_t lact_id   = gHist.getSequentialID(kLAC, 0, kTDC);
     Int_t multiplicity = 0;
@@ -1940,8 +1940,8 @@ process_event( void )
     static const Int_t k_adc    = gUnpacker.get_data_id("WC", "adc");
     static const Int_t k_tdc    = gUnpacker.get_data_id("WC", "tdc");
     // TDC gate range
-    static const UInt_t tdc_min = gUser.GetParameter("WC_TDC", 0);
-    static const UInt_t tdc_max = gUser.GetParameter("WC_TDC", 1);
+    static const UInt_t tdc_min = gUser.GetParameter("TdcWC", 0);
+    static const UInt_t tdc_max = gUser.GetParameter("TdcWC", 1);
     // UP
     Int_t wca_id   = gHist.getSequentialID(kWC, 0, kADC);
     Int_t wct_id   = gHist.getSequentialID(kWC, 0, kTDC);
@@ -2177,10 +2177,10 @@ process_event( void )
     static const Int_t btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
     static const auto& hodoMan = HodoParamMan::GetInstance();
     // TDC gate range
-    static const UInt_t tdc_min_bh1 = gUser.GetParameter("BH1_TDC", 0);
-    static const UInt_t tdc_max_bh1 = gUser.GetParameter("BH1_TDC", 1);
-    static const UInt_t tdc_min_bh2 = gUser.GetParameter("BH2_TDC", 0);
-    static const UInt_t tdc_max_bh2 = gUser.GetParameter("BH2_TDC", 1);
+    static const UInt_t tdc_min_bh1 = gUser.GetParameter("TdcBH1", 0);
+    static const UInt_t tdc_max_bh1 = gUser.GetParameter("TdcBH1", 1);
+    static const UInt_t tdc_min_bh2 = gUser.GetParameter("TdcBH2", 0);
+    static const UInt_t tdc_max_bh2 = gUser.GetParameter("TdcBH2", 1);
     // BH2
     Double_t t0  = 1e10;
     Double_t ofs = 0;
@@ -2298,8 +2298,8 @@ process_event( void )
     static const Int_t bacm_id   = gHist.getSequentialID(kBAC, 0, kMulti);
 
     // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("BAC_TDC", 0);
-    static const Int_t tdc_max = gUser.GetParameter("BAC_TDC", 1);
+    static const Int_t tdc_min = gUser.GetParameter("TdcBAC", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcBAC", 1);
 
     Int_t multiplicity = 0;
     for(Int_t seg = 0; seg<NumOfSegBAC; ++seg){

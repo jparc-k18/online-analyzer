@@ -236,14 +236,14 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 #_______________________________________________________________________________
 $(my_dir)/dict/%_Dict.cc: $(my_dir)/include/%.hh $(my_dir)/linkdef/%_LinkDef.hh
 	$(QUIET) $(ECHO) "$(blue)=== Generating dictionary $^ - > $@$(default_color)"
-	$(rootcint) -f $@ $(CXXFLAGS) $^
+	$(rootcint) -f $@ $(ROOTCINTFLAGS) $^
 	$(QUIET) if [ -f $(subst .cc,_rdict.pcm,$@) ]; then \
 	$(CP) $(subst .cc,_rdict.pcm,$@) $(lib_dir); fi
 
 #_______________________________________________________________________________
 $(core_dict_src): $(core_heads) $(core_linkdef)
 	$(QUIET) $(ECHO) "$(blue)=== Generating dictionary $^ - > $@$(default_color)"
-	$(rootcint) -f $@ $(CXXFLAGS) $^
+	$(rootcint) -f $@ $(ROOTCINTFLAGS) $^
 
 $(core_dict_lib): $(core_dict_pcm) $(core_dict_src)
 	$(QUIET) $(CP) $< $@

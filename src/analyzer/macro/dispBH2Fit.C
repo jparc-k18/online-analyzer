@@ -11,8 +11,8 @@ dispBH2Fit( void )
   Updater::setUpdating( true );
 
   static const auto& gUser = UserParamMan::GetInstance();
-  static const auto tdc_min = gUser.GetParameter( "BH2_TDC", 0 );
-  static const auto tdc_max = gUser.GetParameter( "BH2_TDC", 1 );
+  static const auto tdc_min = gUser.GetParameter( "TdcBH2", 0 );
+  static const auto tdc_max = gUser.GetParameter( "TdcBH2", 1 );
 
   {
     auto c1 = dynamic_cast<TCanvas*>( gROOT->FindObject("c1") );

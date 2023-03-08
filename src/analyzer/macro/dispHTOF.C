@@ -13,8 +13,8 @@ dispHTOF()
   Updater::setUpdating(true);
 
   const auto& gUser = UserParamMan::GetInstance();
-  const auto tdc_min = gUser.GetParameter("HTOF_TDC", 0);
-  const auto tdc_max = gUser.GetParameter("HTOF_TDC", 1);
+  const auto tdc_min = gUser.GetParameter("TdcHTOF", 0);
+  const auto tdc_max = gUser.GetParameter("TdcHTOF", 1);
 
   { ///// ADC U
     auto c1 = dynamic_cast<TCanvas*>(gROOT->FindObject("c1"));

@@ -15,8 +15,8 @@ void dispBH2()
   // ----------------------------------
   //
   // TDC gate range
-  static const unsigned int tdc_min = gUser.GetParameter("BH2_TDC", 0);
-  static const unsigned int tdc_max = gUser.GetParameter("BH2_TDC", 1);
+  static const unsigned int tdc_min = gUser.GetParameter("TdcBH2", 0);
+  static const unsigned int tdc_max = gUser.GetParameter("TdcBH2", 1);
 
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");

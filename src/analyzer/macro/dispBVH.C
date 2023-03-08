@@ -13,8 +13,8 @@ dispBVH()
   Updater::setUpdating(true);
 
   const auto& gUser = UserParamMan::GetInstance();
-  const auto tdc_min = gUser.GetParameter("BVH_TDC", 0);
-  const auto tdc_max = gUser.GetParameter("BVH_TDC", 1);
+  const auto tdc_min = gUser.GetParameter("TdcBVH", 0);
+  const auto tdc_max = gUser.GetParameter("TdcBVH", 1);
 
   { ///// TDC
     auto c1 = dynamic_cast<TCanvas*>(gROOT->FindObject("c1"));

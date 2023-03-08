@@ -59,8 +59,8 @@ void dispBH1()
   }
 
   // TDC gate range
-  static const unsigned int tdc_min = gUser.GetParameter("BH1_TDC", 0);
-  static const unsigned int tdc_max = gUser.GetParameter("BH1_TDC", 1);
+  static const unsigned int tdc_min = gUser.GetParameter("TdcBH1", 0);
+  static const unsigned int tdc_max = gUser.GetParameter("TdcBH1", 1);
 
   // draw TDC U
   {

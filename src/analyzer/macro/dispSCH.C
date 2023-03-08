@@ -11,7 +11,7 @@ dispSCH( void )
   Updater::setUpdating( true );
 
   const auto& gUser = UserParamMan::GetInstance();
-  const Double_t TotRef = gUser.GetParameter( "SCH_TOTREF" );
+  const Double_t TotRef = gUser.GetParameter( "TotRefSCH" );
 
   std::vector<Int_t> hid_c1 = {
     HistMaker::getUniqueID( kSCH, 0, kTDC, NumOfSegSCH+1 ),

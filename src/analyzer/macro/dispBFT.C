@@ -11,7 +11,7 @@ dispBFT( void )
   Updater::setUpdating( true );
 
   const auto& gUser = UserParamMan::GetInstance();
-  const Double_t TotRef = gUser.GetParameter( "BFT_TOTREF" );
+  const Double_t TotRef = gUser.GetParameter( "TotRefBFT" );
 
   std::vector<Int_t> hid_c1 = {
     HistMaker::getUniqueID( kBFT, 0, kTDC, 1 ),

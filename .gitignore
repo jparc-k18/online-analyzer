@@ -6,7 +6,7 @@
 *~
 \#*
 .\#*
-*.swp
+*.sw[nop]
 backup/
 bin/*
 include/*

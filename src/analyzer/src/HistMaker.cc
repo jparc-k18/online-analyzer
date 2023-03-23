@@ -7286,13 +7286,36 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kVMEEASIROC, 0, kTDC2D  , 0);
     const char* sub_name = "TDC";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersVMEEASIROC; ++i){
+    for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){
       const char* title = NULL;
-      title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
+      title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
 			     1024, 0, 1024,
 			     "ch", "TDC [ch]"));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+    // TOT-2D -------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTOT2D);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kVMEEASIROC, 0, kTOT2D  , 0);
+    const char* sub_name = "TOT";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
+			     1024, 0, 1024,
+			     "ch", "TOT [ch]"));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -7308,9 +7331,9 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kVMEEASIROC, 0, kHighGain, 10);
     const char* sub_name = "HighGain";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersVMEEASIROC; ++i){
+    for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){
       const char* title = NULL;
-      title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
+      title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
 			     4096, 0, 4096,
@@ -7330,9 +7353,9 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kVMEEASIROC, 0, kLowGain, 10);
     const char* sub_name = "LowGain";
     // Add to the top directory
-    for(Int_t i=0; i<NumOfLayersVMEEASIROC; ++i){
+    for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){
       const char* title = NULL;
-      title = Form("%s_%s_%d", nameDetector, sub_name, i + 1);
+      title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
 			     4096, 0, 4096,

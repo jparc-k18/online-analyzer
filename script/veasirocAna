@@ -21,8 +21,8 @@ exe_file=$bin_dir/raw_hist_vmeeasiroc
 data_dir=$ana_dir/data
 
 ##### configure file
-#conf_file=/param/conf/analyzer.conf
-conf_file=/param/conf/analyzer_vmeeasiroc.conf
+conf_file=/param/conf/analyzer.conf
+#conf_file=/param/conf/analyzer_vmeeasiroc.conf
 
 #######################################################################
 if [ ! -f $exe_file ]; then

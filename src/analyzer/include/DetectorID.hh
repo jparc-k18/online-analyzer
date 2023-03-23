@@ -176,7 +176,9 @@ const Int_t NumOfTimeBucket = 170;
 
 // VMEEASIROC Board
 const Int_t DetIdVEASIROC         = 116;
-const Int_t NumOfLayersVMEEASIROC = 95;
+const std::vector<Int_t> PlaneIdOfVMEEASIROC = {16, 17, 31, 32, 33, 34, 49, 50, 51, 52, 53, 69,
+						27, 28, 29, 30, 44, 45, 46, 47, 48, 64, 65, 66, 67, 68, 86};
+const Int_t NumOfPlaneVMEEASIROC = PlaneIdOfVMEEASIROC.size();
 const Int_t NumOfSegVMEEASIROC    = 64;
 
 // Trigger Flag

@@ -245,5 +245,5 @@ ConfMan::FilePath( const std::string& src ) const
   if ( tmp.good() )
     return src;
   else
-    return sConfDir + "+" + src;
+    return sConfDir + "/" + src;
 }

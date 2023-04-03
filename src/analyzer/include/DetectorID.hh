@@ -28,7 +28,7 @@ const Int_t NumOfSegTOF     = 24;
 const Int_t NumOfSegHTOF    = 34;
 const Int_t NumOfSegBVH     =  4;
 const Int_t NumOfSegLAC     = 30;
-const Int_t NumOfSegWC      =  20;
+const Int_t NumOfSegWC      =  12;
 
 // Misc _______________________________________________________________
 const Int_t DetIdTrig       = 21;

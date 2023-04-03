@@ -73,10 +73,10 @@ enum DataType {
   kADCwTDC, kFADC, kFADCwTDC,
   kDeltaE, kCTime, kDeltaE2D, kCTime2D,
   kChisqr,
-  // Extra data type for AFT
-  kTOT2D,
   // Extra data type for CFT
   kHighGain, kLowGain, kPede,
+  // Extra data type for AFT
+  kTOT2D, kHighGainvsTOT,
   // Extra data type for EMC
   kSerial, kXpos, kYpos, kXYpos, kTime,
   // Extra data type for Ge detector

@@ -29,12 +29,13 @@ namespace analyzer
     std::vector<std::string> target = {
 				       // "vme01",
 				       // "vme02",
-				       "hul02sdc-1"
+				       // "hul01scr-1",
+				       // "hul01scr-2",
 				       // "hul_hbx_scr",
 				       // "hul02lac",
-				       // "hul01hr-1",
-				       // "hul01hr-2",
-				       // "hul01hr-3"
+				       "hul01hr-1",
+				       "hul01hr-2",
+				       "hul01hr-3"
     };
   }
 

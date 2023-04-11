@@ -208,7 +208,8 @@ process_event( void )
     int vmeeasiroc_tot_2d_id = gHist.getSequentialID(kVMEEASIROC, 0, kTOT2D,   1);
     int vmeeasiroc_hg_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kHighGain, 11);
     int vmeeasiroc_lg_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kLowGain, 11);
-    int vmeeasiroc_hgvstot_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kHighGainvsTOT, 21);
+    int vmeeasiroc_multihit_2d_id = gHist.getSequentialID(kVMEEASIROC, 0, kMultiHitTdc, 21);
+    int vmeeasiroc_hgvstot_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kHighGainvsTOT, 31);
 
     for(int l=0; l<NumOfPlaneVMEEASIROC; ++l){
       Int_t plane = PlaneIdOfVMEEASIROC[l]-1; // 0 origin
@@ -222,8 +223,6 @@ process_event( void )
 
 	{ // tdc
 	  int nhit_l = gUnpacker.get_entries(k_device, plane, 0, i, k_leading );
-	  int nhit_t = gUnpacker.get_entries(k_device, plane, 0, i, k_trailing );
-	  if(nhit_l==0)continue;
 	  for(int m = 0; m<nhit_l; ++m){
 	    int tdc = gUnpacker.get(k_device, plane, 0, i, k_leading, m);
 	    hptr_array[vmeeasiroc_t_2d_id+l]->Fill(i, tdc);
@@ -257,7 +256,6 @@ process_event( void )
 
       	{ // High gain
 	  int nhit_hg = gUnpacker.get_entries(k_device, plane, 0, i, k_highgain);
-	  if(nhit_hg==0)continue;
 	  for(int m = 0; m<nhit_hg; ++m){
 	    int adc_hg = gUnpacker.get(k_device, plane, 0, i, k_highgain, m);
 	    hptr_array[vmeeasiroc_hg_2d_id+l]->Fill(i, adc_hg);
@@ -266,16 +264,19 @@ process_event( void )
 
 	{ // Low gain
 	  int nhit_lg = gUnpacker.get_entries(k_device, plane, 0, i, k_lowgain );
-	  if(nhit_lg==0)continue;
 	  for(int m = 0; m<nhit_lg; ++m){
 	    int adc_lg = gUnpacker.get(k_device, plane, 0, i, k_lowgain, m);
 	    hptr_array[vmeeasiroc_lg_2d_id+l]->Fill(i, adc_lg);
 	  }
 	}
 
+	{ // multi hit
+	  int nhit_l = gUnpacker.get_entries(k_device, plane, 0, i, k_leading );
+	  hptr_array[vmeeasiroc_multihit_2d_id+l]->Fill(i, nhit_l);
+	}
+
       	{ // adc vs tot
 	  int nhit_hg = gUnpacker.get_entries(k_device, plane, 0, i, k_highgain);
-	  if(nhit_hg==0)continue;
 	  int nhit_l = gUnpacker.get_entries(k_device, plane, 0, i, k_leading );
 	  int nhit_t = gUnpacker.get_entries(k_device, plane, 0, i, k_trailing );
 	  Int_t hit_l_max = 0;

@@ -7365,6 +7365,29 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
+  // MultiHitTdc-2D -------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kMultiHitTdc);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kVMEEASIROC, 0, kMultiHitTdc, 20);
+    const char* sub_name = "MultiHitTdc";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
+			     20, 0, 20,
+			     "ch", "MultiHitTdc"));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
   // ADC HighGain vs TOT ----------------------------------------------
   {
     TString strSubDir  = CONV_STRING(kHighGainvsTOT);
@@ -7372,7 +7395,7 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    Int_t target_id = getUniqueID(kVMEEASIROC, 0, kHighGainvsTOT, 20);
+    Int_t target_id = getUniqueID(kVMEEASIROC, 0, kHighGainvsTOT, 30);
     const char* sub_name = "HighGainvsTOT";
     // Add to the top directory
     for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){

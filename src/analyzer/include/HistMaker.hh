@@ -76,7 +76,7 @@ enum DataType {
   // Extra data type for CFT
   kHighGain, kLowGain, kPede,
   // Extra data type for AFT
-  kTOT2D, kHighGainvsTOT,
+  kTOT2D, kMultiHitTdc, kHighGainvsTOT,
   // Extra data type for EMC
   kSerial, kXpos, kYpos, kXYpos, kTime,
   // Extra data type for Ge detector

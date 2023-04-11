@@ -25,6 +25,8 @@ enum DetectorType {
   kSDC3, kSDC4, kSDC5, kTOF, kLAC,
   // VMEEASIROC unique ID
   kVMEEASIROC,
+  // E72E90
+  kE72BAC, kE90SAC, kE72KVC, kE42BH2,
   // E42
   kBH2_E42, kBH2_E42MT, kWC, kWCMT, kT1, kT1MT, kT2, kT2MT,
   kHTOF, kTPC, kBVH,
@@ -189,6 +191,7 @@ public:
   TList* createDAQ( Bool_t flag_ps=true );
   TList* createDCEff( Bool_t flag_ps=true );
   TList* createBTOF( Bool_t flag_ps=true );
+  TList* createE72E90( Bool_t flag_ps=true );
 
   // Beam Profile
   TList* createBeamProfile( Bool_t flag_ps=true );

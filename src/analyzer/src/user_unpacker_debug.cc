@@ -28,14 +28,14 @@ namespace analyzer
     //std::vector<std::string> target = { "vme01" };
     std::vector<std::string> target = {
 				       // "vme01",
-				       // "vme02",
+				       "vme02",
 				       // "hul01scr-1",
 				       // "hul01scr-2",
 				       // "hul_hbx_scr",
 				       // "hul02lac",
-				       "hul01hr-1",
-				       "hul01hr-2",
-				       "hul01hr-3"
+				       // "hul01hr-1",
+				       // "hul01hr-2",
+				       // "hul01hr-3"
     };
   }
 
@@ -70,6 +70,9 @@ process_end( void )
 int
 process_event( void )
 {
+  Int_t device_id = gUnpacker.get_device_id("E72BAC");
+  gUnpacker.dump_data_device(device_id);
+
 #if 0
   // std::cout << TString('=', 80) << std::endl;
   Int_t eb_id = gUnpacker.get_fe_id("k18eb"); // Event builder

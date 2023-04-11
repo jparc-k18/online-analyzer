@@ -169,6 +169,20 @@ enum dTypesMst
 // Scaler ----------------------------------------------
 const Int_t NumOfScaler  = 2;
 
+// E72  _______________________________________________________________
+const Int_t DetIdE72BAC     = 501; 
+const Int_t DetIdE90SAC     = 502; 
+const Int_t DetIdE72KVC     = 503; 
+const Int_t DetIdE42BH2     = 504; 
+const Int_t DetIdT1         = 505; 
+const Int_t DetIdT2         = 506; 
+const Int_t NumOfSegE72BAC  = 1;
+const Int_t NumOfSegE90SAC  = 2;
+const Int_t NumOfSegE72KVC  = 4;
+const Int_t NumOfSegE42BH2  = 8;
+const Int_t NumOfSegT1      = 1;
+const Int_t NumOfSegT2      = 1;
+
 // E42
 const Int_t DetIdTPC       = 70;
 const Int_t NumOfLayersTPC = 32;
@@ -305,10 +319,10 @@ namespace DetHtTOF
 
 // Old Detectors
 //E42 test in E40 beamtime
-const Int_t DetIdT1       = 14; // E42
-const Int_t DetIdT2       = 15; // E42
-const Int_t NumOfSegT1      =  1; // E42
-const Int_t NumOfSegT2      =  1; // E42
+//const Int_t DetIdT1       = 14; // E42
+//const Int_t DetIdT2       = 15; // E42
+//const Int_t NumOfSegT1      =  1; // E42
+//const Int_t NumOfSegT2      =  1; // E42
 
 //E40 Detectors
 const Int_t DetIdSAC      =  9;

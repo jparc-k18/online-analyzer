@@ -1111,7 +1111,7 @@ process_event( void )
     static const Int_t sdc2mul_id  = gHist.getSequentialID(kSDC2, 0, kMulti);
     static const Int_t sdc2mulwt_id
       = gHist.getSequentialID(kSDC2, 0, kMulti, 1+NumOfLayersSDC2);
-
+    static const Int_t sdc2mul2D_id  = gHist.getSequentialID(kSDC2, 0, kMulti2D);
     static const Int_t sdc2t_ctot_id    = gHist.getSequentialID(kSDC2, 0, kTDC,    1+kTOTcutOffset);
     static const Int_t sdc2tot_ctot_id  = gHist.getSequentialID(kSDC2, 0, kADC,    1+kTOTcutOffset);
     static const Int_t sdc2t1st_ctot_id = gHist.getSequentialID(kSDC2, 0, kTDC2D,  1+kTOTcutOffset);
@@ -1122,7 +1122,9 @@ process_event( void )
     static const Int_t sdc2self_corr_id  = gHist.getSequentialID(kSDC2, kSelfCorr, 0, 1);
 
 
-    // TDC & HitPat & Multi
+    // TDC & HitPat & Multi & Multi2D
+    std::vector<int>multiplicity2D(4);
+    multiplicity2D = {0, 0, 0, 0};
     for(Int_t l=0; l<NumOfLayersSDC2; ++l){
       Int_t tdc                  = 0;
       Int_t tdc_t                = 0;
@@ -1203,11 +1205,24 @@ process_event( void )
         }
       }
 
+      multiplicity2D[l] = multiplicity;
+
       hptr_array[sdc2mul_id + l]->Fill(multiplicity);
       hptr_array[sdc2mulwt_id + l]->Fill(multiplicity_wt);
       hptr_array[sdc2mul_ctot_id   + l]->Fill(multiplicity_ctot);
       hptr_array[sdc2mulwt_ctot_id + l]->Fill(multiplicity_wt_ctot);
     }
+
+    int cor_id = 0;
+    for(Int_t i = 0; i<NumOfLayersSDC2; ++i){
+      for(Int_t j = 0; j<NumOfLayersSDC2; ++j){
+	if( i >= j ) continue;
+	hptr_array[sdc2mul2D_id + cor_id]->Fill(multiplicity2D[i], multiplicity2D[j]);
+	cor_id++;
+      }
+    }
+
+
 
 
     for(Int_t s=0; s<NumOfDimSDC2 ;s++){

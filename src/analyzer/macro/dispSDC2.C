@@ -114,6 +114,27 @@ void dispSDC2( void )
   }
 
 
+  // draw Multi2D
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c6");
+    c->Clear();
+    c->Divide(3,2);
+    int base_id = HistMaker::getUniqueID(kSDC2, 0, kMulti2D);
+    int cor_id = 0;
+    for( int i=0; i<n_layer; ++i ){
+      for( int j=0; j<n_layer; ++j ){
+	if( i >= j ) continue;
+	c->cd(cor_id + 1);
+        TH2 *h2d = (TH2*)GHist::get(base_id + cor_id);
+        if( !h2d ) continue;
+        h2d->Draw("colz");
+	cor_id++;
+      }
+    }
+    c->Update();
+  }
+
+
   // You must write these lines for the thread safe
   // ----------------------------------
   Updater::setUpdating(false);

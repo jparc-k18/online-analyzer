@@ -170,12 +170,12 @@ enum dTypesMst
 const Int_t NumOfScaler  = 2;
 
 // E72  _______________________________________________________________
-const Int_t DetIdE72BAC     = 501; 
-const Int_t DetIdE90SAC     = 502; 
-const Int_t DetIdE72KVC     = 503; 
-const Int_t DetIdE42BH2     = 504; 
-const Int_t DetIdT1         = 505; 
-const Int_t DetIdT2         = 506; 
+const Int_t DetIdE72BAC     = 501;
+const Int_t DetIdE90SAC     = 502;
+const Int_t DetIdE72KVC     = 503;
+const Int_t DetIdE42BH2     = 504;
+const Int_t DetIdT1         = 505;
+const Int_t DetIdT2         = 506;
 const Int_t NumOfSegE72BAC  = 1;
 const Int_t NumOfSegE90SAC  = 2;
 const Int_t NumOfSegE72KVC  = 4;
@@ -187,6 +187,14 @@ const Int_t NumOfSegT2      = 1;
 const Int_t DetIdTPC       = 70;
 const Int_t NumOfLayersTPC = 32;
 const Int_t NumOfTimeBucket = 170;
+
+// AFT for E70
+const Int_t DetIdAFT          = 112;
+const Int_t NumOfPlaneAFT     = 36;
+const std::vector<char*> NameOfPlaneAFT = {"X0", "X1", "Y0", "Y1"};
+const Int_t NumOfSegAFTX      = 32;
+const Int_t NumOfSegAFTY      = 16;
+const Int_t NumOfSegAFT[4]    = {NumOfSegAFTX, NumOfSegAFTX, NumOfSegAFTY, NumOfSegAFTY};
 
 // VMEEASIROC Board
 const Int_t DetIdVEASIROC         = 116;

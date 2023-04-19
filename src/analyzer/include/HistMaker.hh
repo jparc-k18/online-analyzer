@@ -25,6 +25,8 @@ enum DetectorType {
   kSDC3, kSDC4, kSDC5, kTOF, kLAC,
   // VMEEASIROC unique ID
   kVMEEASIROC,
+  //E70
+  kAFT,
   // E72E90
   kE72BAC, kE90SAC, kE72KVC, kE42BH2,
   // E42
@@ -50,7 +52,7 @@ enum SubDetectorType {
   kSubDetectorZero,
   // FHT Layers
   kFHT_L1, kFHT_L2,
-  //CFT cluster
+  //CFT, AFT cluster
   kCluster,
   // Detector unique sub ID in Counters
   kSP0_L1, kSP0_L2, kSP0_L3, kSP0_L4,
@@ -78,7 +80,9 @@ enum DataType {
   // Extra data type for CFT
   kHighGain, kLowGain, kPede,
   // Extra data type for AFT
-  kTOT2D, kMultiHitTdc, kHighGainvsTOT,
+  kHighGain2D, kLowGain2D, kPede2D,
+  kTOT, kTOT2D, kMultiHitTdc,
+  kHighGainXTOT,kLowGainXTOT, kHighGainvsTOT,
   // Extra data type for EMC
   kSerial, kXpos, kYpos, kXYpos, kTime,
   // Extra data type for Ge detector
@@ -167,6 +171,7 @@ public:
   TList* createBC3( Bool_t flag_ps=true );
   TList* createBC4( Bool_t flag_ps=true );
   TList* createBH2( Bool_t flag_ps=true );
+  TList* createAFT( Bool_t flag_ps=true );
   TList* createBAC( Bool_t flag_ps=true );
   TList* createFAC( Bool_t flag_ps=true );
   TList* createPVAC( Bool_t flag_ps=true );

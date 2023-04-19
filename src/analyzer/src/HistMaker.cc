@@ -109,8 +109,7 @@ TH1* HistMaker::createTH1( Int_t unique_id, const TString& title,
 {
   // Add information to dictionaries which will be used to find the histogram
   Int_t sequential_id = current_hist_id_++;
-  TypeRetInsert ret =
-    idmap_seq_from_unique_.insert( std::make_pair( unique_id, sequential_id ) );
+  TypeRetInsert ret   = idmap_seq_from_unique_.insert( std::make_pair( unique_id, sequential_id ) );
   idmap_seq_from_name_.insert( std::make_pair( title, sequential_id ) );
   idmap_unique_from_seq_.insert( std::make_pair( sequential_id, unique_id ) );
   if(!ret.second){
@@ -145,10 +144,10 @@ TH2* HistMaker::createTH2( Int_t unique_id, const TString& title,
 {
   // Add information to dictionaries which will be used to find the histogram
   Int_t sequential_id = current_hist_id_++;
-  TypeRetInsert ret =
-    idmap_seq_from_unique_.insert( std::make_pair(unique_id, sequential_id ) );
+  TypeRetInsert ret   = idmap_seq_from_unique_.insert( std::make_pair(unique_id, sequential_id ) );
   idmap_seq_from_name_.insert( std::make_pair(title, sequential_id ) );
   idmap_unique_from_seq_.insert( std::make_pair(sequential_id, unique_id ) );
+
   if( !ret.second ){
     std::cerr << "#E " << FUNC_NAME
 	      << " The unique id overlaps with other id"
@@ -1849,6 +1848,692 @@ TList* HistMaker::createBAC( Bool_t flag_ps )
 			   "Multiplicity", ""));
   }
 
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
+// createAFT
+// -------------------------------------------------------------------------
+TList* HistMaker::createAFT( Bool_t flag_ps )
+{
+
+  // Determine the detector name
+  TString strDet = CONV_STRING(kAFT);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
+
+  // Declaration of the directory
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // TDC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kTDC, 0);
+    const char* sub_name = "TDC";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+    	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+    				1024, 0, 1024,
+    				"TDC [ch]", ""));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // TOT---------------------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kTOT);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kTOT, 0);
+    const char* sub_name = "TOT";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+    	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+    				200, -50, 150,
+    				"TOT [ch]", ""));
+      }
+    }
+
+  // CTOT---------------------------------------------------------
+    target_id = getUniqueID(kAFT, 0, kTOT, 100);
+    sub_name = "CTOT";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+    	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+    				200, -50, 150,
+    				"TOT [ch]", ""));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC HighGain------------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kHighGain);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kHighGain, 0);
+    const char* sub_name = "HighGain";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+    	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+  				4096, 0, 4096,
+  				"ADC [ch]", ""));
+      }
+    }
+
+    // ADC HighGain Cut -------------------------------------------
+    target_id = getUniqueID(kAFT, 0, kHighGain, 100);
+    sub_name = "CHighGain";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+    	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+  				4096, 0, 4096,
+  				"ADC [ch]", ""));
+      }
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC LowGain ------------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kLowGain);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kLowGain , 0);
+    const char* sub_name = "LowGain";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+  	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+  				4096, 0, 4096,
+  				"ADC [ch]", ""));
+      }
+    }
+
+  // ADC LowGain Cut --------------------------------------------
+    target_id = getUniqueID(kAFT, 0, kLowGain , 100);
+    sub_name = "CLowGain";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+  	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+  				4096, 0, 4096,
+  				"ADC [ch]", ""));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC Pedestal -----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kPedestal);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kPede, 0);
+    const char* sub_name = "Pedestal";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+  	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+  				1024, -200, 824,
+  				"ADC [ch]", ""));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // TDC-2D -------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTDC2D);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kTDC2D  , 0);
+    const char* sub_name = "TDC";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+  	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+  	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH2(++target_id, title, // 1 origin
+  			       aft_nseg, 0, aft_nseg,
+  			       1024, 0, 1024,
+  			       "Fiber", "TDC [ch]"));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // TOT-2D --------------------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kTOT2D);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kTOT2D, 0);
+    const char* sub_name = "TOT";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH2(++target_id, title, // 1 origin
+  			       aft_nseg, 0, aft_nseg,
+  			       200, -50, 150,
+  			       "Fiber", "TOT [ch]"));
+      }
+    }
+
+    // CTOT-2D (after cut) --------------------------------------------
+    target_id = getUniqueID(kAFT, 0, kTOT2D, 100);
+    sub_name = "CTOT";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH2(++target_id, title, // 1 origin
+  			       aft_nseg, 0, aft_nseg,
+  			       200, -50, 150,
+  			       "Fiber", "TOT [ch]"));
+
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC-2D HighGain ----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kHighGain_2D);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kHighGain2D, 0);
+    const char* sub_name = "HighGain";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH2(++target_id, title, // 1 origin
+  			       aft_nseg, 0, aft_nseg,
+  			       4096/8, 0, 4096,
+  			       "Fiber", "ADC [ch]"));
+      }
+    }
+
+    // ADC-2D HighGain Cut ------------------------------------------
+    target_id = getUniqueID(kAFT, 0, kHighGain2D, 100);
+    sub_name = "CHighGain";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH2(++target_id, title, // 1 origin
+  			       aft_nseg, 0, aft_nseg,
+  			       4096/8, 0, 4096,
+  			       "Fiber", "ADC [ch]"));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC-2D LowGain -----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kLowGain_2D);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kLowGain2D, 0);
+    const char* sub_name = "LowGain";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH2(++target_id, title, // 1 origin
+  			       aft_nseg, 0, aft_nseg,
+  			       4096/8, 0, 4096,
+  			       "Fiber", "ADC [ch]"));
+      }
+    }
+
+    // ADC-2D LowGain Cut -------------------------------------------
+    target_id = getUniqueID(kAFT, 0, kLowGain2D, 100);
+    sub_name = "CLowGain";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH2(++target_id, title, // 1 origin
+  			       aft_nseg, 0, aft_nseg,
+  			       4096/8, 0, 4096,
+  			       "Fiber", "ADC [ch]"));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC-2D Pedestal ----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kPedestal_2D);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kPede2D, 0);
+    const char* sub_name = "Pedestal";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH2(++target_id, title, // 1 origin
+  			       aft_nseg, 0, aft_nseg,
+  			       4096/8,-200, 824,
+  			       "Fiber", "ADC [ch]"));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC HighGain * TOT -----------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kHighGainXTOT);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kHighGainXTOT, 0);
+    const char* sub_name = "HighGainXTOT";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
+  			      4096/8, 0, 4096,
+  			      200, -50, 150,
+  			      "HighGain [ch]", "TOT [ch]"));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC LowGain * TOT -----------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kLowGainXTOT);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kLowGainXTOT, 0);
+    const char* sub_name = "LowGainXTOT";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
+  			      4096/8, 0, 4096,
+  			      200, -50, 150,
+  			      "LowGain [ch]", "TOT [ch]"));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // Hit parttern -----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kHitPattern);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kHitPat, 0);
+    const char* sub_name = "HitPat";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
+  				aft_nseg, 0, aft_nseg,
+  				"Fiber", ""));
+      }
+    }
+
+    // Hit parttern (after cut) -----------------------------------
+    target_id = getUniqueID(kAFT, 0, kHitPat, 100);
+    sub_name = "CHitPat";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
+  				aft_nseg, 0, aft_nseg,
+  				"Fiber", ""));
+      }
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // Multiplicity -----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kMultiplicity);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kMulti, 0);
+    const char* sub_name = "Multi";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
+  				aft_nseg, 0, aft_nseg,
+  				"Fiber", ""));
+      }
+    }
+
+    // Hit parttern (after cut) -----------------------------------
+    target_id = getUniqueID(kAFT, 0, kMulti, 100);
+    sub_name = "CMulti";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
+  				aft_nseg, 0, aft_nseg,
+  				"Fiber", ""));
+      }
+    }
+
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  //cluster TDC -----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kCluster_tdc);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, kCluster, kTDC, 0);
+    const char* sub_name = "ClusterTDC";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+  	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+  				1024, 0, 1024,
+  				"TDC [ch]", ""));
+      }
+    }
+
+    target_id = getUniqueID(kAFT, kCluster, kTDC2D, 0);
+    sub_name = "seg-TDC maxseg";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH2(++target_id, title, // 1 origin
+  			       aft_nseg, 0, aft_nseg,
+  			       1024, 0, 1024,
+  			       "Fiber", "TDC [ch]"));
+      }
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  //cluster ADC HighGain -----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kCluster_hgadc);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // ADC Cluster HighGain -------------------------------------------
+    Int_t target_id = getUniqueID(kAFT, kCluster, kHighGain, 0);
+    const char* sub_name = "ClusterHighGain";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+  	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+  			      4096, 0, 4096,
+  			      "ADC [ch]", ""));
+      }
+    }
+
+    target_id = getUniqueID(kAFT, kCluster, kHighGain2D, 100);
+    sub_name = "seg-MaxHG";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
+  				aft_nseg, 0, aft_nseg,
+  				4096/8, 0, 4096,
+  				"Fiber", "ADC [ch]"));
+      }
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  //cluster ADC LowGain -----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kCluster_lgadc);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // ADC Cluster LowGain -------------------------------------------
+    Int_t target_id = getUniqueID(kAFT, kCluster, kLowGain, 0);
+    const char* sub_name = "ClusterLowGain";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+
+  	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+  			      4096, 0, 4096,
+  			      "ADC [ch]", ""));
+      }
+    }
+
+    target_id = getUniqueID(kAFT, kCluster, kLowGain, 100);
+    sub_name = "seg-MaxLG";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const char* layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
+  				aft_nseg, 0, aft_nseg,
+  				4096/8, 0, 4096,
+  				"Fiber", "ADC [ch]"));
+      }
+    }
+    top_dir->Add(sub_dir);
+  }
+
+
+  // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
 

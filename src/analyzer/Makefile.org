@@ -14,7 +14,7 @@ my_dir  = $(src_top_dir)/$(my_name)
 
 include ../common.mk
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 core_src	:= $(wildcard $(my_dir)/src/*.cc)
 core_src	:= $(filter-out $(my_dir)/src/user_%.cc,$(core_src))
 core_src	:= $(filter-out $(my_dir)/src/GuiPs.cc,$(core_src))
@@ -33,7 +33,7 @@ gui_obj		:= $(gui_src:$(my_dir)/src/%.cc=%.o)
 user_src	+= $(filter $(my_dir)/src/user_%.cc,$(wildcard $(my_dir)/src/*.cc))
 user_obj	:= $(user_src:$(my_dir)/src/%.cc=%.o)
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 core_linkdef	= $(my_dir)/linkdef/K18AnalyzerCore_LinkDef.hh
 core_dict_src	= $(core_linkdef:$(my_dir)/linkdef/%LinkDef.hh=$(my_dir)/dict/%Dict.cc)
 core_dict_obj	= $(core_dict_src:%.cc=%.o)
@@ -41,7 +41,7 @@ core_dict_pcm	= $(core_dict_src:%.cc=%_rdict.pcm)
 core_dict_lib	= $(core_dict_pcm:$(my_dir)/dict/%=$(lib_dir)/%)
 core_lib	= $(core_dict_src:$(my_dir)/dict/%_Dict.cc=$(lib_dir)/lib%.so)
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_skeleton	:= $(core_obj) user_skeleton.o
 my_tgt_skeleton	:= $(bin_dir)/skeleton
 
@@ -80,6 +80,9 @@ my_tgt_rawhist_e42_woTPC	:= $(bin_dir)/raw_hist_e42_woTPC
 
 my_obj_rawhist_e70	:= $(core_obj) user_rawhist_e70.o $(gui_obj)
 my_tgt_rawhist_e70	:= $(bin_dir)/raw_hist_e70
+
+my_obj_rawhist_aft	:= $(core_obj) user_rawhist_aft.o $(gui_obj)
+my_tgt_rawhist_aft	:= $(bin_dir)/raw_hist_aft
 
 my_obj_rawhist_hbx	:= $(core_obj) user_rawhist_hbx.o $(gui_obj)
 my_tgt_rawhist_hbx	:= $(bin_dir)/raw_hist_hbx
@@ -168,6 +171,12 @@ my_tgt_scaler_e03	:= $(bin_dir)/scaler_e03
 my_obj_scaler_e42	:= $(core_obj) user_scaler_e42.o
 my_tgt_scaler_e42	:= $(bin_dir)/scaler_e42
 
+my_obj_scaler_e72	:= $(core_obj) user_scaler_e72.o
+my_tgt_scaler_e72	:= $(bin_dir)/scaler_e72
+
+my_obj_scaler_e70	:= $(core_obj) user_scaler_e70.o
+my_tgt_scaler_e70	:= $(bin_dir)/scaler_e70
+
 my_obj_scaler_sch	:= $(core_obj) user_scaler_sch.o
 my_tgt_scaler_sch	:= $(bin_dir)/scaler_sch
 
@@ -188,16 +197,18 @@ my_tgt_ktune_y2020      := $(bin_dir)/ktune_y2020
 
 
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_event_display) \
 	$(my_tgt_rawhist_e42) \
 	$(my_tgt_rawhist_e42_woTPC) \
 	$(my_tgt_rawhist_e70) \
+	$(my_tgt_rawhist_aft) \
 	$(my_tgt_rawhist_hbx) \
 	$(my_tgt_rawhist_vmeeasiroc) \
 	$(my_tgt_beammonitor) \
-	$(my_tgt_scaler_e42) \
+	$(my_tgt_scaler_e70) \
+	$(my_tgt_scaler_e72) \
 	$(my_tgt_scaler_sch) \
 	$(my_tgt_scaler_daq) \
 	$(my_tgt_jsroot_beamprofile) \
@@ -213,6 +224,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 
 my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 	$(my_tgt_rawhist_e40) \	$(my_tgt_jsroot_e40) \
+	$(my_tgt_scaler_e42) \
 	$(my_tgt_scaler_e13) $(my_tgt_hbjscaler) \
 	$(my_tgt_hbj_ana) $(my_tgt_pwo) \
 	$(my_tgt_rawhist_e0705) $(my_tgt_scaler_e0705) \
@@ -233,14 +245,14 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 	$(my_tgt_scaler_e03) \
 	$(my_tgt_jsroot_e03)
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 $(my_dir)/dict/%_Dict.cc: $(my_dir)/include/%.hh $(my_dir)/linkdef/%_LinkDef.hh
 	$(QUIET) $(ECHO) "$(blue)=== Generating dictionary $^ - > $@$(default_color)"
 	$(rootcint) -f $@ $(ROOTCINTFLAGS) $^
 	$(QUIET) if [ -f $(subst .cc,_rdict.pcm,$@) ]; then \
 	$(CP) $(subst .cc,_rdict.pcm,$@) $(lib_dir); fi
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 $(core_dict_src): $(core_heads) $(core_linkdef)
 	$(QUIET) $(ECHO) "$(blue)=== Generating dictionary $^ - > $@$(default_color)"
 	$(rootcint) -f $@ $(ROOTCINTFLAGS) $^
@@ -252,31 +264,31 @@ $(core_lib): $(addprefix $(my_dir)/src/,$(core_obj)) $(core_dict_obj)
 	$(QUIET) $(ECHO) "$(yellow)=== Generating shared object $^ - > $@$(default_color)"
 	$(CXX) $(SOFLAGS) $^ -o $@
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_skeleton	:= $(addprefix $(my_dir)/src/,$(my_obj_skeleton))
 my_lib_skeleton	:= libmyskeleton.so
 $(eval $(call make-lib,$(my_lib_skeleton),$(my_obj_skeleton)))
 $(eval $(call make-gui-target,$(my_tgt_skeleton),$(my_lib_skeleton)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_udebug	:= $(addprefix $(my_dir)/src/,$(my_obj_udebug))
 my_lib_udebug	:= libmyudebug.so
 $(eval $(call make-lib,$(my_lib_udebug),$(my_obj_udebug)))
 $(eval $(call make-nogui-target,$(my_tgt_udebug),$(my_lib_udebug)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_tag	:= $(addprefix $(my_dir)/src/,$(my_obj_tag))
 my_lib_tag	:= libmytag.so
 $(eval $(call make-lib,$(my_lib_tag),$(my_obj_tag)))
 $(eval $(call make-nogui-target,$(my_tgt_tag),$(my_lib_tag)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_event_display	:= $(addprefix $(my_dir)/src/,$(my_obj_event_display))
 my_lib_event_display	:= libmyevent_display.so
 $(eval $(call make-lib,$(my_lib_event_display),$(my_obj_event_display)))
 $(eval $(call make-nogui-target,$(my_tgt_event_display),$(my_lib_event_display)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_rawhist_e13	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e13))
 my_obj_rawhist_e13	:= $(my_obj_rawhist_e13) \
 		  $(my_dir)/dict/GuiPs_Dict.o
@@ -284,7 +296,7 @@ my_lib_rawhist_e13 := libmyrawhist_e13.so
 $(eval $(call make-lib,$(my_lib_rawhist_e13),$(my_obj_rawhist_e13)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e13),$(my_lib_rawhist_e13)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_rawhist_e0705	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e0705))
 my_obj_rawhist_e0705	:= $(my_obj_rawhist_e0705) \
 		$(my_dir)/dict/GuiPs_Dict.o
@@ -292,7 +304,7 @@ my_lib_rawhist_e0705	:= libmyrawhist_e0705.so
 $(eval $(call make-lib,$(my_lib_rawhist_e0705),$(my_obj_rawhist_e0705)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e0705),$(my_lib_rawhist_e0705)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_rawhist_e07	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e07))
 my_obj_rawhist_e07	:= $(my_obj_rawhist_e07) \
 		$(my_dir)/dict/GuiPs_Dict.o
@@ -300,7 +312,7 @@ my_lib_rawhist_e07	:= libmyrawhist_e07.so
 $(eval $(call make-lib,$(my_lib_rawhist_e07),$(my_obj_rawhist_e07)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e07),$(my_lib_rawhist_e07)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_rawhist_e40	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e40))
 my_obj_rawhist_e40	:= $(my_obj_rawhist_e40) \
 		$(my_dir)/dict/GuiPs_Dict.o
@@ -308,7 +320,7 @@ my_lib_rawhist_e40	:= libmyrawhist_e40.so
 $(eval $(call make-lib,$(my_lib_rawhist_e40),$(my_obj_rawhist_e40)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e40),$(my_lib_rawhist_e40)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_rawhist_catch	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_catch))
 my_obj_rawhist_catch	:= $(my_obj_rawhist_catch) \
 		$(my_dir)/dict/GuiPs_Dict.o
@@ -317,7 +329,7 @@ $(eval $(call make-lib,$(my_lib_rawhist_catch),$(my_obj_rawhist_catch)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_catch),$(my_lib_rawhist_catch)))
 #
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_rawhist_e03	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e03))
 my_obj_rawhist_e03	:= $(my_obj_rawhist_e03) \
 		$(my_dir)/dict/GuiPs_Dict.o
@@ -325,7 +337,7 @@ my_lib_rawhist_e03	:= libmyrawhist_e03.so
 $(eval $(call make-lib,$(my_lib_rawhist_e03),$(my_obj_rawhist_e03)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e03),$(my_lib_rawhist_e03)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_rawhist_e42	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e42))
 my_obj_rawhist_e42	:= $(my_obj_rawhist_e42) \
 		$(my_dir)/dict/GuiPs_Dict.o
@@ -333,7 +345,7 @@ my_lib_rawhist_e42	:= libmyrawhist_e42.so
 $(eval $(call make-lib,$(my_lib_rawhist_e42),$(my_obj_rawhist_e42)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e42),$(my_lib_rawhist_e42)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_rawhist_e42_woTPC	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e42_woTPC))
 my_obj_rawhist_e42_woTPC	:= $(my_obj_rawhist_e42_woTPC) \
 		$(my_dir)/dict/GuiPs_Dict.o
@@ -349,8 +361,15 @@ my_lib_rawhist_e70	:= libmyrawhist_e70.so
 $(eval $(call make-lib,$(my_lib_rawhist_e70),$(my_obj_rawhist_e70)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_e70),$(my_lib_rawhist_e70)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
+my_obj_rawhist_aft	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_aft))
+my_obj_rawhist_aft	:= $(my_obj_rawhist_aft) \
+		$(my_dir)/dict/GuiPs_Dict.o
+my_lib_rawhist_aft	:= libmyrawhist_aft.so
+$(eval $(call make-lib,$(my_lib_rawhist_aft),$(my_obj_rawhist_aft)))
+$(eval $(call make-gui-target,$(my_tgt_rawhist_aft),$(my_lib_rawhist_aft)))
 
+#______________________________________________________________________________
 my_obj_rawhist_hbx	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_hbx))
 my_obj_rawhist_hbx	:= $(my_obj_rawhist_hbx) \
 		$(my_dir)/dict/GuiPs_Dict.o
@@ -358,7 +377,7 @@ my_lib_rawhist_hbx	:= libmyrawhist_hbx.so
 $(eval $(call make-lib,$(my_lib_rawhist_hbx),$(my_obj_rawhist_hbx)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_hbx),$(my_lib_rawhist_hbx)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_rawhist_vmeeasiroc	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_vmeeasiroc))
 my_obj_rawhist_vmeeasiroc	:= $(my_obj_rawhist_vmeeasiroc) \
 		$(my_dir)/dict/GuiPs_Dict.o
@@ -366,204 +385,216 @@ my_lib_rawhist_vmeeasiroc	:= libmyrawhist_vmeeasiroc.so
 $(eval $(call make-lib,$(my_lib_rawhist_vmeeasiroc),$(my_obj_rawhist_vmeeasiroc)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_vmeeasiroc),$(my_lib_rawhist_vmeeasiroc)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_vme01debug	:= $(addprefix $(my_dir)/src/,$(my_obj_vme01debug))
 my_lib_vme01debug	:= libmyvme01debug.so
 $(eval $(call make-lib,$(my_lib_vme01debug),$(my_obj_vme01debug)))
 $(eval $(call make-gui-target,$(my_tgt_vme01debug),$(my_lib_vme01debug)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_mstmonitor_e40	:= $(addprefix $(my_dir)/src/,$(my_obj_mstmonitor_e40))
 my_lib_mstmonitor_e40	:= libmymstmonitor_e40.so
 $(eval $(call make-lib,$(my_lib_mstmonitor_e40),$(my_obj_mstmonitor_e40)))
 $(eval $(call make-nogui-target,$(my_tgt_mstmonitor_e40),$(my_lib_mstmonitor_e40)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_mstmonitorjs_e40	:= $(addprefix $(my_dir)/src/,$(my_obj_mstmonitorjs_e40))
 my_obj_mstmonitorjs_e40	:= $(my_obj_mstmonitorjs_e40)
 my_lib_mstmonitorjs_e40	:= libmymstmonitorjs_e40.so
 $(eval $(call make-lib,$(my_lib_mstmonitorjs_e40),$(my_obj_mstmonitorjs_e40)))
 $(eval $(call make-nogui-target,$(my_tgt_mstmonitorjs_e40),$(my_lib_mstmonitorjs_e40)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_jsroot_e07	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_e07))
 my_obj_jsroot_e07	:= $(my_obj_jsroot_e07)
 my_lib_jsroot_e07	:= libmyjsroot_e07.so
 $(eval $(call make-lib,$(my_lib_jsroot_e07),$(my_obj_jsroot_e07)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_e07),$(my_lib_jsroot_e07)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_jsroot_e40	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_e40))
 my_obj_jsroot_e40	:= $(my_obj_jsroot_e40)
 my_lib_jsroot_e40	:= libmyjsroot_e40.so
 $(eval $(call make-lib,$(my_lib_jsroot_e40),$(my_obj_jsroot_e40)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_e40),$(my_lib_jsroot_e40)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_jsroot_e03	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_e03))
 my_obj_jsroot_e03	:= $(my_obj_jsroot_e03)
 my_lib_jsroot_e03	:= libmyjsroot_e03.so
 $(eval $(call make-lib,$(my_lib_jsroot_e03),$(my_obj_jsroot_e03)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_e03),$(my_lib_jsroot_e03)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_jsroot_e42	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_e42))
 my_obj_jsroot_e42	:= $(my_obj_jsroot_e42)
 my_lib_jsroot_e42	:= libmyjsroot_e42.so
 $(eval $(call make-lib,$(my_lib_jsroot_e42),$(my_obj_jsroot_e42)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_e42),$(my_lib_jsroot_e42)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_jsroot_scaler	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_scaler))
 my_obj_jsroot_scaler	:= $(my_obj_jsroot_scaler)
 my_lib_jsroot_scaler	:= libmyjsroot_scaler.so
 $(eval $(call make-lib,$(my_lib_jsroot_scaler),$(my_obj_jsroot_scaler)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_scaler),$(my_lib_jsroot_scaler)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_jsroot_scaler_hbx	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_scaler_hbx))
 my_obj_jsroot_scaler_hbx	:= $(my_obj_jsroot_scaler_hbx)
 my_lib_jsroot_scaler_hbx	:= libmyjsroot_scaler_hbx.so
 $(eval $(call make-lib,$(my_lib_jsroot_scaler_hbx),$(my_obj_jsroot_scaler_hbx)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_scaler_hbx),$(my_lib_jsroot_scaler_hbx)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_jsroot_beammonitor	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_beammonitor))
 my_obj_jsroot_beammonitor	:= $(my_obj_jsroot_beammonitor)
 my_lib_jsroot_beammonitor	:= libmyjsroot_beammonitor.so
 $(eval $(call make-lib,$(my_lib_jsroot_beammonitor),$(my_obj_jsroot_beammonitor)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_beammonitor),$(my_lib_jsroot_beammonitor)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_jsroot_beamprofile	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_beamprofile))
 my_obj_jsroot_beamprofile	:= $(my_obj_jsroot_beamprofile)
 my_lib_jsroot_beamprofile	:= libmyjsroot_beamprofile.so
 $(eval $(call make-lib,$(my_lib_jsroot_beamprofile),$(my_obj_jsroot_beamprofile)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_beamprofile),$(my_lib_jsroot_beamprofile)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_jsroot_totmonitor	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_totmonitor))
 my_obj_jsroot_totmonitor	:= $(my_obj_jsroot_totmonitor)
 my_lib_jsroot_totmonitor	:= libmyjsroot_totmonitor.so
 $(eval $(call make-lib,$(my_lib_jsroot_totmonitor),$(my_obj_jsroot_totmonitor)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_totmonitor),$(my_lib_jsroot_totmonitor)))
 #
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_emc_position := $(addprefix $(my_dir)/src/,$(my_obj_emc_position))
 my_obj_emc_position := $(my_obj_emc_position)
 my_lib_emc_position := libmyemc_position.so
 $(eval $(call make-lib,$(my_lib_emc_position),$(my_obj_emc_position)))
 $(eval $(call make-gui-target,$(my_tgt_emc_position),$(my_lib_emc_position)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_beammonitor := $(addprefix $(my_dir)/src/,$(my_obj_beammonitor))
 my_lib_beammonitor := libmybeammonitor.so
 $(eval $(call make-lib,$(my_lib_beammonitor),$(my_obj_beammonitor)))
 $(eval $(call make-gui-target,$(my_tgt_beammonitor),$(my_lib_beammonitor)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_beamprofile_e13	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e13))
 my_obj_beamprofile_e13	:= $(my_obj_beamprofile_e13)
 my_lib_beamprofile_e13 := libmybeamprofile_e13.so
 $(eval $(call make-lib,$(my_lib_beamprofile_e13),$(my_obj_beamprofile_e13)))
 $(eval $(call make-gui-target,$(my_tgt_beamprofile_e13),$(my_lib_beamprofile_e13)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_beamprofile_e07	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e07))
 my_obj_beamprofile_e07	:= $(my_obj_beamprofile_e07)
 my_lib_beamprofile_e07 := libmybeamprofile_e07.so
 $(eval $(call make-lib,$(my_lib_beamprofile_e07),$(my_obj_beamprofile_e07)))
 $(eval $(call make-gui-target,$(my_tgt_beamprofile_e07),$(my_lib_beamprofile_e07)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_beamprofile_e05	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e05))
 my_obj_beamprofile_e05	:= $(my_obj_beamprofile_e05)
 my_lib_beamprofile_e05 := libmybeamprofile_e05.so
 $(eval $(call make-lib,$(my_lib_beamprofile_e05),$(my_obj_beamprofile_e05)))
 $(eval $(call make-gui-target,$(my_tgt_beamprofile_e05),$(my_lib_beamprofile_e05)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_beamprofile_e03	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e03))
 my_obj_beamprofile_e03	:= $(my_obj_beamprofile_e03)
 my_lib_beamprofile_e03 := libmybeamprofile_e03.so
 $(eval $(call make-lib,$(my_lib_beamprofile_e03),$(my_obj_beamprofile_e03)))
 $(eval $(call make-gui-target,$(my_tgt_beamprofile_e03),$(my_lib_beamprofile_e03)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_beamprofile_e40	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e40))
 my_obj_beamprofile_e40	:= $(my_obj_beamprofile_e40)
 my_lib_beamprofile_e40 := libmybeamprofile_e40.so
 $(eval $(call make-lib,$(my_lib_beamprofile_e40),$(my_obj_beamprofile_e40)))
 $(eval $(call make-gui-target,$(my_tgt_beamprofile_e40),$(my_lib_beamprofile_e40)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_beamprofile_e42	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e42))
 my_obj_beamprofile_e42	:= $(my_obj_beamprofile_e42)
 my_lib_beamprofile_e42 := libmybeamprofile_e42.so
 $(eval $(call make-lib,$(my_lib_beamprofile_e42),$(my_obj_beamprofile_e42)))
 $(eval $(call make-gui-target,$(my_tgt_beamprofile_e42),$(my_lib_beamprofile_e42)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_emc_ssd_monitor	:= $(addprefix $(my_dir)/src/,$(my_obj_emc_ssd_monitor))
 my_lib_emc_ssd_monitor	:= libmyemc_ssd_monitor.so
 $(eval $(call make-lib,$(my_lib_emc_ssd_monitor),$(my_obj_emc_ssd_monitor)))
 $(eval $(call make-nogui-target,$(my_tgt_emc_ssd_monitor),$(my_lib_emc_ssd_monitor)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_scaler_e13 := $(addprefix $(my_dir)/src/,$(my_obj_scaler_e13))
 my_lib_scaler_e13 := libmyscaler_e13.so
 $(eval $(call make-lib,$(my_lib_scaler_e13),$(my_obj_scaler_e13)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_e13),$(my_lib_scaler_e13)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_scaler_e0705	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e0705))
 my_lib_scaler_e0705	:= libmyscaler_e0705.so
 $(eval $(call make-lib,$(my_lib_scaler_e0705),$(my_obj_scaler_e0705)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_e0705),$(my_lib_scaler_e0705)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_scaler_e07	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e07))
 my_lib_scaler_e07	:= libmyscaler_e07.so
 $(eval $(call make-lib,$(my_lib_scaler_e07),$(my_obj_scaler_e07)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_e07),$(my_lib_scaler_e07)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_scaler_e40	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e40))
 my_lib_scaler_e40	:= libmyscaler_e40.so
 $(eval $(call make-lib,$(my_lib_scaler_e40),$(my_obj_scaler_e40)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_e40),$(my_lib_scaler_e40)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_scaler_e03	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e03))
 my_lib_scaler_e03	:= libmyscaler_e03.so
 $(eval $(call make-lib,$(my_lib_scaler_e03),$(my_obj_scaler_e03)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_e03),$(my_lib_scaler_e03)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_scaler_e42	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e42))
 my_lib_scaler_e42	:= libmyscaler_e42.so
 $(eval $(call make-lib,$(my_lib_scaler_e42),$(my_obj_scaler_e42)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_e42),$(my_lib_scaler_e42)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
+my_obj_scaler_e72	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e72))
+my_lib_scaler_e72	:= libmyscaler_e72.so
+$(eval $(call make-lib,$(my_lib_scaler_e72),$(my_obj_scaler_e72)))
+$(eval $(call make-nogui-target,$(my_tgt_scaler_e72),$(my_lib_scaler_e72)))
+
+#______________________________________________________________________________
+my_obj_scaler_e70	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e70))
+my_lib_scaler_e70	:= libmyscaler_e70.so
+$(eval $(call make-lib,$(my_lib_scaler_e70),$(my_obj_scaler_e70)))
+$(eval $(call make-nogui-target,$(my_tgt_scaler_e70),$(my_lib_scaler_e70)))
+
+#______________________________________________________________________________
 my_obj_scaler_sch	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_sch))
 my_lib_scaler_sch	:= libmyscaler_sch.so
 $(eval $(call make-lib,$(my_lib_scaler_sch),$(my_obj_scaler_sch)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_sch),$(my_lib_scaler_sch)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_scaler_daq	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_daq))
 my_lib_scaler_daq	:= libmyscaler_daq.so
 $(eval $(call make-lib,$(my_lib_scaler_daq),$(my_obj_scaler_daq)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_daq),$(my_lib_scaler_daq)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_hbjscaler	:= $(addprefix $(my_dir)/src/,$(my_obj_hbjscaler))
 my_lib_hbjscaler	:= libmyhbjscaler.so
 $(eval $(call make-lib,$(my_lib_hbjscaler),$(my_obj_hbjscaler)))
 $(eval $(call make-nogui-target,$(my_tgt_hbjscaler),$(my_lib_hbjscaler)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_hbj_ana	:= $(addprefix $(my_dir)/src/,$(my_obj_hbj_ana))
 my_obj_hbj_ana	:= $(my_obj_hbj_ana) \
 		  $(my_dir)/dict/GuiPs_Dict.o
@@ -571,7 +602,7 @@ my_lib_hbj_ana	:= libmyhbj_ana.so
 $(eval $(call make-lib,$(my_lib_hbj_ana),$(my_obj_hbj_ana)))
 $(eval $(call make-gui-target,$(my_tgt_hbj_ana),$(my_lib_hbj_ana)))
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_pwo	:= $(addprefix $(my_dir)/src/,$(my_obj_pwo))
 my_obj_pwo	:= $(my_obj_pwo)
 my_lib_pwo	:= libmypwo.so
@@ -579,7 +610,7 @@ $(eval $(call make-lib,$(my_lib_pwo),$(my_obj_pwo)))
 $(eval $(call make-gui-target,$(my_tgt_pwo),$(my_lib_pwo)))
 
 
-#_______________________________________________________________________________
+#______________________________________________________________________________
 my_obj_ktune_y2020      := $(addprefix $(my_dir)/src/,$(my_obj_ktune_y2020))
 my_obj_ktune_y2020      := $(my_obj_ktune_y2020) \
 		        $(my_dir)/dict/GuiPs_Dict.o

@@ -1872,6 +1872,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
+  const char* NameOfPlaneAFT[4] = {"X0", "X1", "Y0", "Y1"};
+
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -9509,7 +9511,6 @@ TList* HistMaker::createE72E90( Bool_t flag_ps )
 
   // ADC---------------------------------------------------------
   {
-    // E72BAC
     // Declaration of the sub-directory
     TString strSubDir  = CONV_STRING(kADC);
     const char* nameSubDir = strSubDir.Data();
@@ -9517,6 +9518,7 @@ TList* HistMaker::createE72E90( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
+    // E72BAC
     Int_t target_id = getUniqueID(kE72BAC, 0, kADC, 0);
     const char* title = NULL;
     title = Form("%s_BAC_%s", nameDetector, nameSubDir);
@@ -9562,7 +9564,6 @@ TList* HistMaker::createE72E90( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-#if 0
   // ADC w/TDC ---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -9572,17 +9573,44 @@ TList* HistMaker::createE72E90( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
+    // E72BAC
     Int_t target_id = getUniqueID(kE72BAC, 0, kADCwTDC, 0);
-    for( Int_t i=0; i<NumOfSegE72BAC*2; ++i ){
-      const char* title = NULL;
-      if( i<NumOfSegE72BAC ){
-	Int_t seg = i +1; // 1 origin
-	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-      }else{
-	Int_t seg = i +1 -NumOfSegE72BAC; // 1 origin
-	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
-      }
+    const char* title = NULL;
+    title = Form("%s_BAC_%s", nameDetector, nameSubDir);
 
+    sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    // E90SAC
+    target_id = getUniqueID(kE90SAC, 0, kADCwTDC, 0);
+    for( Int_t i=0; i<NumOfSegE90SAC; ++i ){
+      const char* title = NULL;
+      Int_t seg = i +1; // 1 origin
+      title = Form("%s_SAC_%s_%d", nameDetector, nameSubDir, seg);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+    // E72KVC
+    const TString udsum[3] = {"U", "D", "SUM"};
+    target_id = getUniqueID(kE72KVC, 0, kADCwTDC, 0);
+    for( Int_t j=0; j<3; ++j ){
+      for( Int_t i=0; i<NumOfSegE72KVC; ++i ){
+	const char* title = NULL;
+	Int_t seg = i +1; // 1 origin
+	title = Form("%s_KVC_%s_%d%s", nameDetector, nameSubDir, seg, udsum[j].Data());
+	sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			       0x1000, 0, 0x1000,
+			       "ADC [ch]", ""));
+      }
+    }
+    // E42BH2
+    const TString ud[2] = {"U", "D"};
+    target_id = getUniqueID(kE42BH2, 0, kADCwTDC, 0);
+    for( Int_t j=0; j<2; ++j ){
+      const char* title = NULL;
+      Int_t seg = 4; // 1 origin
+      title = Form("%s_BH2_%s_%d%s", nameDetector, nameSubDir, seg, ud[j].Data());
       sub_dir->Add(createTH1(++target_id, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
@@ -9601,27 +9629,155 @@ TList* HistMaker::createE72E90( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     // Make histogram and add it
+    // E72BAC
     Int_t target_id = getUniqueID(kE72BAC, 0, kTDC, 0);
-    for(Int_t i = 0; i<NumOfSegE72BAC*2; ++i){
-      const char* title = NULL;
-      if(i < NumOfSegE72BAC){
-	Int_t seg = i+1; // 1 origin
-	title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-      }else{
-	Int_t seg = i+1-NumOfSegE72BAC; // 1 origin
-	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
-      }
+    const char* title = NULL;
+    title = Form("%s_BAC_%s", nameDetector, nameSubDir);
 
-      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     //			     10000, 0, 400000,
-			     50000, 0, 2000000,
-			     "TDC [ch]", ""));
+    sub_dir->Add(createTH1(target_id +1, title, // 1 origin
+			    //			     10000, 0, 400000,
+			    50000, 0, 2000000,
+			    "TDC [ch]", ""));
+    // E90SAC
+    target_id = getUniqueID(kE90SAC, 0, kTDC, 0);
+    for( Int_t i=0; i<NumOfSegE90SAC; ++i ){
+      const char* title = NULL;
+      Int_t seg = i +1; // 1 origin
+      title = Form("%s_SAC_%s_%d", nameDetector, nameSubDir, seg);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			    50000, 0, 2000000,
+			    "TDC [ch]", ""));
     }
+    // E72KVC
+    const TString udsum[3] = {"U", "D", "SUM"};
+    target_id = getUniqueID(kE72KVC, 0, kTDC, 0);
+    for( Int_t j=0; j<3; ++j ){
+      for( Int_t i=0; i<NumOfSegE72KVC; ++i ){
+	const char* title = NULL;
+	Int_t seg = i +1; // 1 origin
+	title = Form("%s_KVC_%s_%d%s", nameDetector, nameSubDir, seg, udsum[j].Data());
+	sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			    50000, 0, 2000000,
+			    "TDC [ch]", ""));
+      }
+    }
+    // E42BH2
+    const TString udmt[3] = {"U", "D", "MT"};
+    target_id = getUniqueID(kE42BH2, 0, kTDC, 0);
+    for( Int_t j=0; j<2; ++j ){
+      const char* title = NULL;
+      Int_t seg = 4; // 1 origin
+      title = Form("%s_BH2_%s_%d%s", nameDetector, nameSubDir, seg, udmt[j].Data());
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			    50000, 0, 2000000,
+			    "TDC [ch]", ""));
+    }
+    for( Int_t i=0; i<NumOfSegE42BH2; ++i ){
+      const char* title = NULL;
+      Int_t seg = i +1; // 1 origin
+      title = Form("%s_BH2_%s_%d%s", nameDetector, nameSubDir, seg, udmt[2].Data());
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			    50000, 0, 2000000,
+			    "TDC [ch]", ""));
+    }
+    // T1
+    target_id = getUniqueID(kT1, 0, kTDC, 0);
+    title = Form("%s_T1_%s", nameDetector, nameSubDir);
+
+    sub_dir->Add(createTH1(target_id +1, title, // 1 origin
+			    //			     10000, 0, 400000,
+			    50000, 0, 2000000,
+			    "TDC [ch]", ""));
+    // T2
+    target_id = getUniqueID(kT2, 0, kTDC, 0);
+    title = Form("%s_T2_%s", nameDetector, nameSubDir);
+
+    sub_dir->Add(createTH1(target_id +1, title, // 1 origin
+			    //			     10000, 0, 400000,
+			    50000, 0, 2000000,
+			    "TDC [ch]", ""));
+
 
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-#endif
+  // Hit parttern -----------------------------------------------
+  {
+    const char* title = "E90SAC_hit_pattern";
+    Int_t target_id = getUniqueID(kE90SAC, 0, kHitPat, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegE90SAC, 0, NumOfSegE90SAC,
+			   "Segment", ""));
+  }
+
+  // Multiplicity -----------------------------------------------
+  {
+    const char* title = "E90SAC_multiplicity";
+    Int_t target_id = getUniqueID(kE90SAC, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegE90SAC+1, 0, NumOfSegE90SAC+1,
+			   "Multiplicity", ""));
+  }
+  // Hit parttern -----------------------------------------------
+  {
+    const char* title = "E72KVC_hit_pattern";
+    Int_t target_id = getUniqueID(kE72KVC, 0, kHitPat, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegE72KVC, 0, NumOfSegE72KVC,
+			   "Segment", ""));
+  }
+
+  // Multiplicity -----------------------------------------------
+  {
+    const char* title = "E72KVC_multiplicity";
+    Int_t target_id = getUniqueID(kE72KVC, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegE72KVC+1, 0, NumOfSegE72KVC+1,
+			   "Multiplicity", ""));
+  }
+  // Hit parttern -----------------------------------------------
+  {
+    const char* title = "E72KVCSUM_hit_pattern";
+    Int_t target_id = getUniqueID(kE72KVC, 0, kHitPat, 1);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegE72KVC, 0, NumOfSegE72KVC,
+			   "Segment", ""));
+  }
+
+  // Multiplicity -----------------------------------------------
+  {
+    const char* title = "E72KVCSUM_multiplicity";
+    Int_t target_id = getUniqueID(kE72KVC, 0, kMulti, 1);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegE72KVC+1, 0, NumOfSegE72KVC+1,
+			   "Multiplicity", ""));
+  }
+  
+  // Hit parttern -----------------------------------------------
+  {
+    const char* title = "E42BH2_hit_pattern";
+    Int_t target_id = getUniqueID(kE42BH2, 0, kHitPat, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegE42BH2, 0, NumOfSegE42BH2,
+			   "Segment", ""));
+  }
+
+  // Multiplicity -----------------------------------------------
+  {
+    const char* title = "E42BH2_multiplicity";
+    Int_t target_id = getUniqueID(kE42BH2, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegE42BH2+1, 0, NumOfSegE42BH2+1,
+			   "Multiplicity", ""));
+  }
 
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;

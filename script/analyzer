@@ -22,7 +22,7 @@ data_dir=$ana_dir/data
 
 ##### configure file
 # Do NOT change here. Change symbolic link.
-conf_file=/param/conf/analyzer.conf
+conf_file=/misc/software/param/conf/analyzer.conf
 
 #######################################################################
 if [ ! -f $exe_file ]; then

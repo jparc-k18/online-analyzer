@@ -182,6 +182,34 @@ const Int_t NumOfSegE72KVC  = 4;
 const Int_t NumOfSegE42BH2  = 8;
 const Int_t NumOfSegT1      = 1;
 const Int_t NumOfSegT2      = 1;
+const Int_t NumOfSegE72Parasite  = 8;
+
+namespace e72parasite
+{
+  enum EE72Parasite
+  {
+    kT1,
+    kE42BH2,
+    kE72BAC,
+    kE90SAC1,
+    kE90SAC2,
+    kE72KVC,
+    kE72KVCSUM,
+    kT2
+  };
+
+  const std::vector<TString> SE72Parasite = 
+  {
+    "T1",
+    "BH2",
+    "BAC",
+    "SAC-6",
+    "SAC-8",
+    "KVC",
+    "KVCSUM",
+    "T2",
+  };
+}
 
 // E42
 const Int_t DetIdTPC       = 70;
@@ -191,7 +219,8 @@ const Int_t NumOfTimeBucket = 170;
 // AFT for E70
 const Int_t DetIdAFT          = 112;
 const Int_t NumOfPlaneAFT     = 36;
-const std::vector<char*> NameOfPlaneAFT = {"X0", "X1", "Y0", "Y1"};
+// const char *NameOfPlaneAFT[4] = {"X0", "X1", "Y0", "Y1"};
+// const std::vector<char*> NameOfPlaneAFT = {"X0", "X1", "Y0", "Y1"};
 const Int_t NumOfSegAFTX      = 32;
 const Int_t NumOfSegAFTY      = 16;
 const Int_t NumOfSegAFT[4]    = {NumOfSegAFTX, NumOfSegAFTX, NumOfSegAFTY, NumOfSegAFTY};

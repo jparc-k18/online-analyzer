@@ -28,7 +28,7 @@ enum DetectorType {
   //E70
   kAFT,
   // E72E90
-  kE72BAC, kE90SAC, kE72KVC, kE42BH2,
+  kE72BAC, kE90SAC, kE72KVC, kE42BH2, kE72Parasite,
   // E42
   kBH2_E42, kBH2_E42MT, kWC, kWCMT, kT1, kT1MT, kT2, kT2MT,
   kHTOF, kTPC, kBVH,

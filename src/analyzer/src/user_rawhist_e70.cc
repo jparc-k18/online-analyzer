@@ -170,6 +170,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_misc->Add(gHist.createMatrix());
   tab_misc->Add(gHist.createE72E90());
   tab_misc->Add(macro::Get("dispE72E90"));
+  tab_misc->Add(macro::Get("dispE72E90Eff"));
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -2357,6 +2358,79 @@ process_event( void )
     gUnpacker.dump_data_device(k_device);
 #endif
   }//BAC
+// ======================== E72E90 ==============================
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+  // E72Parasite -----------------------------------------------------------
+  static const Int_t e72para_id = gHist.getSequentialID(kE72Parasite, 0, kHitPat);
+  Bool_t is_T1_fired = false, is_T2_fired = false;
+  // T1 -----------------------------------------------------------
+  {
+    // data type
+    static const Int_t k_device = gUnpacker.get_device_id("T1");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("T1","tdc");
+
+    // sequential id
+    static const Int_t t_id   = gHist.getSequentialID(kT1, 0, kTDC);
+    static const Int_t m_id   = gHist.getSequentialID(kT1, 0, kMulti);
+
+    // TDC gate range
+    static const Int_t tdc_min = gUser.GetParameter("TdcT1", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcT1", 1);
+
+    Int_t multiplicity = 0;
+    Int_t seg = 0;
+      // TDC
+      auto nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+
+      for(Int_t m = 0; m<nhit_t; ++m){
+	Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+	hptr_array[t_id + seg]->Fill( tdc );
+	if(tdc_min < tdc && tdc < tdc_max){
+	  is_T1_fired = true;
+	}// tdc range is ok
+      }// for(m)
+      if( is_T1_fired ){
+	++multiplicity;
+      }
+    hptr_array[m_id]->Fill( multiplicity );
+  }//T1
+  // T2 -----------------------------------------------------------
+  {
+    // data type
+    static const Int_t k_device = gUnpacker.get_device_id("T2");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("T2","tdc");
+
+    // sequential id
+    static const Int_t t_id   = gHist.getSequentialID(kT2, 0, kTDC);
+    static const Int_t m_id   = gHist.getSequentialID(kT2, 0, kMulti);
+
+    // TDC gate range
+    static const Int_t tdc_min = gUser.GetParameter("TdcT2", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcT2", 1);
+
+    Int_t multiplicity = 0;
+    Int_t seg = 0;
+      // TDC
+      auto nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+
+      for(Int_t m = 0; m<nhit_t; ++m){
+	Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+	hptr_array[t_id + seg]->Fill( tdc );
+	if(tdc_min < tdc && tdc < tdc_max){
+	  is_T2_fired = true;
+	}// tdc range is ok
+      }// for(m)
+      if( is_T2_fired ){
+	++multiplicity;
+      }
+      hptr_array[m_id]->Fill( multiplicity );
+  }//T2
+
+  //if( !(is_T1_fired && is_T2_fired) ) return 0;
+  //hptr_array[e72para_id]->Fill( e72parasite::kT1 );
+  //hptr_array[e72para_id]->Fill( e72parasite::kT2 );
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
@@ -2372,11 +2446,13 @@ process_event( void )
     static const Int_t a_id   = gHist.getSequentialID(kE72BAC, 0, kADC);
     static const Int_t t_id   = gHist.getSequentialID(kE72BAC, 0, kTDC);
     static const Int_t awt_id = gHist.getSequentialID(kE72BAC, 0, kADCwTDC);
+    static const Int_t m_id   = gHist.getSequentialID(kE72BAC, 0, kMulti);
 
     // TDC gate range
     static const Int_t tdc_min = gUser.GetParameter("TdcE72BAC", 0);
     static const Int_t tdc_max = gUser.GetParameter("TdcE72BAC", 1);
 
+    Int_t multiplicity = 0;
     Int_t seg = 0;
       // ADC
       auto nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
@@ -2403,7 +2479,10 @@ process_event( void )
 	  Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
 	  hptr_array[awt_id + seg]->Fill( adc );
 	}
+	hptr_array[e72para_id]->Fill( e72parasite::kE72BAC );
+	++multiplicity;
       }// flag is OK
+    hptr_array[m_id]->Fill( multiplicity );
 
 #if 0
     // Debug, dump data relating this detector
@@ -2426,13 +2505,14 @@ process_event( void )
     static const Int_t t_id   = gHist.getSequentialID(kE90SAC, 0, kTDC);
     static const Int_t awt_id = gHist.getSequentialID(kE90SAC, 0, kADCwTDC);
     static const Int_t h_id   = gHist.getSequentialID(kE90SAC, 0, kHitPat);
-    static const Int_t m_id   = gHist.getSequentialID(kE90SAC, 0, kMulti);
+    static const Int_t m6_id   = gHist.getSequentialID(kE90SAC, 0, kMulti, 1);
+    static const Int_t m8_id   = gHist.getSequentialID(kE90SAC, 0, kMulti, 2);
 
     // TDC gate range
     static const Int_t tdc_min = gUser.GetParameter("TdcE90SAC", 0);
     static const Int_t tdc_max = gUser.GetParameter("TdcE90SAC", 1);
 
-    Int_t multiplicity = 0;
+    Int_t multiplicity[2] = {0, 0};
     for(Int_t seg = 0; seg<NumOfSegE90SAC; ++seg){
       // ADC
       Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
@@ -2460,11 +2540,13 @@ process_event( void )
 	  hptr_array[awt_id + seg]->Fill( adc );
 	}
 	hptr_array[h_id]->Fill(seg);
-	++multiplicity;
+	hptr_array[e72para_id]->Fill( e72parasite::kE90SAC1 + seg );
+	++multiplicity[seg];
       }// flag is OK
     }
 
-    hptr_array[m_id]->Fill( multiplicity );
+    hptr_array[m6_id]->Fill( multiplicity[0] );
+    hptr_array[m8_id]->Fill( multiplicity[1] );
 
 #if 0
     // Debug, dump data relating this detector
@@ -2488,6 +2570,8 @@ process_event( void )
     static const Int_t awt_id = gHist.getSequentialID(kE72KVC, 0, kADCwTDC);
     static const Int_t h_id   = gHist.getSequentialID(kE72KVC, 0, kHitPat);
     static const Int_t m_id   = gHist.getSequentialID(kE72KVC, 0, kMulti);
+    static const Int_t h2_id   = gHist.getSequentialID(kE72KVC, 0, kHitPat, 2);
+    static const Int_t m2_id   = gHist.getSequentialID(kE72KVC, 0, kMulti, 2);
     
     // TDC gate range
     static const Int_t tdc_min = gUser.GetParameter("TdcE72KVC", 0);
@@ -2528,13 +2612,16 @@ process_event( void )
 	  ++multiplicity;
       }// flag is OK
       if(hit_flag[seg][2] == 1){
-	  hptr_array[h_id+2]->Fill(seg);
+	  hptr_array[h2_id]->Fill(seg);
 	  ++multiplicity_sum;
       }// flag is OK
     }//seg
 
     hptr_array[m_id]->Fill( multiplicity );
-    hptr_array[m_id+2]->Fill( multiplicity_sum );
+    hptr_array[m2_id]->Fill( multiplicity_sum );
+
+    if( multiplicity ) hptr_array[e72para_id]->Fill( e72parasite::kE72KVC );
+    if( multiplicity_sum ) hptr_array[e72para_id]->Fill( e72parasite::kE72KVCSUM );
 
 #if 0
     // Debug, dump data relating this detector
@@ -2624,45 +2711,6 @@ process_event( void )
     gUnpacker.dump_data_device(k_device);
 #endif
   }//E42BH2
-#if DEBUG
-  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-#endif
-  // T1 -----------------------------------------------------------
-  {
-    // data type
-    static const Int_t k_device = gUnpacker.get_device_id("T1");
-    static const Int_t k_tdc    = gUnpacker.get_data_id("T1","tdc");
-
-    // sequential id
-    static const Int_t t_id   = gHist.getSequentialID(kT1, 0, kTDC);
-
-    Int_t seg = 0;
-      // TDC
-      auto nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-
-      for(Int_t m = 0; m<nhit_t; ++m){
-	Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
-	hptr_array[t_id + seg]->Fill( tdc );
-      }// for(m)
-  }//T1
-  // T2 -----------------------------------------------------------
-  {
-    // data type
-    static const Int_t k_device = gUnpacker.get_device_id("T2");
-    static const Int_t k_tdc    = gUnpacker.get_data_id("T2","tdc");
-
-    // sequential id
-    static const Int_t t_id   = gHist.getSequentialID(kT2, 0, kTDC);
-
-    Int_t seg = 0;
-      // TDC
-      auto nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-
-      for(Int_t m = 0; m<nhit_t; ++m){
-	Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
-	hptr_array[t_id + seg]->Fill( tdc );
-      }// for(m)
-  }//T2
 
 
   return 0;

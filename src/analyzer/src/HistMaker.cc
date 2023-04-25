@@ -9490,7 +9490,7 @@ TList* HistMaker::createFHT2( Bool_t flag_ps )
   return top_dir;
 }
 // -------------------------------------------------------------------------
-// createE72BAC
+// createE72E90
 // -------------------------------------------------------------------------
 TList* HistMaker::createE72E90( Bool_t flag_ps )
 {
@@ -9701,6 +9701,35 @@ TList* HistMaker::createE72E90( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
+
+  // Multiplicity -----------------------------------------------
+  {
+    const char* title = "T1_multiplicity";
+    Int_t target_id = getUniqueID(kT1, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegT1+1, 0, NumOfSegT1+1,
+			   "Multiplicity", ""));
+  }
+  // Multiplicity -----------------------------------------------
+  {
+    const char* title = "T2_multiplicity";
+    Int_t target_id = getUniqueID(kT2, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegT2+1, 0, NumOfSegT2+1,
+			   "Multiplicity", ""));
+  }
+
+  // Multiplicity -----------------------------------------------
+  {
+    const char* title = "E72BAC_multiplicity";
+    Int_t target_id = getUniqueID(kE72BAC, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegE72BAC+1, 0, NumOfSegE72BAC+1,
+			   "Multiplicity", ""));
+  }
   // Hit parttern -----------------------------------------------
   {
     const char* title = "E90SAC_hit_pattern";
@@ -9713,8 +9742,17 @@ TList* HistMaker::createE72E90( Bool_t flag_ps )
 
   // Multiplicity -----------------------------------------------
   {
-    const char* title = "E90SAC_multiplicity";
+    const char* title = "E90SAC6_multiplicity";
     Int_t target_id = getUniqueID(kE90SAC, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+			   NumOfSegE90SAC+1, 0, NumOfSegE90SAC+1,
+			   "Multiplicity", ""));
+  }
+  // Multiplicity -----------------------------------------------
+  {
+    const char* title = "E90SAC8_multiplicity";
+    Int_t target_id = getUniqueID(kE90SAC, 0, kMulti, 1);
     // Add to the top directory
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegE90SAC+1, 0, NumOfSegE90SAC+1,
@@ -9777,6 +9815,21 @@ TList* HistMaker::createE72E90( Bool_t flag_ps )
     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
 			   NumOfSegE42BH2+1, 0, NumOfSegE42BH2+1,
 			   "Multiplicity", ""));
+  }
+  
+  // Hit parttern -----------------------------------------------
+  {
+    const char* title = "E72Parasite_hit_pattern";
+    Int_t target_id = getUniqueID(kE72Parasite, 0, kHitPat, 0);
+    // Add to the top directory
+    auto h = createTH1(target_id + 1, title, // 1 origin
+		    NumOfSegE72Parasite, 0, NumOfSegE72Parasite,
+		    "", "");
+    for( Int_t i=0, n=e72parasite::SE72Parasite.size(); i<n; ++i ){
+	    h->GetXaxis()->SetBinLabel( i+1, e72parasite::SE72Parasite.at(i) );
+    }
+    h->SetStats(0);
+    top_dir->Add(h);
   }
 
   // Return the TList pointer which is added into TGFileBrowser

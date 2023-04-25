@@ -100,6 +100,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("split32"));
   tab_macro->Add(macro::Get("split33"));
   tab_macro->Add(macro::Get("dispAFT1D"));
+  tab_macro->Add(macro::Get("dispAFT2D"));
   // tab_macro->Add(macro::Get("dispCFTTDC"));
   // tab_macro->Add(macro::Get("dispCFTADC"));
   // tab_macro->Add(macro::Get("dispCFTHitMulti"));
@@ -228,6 +229,8 @@ process_event( void )
   // AFT
   //------------------------------------------------------------------
   {
+    const char* NameOfPlaneAFT[4] = {"X0", "X1", "Y0", "Y1"};
+
     // data type
     static const int k_device   = gUnpacker.get_device_id("AFT");
     static const int k_leading  = gUnpacker.get_data_id("AFT" , "leading");
@@ -285,12 +288,12 @@ process_event( void )
 	  int hit_l_max = 0;
 	  int hit_t_max = 0;
 	  if(nhit_l==0) continue;
+	  ++multiplicity[ud][l];
 	  for(int m = 0; m<nhit_l; ++m){
 	    int tdc = gUnpacker.get(k_device, l, i, ud, k_leading, m);
 	    hptr_array[aft_t_id+ud*NumOfPlaneAFT+l]->Fill(tdc);
 	    hptr_array[aft_t_2d_id+ud*NumOfPlaneAFT+l]->Fill(i, tdc);
 	    hptr_array[aft_hit_id+ud*NumOfPlaneAFT+l]->Fill(i);
-	    ++multiplicity[ud][l];
 	    if(tdc_min < tdc && tdc < tdc_max){
 	      ++cmultiplicity[ud][l];
 	      hptr_array[aft_chit_id+ud*NumOfPlaneAFT+l]->Fill(i);

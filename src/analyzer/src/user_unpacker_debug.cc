@@ -28,8 +28,9 @@ namespace analyzer
     //std::vector<std::string> target = { "vme01" };
     std::vector<std::string> target = {
 				       // "vme01",
-				       "vme02",
-				       // "hul01scr-1",
+				       // "vme02",
+				       "hul01hr-4",
+				       "hul01scr-4",
 				       // "hul01scr-2",
 				       // "hul_hbx_scr",
 				       // "hul02lac",
@@ -70,8 +71,10 @@ process_end( void )
 int
 process_event( void )
 {
+#if 0
   Int_t device_id = gUnpacker.get_device_id("E72BAC");
   gUnpacker.dump_data_device(device_id);
+#endif
 
 #if 0
   // std::cout << TString('=', 80) << std::endl;

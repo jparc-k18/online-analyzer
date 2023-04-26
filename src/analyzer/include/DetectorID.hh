@@ -219,8 +219,6 @@ const Int_t NumOfTimeBucket = 170;
 // AFT for E70
 const Int_t DetIdAFT          = 112;
 const Int_t NumOfPlaneAFT     = 36;
-// const char *NameOfPlaneAFT[4] = {"X0", "X1", "Y0", "Y1"};
-// const std::vector<char*> NameOfPlaneAFT = {"X0", "X1", "Y0", "Y1"};
 const std::vector<TString> NameOfPlaneAFT = {"X0", "X1", "Y0", "Y1"};
 const Int_t NumOfSegAFTX      = 32;
 const Int_t NumOfSegAFTY      = 16;

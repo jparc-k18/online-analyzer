@@ -1872,8 +1872,6 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  // const char* NameOfPlaneAFT[4] = {"X0", "X1", "Y0", "Y1"};
-
   // TDC---------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -1888,7 +1886,6 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
 	const char* title = NULL;
-	// const char* layer_name = NameOfPlaneAFT[i%4];
 	const TString layer_name = NameOfPlaneAFT[i%4];
 	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
     	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());

@@ -1872,7 +1872,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  const char* NameOfPlaneAFT[4] = {"X0", "X1", "Y0", "Y1"};
+  // const char* NameOfPlaneAFT[4] = {"X0", "X1", "Y0", "Y1"};
 
   // TDC---------------------------------------------------------
   {
@@ -1888,9 +1888,10 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
 	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	// const char* layer_name = NameOfPlaneAFT[i%4];
+	const TString layer_name = NameOfPlaneAFT[i%4];
+	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
     				1024, 0, 1024,
@@ -1914,9 +1915,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
     				200, -50, 150,
@@ -1931,9 +1932,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
     				200, -50, 150,
@@ -1957,9 +1958,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				4096, 0, 4096,
@@ -1974,9 +1975,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				4096, 0, 4096,
@@ -2001,9 +2002,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				4096, 0, 4096,
@@ -2018,9 +2019,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				4096, 0, 4096,
@@ -2044,9 +2045,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				1024, -200, 824,
@@ -2071,9 +2072,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-  	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-  	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+  	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+  	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2099,9 +2100,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2118,9 +2119,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2147,9 +2148,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2166,9 +2167,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2194,9 +2195,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2213,9 +2214,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2241,9 +2242,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2269,9 +2270,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
   			      4096/8, 0, 4096,
@@ -2296,9 +2297,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
   			      4096/8, 0, 4096,
@@ -2323,9 +2324,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
@@ -2341,9 +2342,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
@@ -2369,9 +2370,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
@@ -2387,9 +2388,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
@@ -2416,9 +2417,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				1024, 0, 1024,
@@ -2432,9 +2433,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2460,9 +2461,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   			      4096, 0, 4096,
@@ -2476,9 +2477,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
@@ -2503,10 +2504,10 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
-    	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name);
+	const char* title = NULL;
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   			      4096, 0, 4096,
@@ -2520,9 +2521,9 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
-	const char* layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
@@ -9796,7 +9797,7 @@ TList* HistMaker::createE72E90( Bool_t flag_ps )
 			   NumOfSegE72KVC+1, 0, NumOfSegE72KVC+1,
 			   "Multiplicity", ""));
   }
-  
+
   // Hit parttern -----------------------------------------------
   {
     const char* title = "E42BH2_hit_pattern";
@@ -9816,7 +9817,7 @@ TList* HistMaker::createE72E90( Bool_t flag_ps )
 			   NumOfSegE42BH2+1, 0, NumOfSegE42BH2+1,
 			   "Multiplicity", ""));
   }
-  
+
   // Hit parttern -----------------------------------------------
   {
     const char* title = "E72Parasite_hit_pattern";

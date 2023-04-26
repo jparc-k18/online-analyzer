@@ -229,7 +229,7 @@ process_event( void )
   // AFT
   //------------------------------------------------------------------
   {
-    const char* NameOfPlaneAFT[4] = {"X0", "X1", "Y0", "Y1"};
+    // const char* NameOfPlaneAFT[4] = {"X0", "X1", "Y0", "Y1"};
 
     // data type
     static const int k_device   = gUnpacker.get_device_id("AFT");

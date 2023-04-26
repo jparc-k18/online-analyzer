@@ -198,7 +198,7 @@ namespace e72parasite
     kT2
   };
 
-  const std::vector<TString> SE72Parasite = 
+  const std::vector<TString> SE72Parasite =
   {
     "T1",
     "BH2",
@@ -221,6 +221,7 @@ const Int_t DetIdAFT          = 112;
 const Int_t NumOfPlaneAFT     = 36;
 // const char *NameOfPlaneAFT[4] = {"X0", "X1", "Y0", "Y1"};
 // const std::vector<char*> NameOfPlaneAFT = {"X0", "X1", "Y0", "Y1"};
+const std::vector<TString> NameOfPlaneAFT = {"X0", "X1", "Y0", "Y1"};
 const Int_t NumOfSegAFTX      = 32;
 const Int_t NumOfSegAFTY      = 16;
 const Int_t NumOfSegAFT[4]    = {NumOfSegAFTX, NumOfSegAFTX, NumOfSegAFTY, NumOfSegAFTY};

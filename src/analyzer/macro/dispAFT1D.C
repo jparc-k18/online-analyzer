@@ -16,7 +16,7 @@ dispAFT1D( void )
   Updater::setUpdating(true);
   // ----------------------------------
 
-  // draw TDC UandD
+  // draw TDC UorD
   {
     int aft_t_id     = HistMaker::getUniqueID( kAFT, 0, kTDC, 0 );
     for( int ud=0; ud<2; ud++ ){
@@ -33,7 +33,7 @@ dispAFT1D( void )
     }
   }
 
-  // draw TOT UandD
+  // draw TOT UorD
   {
     int aft_tot_id     = HistMaker::getUniqueID( kAFT, 0, kTOT, 0 );
     int aft_ctot_id    = HistMaker::getUniqueID( kAFT, 0, kTOT, 100 );
@@ -56,7 +56,7 @@ dispAFT1D( void )
     }
   }
 
-  // draw HighGain UandD
+  // draw HighGain UorD
   {
     int aft_hg_id     = HistMaker::getUniqueID( kAFT, 0, kHighGain, 0 );
     int aft_chg_id    = HistMaker::getUniqueID( kAFT, 0, kHighGain, 100 );
@@ -79,7 +79,7 @@ dispAFT1D( void )
     }
   }
 
-  // draw LowGain UandD
+  // draw LowGain UorD
   {
     int aft_lg_id     = HistMaker::getUniqueID( kAFT, 0, kLowGain, 0 );
     int aft_clg_id    = HistMaker::getUniqueID( kAFT, 0, kLowGain, 100 );
@@ -102,7 +102,7 @@ dispAFT1D( void )
     }
   }
 
-  // draw pe UandD
+  // draw pe UorD
   {
     int aft_pe_id     = HistMaker::getUniqueID( kAFT, 0, kPede, 0 );
     for( int ud=0; ud<2; ud++ ){

@@ -16,7 +16,7 @@ dispAFT2D( void )
   Updater::setUpdating(true);
   // ----------------------------------
 
-  // draw TDC-2D UandD
+  // draw TDC-2D UorD
   {
     int aft_t_2d_id     = HistMaker::getUniqueID( kAFT, 0, kTDC2D, 0 );
     for( int ud=0; ud<2; ud++ ){
@@ -33,7 +33,7 @@ dispAFT2D( void )
     }
   }
 
-  // draw TOT-2D UandD
+  // draw TOT-2D UorD
   {
     int aft_tot_2d_id     = HistMaker::getUniqueID( kAFT, 0, kTOT2D, 0 );
     int aft_ctot_2d_id    = HistMaker::getUniqueID( kAFT, 0, kTOT2D, 100 );
@@ -56,7 +56,7 @@ dispAFT2D( void )
     }
   }
 
-  // draw HighGain UandD
+  // draw HighGain UorD
   {
     int aft_hg_2d_id     = HistMaker::getUniqueID( kAFT, 0, kHighGain2D, 0 );
     int aft_chg_2d_id    = HistMaker::getUniqueID( kAFT, 0, kHighGain2D, 100 );
@@ -79,7 +79,7 @@ dispAFT2D( void )
     }
   }
 
-  // draw LowGain UandD
+  // draw LowGain UorD
   {
     int aft_lg_2d_id     = HistMaker::getUniqueID( kAFT, 0, kLowGain2D, 0 );
     int aft_clg_2d_id    = HistMaker::getUniqueID( kAFT, 0, kLowGain2D, 100 );
@@ -102,7 +102,7 @@ dispAFT2D( void )
     }
   }
 
-  // draw pe UandD
+  // draw pe UorD
   {
     int aft_pe_2d_id     = HistMaker::getUniqueID( kAFT, 0, kPede2D, 0 );
     for( int ud=0; ud<2; ud++ ){
@@ -118,6 +118,7 @@ dispAFT2D( void )
       c->Update();
     }
   }
+
 
 
 

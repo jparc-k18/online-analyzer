@@ -24,6 +24,7 @@
 #include <UnpackerManager.hh>
 
 #include "TpcPadHelper.hh"
+#include "AftHelper.hh"
 
 #define USE_copper 0
 
@@ -42,7 +43,8 @@ TString getStr_FromEnum(const char* c){
 namespace
 {
 using hddaq::unpacker::GUnpacker;
-const auto& gUnpacker = GUnpacker::get_instance();
+const auto& gUnpacker  = GUnpacker::get_instance();
+      auto& gAftHelper = AftHelper::GetInstance();
 }
 
 // Constructor -------------------------------------------------------------
@@ -2336,12 +2338,13 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     target_id = getUniqueID(kAFT, 0, kHitPat, 100);
     sub_name = "CHitPat";
     // Add to the top directory
-    for(Int_t ud=0; ud<2; ud++){
+    for(Int_t ud=0; ud<3; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
     	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
     	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+  	else if( ud == 2 ) title = Form("%s_%s_%d_%s",  nameDetector, sub_name, i/4+1, layer_name.Data()); // for hitpattern defined by hits on both edges
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
@@ -2349,6 +2352,34 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   				"Fiber", ""));
       }
     }
+
+    // 2D Hit parttern (after cut) -----------------------------------
+    const char* title_x = Form("%s_%sPoly_X_2D", nameDetector, sub_name);
+    const char* title_y = Form("%s_%sPoly_Y_2D", nameDetector, sub_name);
+    auto h_hit_poly_x = dynamic_cast<TH2Poly*>( createTH2Poly( ++target_id, title_x, -15, 125, -70, 70 ) );
+    auto h_hit_poly_y = dynamic_cast<TH2Poly*>( createTH2Poly( ++target_id, title_y, -15, 125, -35, 35 ) );
+    const double phi   = gAftHelper.GetPhi();
+    const int    npoly = gAftHelper.GetNPoly();
+    double X[npoly], Z[npoly];
+    for( int iPlane = 0; iPlane < NumOfPlaneAFT; iPlane++ ){
+      for( int iSeg = 0; iSeg < NumOfSegAFT[iPlane%4]; iSeg++ ){
+	double posx = gAftHelper.GetX( iPlane, iSeg );
+	double posz = gAftHelper.GetZ( iPlane, iSeg );
+	for( int ipoly = 0; ipoly < npoly; ipoly++ ){
+	  X[ipoly] = posx + phi/2.*TMath::Cos(ipoly*2*TMath::Pi()/npoly);
+	  Z[ipoly] = posz + phi/2.*TMath::Sin(ipoly*2*TMath::Pi()/npoly);
+	}
+	if( iPlane%4 == 0 || iPlane%4 == 1 ) h_hit_poly_x->AddBin(npoly, Z, X);
+	if( iPlane%4 == 2 || iPlane%4 == 3 ) h_hit_poly_y->AddBin(npoly, Z, X);
+      }
+    }
+
+    h_hit_poly_x->SetStats( 0 );
+    h_hit_poly_y->SetStats( 0 );
+    h_hit_poly_x->SetMinimum( 0. );
+    h_hit_poly_y->SetMinimum( 0. );
+    sub_dir->Add( h_hit_poly_x );
+    sub_dir->Add( h_hit_poly_y );
 
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -2378,16 +2409,17 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       }
     }
 
-    // Hit parttern (after cut) -----------------------------------
+    // Multiplicity (after cut) -----------------------------------
     target_id = getUniqueID(kAFT, 0, kMulti, 100);
     sub_name = "CMulti";
     // Add to the top directory
-    for(Int_t ud=0; ud<2; ud++){
+    for(Int_t ud=0; ud<3; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
     	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
     	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	else if( ud == 2 ) title = Form("%s_%s_%d_%s",  nameDetector, sub_name, i/4+1, layer_name.Data()); // for multipliticy defined by hits on both edges
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
@@ -2396,6 +2428,16 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       }
     }
 
+    for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+      if( i%4 == 0 || i%4 == 2 ) continue;
+      const char* title = NULL;
+      if( i%4 == 1 )      title = Form("%s_%s_%d_X", nameDetector, sub_name, i/4+1);
+      else if( i%4 == 3 ) title = Form("%s_%s_%d_Y", nameDetector, sub_name, i/4+1);
+      Int_t aft_nseg = NumOfSegAFT[i%4]*2;
+      sub_dir->Add(createTH1( ++target_id, title, // 1 origin
+			      aft_nseg, 0, aft_nseg,
+			      "Fiber", ""));
+    }
 
     // insert sub directory
     top_dir->Add(sub_dir);

@@ -46,6 +46,8 @@
 #include "HodoAnalyzer.hh"
 #include "FiberHit.hh"
 
+#include "AftHelper.hh"
+
 #define DEBUG    0
 #define FLAG_DAQ 1
 
@@ -57,6 +59,7 @@ namespace analyzer
   namespace
   {
     const UserParamMan& gUser = UserParamMan::GetInstance();
+    auto& gAftHelper          = AftHelper::GetInstance();
     std::vector<TH1*> hptr_array;
     bool flag_event_cut = false;
     int event_cut_factor = 1; // for fast semi-online analysis
@@ -73,8 +76,6 @@ process_begin( const std::vector<std::string>& argv )
   gConfMan.InitializeParameter<DCGeomMan>("DCGEO");
   gConfMan.InitializeParameter<DCTdcCalibMan>("DCTDC");
   gConfMan.InitializeParameter<DCDriftParamMan>("DCDRFT");
-//  gConfMan.InitializeParameter<MatrixParamMan>("MATRIX2D", "MATRIX3D");
-  //gConfMan.InitializeParameter<MsTParamMan>("MASS");
   gConfMan.InitializeParameter<UserParamMan>("USER");
   if( !gConfMan.IsGood() ) return -1;
   // unpacker and all the parameter managers are initialized at this stage
@@ -101,21 +102,12 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("split33"));
   tab_macro->Add(macro::Get("dispAFT1D"));
   tab_macro->Add(macro::Get("dispAFT2D"));
-  // tab_macro->Add(macro::Get("dispCFTTDC"));
-  // tab_macro->Add(macro::Get("dispCFTADC"));
-  // tab_macro->Add(macro::Get("dispCFTHitMulti"));
-  // tab_macro->Add(macro::Get("dispBGO"));
-  // tab_macro->Add(macro::Get("dispPiID"));
+  tab_macro->Add(macro::Get("dispAFTpoly2D"));
   tab_macro->Add(macro::Get("dispDAQ"));
-  // tab_macro->Add(macro::Get("effCFT"));
-  // tab_macro->Add(macro::Get("auto_monitor_all"));
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
   tab_hist->Add(gHist.createAFT());
-  // tab_hist->Add(gHist.createCFT());
-  // tab_hist->Add(gHist.createBGO());
-  // tab_hist->Add(gHist.createPiID());
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -161,8 +153,6 @@ process_event( void )
 {
   static UnpackerManager& gUnpacker = GUnpacker::get_instance();
   static HistMaker&       gHist     = HistMaker::getInstance();
-//  static MatrixParamMan&  gMatrix   = MatrixParamMan::GetInstance();
-//  static MsTParamMan&     gMsT      = MsTParamMan::GetInstance();
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
@@ -229,8 +219,6 @@ process_event( void )
   // AFT
   //------------------------------------------------------------------
   {
-    // const char* NameOfPlaneAFT[4] = {"X0", "X1", "Y0", "Y1"};
-
     // data type
     static const int k_device   = gUnpacker.get_device_id("AFT");
     static const int k_leading  = gUnpacker.get_data_id("AFT" , "leading");
@@ -275,113 +263,141 @@ process_event( void )
     int aft_cl_lgadc_id   = gHist.getSequentialID(kAFT, kCluster, kLowGain,    1);
     int aft_cl_lgadc2d_id = gHist.getSequentialID(kAFT, kCluster, kLowGain2D,  1);
 
-    int multiplicity[2][NumOfPlaneAFT] ;
-    int cmultiplicity[2][NumOfPlaneAFT];
+    int cmultiplicity_both[NumOfPlaneAFT];
+    for(int l=0; l<NumOfPlaneAFT; ++l){
+      int multiplicity = 0;
+      int cmultiplicity = 0;
+      cmultiplicity_both[l] = 0;
+      std::vector<std::vector<bool>> flag_hit_wt(NumOfSegAFT[l%4]);
+      for(int seg = 0; seg<NumOfSegAFT[l%4]; ++seg){
+	flag_hit_wt[seg].resize(kUorD);
+	for(int ud=0; ud<kUorD; ud++){
+	  { // highgain
+	    int nhit_hg = gUnpacker.get_entries(k_device, l, seg, ud, k_highgain);
+	    if(nhit_hg!=0){
+	      for(int m = 0; m<nhit_hg; ++m){
+		int adc_hg = gUnpacker.get(k_device, l, seg, ud, k_highgain, m);
+		hptr_array[aft_hg_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg);
+		hptr_array[aft_hg_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_hg);
 
-    for(int ud=0; ud<2; ud++){
-      for(int l=0; l<NumOfPlaneAFT; ++l){
-	multiplicity[ud][l]     = 0;
-	cmultiplicity[ud][l]    = 0;
-	for(int i = 0; i<NumOfSegAFT[l%4]; ++i){
-	  int nhit_l = gUnpacker.get_entries(k_device, l, i, ud, k_leading );
-	  int nhit_t = gUnpacker.get_entries(k_device, l, i, ud, k_trailing );
-	  int hit_l_max = 0;
-	  int hit_t_max = 0;
-	  if(nhit_l==0) continue;
-	  ++multiplicity[ud][l];
-	  for(int m = 0; m<nhit_l; ++m){
-	    int tdc = gUnpacker.get(k_device, l, i, ud, k_leading, m);
-	    hptr_array[aft_t_id+ud*NumOfPlaneAFT+l]->Fill(tdc);
-	    hptr_array[aft_t_2d_id+ud*NumOfPlaneAFT+l]->Fill(i, tdc);
-	    hptr_array[aft_hit_id+ud*NumOfPlaneAFT+l]->Fill(i);
-	    if(tdc_min < tdc && tdc < tdc_max){
-	      ++cmultiplicity[ud][l];
-	      hptr_array[aft_chit_id+ud*NumOfPlaneAFT+l]->Fill(i);
+		double pedeAFT = 0.;
+		double gainAFT = 100.;
+		// pedeAFT = hman->GetPedestal(DetIdAFT,layer,i,0);
+		// gainAFT = hman->GetGain(DetIdAFT,layer,i,0);
+		double adc_pe = ((double)adc_hg - pedeAFT)/gainAFT;
+		hptr_array[aft_pe_id+ud*NumOfPlaneAFT+l]->Fill(adc_pe);
+		hptr_array[aft_pe_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_pe);
+	      }
 	    }
 	  }
 
-	  if(nhit_l != 0) hit_l_max = gUnpacker.get(k_device, l, i, ud, k_leading,  nhit_l - 1);
-	  if(nhit_t != 0) hit_t_max = gUnpacker.get(k_device, l, i, ud, k_trailing, nhit_t - 1);
-	  if(nhit_l == nhit_t && hit_l_max > hit_t_max){
-	    for(int m = 0; m<nhit_l; ++m){
-	      int tdc   = gUnpacker.get(k_device, l, i, ud, k_leading, m);
-	      int tdc_t = gUnpacker.get(k_device, l, i, ud, k_trailing, m);
-	      int tot   = tdc - tdc_t;
-	      hptr_array[aft_tot_id+ud*NumOfPlaneAFT+l]->Fill(tot);
-	      hptr_array[aft_tot_2d_id+ud*NumOfPlaneAFT+l]->Fill(i, tot);
-
-	      if(tdc_min < tdc && tdc < tdc_max){
-		hptr_array[aft_ctot_id+ud*NumOfPlaneAFT+l]->Fill(tot);
-		hptr_array[aft_ctot_2d_id+ud*NumOfPlaneAFT+l]->Fill(i, tot);
-
-		if( m != nhit_l-1 )continue;
-		for(int hl=0; hl<2; hl++){
-		  if(hl==0){
-		    int nhit_hg = gUnpacker.get_entries(k_device, l, i, ud, k_highgain);
-		    if(nhit_hg==0)continue;
-		    int adc_hg = gUnpacker.get(k_device, l, i, ud, k_highgain, 0);
-		    hptr_array[aft_chg_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg);
-		    hptr_array[aft_chg_2d_id+ud*NumOfPlaneAFT+l]->Fill(i, adc_hg);
-		    hptr_array[aft_hg_tot_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg, tot);
-		  }
-		  if(hl==1){
-		    int nhit_lg = gUnpacker.get_entries(k_device, l, i, ud, k_lowgain);
-		    if(nhit_lg==0)continue;
-		    int adc_lg = gUnpacker.get(k_device, l, i, ud, k_lowgain, 0);
-		    hptr_array[aft_clg_id+ud*NumOfPlaneAFT+l]->Fill(adc_lg);
-		    hptr_array[aft_clg_2d_id+ud*NumOfPlaneAFT+l]->Fill(i, adc_lg);
-		    hptr_array[aft_lg_tot_id+ud*NumOfPlaneAFT+l]->Fill(adc_lg, tot);
-		  }
-		} // for hg or lg
+	  { // lowgain
+	    int nhit_lg = gUnpacker.get_entries(k_device, l, seg, ud, k_lowgain );
+	    if(nhit_lg!=0){
+	      for(int m = 0; m<nhit_lg; ++m){
+		int adc_lg = gUnpacker.get(k_device, l, seg, ud, k_lowgain, m);
+		hptr_array[aft_lg_id+ud*NumOfPlaneAFT+l]->Fill(adc_lg);
+		hptr_array[aft_lg_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_lg);
 	      }
-
-	    } // multihit
+	    }
 	  }
-	} // for in NumOfSegAFT
 
-	hptr_array[aft_mul_id+ud*NumOfPlaneAFT+l]->Fill(multiplicity[ud][l]);
-	hptr_array[aft_cmul_id+ud*NumOfPlaneAFT+l]->Fill(cmultiplicity[ud][l]);
-
-	for(int i = 0; i<NumOfSegAFT[l%4]; ++i){
-	  int nhit_hg = gUnpacker.get_entries(k_device, l, i, ud, k_highgain);
-	  if(nhit_hg==0)continue;
-	  for(int m = 0; m<nhit_hg; ++m){
-	    int adc_hg = gUnpacker.get(k_device, l, i, ud, k_highgain, m);
-	    hptr_array[aft_hg_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg);
-	    hptr_array[aft_hg_2d_id+ud*NumOfPlaneAFT+l]->Fill(i, adc_hg);
-
-	    double pedeAFT = 0.;
-	    double gainAFT = 100.;
-	    // pedeAFT = hman->GetPedestal(DetIdAFT,layer,i,0);
-	    // gainAFT = hman->GetGain(DetIdAFT,layer,i,0);
-	    double adc_pe = ((double)adc_hg - pedeAFT)/gainAFT;
-	    hptr_array[aft_pe_id+ud*NumOfPlaneAFT+l]->Fill(adc_pe);
-	    hptr_array[aft_pe_2d_id+ud*NumOfPlaneAFT+l]->Fill(i, adc_pe);
+	  { // TDC
+	    int nhit_l = gUnpacker.get_entries(k_device, l, seg, ud, k_leading );
+	    flag_hit_wt[seg][ud] = false;
+	    if(nhit_l!=0){
+	      ++multiplicity;
+	      for(int m = 0; m<nhit_l; ++m){
+		// TDC & hitpat
+		int tdc = gUnpacker.get(k_device, l, seg, ud, k_leading, m);
+		hptr_array[aft_t_id+ud*NumOfPlaneAFT+l]->Fill(tdc);
+		hptr_array[aft_t_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, tdc);
+		hptr_array[aft_hit_id+ud*NumOfPlaneAFT+l]->Fill(seg);
+		if(tdc_min < tdc && tdc < tdc_max){ // w/ TDC cut
+		  flag_hit_wt[seg][ud] = true;
+		  hptr_array[aft_chit_id+ud*NumOfPlaneAFT+l]->Fill(seg);
+		}
+	      }
+	      if(flag_hit_wt[seg][ud]){
+		++cmultiplicity;
+		// highgain w/ TDC cut
+		int nhit_hg = gUnpacker.get_entries(k_device, l, seg, ud, k_highgain);
+		if( nhit_hg != 0 ){
+		  int adc_hg = gUnpacker.get(k_device, l, seg, ud, k_highgain, 0);
+		  hptr_array[aft_chg_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg);
+		  hptr_array[aft_chg_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_hg);
+		}
+		// lowgain w/ TDC cut
+		int nhit_lg = gUnpacker.get_entries(k_device, l, seg, ud, k_lowgain);
+		if( nhit_lg != 0 ){
+		  int adc_lg = gUnpacker.get(k_device, l, seg, ud, k_lowgain, 0);
+		  hptr_array[aft_clg_id+ud*NumOfPlaneAFT+l]->Fill(adc_lg);
+		  hptr_array[aft_clg_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_lg);
+		}
+	      }
+	    }
 	  }
+
+	  { // TOT
+	    int nhit_l = gUnpacker.get_entries(k_device, l, seg, ud, k_leading );
+	    int nhit_t = gUnpacker.get_entries(k_device, l, seg, ud, k_trailing );
+	    int hit_l_max = 0;
+	    int hit_t_max = 0;
+	    if(nhit_l != 0) hit_l_max = gUnpacker.get(k_device, l, seg, ud, k_leading,  nhit_l - 1);
+	    if(nhit_t != 0) hit_t_max = gUnpacker.get(k_device, l, seg, ud, k_trailing, nhit_t - 1);
+	    if(nhit_l == nhit_t && hit_l_max > hit_t_max){
+	      for(int m = 0; m<nhit_l; ++m){
+		int tdc   = gUnpacker.get(k_device, l, seg, ud, k_leading, m);
+		int tdc_t = gUnpacker.get(k_device, l, seg, ud, k_trailing, m);
+		int tot   = tdc - tdc_t;
+		hptr_array[aft_tot_id+ud*NumOfPlaneAFT+l]->Fill(tot);
+		hptr_array[aft_tot_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, tot);
+		if(tdc_min < tdc && tdc < tdc_max){
+		  // tot w/ TDC cut
+		  hptr_array[aft_ctot_id+ud*NumOfPlaneAFT+l]->Fill(tot);
+		  hptr_array[aft_ctot_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, tot);
+		  if( m == nhit_l-1 ){
+		    // highgain x TOT1st w/ TDC cut
+		    int nhit_hg = gUnpacker.get_entries(k_device, l, seg, ud, k_highgain);
+		    if( nhit_hg != 0 ){
+		      int adc_hg = gUnpacker.get(k_device, l, seg, ud, k_highgain, 0);
+		      hptr_array[aft_hg_tot_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg, tot);
+		    }
+		    // lowgain x TOT1st w/ TDC cut
+		    int nhit_lg = gUnpacker.get_entries(k_device, l, seg, ud, k_lowgain);
+		    if( nhit_lg != 0 ){
+		      int adc_lg = gUnpacker.get(k_device, l, seg, ud, k_lowgain, 0);
+		      hptr_array[aft_lg_tot_id+ud*NumOfPlaneAFT+l]->Fill(adc_lg, tot);
+		    }
+		  }
+		}
+	      } // for in multihit
+	    }
+	  }
+
+	  hptr_array[aft_mul_id+ud*NumOfPlaneAFT+l]->Fill(multiplicity);
+	  hptr_array[aft_cmul_id+ud*NumOfPlaneAFT+l]->Fill(cmultiplicity);
+	} // for in Up or Down
+
+	// hitpat & multiplicity of hit on both ends
+	if( flag_hit_wt[seg][kU] && flag_hit_wt[seg][kD] ){
+	  ++cmultiplicity_both[l];
+	  hptr_array[aft_cmul_id+kUorD*NumOfPlaneAFT+l]->Fill(cmultiplicity_both[l]);
+	  hptr_array[aft_chit_id+kUorD*NumOfPlaneAFT+l]->Fill(seg);
+	  double posx = gAftHelper.GetX( l, seg );
+	  double posz = gAftHelper.GetZ( l, seg );
+	  if( l%4 == 0 || l%4 == 1 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+0]->Fill(posz, posx);
+	  if( l%4 == 2 || l%4 == 3 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+1]->Fill(posz, posx);
 	}
 
-	for(int i = 0; i<NumOfSegAFT[l%4]; ++i){
-	  int nhit_lg = gUnpacker.get_entries(k_device, l, i, ud, k_lowgain );
-	  if(nhit_lg==0)continue;
-	  for(int m = 0; m<nhit_lg; ++m){
-	    int adc_lg = gUnpacker.get(k_device, l, i, ud, k_lowgain, m);
-	    hptr_array[aft_lg_id+ud*NumOfPlaneAFT+l]->Fill(adc_lg);
-	    hptr_array[aft_lg_2d_id+ud*NumOfPlaneAFT+l]->Fill(i, adc_lg);
-	  }
-	}
+      } // for in NumOfSegAFT
+      if( l%2==1 ){
+	int cmultiplicity_both_XY = cmultiplicity_both[l-1] + cmultiplicity_both[l];
+	hptr_array[aft_cmul_id+(kUorD+1)*NumOfPlaneAFT+l/2+1]->Fill(cmultiplicity_both_XY);
+      }
+    } // for in NumOfPlaneAFT
 
-      } // for in NumOfPlaneAFT
 
-      hptr_array[aft_mul_id+ud*NumOfPlaneAFT]->Fill(multiplicity[ud][0] + multiplicity[ud][2]
-						 + multiplicity[ud][4] + multiplicity[ud][6]);
-      hptr_array[aft_mul_id+ud*NumOfPlaneAFT + 1]->Fill(multiplicity[ud][1] + multiplicity[ud][3]
-						     + multiplicity[ud][5] + multiplicity[ud][7]);
-      hptr_array[aft_cmul_id+ud*NumOfPlaneAFT]->Fill(cmultiplicity[ud][0] + cmultiplicity[ud][2]
-						  + cmultiplicity[ud][4] + cmultiplicity[ud][6]);
-      hptr_array[aft_cmul_id+ud*NumOfPlaneAFT + 1]->Fill(cmultiplicity[ud][1] + cmultiplicity[ud][3]
-						      + cmultiplicity[ud][5] + cmultiplicity[ud][7]);
-
-    }
   //   //clustering analysis
   // hodoAna->DecodeAFTHits(rawData);
   // // Fiber Cluster
@@ -447,137 +463,6 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
-
-
-
-// //------------------------------------------------------------------
-//   // BGO
-//   //------------------------------------------------------------------
-//   Bool_t bgo_is_hit = false;
-//   {
-//     // data type
-//     static const int k_device   = gUnpacker.get_device_id("BGO");
-//     //    static const int k_adc      = gUnpacker.get_data_id("BGO", "adc");
-//     //    static const int k_tdc      = gUnpacker.get_data_id("BGO", "tdc");
-//     static const int k_fadc      = gUnpacker.get_data_id("BGO", "fadc");
-//     static const int k_leading   = gUnpacker.get_data_id("BGO", "leading");
-// //    static const int k_trailing   = gUnpacker.get_data_id("BGO", "trailing");
-
-//     // TDC gate range
-//     static const unsigned int tdc_min = gUser.GetParameter("BGO_TDC", 0);
-//     static const unsigned int tdc_max = gUser.GetParameter("BGO_TDC", 1);
-
-//     int bgo_fa_id   = gHist.getSequentialID(kBGO, 0, kFADC);
-//     int bgo_fawt_id = gHist.getSequentialID(kBGO, 0, kFADCwTDC);
-//     int bgo_a_id    = gHist.getSequentialID(kBGO, 0, kADC);
-//     int bgo_awt_id  = gHist.getSequentialID(kBGO, 0, kADCwTDC);
-//     int bgo_a2d_id  = gHist.getSequentialID(kBGO, 0, kADC2D);
-//     int bgo_t_id    = gHist.getSequentialID(kBGO, 0, kTDC);
-//     int bgo_t2d_id  = gHist.getSequentialID(kBGO, 0, kTDC2D);
-//     int bgo_hit_id  = gHist.getSequentialID(kBGO, 0, kHitPat,  1);
-//     int bgo_chit_id = gHist.getSequentialID(kBGO, 0, kHitPat,  2);
-//     int bgo_mul_id  = gHist.getSequentialID(kBGO, 0, kMulti,   1);
-//     int bgo_cmul_id = gHist.getSequentialID(kBGO, 0, kMulti,   2);
-//     unsigned int multiplicity  = 0;
-//     unsigned int cmultiplicity = 0;
-//     std::vector<Int_t> de_array( NumOfSegBGO );
-//     for(int seg=0; seg<NumOfSegBGO; ++seg){
-//       Int_t de  = 0;
-//       Int_t ped = 0;
-//       // FADC
-//       int nhit_f = gUnpacker.get_entries(k_device, 0, seg, 0, k_fadc);
-//       if(nhit_f==0){
-// 	de_array.at(seg) = 0;
-// 	continue;
-//       }
-//       for (int i=0; i<nhit_f; ++i) {
-// 	unsigned int fadc = gUnpacker.get(k_device, 0, seg, 0, k_fadc ,i);
-// 	if( fadc == 0xffff )
-// 	  continue;
-// 	if( ped == 0 )
-// 	  ped = fadc;
-// 	hptr_array[bgo_fa_id + seg]->Fill( i+1, fadc);
-// 	de += ped - fadc;
-//       }
-//       hptr_array[bgo_a_id + seg]->Fill( de );
-//       hptr_array[bgo_a2d_id]->Fill( seg, de );
-//       // TDC && Hit pattern && multiplicity
-//       unsigned int nhit_l = gUnpacker.get_entries(k_device, 0, seg, 0, k_leading);
-// //      unsigned int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_trailing);
-// //      unsigned int hit_l_max = 0;
-// //      unsigned int hit_t_max = 0;
-// //
-// //      if(nhit_l != 0){
-// //        hit_l_max = gUnpacker.get(k_device, 0, seg, 0, k_leading,  nhit_l - 1);
-// //      }
-// //      if(nhit_t != 0){
-// //        hit_t_max = gUnpacker.get(k_device, 0, seg, 0, k_trailing, nhit_t - 1);
-// //      }
-
-//       if(nhit_l!=0){
-// 	// ADC wTDC
-// 	for (int i=0; i<nhit_f; ++i) {
-// 	  unsigned int fadc = gUnpacker.get(k_device, 0, seg, 0, k_fadc ,i);
-// 	  hptr_array[bgo_fawt_id + seg]->Fill( i+1, fadc);
-// 	}
-// 	Bool_t is_hit = false;
-//         for(unsigned int m = 0; m<nhit_l; ++m){
-// 	  unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, k_leading, m);
-//       	  if(tdc!=0){
-//       	    hptr_array[bgo_t_id + seg]->Fill(tdc);
-//       	    hptr_array[bgo_t2d_id]->Fill( seg, tdc );
-// 	    hptr_array[bgo_hit_id]->Fill( seg );
-// 	    ++multiplicity;
-// 	    if(true && tdc_min < tdc && tdc < tdc_max){
-// 	      bgo_is_hit = true;
-// 	      is_hit = true;
-//               hptr_array[bgo_chit_id]->Fill(seg);
-// 	      ++cmultiplicity;
-// 	    }
-//       	  }
-//         }
-// 	if( is_hit ){
-// 	  de_array.at(seg) = de;
-// 	  hptr_array[bgo_awt_id + seg]->Fill( de );
-// 	  hptr_array[bgo_a2d_id + 1]->Fill( seg, de );
-// 	}
-//       } else {
-// 	de_array.at(seg) = 0;
-//       }
-//     }
-
-//     for( Int_t i=0, n=de_array.size(); i<n; ++i ){
-//       for( Int_t j=i+1; j<n; ++j ){
-// 	if( de_array[i] > 0 && de_array[j] > 0 )
-// 	  hptr_array[bgo_a2d_id+2]->Fill( de_array[i], de_array[j] );
-//       }
-//     }
-
-//     for(int seg=0; seg<NumOfSegBGO_T; ++seg){
-//       unsigned int nhit_l = gUnpacker.get_entries(k_device, 1, seg, 0, k_leading);
-//       nhit_l = gUnpacker.get_entries(k_device, 1, seg, 0, k_leading);
-//       if(nhit_l!=0){
-//         for(unsigned int m = 0; m<nhit_l; ++m){
-//       	unsigned int tdc = gUnpacker.get(k_device, 1, seg, 0, k_leading, m);
-//       	  if(tdc!=0){
-//       	    hptr_array[bgo_t_id + NumOfSegBGO + seg]->Fill(tdc);
-//       	  }
-//         }
-//       }
-//     }
-
-//     hptr_array[bgo_mul_id]->Fill(multiplicity);
-//     hptr_array[bgo_cmul_id]->Fill(cmultiplicity); // CMulti
-
-// #if 0
-//     // Debug, dump data relating this detector
-//     gUnpacker.dump_data_device(k_device);
-// #endif
-//   }// BGO
-
-// #if DEBUG
-//   std::cout << __FILE__ << " " << __LINE__ << std::endl;
-// #endif
 
 //   //------------------------------------------------------------------
 //   // CFT
@@ -747,162 +632,66 @@ process_event( void )
 // 						     + cmultiplicity[5] + cmultiplicity[7]);
 
 
-//     //clustering analysis
-//   hodoAna->DecodeCFTHits(rawData);
-//   // Fiber Cluster
-//   for(int p = 0; p<NumOfPlaneCFT; ++p){
-//     //int nhits = hodoAna->GetNHitsCFT(p);
-//     //std::cout<<"plane= "<<p<<",NHits="<<nhits<<std::endl;
+  //   //clustering analysis
+  // hodoAna->DecodeCFTHits(rawData);
+  // // Fiber Cluster
+  // for(int p = 0; p<NumOfPlaneCFT; ++p){
+  //   //int nhits = hodoAna->GetNHitsCFT(p);
+  //   //std::cout<<"plane= "<<p<<",NHits="<<nhits<<std::endl;
 
-//     //hodoAna->TimeCutCFT(p, -30, 30); // CATCH@J-PARC
-//     hodoAna->AdcCutCFT(p, 0, 4000); // CATCH@J-PARC
-//     //hodoAna->AdcCutCFT(p, 50, 4000); // CATCH@J-PARC  for proton
-//     //hodoAna->WidthCutCFT(p, 60, 300); // pp scattering
-//     //hodoAna->WidthCutCFT(p, 30, 300); // cosmic ray
+  //   //hodoAna->TimeCutCFT(p, -30, 30); // CATCH@J-PARC
+  //   hodoAna->AdcCutCFT(p, 0, 4000); // CATCH@J-PARC
+  //   //hodoAna->AdcCutCFT(p, 50, 4000); // CATCH@J-PARC  for proton
+  //   //hodoAna->WidthCutCFT(p, 60, 300); // pp scattering
+  //   //hodoAna->WidthCutCFT(p, 30, 300); // cosmic ray
 
-//     int ncl = hodoAna->GetNClustersCFT(p);
-//     //std::cout<<"plane= "<<p<<",NClusters="<<ncl<<std::endl;
-//     for(int i=0; i<ncl; ++i){
-//       FiberCluster *cl = hodoAna->GetClusterCFT(p,i);
-//       if(!cl) continue;
-//       //      double size  = cl->ClusterSize();
-//       //double seg = cl->MeanSeg();
-//       //double ctime = cl->CMeanTime();
-//       //double width = -cl->minWidth();
-//       //double width = cl->Width();
-//       //double sumADC= cl->SumAdcLow();
-//       //double sumMIP= cl->SumMIPLow();
-//       //double sumdE = cl->SumdELow();
-//       //double r     = cl->MeanPositionR();
-//       //double phi   = cl->MeanPositionPhi();
-//       int Mseg  = cl->MaxSeg();
-//       int MADCHi  = cl->MaxAdcHi();
-//       int MADCLow = cl->MaxAdcLow();
-//       //std::cout<<"cluster="<<i<<" , Maxseg="<<Mseg<<" , MaxADC"<<MADCHi<<std::endl;
-//       hptr_array[cft_cl_hgadc_id + p] ->Fill(MADCHi);
-//       hptr_array[cft_cl_lgadc_id + p] ->Fill(MADCLow);
-//       hptr_array[cft_cl_hgadc2d_id + p] ->Fill(Mseg, MADCHi);
-//       hptr_array[cft_cl_lgadc2d_id + p] ->Fill(Mseg, MADCLow);
-//       int fmulti =hodoAna->GetNHitsCFT(p);
-//       for(int j=0; j<fmulti; ++j){
-// 	FiberHit *fhit = hodoAna->GetHitCFT(p,j);
-// 	int seg_temp = fhit->PairId();
-// 	if(seg_temp == Mseg){
-// 	  int Mhit =fhit ->GetNumOfHit();
-// 	  for(int k=0; k<Mhit; ++k){
-// 	    double Mtime =fhit->GetLeading(k);
-// 	    hptr_array[cft_cl_tdc_id + p] ->Fill(Mtime);
-// 	    hptr_array[cft_cl_tdc2d_id + p] ->Fill(Mseg, Mtime);
-// 	  }
-// 	}
-//       }
-//     }
-//   }
+  //   int ncl = hodoAna->GetNClustersCFT(p);
+  //   //std::cout<<"plane= "<<p<<",NClusters="<<ncl<<std::endl;
+  //   for(int i=0; i<ncl; ++i){
+  //     FiberCluster *cl = hodoAna->GetClusterCFT(p,i);
+  //     if(!cl) continue;
+  //     //      double size  = cl->ClusterSize();
+  //     //double seg = cl->MeanSeg();
+  //     //double ctime = cl->CMeanTime();
+  //     //double width = -cl->minWidth();
+  //     //double width = cl->Width();
+  //     //double sumADC= cl->SumAdcLow();
+  //     //double sumMIP= cl->SumMIPLow();
+  //     //double sumdE = cl->SumdELow();
+  //     //double r     = cl->MeanPositionR();
+  //     //double phi   = cl->MeanPositionPhi();
+  //     int Mseg  = cl->MaxSeg();
+  //     int MADCHi  = cl->MaxAdcHi();
+  //     int MADCLow = cl->MaxAdcLow();
+  //     //std::cout<<"cluster="<<i<<" , Maxseg="<<Mseg<<" , MaxADC"<<MADCHi<<std::endl;
+  //     hptr_array[cft_cl_hgadc_id + p] ->Fill(MADCHi);
+  //     hptr_array[cft_cl_lgadc_id + p] ->Fill(MADCLow);
+  //     hptr_array[cft_cl_hgadc2d_id + p] ->Fill(Mseg, MADCHi);
+  //     hptr_array[cft_cl_lgadc2d_id + p] ->Fill(Mseg, MADCLow);
+  //     int fmulti =hodoAna->GetNHitsCFT(p);
+  //     for(int j=0; j<fmulti; ++j){
+  // 	FiberHit *fhit = hodoAna->GetHitCFT(p,j);
+  // 	int seg_temp = fhit->PairId();
+  // 	if(seg_temp == Mseg){
+  // 	  int Mhit =fhit ->GetNumOfHit();
+  // 	  for(int k=0; k<Mhit; ++k){
+  // 	    double Mtime =fhit->GetLeading(k);
+  // 	    hptr_array[cft_cl_tdc_id + p] ->Fill(Mtime);
+  // 	    hptr_array[cft_cl_tdc2d_id + p] ->Fill(Mseg, Mtime);
+  // 	  }
+  // 	}
+  //     }
+  //   }
+  // }
 
-//   delete rawData;
-//   delete hodoAna;
+  // delete rawData;
+  // delete hodoAna;
 
 // #if 0
 //     // Debug, dump data relating this detector
 //     gUnpacker.dump_data_device(k_device);
 // #endif
 //   }//CFT
-
-// #if DEBUG
-//   std::cout << __FILE__ << " " << __LINE__ << std::endl;
-// #endif
-
-//   //------------------------------------------------------------------
-//   // PiID
-//   //------------------------------------------------------------------
-//   {
-//     // data type
-//     static const int k_device   = gUnpacker.get_device_id("PiID");
-//     static const int k_hg      = gUnpacker.get_data_id("PiID", "highgain");
-//     static const int k_lg      = gUnpacker.get_data_id("PiID", "lowgain");
-//     static const int k_tdc      = gUnpacker.get_data_id("PiID", "leading");
-
-//     // TDC gate range
-//     static const unsigned int tdc_min = gUser.GetParameter("PiID_TDC", 0);
-//     static const unsigned int tdc_max = gUser.GetParameter("PiID_TDC", 1);
-
-//     int piidhg_id   = gHist.getSequentialID(kPiID, 0, kHighGain);
-//     int piidlg_id   = gHist.getSequentialID(kPiID, 0, kLowGain);
-//     int piidt_id   = gHist.getSequentialID(kPiID, 0, kTDC);
-//     int piidhgwt_id = gHist.getSequentialID(kPiID, 0, kADCwTDC);
-//     int piidlgwt_id = gHist.getSequentialID(kPiID, 0, kADCwTDC,NumOfSegPiID +1);
-//     int piidhg2d_id = gHist.getSequentialID(kPiID, 0, kADC2D, 1);
-//     int piidlg2d_id = gHist.getSequentialID(kPiID, 0, kADC2D, 11);
-
-//     for(int seg=0; seg<NumOfSegPiID; ++seg){
-//       // High ADC
-//       int nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_hg);
-//       if(nhit!=0){
-// 	unsigned int adc = gUnpacker.get(k_device, 0, seg, 0, k_hg);
-// 	hptr_array[piidhg_id + seg]->Fill(adc);
-// 	hptr_array[piidhg2d_id]->Fill( seg, adc );
-//       }
-
-//       // Low ADC
-//       nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_lg);
-//       if(nhit!=0){
-// 	unsigned int adc = gUnpacker.get(k_device, 0, seg, 0, k_lg);
-// 	hptr_array[piidlg_id + seg]->Fill(adc);
-// 	hptr_array[piidlg2d_id]->Fill( seg, adc );
-//       }
-
-//       // TDC
-//       nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-//       if(nhit!=0){
-// 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
-// 	if(tdc!=0){
-// 	  hptr_array[piidt_id + seg]->Fill(tdc);
-// 	  // ADCwTDC
-// 	  if( gUnpacker.get_entries(k_device, 0, seg, 0, k_hg)>0 ){
-// 	    unsigned int hadc = gUnpacker.get(k_device, 0, seg, 0, k_hg);
-// 	    hptr_array[piidhgwt_id + seg]->Fill( hadc );
-// 	  }
-// 	  if( gUnpacker.get_entries(k_device, 0, seg, 0, k_lg)>0 ){
-// 	    unsigned int ladc = gUnpacker.get(k_device, 0, seg, 0, k_lg);
-// 	    hptr_array[piidlgwt_id + seg]->Fill( ladc );
-// 	  }
-// 	}
-//       }
-//     }
-
-//     // Hit pattern && multiplicity
-//     static const int piidhit_id = gHist.getSequentialID(kPiID, 0, kHitPat);
-//     static const int piidmul_id = gHist.getSequentialID(kPiID, 0, kMulti);
-//     int multiplicity  = 0;
-//     int cmultiplicity = 0;
-//     for(int seg=0; seg<NumOfSegPiID; ++seg){
-//       int nhit_piid = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-//       // AND
-//       if(nhit_piid!=0){
-// 	unsigned int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc);
-// 	// TDC AND
-// 	if(tdc != 0){
-// 	  hptr_array[piidhit_id]->Fill(seg);
-// 	  ++multiplicity;
-// 	  // TDC range
-// 	  if(true
-// 	     && tdc_min < tdc && tdc < tdc_max
-// 	     ){
-// 	    hptr_array[piidhit_id+1]->Fill(seg); // CHitPat
-// 	    ++cmultiplicity;
-// 	  }// TDC range OK
-// 	}// TDC AND
-//       }// AND
-//     }// for(seg)
-
-//     hptr_array[piidmul_id]->Fill(multiplicity);
-//     hptr_array[piidmul_id+1]->Fill(cmultiplicity); // CMulti
-
-// #if 0
-//     // Debug, dump data relating this detector
-//     gUnpacker.dump_data_device(k_device);
-// #endif
-//   }// PiID
 
 // #if DEBUG
 //   std::cout << __FILE__ << " " << __LINE__ << std::endl;

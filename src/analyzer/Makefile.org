@@ -200,8 +200,6 @@ my_tgt_ktune_y2020      := $(bin_dir)/ktune_y2020
 #______________________________________________________________________________
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_event_display) \
-	$(my_tgt_rawhist_e42) \
-	$(my_tgt_rawhist_e42_woTPC) \
 	$(my_tgt_rawhist_e70) \
 	$(my_tgt_rawhist_aft) \
 	$(my_tgt_rawhist_hbx) \
@@ -212,7 +210,6 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_scaler_sch) \
 	$(my_tgt_scaler_daq) \
 	$(my_tgt_jsroot_beamprofile) \
-	$(my_tgt_jsroot_e42) \
 	$(my_tgt_jsroot_scaler) \
 	$(my_tgt_jsroot_scaler_hbx) \
 	$(my_tgt_jsroot_beammonitor) \
@@ -223,6 +220,9 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 #	$(my_old_tgt)
 
 my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
+	$(my_tgt_rawhist_e42) \
+	$(my_tgt_rawhist_e42_woTPC) \
+	$(my_tgt_jsroot_e42) \
 	$(my_tgt_rawhist_e40) \	$(my_tgt_jsroot_e40) \
 	$(my_tgt_scaler_e42) \
 	$(my_tgt_scaler_e13) $(my_tgt_hbjscaler) \

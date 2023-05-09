@@ -2,6 +2,7 @@
 
 // Author: Shuhei Hayakawa
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -52,6 +53,7 @@ namespace
 HttpServer&   gHttp = HttpServer::GetInstance();
 ScalerAnalyzer scaler_on;
 ScalerAnalyzer scaler_off;
+const std::chrono::milliseconds flush_interval(100);
 }
 
 //____________________________________________________________________________
@@ -221,9 +223,6 @@ process_event()
   static auto& gConfig = GConfig::get_instance();
   static const TString tout = gConfig.get_control_param("tout");
 
-  static Int_t count = 0;
-  count++;
-
   Int_t run_number = root->get_run_number();
   Int_t event_number = gUnpacker.get_event_number();
 
@@ -257,8 +256,14 @@ process_event()
   }
 
   // Scaler Spill On
+  auto now = std::chrono::duration_cast<std::chrono::milliseconds>
+    (std::chrono::system_clock::now().time_since_epoch());
+  static auto prev_flush = now;
+  Bool_t flush_flag = (now - prev_flush) > flush_interval;
+  prev_flush = now;
+
   if(scaler_on.Decode()){
-    if(count%50 != 0 && !scaler_on.IsSpillEnd())
+    if(flush_flag && !scaler_on.IsSpillEnd())
       // if(!scaler_on.IsSpillEnd())
       return 0;
 
@@ -324,7 +329,7 @@ process_event()
 
   // Scaler Spill Off
   if(scaler_off.Decode()){
-    if(count%50 != 0 && !scaler_off.IsSpillEnd())
+    if(flush_flag && !scaler_off.IsSpillEnd())
       // if(!scaler_off.IsSpillEnd())
       return 0;
 

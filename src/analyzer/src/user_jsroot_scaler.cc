@@ -44,15 +44,15 @@
 
 namespace analyzer
 {
-  using namespace hddaq::unpacker;
-  using namespace hddaq;
+using namespace hddaq::unpacker;
+using namespace hddaq;
 
-  namespace
-  {
-    HttpServer&   gHttp = HttpServer::GetInstance();
-    ScalerAnalyzer scaler_on;
-    ScalerAnalyzer scaler_off;
-  }
+namespace
+{
+HttpServer&   gHttp = HttpServer::GetInstance();
+ScalerAnalyzer scaler_on;
+ScalerAnalyzer scaler_off;
+}
 
 //____________________________________________________________________________
 Int_t
@@ -82,11 +82,11 @@ process_begin(const std::vector<std::string>& argv)
 
   scaler_on.SetFlag(ScalerAnalyzer::kSeparateComma);
   scaler_on.SetFlag(ScalerAnalyzer::kSpillBySpill);
-  // scaler_on.SetFlag(ScalerAnalyzer::kSpillOn);
+  scaler_on.SetFlag(ScalerAnalyzer::kSpillOn);
 
   scaler_off.SetFlag(ScalerAnalyzer::kSeparateComma);
   scaler_off.SetFlag(ScalerAnalyzer::kSpillBySpill);
-  // scaler_off.SetFlag(ScalerAnalyzer::kSpillOff);
+  scaler_off.SetFlag(ScalerAnalyzer::kSpillOff);
 
   //////////////////// Set Channels
   // ScalerAnalylzer::Set(Int_t column,
@@ -277,7 +277,7 @@ process_event()
     for(Int_t j=0; j<27; ++j){
       ss << "<tr>";
       for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
-      // for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
+	// for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
         TString n = scaler_on.GetScalerName(i, j);
         if(n.Contains("n/a"))
           continue;
@@ -341,7 +341,7 @@ process_event()
        << "<td align=\"right\" width=\"100\">" << end_mark << "</td>"
        << "<tr><td></td><td></td><td></td></tr>";
     for(Int_t j=0; j<27; ++j){
-    // for(Int_t j=0; j<ScalerAnalyzer::MaxRow; ++j){
+      // for(Int_t j=0; j<ScalerAnalyzer::MaxRow; ++j){
       ss << "<tr>";
       for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
         TString n = scaler_off.GetScalerName(i, j);
@@ -406,7 +406,7 @@ process_event()
     static auto prev_spill = scaler_on.Get("Spill");
     auto        curr_spill = scaler_on.Get("Spill");
     if(host.Contains("k18term4") &&
-      	event_number > 1 && prev_spill != curr_spill){
+       event_number > 1 && prev_spill != curr_spill){
       std::cout << "exec tagslip sound!" << std::endl;
       gSystem->Exec("ssh axis@eb0 \"aplay ~/sound/tagslip.wav\" &");
     }

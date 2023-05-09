@@ -147,11 +147,13 @@ process_event()
       }
       if( trigger_flag[seg] ) hptr_array[hit_id]->Fill( seg );
     }
-    if( !( trigger_flag[trigger::kSpillEnd] |
+    if( !( trigger_flag[trigger::kSpillOnEnd] |
+	   trigger_flag[trigger::kSpillOffEnd] |
 	   trigger_flag[trigger::kLevel1OR] ) |
         !( trigger_flag[trigger::kL1SpillOn] |
 	   trigger_flag[trigger::kL1SpillOff] |
-           trigger_flag[trigger::kSpillEnd] ) ){
+           trigger_flag[trigger::kSpillOnEnd] |
+	   trigger_flag[trigger::kSpillOffEnd] ) ){
       hddaq::cerr << "#W Trigger flag is missing!!! "
 		  << trigger_flag << std::endl;
     }

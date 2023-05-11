@@ -413,7 +413,7 @@ process_event()
   { ///// BH1
     static const auto device_id = gUnpacker.get_device_id("BH1");
     static const auto adc_id = gUnpacker.get_data_id("BH1", "adc");
-    static const auto tdc_id = gUnpacker.get_data_id("BH1", "fpga_leading");
+    static const auto tdc_id = gUnpacker.get_data_id("BH1", "tdc");
     static const auto tdc_min = gUser.GetParameter("TdcBH1", 0);
     static const auto tdc_max = gUser.GetParameter("TdcBH1", 1);
     static const auto adc_hid = gHist.getSequentialID(kBH1, 0, kADC);
@@ -794,7 +794,7 @@ process_event()
   { ///// BH2
     static const auto device_id = gUnpacker.get_device_id("BH2");
     static const auto adc_id = gUnpacker.get_data_id("BH2", "adc");
-    static const auto tdc_id = gUnpacker.get_data_id("BH2", "fpga_leading");
+    static const auto tdc_id = gUnpacker.get_data_id("BH2", "tdc");
     static const auto tdc_min = gUser.GetParameter("TdcBH2", 0);
     static const auto tdc_max = gUser.GetParameter("TdcBH2", 1);
     static const auto adc_hid = gHist.getSequentialID(kBH2, 0, kADC);
@@ -849,7 +849,7 @@ process_event()
   { ///// HTOF
     static const auto device_id = gUnpacker.get_device_id("HTOF");
     static const auto adc_id = gUnpacker.get_data_id("HTOF", "adc");
-    static const auto tdc_id = gUnpacker.get_data_id("HTOF", "fpga_leading");
+    static const auto tdc_id = gUnpacker.get_data_id("HTOF", "tdc");
     static const auto tdc_min = gUser.GetParameter("TdcHTOF", 0);
     static const auto tdc_max = gUser.GetParameter("TdcHTOF", 1);
     static const auto htofa_id = gHist.getSequentialID(kHTOF, 0, kADC);
@@ -1849,7 +1849,7 @@ process_event()
   { ///// TOF
     static const auto device_id = gUnpacker.get_device_id("TOF");
     static const auto adc_id = gUnpacker.get_data_id("TOF", "adc");
-    static const auto tdc_id = gUnpacker.get_data_id("TOF", "fpga_leading");
+    static const auto tdc_id = gUnpacker.get_data_id("TOF", "tdc");
     static const auto tdc_min = gUser.GetParameter("TdcTOF", 0);
     static const auto tdc_max = gUser.GetParameter("TdcTOF", 1);
     static const auto adc_hid = gHist.getSequentialID(kTOF, 0, kADC);
@@ -2188,7 +2188,7 @@ process_event()
     // Unpacker
     static const Int_t k_d_bh1  = gUnpacker.get_device_id("BH1");
     static const Int_t k_d_bh2  = gUnpacker.get_device_id("BH2");
-    static const Int_t k_tdc    = gUnpacker.get_data_id("BH1", "fpga_leading");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
     // HodoParam
     static const Int_t cid_bh1  = 1;
     static const Int_t cid_bh2  = 2;
@@ -2256,7 +2256,7 @@ process_event()
     // Unpacker
     static const Int_t k_d_bh1  = gUnpacker.get_device_id("BH1");
     static const Int_t k_d_bh2  = gUnpacker.get_device_id("BH2");
-    static const Int_t k_tdc    = gUnpacker.get_data_id("BH1", "fpga_leading");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("BH1", "tdc");
     // Sequential ID
     static const Int_t btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
     // BH2

@@ -486,10 +486,10 @@ process_event()
       for(Int_t ud=0; ud<kUorD; ++ud) {
 	UInt_t tdc_prev = 0;
 	Bool_t is_in_range = false;
-	for(Int_t m=0, n=gUnpacker.get_entries(device_id, ud, 0, i, leading_id);
+	for(Int_t m=0, n=gUnpacker.get_entries(device_id, ud, i, 0, leading_id);
 	    m<n; ++m) {
-	  auto tdc = gUnpacker.get(device_id, ud, 0, i, leading_id, m);
-	  auto tdc_t = gUnpacker.get(device_id, ud, 0, i, trailing_id, m);
+	  auto tdc = gUnpacker.get(device_id, ud, i, 0, leading_id, m);
+	  auto tdc_t = gUnpacker.get(device_id, ud, i, 0, trailing_id, m);
 	  auto tot = tdc - tdc_t;
 	  if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
 	    continue;

@@ -14,15 +14,24 @@ void dispLAC()
   // draw ADC U
   TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
   c->Clear();
-  c->Divide(5,6);
+  c->Divide(2,1);
   int base_id = HistMaker::getUniqueID(kLAC, 0, kADC, 1);
-  for(int i = 0; i<n_seg; ++i){
+  for(int i = 0; i<2; ++i){
     c->cd(i+1);
     gPad->SetLogy();
     TH1 *h = (TH1*)GHist::get(base_id + i);
     h->GetXaxis()->SetRangeUser(0,3000);
     h->Draw();
   }
+  // c->Divide(5,6);
+  // int base_id = HistMaker::getUniqueID(kLAC, 0, kADC, 1);
+  // for(int i = 0; i<n_seg; ++i){
+  //   c->cd(i+1);
+  //   gPad->SetLogy();
+  //   TH1 *h = (TH1*)GHist::get(base_id + i);
+  //   h->GetXaxis()->SetRangeUser(0,3000);
+  //   h->Draw();
+  // }
 
   c->Update();
 #endif

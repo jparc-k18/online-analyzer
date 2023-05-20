@@ -1889,8 +1889,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
 	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
     				1024, 0, 1024,
@@ -1915,8 +1915,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
     				200, -50, 150,
@@ -1932,8 +1932,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
     				200, -50, 150,
@@ -1952,14 +1952,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     Int_t target_id = getUniqueID(kAFT, 0, kHighGain, 0);
-    const char* sub_name = "HighGain";
+    const char* sub_name = "HG";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				4096, 0, 4096,
@@ -1969,14 +1969,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 
     // ADC HighGain Cut -------------------------------------------
     target_id = getUniqueID(kAFT, 0, kHighGain, 100);
-    sub_name = "CHighGain";
+    sub_name = "CHG";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				4096, 0, 4096,
@@ -1996,14 +1996,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     Int_t target_id = getUniqueID(kAFT, 0, kLowGain , 0);
-    const char* sub_name = "LowGain";
+    const char* sub_name = "LG";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				4096, 0, 4096,
@@ -2013,14 +2013,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 
   // ADC LowGain Cut --------------------------------------------
     target_id = getUniqueID(kAFT, 0, kLowGain , 100);
-    sub_name = "CLowGain";
+    sub_name = "CLG";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				4096, 0, 4096,
@@ -2045,8 +2045,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				1024, -200, 824,
@@ -2072,8 +2072,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-  	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-  	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+  	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+  	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2100,8 +2100,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2119,8 +2119,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2142,14 +2142,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     Int_t target_id = getUniqueID(kAFT, 0, kHighGain2D, 0);
-    const char* sub_name = "HighGain";
+    const char* sub_name = "HG";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2161,14 +2161,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 
     // ADC-2D HighGain Cut ------------------------------------------
     target_id = getUniqueID(kAFT, 0, kHighGain2D, 100);
-    sub_name = "CHighGain";
+    sub_name = "CHG";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2189,14 +2189,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     Int_t target_id = getUniqueID(kAFT, 0, kLowGain2D, 0);
-    const char* sub_name = "LowGain";
+    const char* sub_name = "LG";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2208,14 +2208,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 
     // ADC-2D LowGain Cut -------------------------------------------
     target_id = getUniqueID(kAFT, 0, kLowGain2D, 100);
-    sub_name = "CLowGain";
+    sub_name = "CLG";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2242,8 +2242,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2264,14 +2264,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     Int_t target_id = getUniqueID(kAFT, 0, kHighGainXTOT, 0);
-    const char* sub_name = "HighGainXTOT";
+    const char* sub_name = "HGXTOT";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
   			      4096/8, 0, 4096,
@@ -2291,14 +2291,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     Int_t target_id = getUniqueID(kAFT, 0, kLowGainXTOT, 0);
-    const char* sub_name = "LowGainXTOT";
+    const char* sub_name = "LGXTOT";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
   	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
   			      4096/8, 0, 4096,
@@ -2324,8 +2324,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
@@ -2342,8 +2342,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
   	else if( ud == 2 ) title = Form("%s_%s_%d_%s",  nameDetector, sub_name, i/4+1, layer_name.Data()); // for hitpattern defined by hits on both edges
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
@@ -2399,8 +2399,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
@@ -2417,8 +2417,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
     	else if( ud == 2 ) title = Form("%s_%s_%d_%s",  nameDetector, sub_name, i/4+1, layer_name.Data()); // for multipliticy defined by hits on both edges
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
@@ -2431,7 +2431,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     for(Int_t i=0; i<NumOfPlaneAFT; ++i){
       if( i%4 == 0 || i%4 == 2 ) continue;
       const char* title = NULL;
-      if( i%4 == 1 )      title = Form("%s_%s_%d_X", nameDetector, sub_name, i/4+1);
+      if( i%4 == 1 ) title = Form("%s_%s_%d_X", nameDetector, sub_name, i/4+1);
       else if( i%4 == 3 ) title = Form("%s_%s_%d_Y", nameDetector, sub_name, i/4+1);
       Int_t aft_nseg = NumOfSegAFT[i%4]*2;
       sub_dir->Add(createTH1( ++target_id, title, // 1 origin
@@ -2457,8 +2457,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   				1024, 0, 1024,
@@ -2473,8 +2473,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
@@ -2495,14 +2495,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 
     // ADC Cluster HighGain -------------------------------------------
     Int_t target_id = getUniqueID(kAFT, kCluster, kHighGain, 0);
-    const char* sub_name = "ClusterHighGain";
+    const char* sub_name = "ClusterHG";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   			      4096, 0, 4096,
@@ -2517,8 +2517,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
@@ -2539,14 +2539,14 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 
     // ADC Cluster LowGain -------------------------------------------
     Int_t target_id = getUniqueID(kAFT, kCluster, kLowGain, 0);
-    const char* sub_name = "ClusterLowGain";
+    const char* sub_name = "ClusterLG";
     // Add to the top directory
     for(Int_t ud=0; ud<2; ud++){
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
 	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
   			      4096, 0, 4096,
@@ -2561,8 +2561,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       for(Int_t i=0; i<NumOfPlaneAFT; ++i){
     	const char* title = NULL;
 	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 )      title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
@@ -8079,7 +8079,7 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     Int_t target_id = getUniqueID(kVMEEASIROC, 0, kHighGain, 10);
-    const char* sub_name = "HighGain";
+    const char* sub_name = "HG";
     // Add to the top directory
     for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){
       const char* title = NULL;
@@ -8101,7 +8101,7 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     Int_t target_id = getUniqueID(kVMEEASIROC, 0, kLowGain, 10);
-    const char* sub_name = "LowGain";
+    const char* sub_name = "LG";
     // Add to the top directory
     for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){
       const char* title = NULL;
@@ -8146,7 +8146,7 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
     sub_dir->SetName(nameSubDir);
 
     Int_t target_id = getUniqueID(kVMEEASIROC, 0, kHighGainvsTOT, 30);
-    const char* sub_name = "HighGainvsTOT";
+    const char* sub_name = "HGvsTOT";
     // Add to the top directory
     for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){
       TString strSubSubDir  = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);

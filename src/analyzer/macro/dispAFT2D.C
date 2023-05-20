@@ -27,7 +27,19 @@ dispAFT2D( void )
 	c->cd(i+1);
 	TH2 *h = (TH2*)GHist::get( ++aft_t_2d_id );
 	if( !h ) continue;
-	h->Draw();
+	h->Draw("colz");
+      }
+      for( int i = 0; i < 4; i++ ){
+	c->cd(NumOfPlaneAFT+i+1);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+	const char* title = NULL;
+	if( ud == 0 ) title = Form("TDC_#U_%s_2D", layer_name.Data());
+	if( ud == 1 ) title = Form("TDC_#D_%s_2D", layer_name.Data());
+	double xpos = 0.1;
+	double ypos = 0.5;
+	TLatex *text = new TLatex(xpos, ypos, title);
+	text->SetTextSize(0.12);
+	text->Draw();
       }
       c->Update();
     }
@@ -42,15 +54,27 @@ dispAFT2D( void )
       c->Clear();
       c->Divide(8, 5);
       for( int i=0; i<NumOfPlaneAFT; ++i ){
-  	c->cd(i+1);
-  	TH2 *h = (TH2*)GHist::get( ++aft_tot_2d_id );
-  	if( !h ) continue;
-  	h->Draw();
-  	TH2 *hh = (TH2*)GHist::get( ++aft_ctot_2d_id );
-  	if( !hh ) continue;
-  	// hh->GetXaxis()->SetRangeUser( 0, 4096 );
-  	hh->SetLineColor( kRed );
-  	hh->Draw("same");
+	c->cd(i+1);
+	TH2 *h = (TH2*)GHist::get( ++aft_tot_2d_id );
+	if( !h ) continue;
+	h->Draw("colz");
+	// TH2 *hh = (TH2*)GHist::get( ++aft_ctot_2d_id );
+	// if( !hh ) continue;
+	// // hh->GetXaxis()->SetRangeUser( 0, 4096 );
+	// hh->SetLineColor( kRed );
+	// hh->Draw("same");
+	for( int i = 0; i < 4; i++ ){
+	  c->cd(NumOfPlaneAFT+i+1);
+	  const TString layer_name = NameOfPlaneAFT[i%4];
+	  const char* title = NULL;
+	  if( ud == 0 ) title = Form("TOT_#U_%s_2D", layer_name.Data());
+	  if( ud == 1 ) title = Form("TOT_#D_%s_2D", layer_name.Data());
+	  double xpos = 0.1;
+	  double ypos = 0.5;
+	  TLatex *text = new TLatex(xpos, ypos, title);
+	  text->SetTextSize(0.12);
+	  text->Draw();
+	}
       }
       c->Update();
     }
@@ -65,15 +89,27 @@ dispAFT2D( void )
       c->Clear();
       c->Divide(8, 5);
       for( int i=0; i<NumOfPlaneAFT; ++i ){
-  	c->cd(i+1);
-  	TH2 *h = (TH2*)GHist::get( ++aft_hg_2d_id );
-  	if( !h ) continue;
-  	h->Draw();
-  	TH2 *hh = (TH2*)GHist::get( ++aft_chg_2d_id );
-  	if( !hh ) continue;
-  	// hh->GetXaxis()->SetRangeUser( 0, 4096 );
-  	hh->SetLineColor( kRed );
-  	hh->Draw("same");
+	c->cd(i+1);
+	TH2 *h = (TH2*)GHist::get( ++aft_hg_2d_id );
+	if( !h ) continue;
+	h->Draw("colz");
+	// TH2 *hh = (TH2*)GHist::get( ++aft_chg_2d_id );
+	// if( !hh ) continue;
+	// // hh->GetXaxis()->SetRangeUser( 0, 4096 );
+	// hh->SetLineColor( kRed );
+	// hh->Draw("same");
+	for( int i = 0; i < 4; i++ ){
+	  c->cd(NumOfPlaneAFT+i+1);
+	  const TString layer_name = NameOfPlaneAFT[i%4];
+	  const char* title = NULL;
+	  if( ud == 0 ) title = Form("HG_#U_%s_2D", layer_name.Data());
+	  if( ud == 1 ) title = Form("HG_#D_%s_2D", layer_name.Data());
+	  double xpos = 0.1;
+	  double ypos = 0.5;
+	  TLatex *text = new TLatex(xpos, ypos, title);
+	  text->SetTextSize(0.12);
+	  text->Draw();
+	}
       }
       c->Update();
     }
@@ -88,15 +124,27 @@ dispAFT2D( void )
       c->Clear();
       c->Divide(8, 5);
       for( int i=0; i<NumOfPlaneAFT; ++i ){
-  	c->cd(i+1);
-  	TH2 *h = (TH2*)GHist::get( ++aft_lg_2d_id );
-  	if( !h ) continue;
-  	h->Draw();
-  	TH2 *hh = (TH2*)GHist::get( ++aft_clg_2d_id );
-  	if( !hh ) continue;
-  	// hh->GetXaxis()->SetRangeUser( 0, 4096 );
-  	hh->SetLineColor( kRed );
-  	hh->Draw("same");
+	c->cd(i+1);
+	TH2 *h = (TH2*)GHist::get( ++aft_lg_2d_id );
+	if( !h ) continue;
+	h->Draw("colz");
+	// TH2 *hh = (TH2*)GHist::get( ++aft_clg_2d_id );
+	// if( !hh ) continue;
+	// // hh->GetXaxis()->SetRangeUser( 0, 4096 );
+	// hh->SetLineColor( kRed );
+	// hh->Draw("same");
+	for( int i = 0; i < 4; i++ ){
+	  c->cd(NumOfPlaneAFT+i+1);
+	  const TString layer_name = NameOfPlaneAFT[i%4];
+	  const char* title = NULL;
+	  if( ud == 0 ) title = Form("LG_#U_%s_2D", layer_name.Data());
+	  if( ud == 1 ) title = Form("LG_#D_%s_2D", layer_name.Data());
+	  double xpos = 0.1;
+	  double ypos = 0.5;
+	  TLatex *text = new TLatex(xpos, ypos, title);
+	  text->SetTextSize(0.12);
+	  text->Draw();
+	}
       }
       c->Update();
     }
@@ -110,17 +158,14 @@ dispAFT2D( void )
       c->Clear();
       c->Divide(8, 5);
       for( int i=0; i<NumOfPlaneAFT; ++i ){
-  	c->cd(i+1);
-  	TH2 *h = (TH2*)GHist::get( ++aft_pe_2d_id );
-  	if( !h ) continue;
-  	h->Draw();
+	c->cd(i+1);
+	TH2 *h = (TH2*)GHist::get( ++aft_pe_2d_id );
+	if( !h ) continue;
+	h->Draw("colz");
       }
       c->Update();
     }
   }
-
-
-
 
 
   // You must write these lines for the thread safe

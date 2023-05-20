@@ -29,6 +29,18 @@ dispAFT1D( void )
 	if( !h ) continue;
 	h->Draw();
       }
+      for( int i = 0; i < 4; i++ ){
+	c->cd(NumOfPlaneAFT+i+1);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+	const char* title = NULL;
+	if( ud == 0 ) title = Form("TDC_#U_%s", layer_name.Data());
+	if( ud == 1 ) title = Form("TDC_#D_%s", layer_name.Data());
+	double xpos = 0.1;
+	double ypos = 0.5;
+	TLatex *text = new TLatex(xpos, ypos, title);
+	text->SetTextSize(0.15);
+	text->Draw();
+      }
       c->Update();
     }
   }
@@ -45,12 +57,25 @@ dispAFT1D( void )
 	c->cd(i+1);
 	TH1 *h = (TH1*)GHist::get( ++aft_tot_id );
 	if( !h ) continue;
+	h->SetTitleSize(0.05, "T");
 	h->Draw();
 	TH1 *hh = (TH1*)GHist::get( ++aft_ctot_id );
 	if( !hh ) continue;
 	// hh->GetXaxis()->SetRangeUser( 0, 4096 );
 	hh->SetLineColor( kRed );
 	hh->Draw("same");
+      }
+      for( int i = 0; i < 4; i++ ){
+	c->cd(NumOfPlaneAFT+i+1);
+	const TString layer_name = NameOfPlaneAFT[i%4];
+	const char* title = NULL;
+	if( ud == 0 ) title = Form("TOT_#U_%s", layer_name.Data());
+	if( ud == 1 ) title = Form("TOT_#D_%s", layer_name.Data());
+	double xpos = 0.1;
+	double ypos = 0.5;
+	TLatex *text = new TLatex(xpos, ypos, title);
+	text->SetTextSize(0.15);
+	text->Draw();
       }
       c->Update();
     }
@@ -74,6 +99,18 @@ dispAFT1D( void )
 	// hh->GetXaxis()->SetRangeUser( 0, 4096 );
 	hh->SetLineColor( kRed );
 	hh->Draw("same");
+	for( int i = 0; i < 4; i++ ){
+	  c->cd(NumOfPlaneAFT+i+1);
+	  const TString layer_name = NameOfPlaneAFT[i%4];
+	  const char* title = NULL;
+	  if( ud == 0 ) title = Form("HG_#U_%s", layer_name.Data());
+	  if( ud == 1 ) title = Form("HG_#D_%s", layer_name.Data());
+	  double xpos = 0.1;
+	  double ypos = 0.5;
+	  TLatex *text = new TLatex(xpos, ypos, title);
+	  text->SetTextSize(0.15);
+	  text->Draw();
+	}
       }
       c->Update();
     }
@@ -97,6 +134,18 @@ dispAFT1D( void )
 	// hh->GetXaxis()->SetRangeUser( 0, 4096 );
 	hh->SetLineColor( kRed );
 	hh->Draw("same");
+	for( int i = 0; i < 4; i++ ){
+	  c->cd(NumOfPlaneAFT+i+1);
+	  const TString layer_name = NameOfPlaneAFT[i%4];
+	  const char* title = NULL;
+	  if( ud == 0 ) title = Form("LG_#U_%s", layer_name.Data());
+	  if( ud == 1 ) title = Form("LG_#D_%s", layer_name.Data());
+	  double xpos = 0.1;
+	  double ypos = 0.5;
+	  TLatex *text = new TLatex(xpos, ypos, title);
+	  text->SetTextSize(0.15);
+	  text->Draw();
+	}
       }
       c->Update();
     }

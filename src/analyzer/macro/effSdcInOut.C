@@ -44,16 +44,22 @@ void effSdcInOut( void )
     Int_t base_id = HistMaker::getUniqueID(kSDC2, 0, kMulti);
     for( Int_t i=0; i<n_layer; ++i ){
       c->cd(i+1);
+      TH1 *h = GHist::get(base_id +i);
+      h->Draw();
       TH1 *h_wt = GHist::get(base_id +i +n_layer);
-      h_wt->Draw();
-
-      double Nof0     = h_wt->GetBinContent(1);
-      double NofTotal = h_wt->GetEntries();
+      if( !h_wt ) continue;
+      h_wt->SetLineColor(kBlue);
+      h_wt->Draw("same");
+      double Nof0     = h->GetBinContent(1);
+      double NofTotal = h->GetEntries();
       double eff      = 1. - (double)Nof0/NofTotal;
+      double Nof0_wt     = h_wt->GetBinContent(1);
+      double NofTotal_wt = h_wt->GetEntries();
+      double eff_wt      = 1. - (double)Nof0_wt/NofTotal_wt;
 
       double xpos  = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
-      double ypos  = h_wt->GetMaximum()*0.8;
-      TLatex *text = new TLatex(xpos, ypos, Form("plane eff. %.4f", eff));
+      double ypos  = h_wt->GetMaximum()*0.5;
+      TLatex *text = new TLatex(xpos, ypos, Form("plane eff. %.4f(%.4f)", eff, eff_wt));
       text->SetTextSize(0.08);
       text->Draw();
     }

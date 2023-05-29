@@ -20,9 +20,8 @@ enum DetectorType {
   // Detector unique ID in the beam line
   kBH1, kBFT, kBC3, kBC4, kBH2, kBAC, kBH2MT,
   kMsT, kMsT_T0, kMtx3D,
-  // Detector unique ID in the KURAMA system
-  kPVAC, kFAC, kSDC1, kSDC2, kSCH,
-  kSDC3, kSDC4, kSDC5, kTOF, kLAC,
+  // Detector unique ID in the S-2S system
+  kAC1, kSDC1, kSDC2, kSDC3, kSDC4, kSDC5, kTOF,
   // VMEEASIROC unique ID
   kVMEEASIROC,
   //E70
@@ -32,6 +31,8 @@ enum DetectorType {
   // E42
   kBH2_E42, kBH2_E42MT, kWC, kWCMT, kT1, kT1MT, kT2, kT2MT,
   kHTOF, kTPC, kBVH,
+  // Old detectors in the KURAMA system
+  kPVAC, kFAC, kSCH, kLAC,
   // Old detectors E07
   kFBH, kSSDT, kSSD1, kSSD2, kEMC,
   // Old detectors E40
@@ -184,6 +185,7 @@ public:
   TList* createSDC5( Bool_t flag_ps=true );
   TList* createTOF( Bool_t flag_ps=true );
   TList* createLAC( Bool_t flag_ps=true );
+  TList* createAC1( Bool_t flag_ps=true );
   TList* createMsT( Bool_t flag_ps=true );
   TList* createMsT_T0( Bool_t flag_ps=true );
   TList* createMatrix( Bool_t flag_ps=false );

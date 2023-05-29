@@ -113,6 +113,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(macro::Get("dispSDC5"));
   tab_macro->Add(macro::Get("dispSDCout_hitpat"));
   tab_macro->Add(macro::Get("dispTOF"));
+  tab_macro->Add(macro::Get("dispAC1"));
   tab_macro->Add(macro::Get("dispLAC"));
   tab_macro->Add(macro::Get("dispWC"));
   tab_macro->Add(macro::Get("dispMatrix"));
@@ -140,6 +141,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createSDC4());
   tab_hist->Add(gHist.createSDC5());
   tab_hist->Add(gHist.createTOF());
+  tab_hist->Add(gHist.createAC1());
   tab_hist->Add(gHist.createLAC());
   tab_hist->Add(gHist.createWC());
   tab_hist->Add(gHist.createTPC());
@@ -335,6 +337,7 @@ process_event()
 
   if (trigger_flag[trigger::kSpillOnEnd] || trigger_flag[trigger::kSpillOffEnd])
     return 0;
+
 
   std::vector<Int_t> hitseg_bh1;
   { ///// BH1
@@ -1673,6 +1676,75 @@ process_event()
     gUnpacker.dump_data_device(k_device);
 #endif
   }
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+
+  //------------------------------------------------------------------
+  //AC1
+  //------------------------------------------------------------------
+  {
+    // data type
+    static const Int_t k_device = gUnpacker.get_device_id("AC1");
+    static const Int_t k_adc    = gUnpacker.get_data_id("AC1","adc");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("AC1","tdc");
+
+    static const Int_t ac1a_id   = gHist.getSequentialID(kAC1, 0, kADC);
+    static const Int_t ac1t_id   = gHist.getSequentialID(kAC1, 0, kTDC);
+    static const Int_t ac1awt_id  = gHist.getSequentialID(kAC1, 0, kADCwTDC);
+    static const Int_t ac1hit_id  = gHist.getSequentialID(kAC1, 0, kHitPat);
+    static const Int_t ac1mul_id  = gHist.getSequentialID(kAC1, 0, kMulti);
+    // TDC gate range
+    static const Int_t tdc_min = gUser.GetParameter("TdcAC1", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcAC1", 1);
+
+    Int_t multiplicity = 0;
+
+    for(Int_t seg = 0; seg<NumOfSegAC1; ++seg) {
+      // ADC
+      if(seg>NumOfSegAC1-3){
+        Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+        if (nhit_a!=0) {
+	  Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	  hptr_array[ac1a_id + seg-NumOfSegAC1+2 ]->Fill(adc);
+        }
+      }
+
+      // INDIVISUAL TDC
+      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      Bool_t is_in_gate = false;
+
+      for(Int_t m = 0; m<nhit_t; ++m) {
+	Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+	hptr_array[ac1t_id + seg]->Fill(tdc);
+
+	if (tdc_min < tdc && tdc < tdc_max) {
+	  is_in_gate = true;
+	}// tdc range is ok
+      }// for tdc
+
+      if (is_in_gate) {
+        if(seg>NumOfSegAC1-3){
+	  if (gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0) {
+	    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	    hptr_array[ac1awt_id + seg-NumOfSegAC1+2 ]->Fill(adc);
+	  }
+        }
+      	else{
+	++multiplicity;
+      	hptr_array[ac1hit_id]->Fill(seg);
+	}
+      }
+    }
+    hptr_array[ac1mul_id]->Fill(multiplicity);
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }//AC
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;

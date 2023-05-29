@@ -815,7 +815,7 @@ TList* HistMaker::createBC4( Bool_t flag_ps )
   top_dir->SetName(nameDetector);
 
   // layer configuration
-  const char* name_layer[] = {"u0", "u1", "v0", "v1", "x0", "x1"};
+  const char* name_layer[] = {"v0", "v1", "u0", "u1", "x0", "x1"};
 
   // TDC---------------------------------------------------------
   {
@@ -2154,7 +2154,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
   			       aft_nseg, 0, aft_nseg,
-  			       4096/8, 0, 4096,
+  			       // 4096/8, 0, 4096,
+  			       4096, 0, 4096,
   			       "Fiber", "ADC [ch]"));
       }
     }
@@ -2173,7 +2174,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
   			       aft_nseg, 0, aft_nseg,
-  			       4096/8, 0, 4096,
+  			       // 4096/8, 0, 4096,
+  			       4096, 0, 4096,
   			       "Fiber", "ADC [ch]"));
       }
     }
@@ -3796,7 +3798,7 @@ TList* HistMaker::createSDC1( Bool_t flag_ps )
   top_dir->SetName(nameDetector);
 
   // layer configuration
-  const char* name_layer[] = {"v0", "v1", "x0", "x1", "u0", "u1"};
+  const char* name_layer[] = {"u0", "u1", "x0", "x1", "v0", "v1"};
 
   // TDC---------------------------------------------------------
   {
@@ -5921,6 +5923,112 @@ TList* HistMaker::createLAC( Bool_t flag_ps )
 }
 
 // -------------------------------------------------------------------------
+// createAC1
+// -------------------------------------------------------------------------
+TList* HistMaker::createAC1( Bool_t flag_ps )
+{
+  // Determine the detector name
+  TString strDet = CONV_STRING(kAC1);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
+
+  // Declaration of the directory
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // SUM ADC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kAC1, 0, kADC, 0);
+    for(Int_t i = 0; i<2; ++i){
+      Int_t seg = i+1;
+      const char* title = NULL;
+      title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+  { // SUM ADCwTDC---------------------------------------------------------
+    TString strSubDir  = CONV_STRING(kADCwTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kAC1, 0, kADCwTDC, 0);
+    for(Int_t i = 0; i<2; ++i){
+      Int_t seg = i+1;
+      const char* title = NULL;
+      title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+
+  // TDC SUM and INDIVISUAL---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kAC1, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegAC1; ++i){
+      const char* title = NULL;
+      Int_t seg = i+1; // 1 origin
+      if(i<18){
+        title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+      }
+      else{
+        title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg-18);
+      }
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "TDC [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
+  { ///// Hit parttern
+    Int_t target_id = getUniqueID(kAC1, 0, kHitPat, 0);
+    top_dir->Add(createTH1(++target_id, "AC1_hit_pattern", // 1 origin
+			   NumOfSegAC1-2, 0, NumOfSegAC1-2,
+			   "Segment", ""));
+  }
+  { ///// Multiplicity
+    Int_t target_id = getUniqueID(kAC1, 0, kMulti, 0);
+    top_dir->Add(createTH1(++target_id, "AC1_multiplicity", // 1 origin
+			   NumOfSegAC1-2, 0, NumOfSegAC1-2,
+			   "Multiplicity", ""));
+  }
+  return top_dir;
+
+  }
+
+  // Return the TList pointer which is added into TGFileBrowser
+  return top_dir;
+}
+
+
+// -------------------------------------------------------------------------
 // createLC
 // -------------------------------------------------------------------------
 TList* HistMaker::createLC( Bool_t flag_ps )
@@ -6012,12 +6120,11 @@ TList* HistMaker::createLC( Bool_t flag_ps )
     for(Int_t i = 0; i<NumOfSegLC; ++i){
       const char* title = NULL;
       if(i < NumOfSegLC){
-	//	Int_t seg = i+1; // 1 origin
 	Int_t seg = i+1; // 1 origin
 	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
 	//      }else{
 	//	Int_t seg = i+1-NumOfSegLC; // 1 origin
-	//	title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+	//	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin

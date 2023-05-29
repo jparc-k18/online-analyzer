@@ -93,6 +93,7 @@ dispVMEEASIROC( void )
       c->cd(i+1);
       TH2 *h = (TH2*)GHist::get( vmeeasiroc_hg_2d_id + i );
       if( !h ) continue;
+      // h->GetYaxis()->SetRangeUser(700, 1100);
       h->Draw("colz");
 
       double stddev_mean = 0.;
@@ -133,6 +134,7 @@ dispVMEEASIROC( void )
       c->cd((i-12)+1);
       TH2 *h = (TH2*)GHist::get( vmeeasiroc_hg_2d_id + i );
       if( !h ) continue;
+      // h->GetYaxis()->SetRangeUser(700, 1100);
       h->Draw("colz");
 
       double stddev_mean = 0.;

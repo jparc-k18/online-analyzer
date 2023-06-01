@@ -19,9 +19,10 @@ const Int_t DetIdBVH      =  9;
 const Int_t DetIdLAC      = 12;
 const Int_t DetIdWC       = 13; // E42
 const Int_t DetIdAC1       = 14;
+const Int_t DetIdSAC3       = 15;
 const Int_t NumOfSegBH1     = 11;
 const Int_t NumOfSegBH2     =  8;
-const Int_t NumOfSegBAC     =  1;
+const Int_t NumOfSegBAC     =  2;
 const Int_t NumOfSegPVAC    =  1;
 const Int_t NumOfSegFAC     =  1;
 const Int_t NumOfSegSCH     = 64;
@@ -31,6 +32,7 @@ const Int_t NumOfSegBVH     =  4;
 const Int_t NumOfSegLAC     = 30;
 const Int_t NumOfSegAC1     =  20;
 const Int_t NumOfSegWC      =  12;
+const Int_t NumOfSegSAC3     =  1;
 
 // Misc _______________________________________________________________
 const Int_t DetIdTrig       = 21;

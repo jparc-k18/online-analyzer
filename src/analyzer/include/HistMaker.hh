@@ -21,7 +21,7 @@ enum DetectorType {
   kBH1, kBFT, kBC3, kBC4, kBH2, kBAC, kBH2MT,
   kMsT, kMsT_T0, kMtx3D,
   // Detector unique ID in the S-2S system
-  kAC1, kSDC1, kSDC2, kSDC3, kSDC4, kSDC5, kTOF, kSAC3,
+  kAC1, kSDC1, kSDC2, kSDC3, kSDC4, kSDC5, kTOF, kSAC3, kSFV,
   // VMEEASIROC unique ID
   kVMEEASIROC,
   //E70

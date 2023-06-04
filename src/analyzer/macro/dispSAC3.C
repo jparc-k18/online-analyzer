@@ -9,7 +9,7 @@ void dispSAC3()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  int n_seg = 2;
+  int n_seg = 1;
 
 
 

@@ -167,6 +167,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_misc->Add(gHist.createMatrix());
   tab_misc->Add(gHist.createE72E90());
   tab_misc->Add(gHist.createSAC3());
+  tab_misc->Add(gHist.createSFV());
   tab_misc->Add(macro::Get("dispE72E90"));
   tab_misc->Add(macro::Get("dispE72E90Eff"));
 
@@ -1858,6 +1859,71 @@ process_event()
     gUnpacker.dump_data_device(k_device);
 #endif
   }//SAC3
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+
+  // SFV  -----------------------------------------------------------
+  {
+    // data type
+    static const Int_t k_device = gUnpacker.get_device_id("SFV");
+    //static const Int_t k_adc    = gUnpacker.get_data_id("SFV","adc");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("SFV","tdc");
+
+//    static const Int_t a_id   = gHist.getSequentialID(kSFV, 0, kADC, 1);
+    static const Int_t t_id   = gHist.getSequentialID(kSFV, 0, kTDC);
+//    static const Int_t awt_id = gHist.getSequentialID(kE90SAC, 0, kADCwTDC);
+//    static const Int_t h_id   = gHist.getSequentialID(kE90SAC, 0, kHitPat);
+//    static const Int_t m6_id   = gHist.getSequentialID(kE90SAC, 0, kMulti, 1);
+//    static const Int_t m8_id   = gHist.getSequentialID(kE90SAC, 0, kMulti, 2);
+
+    // TDC gate range
+    static const Int_t tdc_min = gUser.GetParameter("TdcSFV", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcSFV", 1);
+
+  //  Int_t multiplicity[2] = {0, 0};
+    for(Int_t seg = 0; seg<NumOfSegSFV; ++seg) {
+  //    // ADC
+  //    Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+  //    if (nhit_a!=0) {
+  //      Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+  //      hptr_array[a_id + seg]->Fill(adc);
+  //    }
+      // TDC
+      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      Bool_t is_in_gate = false;
+
+      for(Int_t m = 0; m<nhit_t; ++m) {
+        Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+        hptr_array[t_id + seg]->Fill(tdc);
+
+        if (tdc_min < tdc && tdc < tdc_max) {
+          is_in_gate = true;
+        }// tdc range is ok
+      }// for(m)
+
+  //    if (is_in_gate) {
+  //      // ADC w/TDC
+  //      if (gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0) {
+  //        Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+  //        hptr_array[awt_id + seg]->Fill(adc);
+  //      }
+  //      hptr_array[h_id]->Fill(seg);
+  //      hptr_array[e72para_id]->Fill(e72parasite::kE90SAC1 + seg);
+  //      ++multiplicity[seg];
+  //    }// flag is OK
+    }
+
+  //  hptr_array[m6_id]->Fill(multiplicity[0]);
+  //  hptr_array[m8_id]->Fill(multiplicity[1]);
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }//SFV
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;

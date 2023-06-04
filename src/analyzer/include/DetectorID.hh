@@ -20,6 +20,7 @@ const Int_t DetIdLAC      = 12;
 const Int_t DetIdWC       = 13; // E42
 const Int_t DetIdAC1       = 14;
 const Int_t DetIdSAC3       = 15;
+const Int_t DetIdSFV       = 16;
 const Int_t NumOfSegBH1     = 11;
 const Int_t NumOfSegBH2     =  8;
 const Int_t NumOfSegBAC     =  2;
@@ -32,7 +33,8 @@ const Int_t NumOfSegBVH     =  4;
 const Int_t NumOfSegLAC     = 30;
 const Int_t NumOfSegAC1     =  20;
 const Int_t NumOfSegWC      =  12;
-const Int_t NumOfSegSAC3     =  1;
+const Int_t NumOfSegSAC3    =  1;
+const Int_t NumOfSegSFV     =  6;
 
 // Misc _______________________________________________________________
 const Int_t DetIdTrig       = 21;
@@ -491,14 +493,14 @@ const Int_t NumOfSegKIC  =  4;
 // E13 Detectors
 const Int_t DetIdBMW     = 10;
 const Int_t DetIdMatrix  = 12;
-const Int_t DetIdSFV     = 24;
+//const Int_t DetIdSFV     = 24;
 const Int_t DetIdTOFMT   = 25;
 const Int_t DetIdSP0     = 26;
 //const Int_t DetIdGe      = 27;
 const Int_t DetIdPWO     = 28;
 const Int_t DetIdPWOADC  = 29;
 const Int_t NumOfSegBAC_SAC = 6;
-const Int_t NumOfSegSFV = 18;
+//const Int_t NumOfSegSFV = 18;
 //const Int_t NumOfSegGe   = 32;
 
 const Int_t NumOfSegPWO  = 238;

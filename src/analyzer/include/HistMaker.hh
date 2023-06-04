@@ -187,6 +187,7 @@ public:
   TList* createLAC( Bool_t flag_ps=true );
   TList* createAC1( Bool_t flag_ps=true );
   TList* createSAC3( Bool_t flag_ps=true );
+  TList* createSFV( Bool_t flag_ps=true );
   TList* createMsT( Bool_t flag_ps=true );
   TList* createMsT_T0( Bool_t flag_ps=true );
   TList* createMatrix( Bool_t flag_ps=false );

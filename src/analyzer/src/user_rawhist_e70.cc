@@ -1,3 +1,7 @@
+
+
+
+
 // -*- C++ -*-
 
 #include <iostream>
@@ -116,7 +120,6 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(macro::Get("dispAC1"));
   tab_macro->Add(macro::Get("dispLAC"));
   tab_macro->Add(macro::Get("dispWC"));
-  tab_macro->Add(macro::Get("dispSAC3"));
   tab_macro->Add(macro::Get("dispMatrix"));
   tab_macro->Add(macro::Get("dispTriggerFlag"));
   tab_macro->Add(macro::Get("dispHitPat"));
@@ -170,6 +173,8 @@ process_begin(const std::vector<std::string>& argv)
   tab_misc->Add(gHist.createSFV());
   tab_misc->Add(macro::Get("dispE72E90"));
   tab_misc->Add(macro::Get("dispE72E90Eff"));
+  tab_misc->Add(macro::Get("dispSAC3"));
+  tab_misc->Add(macro::Get("dispSFV"));
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -1805,18 +1810,18 @@ process_event()
     // data type
     static const Int_t k_device = gUnpacker.get_device_id("SAC3");
     static const Int_t k_adc    = gUnpacker.get_data_id("SAC3","adc");
-    //static const Int_t k_tdc    = gUnpacker.get_data_id("SAC3","tdc");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("SAC3","tdc");
 
-    static const Int_t a_id   = gHist.getSequentialID(kSAC3, 0, kADC, 1);
-//    static const Int_t t_id   = gHist.getSequentialID(kE90SAC, 0, kTDC);
+    static const Int_t a_id   = gHist.getSequentialID(kSAC3, 0, kADC);
+    static const Int_t t_id   = gHist.getSequentialID(kSAC3, 0, kTDC);
 //    static const Int_t awt_id = gHist.getSequentialID(kE90SAC, 0, kADCwTDC);
 //    static const Int_t h_id   = gHist.getSequentialID(kE90SAC, 0, kHitPat);
 //    static const Int_t m6_id   = gHist.getSequentialID(kE90SAC, 0, kMulti, 1);
 //    static const Int_t m8_id   = gHist.getSequentialID(kE90SAC, 0, kMulti, 2);
 
     // TDC gate range
-    //static const Int_t tdc_min = gUser.GetParameter("TdcE90SAC", 0);
-    //static const Int_t tdc_max = gUser.GetParameter("TdcE90SAC", 1);
+    static const Int_t tdc_min = gUser.GetParameter("TdcSAC3", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcSAC3", 1);
 
   //  Int_t multiplicity[2] = {0, 0};
     for(Int_t seg = 0; seg<NumOfSegSAC3; ++seg) {
@@ -1826,18 +1831,18 @@ process_event()
 	Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
 	hptr_array[a_id + seg]->Fill(adc);
       }
-  //    // TDC
-  //    Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-  //    Bool_t is_in_gate = false;
+      // TDC
+      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      Bool_t is_in_gate = false;
 
-  //    for(Int_t m = 0; m<nhit_t; ++m) {
-  //      Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
-  //      hptr_array[t_id + seg]->Fill(tdc);
+      for(Int_t m = 0; m<nhit_t; ++m) {
+        Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+        hptr_array[t_id + seg]->Fill(tdc);
 
-  //      if (tdc_min < tdc && tdc < tdc_max) {
-  //        is_in_gate = true;
-  //      }// tdc range is ok
-  //    }// for(m)
+        if (tdc_min < tdc && tdc < tdc_max) {
+          is_in_gate = true;
+        }// tdc range is ok
+      }// for(m)
 
   //    if (is_in_gate) {
   //      // ADC w/TDC
@@ -1875,15 +1880,15 @@ process_event()
 //    static const Int_t a_id   = gHist.getSequentialID(kSFV, 0, kADC, 1);
     static const Int_t t_id   = gHist.getSequentialID(kSFV, 0, kTDC);
 //    static const Int_t awt_id = gHist.getSequentialID(kE90SAC, 0, kADCwTDC);
-//    static const Int_t h_id   = gHist.getSequentialID(kE90SAC, 0, kHitPat);
-//    static const Int_t m6_id   = gHist.getSequentialID(kE90SAC, 0, kMulti, 1);
-//    static const Int_t m8_id   = gHist.getSequentialID(kE90SAC, 0, kMulti, 2);
+    static const Int_t SFVhit_id   = gHist.getSequentialID(kSFV, 0, kHitPat);
+    static const Int_t SFVmul_id   = gHist.getSequentialID(kSFV, 0, kMulti);
 
     // TDC gate range
     static const Int_t tdc_min = gUser.GetParameter("TdcSFV", 0);
     static const Int_t tdc_max = gUser.GetParameter("TdcSFV", 1);
 
-  //  Int_t multiplicity[2] = {0, 0};
+    Int_t multiplicity = 0;
+
     for(Int_t seg = 0; seg<NumOfSegSFV; ++seg) {
   //    // ADC
   //    Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
@@ -1916,8 +1921,7 @@ process_event()
   //    }// flag is OK
     }
 
-  //  hptr_array[m6_id]->Fill(multiplicity[0]);
-  //  hptr_array[m8_id]->Fill(multiplicity[1]);
+    hptr_array[SFVmul_id]->Fill(multiplicity);
 
 #if 0
     // Debug, dump data relating this detector

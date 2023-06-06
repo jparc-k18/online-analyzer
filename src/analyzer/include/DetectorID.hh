@@ -215,6 +215,15 @@ namespace e72parasite
   };
 }
 
+
+// TF  _______________________________________________________________
+const Int_t DetIdTF_TF      = 507;
+const Int_t DetIdTF_GN1     = 508;
+const Int_t DetIdTF_GN2     = 509;
+const Int_t NumOfSegTF_TF   = 1;
+const Int_t NumOfSegTF_GN1  = 1;
+const Int_t NumOfSegTF_GN2  = 1;
+
 // E42
 const Int_t DetIdTPC       = 70;
 const Int_t NumOfLayersTPC = 32;

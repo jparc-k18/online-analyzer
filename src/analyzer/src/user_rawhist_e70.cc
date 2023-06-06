@@ -171,10 +171,16 @@ process_begin(const std::vector<std::string>& argv)
   tab_misc->Add(gHist.createE72E90());
   tab_misc->Add(gHist.createSAC3());
   tab_misc->Add(gHist.createSFV());
+  tab_misc->Add(gHist.createTF_TF());
+  tab_misc->Add(gHist.createTF_GN1());
+  tab_misc->Add(gHist.createTF_GN2());
   tab_misc->Add(macro::Get("dispE72E90"));
   tab_misc->Add(macro::Get("dispE72E90Eff"));
   tab_misc->Add(macro::Get("dispSAC3"));
   tab_misc->Add(macro::Get("dispSFV"));
+  tab_misc->Add(macro::Get("dispTF_TF"));
+  tab_misc->Add(macro::Get("dispTF_GN1"));
+  tab_misc->Add(macro::Get("dispTF_GN2"));
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -2052,6 +2058,9 @@ process_event()
     // static const Int_t k_device_sdc2 = gUnpacker.get_device_id("SDC2");
     static const Int_t k_device_sdc3 = gUnpacker.get_device_id("SDC3");
     static const Int_t k_device_sdc4 = gUnpacker.get_device_id("SDC4");
+    // static const Int_t k_device_tof = gUnpacker.get_device_id("TOF");
+    // static const Int_t k_device_ac1 = gUnpacker.get_device_id("AC1");
+    // static const Int_t k_device_wc = gUnpacker.get_device_id("WC");
 
     // sequential id
     Int_t cor_id = gHist.getSequentialID(kCorrelation, 0, 0, 1);
@@ -2086,6 +2095,36 @@ process_event()
 	}
       }
     }
+
+    // // AC1 vs TOF
+    // TH2* hcor_ac1tof = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+    // for(Int_t seg1 = 0; seg1<NumOfSegAC1; ++seg1) {
+    //   for(Int_t seg2 = 0; seg2<NumOfSegTOF; ++seg2) {
+    // 	Int_t hitAC1 = gUnpacker.get_entries(k_device_ac1, 0, seg1, 0, 1);
+    // 	Int_t hitTOF = gUnpacker.get_entries(k_device_tof, 0, seg2, 0, 1);
+    // 	if (hitAC1 == 0 || hitTOF == 0)continue;
+    // 	Int_t tdcac1 = gUnpacker.get(k_device_ac1, 0, seg1, 0, 1);
+    // 	Int_t tdctof = gUnpacker.get(k_device_tof, 0, seg2, 0, 1);
+    // 	if (tdcac1 != 0 && tdctof != 0) {
+    // 	  hcor_ac1tof->Fill(seg1, seg2);
+    // 	}
+    //   }
+    // }
+
+    // // WC vs TOF
+    // TH2* hcor_wctof = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+    // for(Int_t seg1 = 0; seg1<NumOfSegWC; ++seg1) {
+    //   for(Int_t seg2 = 0; seg2<NumOfSegTOF; ++seg2) {
+    // 	Int_t hitWC = gUnpacker.get_entries(k_device_wc, 0, seg1, 0, 1);
+    // 	Int_t hitTOF = gUnpacker.get_entries(k_device_tof, 0, seg2, 0, 1);
+    // 	if (hitWC == 0 || hitTOF == 0)continue;
+    // 	Int_t tdcwc = gUnpacker.get(k_device_wc, 0, seg1, 0, 1);
+    // 	Int_t tdctof = gUnpacker.get(k_device_tof, 0, seg2, 0, 1);
+    // 	if (tdcwc != 0 && tdctof != 0) {
+    // 	  hcor_wctof->Fill(seg1, seg2);
+    // 	}
+    //   }
+    // }
 
     // BC3 vs BC4
     TH2* hcor_bc3bc4 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
@@ -2590,6 +2629,151 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+
+  // TF_TF  -----------------------------------------------------------
+  {
+    // data type
+    static const Int_t k_device = gUnpacker.get_device_id("TF_TF");
+    static const Int_t k_adc    = gUnpacker.get_data_id("TF_TF","adc");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("TF_TF","tdc");
+
+    static const Int_t a_id   = gHist.getSequentialID(kTF_TF, 0, kADC);
+    static const Int_t t_id   = gHist.getSequentialID(kTF_TF, 0, kTDC);
+
+    // TDC gate range
+    static const Int_t tdc_min = gUser.GetParameter("TdcTF_TF", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcTF_TF", 1);
+
+    for(Int_t seg = 0; seg<NumOfSegTF_TF; ++seg) {
+      // ADC
+      Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      if (nhit_a!=0) {
+	Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	hptr_array[a_id + seg]->Fill(adc);
+      }
+      // TDC
+      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      Bool_t is_in_gate = false;
+
+      for(Int_t m = 0; m<nhit_t; ++m) {
+        Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+        hptr_array[t_id + seg]->Fill(tdc);
+
+        if (tdc_min < tdc && tdc < tdc_max) {
+          is_in_gate = true;
+        }// tdc range is ok
+      }// for(m)
+
+    }
+
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }//TF_TF
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+
+  // TF_GN1  -----------------------------------------------------------
+  {
+    // data type
+    static const Int_t k_device = gUnpacker.get_device_id("TF_GN1");
+    //static const Int_t k_adc    = gUnpacker.get_data_id("TF_GN1","adc");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("TF_GN1","tdc");
+
+    //static const Int_t a_id   = gHist.getSequentialID(kTF_GN1, 0, kADC);
+    static const Int_t t_id   = gHist.getSequentialID(kTF_GN1, 0, kTDC);
+
+    // TDC gate range
+    static const Int_t tdc_min = gUser.GetParameter("TdcTF_GN1", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcTF_GN1", 1);
+
+    for(Int_t seg = 0; seg<NumOfSegTF_GN1; ++seg) {
+      // ADC
+    //  Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+    //  if (nhit_a!=0) {
+    //    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+    //    hptr_array[a_id + seg]->Fill(adc);
+    //  }
+      // TDC
+      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      Bool_t is_in_gate = false;
+
+      for(Int_t m = 0; m<nhit_t; ++m) {
+        Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+        hptr_array[t_id + seg]->Fill(tdc);
+
+        if (tdc_min < tdc && tdc < tdc_max) {
+          is_in_gate = true;
+        }// tdc range is ok
+      }// for(m)
+
+    }
+
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }//TF_GN1
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+
+  // TF_GN2  -----------------------------------------------------------
+  {
+    // data type
+    static const Int_t k_device = gUnpacker.get_device_id("TF_GN2");
+    //static const Int_t k_adc    = gUnpacker.get_data_id("TF_GN2","adc");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("TF_GN2","tdc");
+
+    //static const Int_t a_id   = gHist.getSequentialID(kTF_GN2, 0, kADC);
+    static const Int_t t_id   = gHist.getSequentialID(kTF_GN2, 0, kTDC);
+
+    // TDC gate range
+    static const Int_t tdc_min = gUser.GetParameter("TdcTF_GN2", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcTF_GN2", 1);
+
+    for(Int_t seg = 0; seg<NumOfSegTF_GN2; ++seg) {
+      // ADC
+    //  Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+    //  if (nhit_a!=0) {
+    //    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+    //    hptr_array[a_id + seg]->Fill(adc);
+    //  }
+      // TDC
+      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      Bool_t is_in_gate = false;
+
+      for(Int_t m = 0; m<nhit_t; ++m) {
+        Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+        hptr_array[t_id + seg]->Fill(tdc);
+
+        if (tdc_min < tdc && tdc < tdc_max) {
+          is_in_gate = true;
+        }// tdc range is ok
+      }// for(m)
+
+    }
+
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }//TF_GN2
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+
   // E42BH2  -----------------------------------------------------------
   {
     // data type
@@ -2615,7 +2799,7 @@ process_event()
       }
     }
     Int_t multiplicity = 0;
-    Int_t seg = 3;
+    Int_t seg = 4;
     for(Int_t ud=0; ud<2; ++ud) {
       // ADC
       UInt_t adc = 0;

@@ -28,6 +28,8 @@ enum DetectorType {
   kAFT,
   // E72E90
   kE72BAC, kE90SAC, kE72KVC, kE42BH2, kE72Parasite,
+  // TF
+  kTF_TF, kTF_GN1, kTF_GN2,
   // E42
   kBH2_E42, kBH2_E42MT, kWC, kWCMT, kT1, kT1MT, kT2, kT2MT,
   kHTOF, kTPC, kBVH,
@@ -201,6 +203,9 @@ public:
   TList* createDCEff( Bool_t flag_ps=true );
   TList* createBTOF( Bool_t flag_ps=true );
   TList* createE72E90( Bool_t flag_ps=true );
+  TList* createTF_TF( Bool_t flag_ps=true );
+  TList* createTF_GN1( Bool_t flag_ps=true );
+  TList* createTF_GN2( Bool_t flag_ps=true );
 
   // Beam Profile
   TList* createBeamProfile( Bool_t flag_ps=true );

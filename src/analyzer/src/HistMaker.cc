@@ -6011,7 +6011,7 @@ TList* HistMaker::createAC1( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kAC1, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "AC1_hit_pattern", // 1 origin
 			   NumOfSegAC1-2, 0, NumOfSegAC1-2,
-			   "Segment", ""));
+			   "PMT No", ""));
   }
   { ///// Multiplicity
     Int_t target_id = getUniqueID(kAC1, 0, kMulti, 0);
@@ -7223,24 +7223,11 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
                              NumOfSegBH2, 0, NumOfSegBH2,
                              "BH1 seg", "BH2 seg" ) );
 
-    // SCH vs TOF -----------------------------------------------
-    top_dir->Add( createTH2( ++target_id, "SCH_TOF", // 1 origin
-                             NumOfSegSCH, 0, NumOfSegSCH,
-                             NumOfSegTOF+NumOfSegBVH, 0, NumOfSegTOF+NumOfSegBVH,
-                             "SCH seg", "TOF seg" ) );
-
-    // // AC1 vs TOF -----------------------------------------------
-    // top_dir->Add( createTH2( ++target_id, "AC1_TOF", // 1 origin
-    //                          NumOfSegAC1, 0, NumOfSegAC1,
-    //                          NumOfSegTOF, 0, NumOfSegTOF,
-    //                          "AC1 seg", "TOF seg" ) );
-
-    // // WC vs TOF -----------------------------------------------
-    // top_dir->Add( createTH2( ++target_id, "WC_TOF", // 1 origin
-    //                          NumOfSegWC, 0, NumOfSegWC,
-    //                          NumOfSegTOF, 0, NumOfSegTOF,
-    //                          "WC seg", "TOF seg" ) );
-
+    // // SCH vs TOF -----------------------------------------------
+    // top_dir->Add( createTH2( ++target_id, "SCH_TOF", // 1 origin
+    //                          NumOfSegSCH, 0, NumOfSegSCH,
+    //                          NumOfSegTOF+NumOfSegBVH, 0, NumOfSegTOF+NumOfSegBVH,
+    //                          "SCH seg", "TOF seg" ) );
     // BC4 vs BC3 ----------------------------------------------
     top_dir->Add( createTH2( ++target_id, "BC4x1_BC3x0", // 1 origin
                              NumOfWireBC3, 0, NumOfWireBC3,
@@ -7264,6 +7251,19 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
                              NumOfWireSDC4, 0, NumOfWireSDC4,
                              NumOfSegTOF, 0, NumOfSegTOF,
                              "SDC4 wire", "TOF seg" ) );
+
+    // AC1 vs TOF -----------------------------------------------
+    top_dir->Add( createTH2( ++target_id, "AC1_TOF", // 1 origin
+                             NumOfSegAC1-2, 0, NumOfSegAC1-2,
+                             NumOfSegTOF, 0, NumOfSegTOF,
+                             "AC1 PMT No", "TOF seg" ) );
+
+    // WC vs TOF -----------------------------------------------
+    top_dir->Add( createTH2( ++target_id, "WC_TOF", // 1 origin
+                             NumOfSegWC, 0, NumOfSegWC,
+                             NumOfSegTOF, 0, NumOfSegTOF,
+                             "WC seg", "TOF seg" ) );
+
 
     // // FHT1 UX1 vs FHT1 UX2 --------------------------------------------
     // top_dir->Add(createTH2(++target_id, "FHT1_UX1_FHT1_UX2", // 1 origin

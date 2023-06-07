@@ -2055,9 +2055,9 @@ process_event()
     // static const Int_t k_device_sdc2 = gUnpacker.get_device_id("SDC2");
     static const Int_t k_device_sdc3 = gUnpacker.get_device_id("SDC3");
     static const Int_t k_device_sdc4 = gUnpacker.get_device_id("SDC4");
-    // static const Int_t k_device_tof = gUnpacker.get_device_id("TOF");
-    // static const Int_t k_device_ac1 = gUnpacker.get_device_id("AC1");
-    // static const Int_t k_device_wc = gUnpacker.get_device_id("WC");
+    static const Int_t k_device_tof = gUnpacker.get_device_id("TOF");
+    static const Int_t k_device_ac1 = gUnpacker.get_device_id("AC1");
+    static const Int_t k_device_wc = gUnpacker.get_device_id("WC");
 
     // sequential id
     Int_t cor_id = gHist.getSequentialID(kCorrelation, 0, 0, 1);
@@ -2092,36 +2092,6 @@ process_event()
 	}
       }
     }
-
-    // // AC1 vs TOF
-    // TH2* hcor_ac1tof = dynamic_cast<TH2*>(hptr_array[cor_id++]);
-    // for(Int_t seg1 = 0; seg1<NumOfSegAC1; ++seg1) {
-    //   for(Int_t seg2 = 0; seg2<NumOfSegTOF; ++seg2) {
-    // 	Int_t hitAC1 = gUnpacker.get_entries(k_device_ac1, 0, seg1, 0, 1);
-    // 	Int_t hitTOF = gUnpacker.get_entries(k_device_tof, 0, seg2, 0, 1);
-    // 	if (hitAC1 == 0 || hitTOF == 0)continue;
-    // 	Int_t tdcac1 = gUnpacker.get(k_device_ac1, 0, seg1, 0, 1);
-    // 	Int_t tdctof = gUnpacker.get(k_device_tof, 0, seg2, 0, 1);
-    // 	if (tdcac1 != 0 && tdctof != 0) {
-    // 	  hcor_ac1tof->Fill(seg1, seg2);
-    // 	}
-    //   }
-    // }
-
-    // // WC vs TOF
-    // TH2* hcor_wctof = dynamic_cast<TH2*>(hptr_array[cor_id++]);
-    // for(Int_t seg1 = 0; seg1<NumOfSegWC; ++seg1) {
-    //   for(Int_t seg2 = 0; seg2<NumOfSegTOF; ++seg2) {
-    // 	Int_t hitWC = gUnpacker.get_entries(k_device_wc, 0, seg1, 0, 1);
-    // 	Int_t hitTOF = gUnpacker.get_entries(k_device_tof, 0, seg2, 0, 1);
-    // 	if (hitWC == 0 || hitTOF == 0)continue;
-    // 	Int_t tdcwc = gUnpacker.get(k_device_wc, 0, seg1, 0, 1);
-    // 	Int_t tdctof = gUnpacker.get(k_device_tof, 0, seg2, 0, 1);
-    // 	if (tdcwc != 0 && tdctof != 0) {
-    // 	  hcor_wctof->Fill(seg1, seg2);
-    // 	}
-    //   }
-    // }
 
     // BC3 vs BC4
     TH2* hcor_bc3bc4 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
@@ -2165,6 +2135,37 @@ process_event()
 	hcor_tofsdc4->Fill(wire, seg_tof);
       }
     }
+
+    // AC1 vs TOF
+    TH2* hcor_ac1tof = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+    for(Int_t seg1 = 0; seg1<NumOfSegAC1-2; ++seg1) {
+      for(Int_t seg2 = 0; seg2<NumOfSegTOF; ++seg2) {
+	Int_t hitAC1 = gUnpacker.get_entries(k_device_ac1, 0, seg1, 0, 1);
+	Int_t hitTOF = gUnpacker.get_entries(k_device_tof, 0, seg2, 0, 1);
+	if (hitAC1 == 0 || hitTOF == 0)continue;
+	Int_t tdcac1 = gUnpacker.get(k_device_ac1, 0, seg1, 0, 1);
+	Int_t tdctof = gUnpacker.get(k_device_tof, 0, seg2, 0, 1);
+	if (tdcac1 != 0 && tdctof != 0) {
+	  hcor_ac1tof->Fill(seg1, seg2);
+	}
+      }
+    }
+
+    // WC vs TOF
+    TH2* hcor_wctof = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+    for(Int_t seg1 = 0; seg1<NumOfSegWC; ++seg1) {
+      for(Int_t seg2 = 0; seg2<NumOfSegTOF; ++seg2) {
+	Int_t hitWC = gUnpacker.get_entries(k_device_wc, 0, seg1, 0, 1);
+	Int_t hitTOF = gUnpacker.get_entries(k_device_tof, 0, seg2, 0, 1);
+	if (hitWC == 0 || hitTOF == 0)continue;
+	Int_t tdcwc = gUnpacker.get(k_device_wc, 0, seg1, 0, 1);
+	Int_t tdctof = gUnpacker.get(k_device_tof, 0, seg2, 0, 1);
+	if (tdcwc != 0 && tdctof != 0) {
+	  hcor_wctof->Fill(seg1, seg2);
+	}
+      }
+    }
+
   }
 
 #if DEBUG

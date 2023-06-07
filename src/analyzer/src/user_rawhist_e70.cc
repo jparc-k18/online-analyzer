@@ -1,7 +1,3 @@
-
-
-
-
 // -*- C++ -*-
 
 #include <iostream>
@@ -1884,7 +1880,7 @@ process_event()
     static const Int_t k_tdc    = gUnpacker.get_data_id("SFV","tdc");
 
 //    static const Int_t a_id   = gHist.getSequentialID(kSFV, 0, kADC, 1);
-    static const Int_t t_id   = gHist.getSequentialID(kSFV, 0, kTDC);
+    static const Int_t SFVt_id   = gHist.getSequentialID(kSFV, 0, kTDC);
 //    static const Int_t awt_id = gHist.getSequentialID(kE90SAC, 0, kADCwTDC);
     static const Int_t SFVhit_id   = gHist.getSequentialID(kSFV, 0, kHitPat);
     static const Int_t SFVmul_id   = gHist.getSequentialID(kSFV, 0, kMulti);
@@ -1908,23 +1904,24 @@ process_event()
 
       for(Int_t m = 0; m<nhit_t; ++m) {
         Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
-        hptr_array[t_id + seg]->Fill(tdc);
+        hptr_array[SFVt_id + seg]->Fill(tdc);
 
         if (tdc_min < tdc && tdc < tdc_max) {
           is_in_gate = true;
         }// tdc range is ok
       }// for(m)
 
-  //    if (is_in_gate) {
+      if (is_in_gate) {
+       if(seg<NumOfSegSFV-2){
   //      // ADC w/TDC
   //      if (gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0) {
   //        Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
   //        hptr_array[awt_id + seg]->Fill(adc);
   //      }
-  //      hptr_array[h_id]->Fill(seg);
-  //      hptr_array[e72para_id]->Fill(e72parasite::kE90SAC1 + seg);
-  //      ++multiplicity[seg];
-  //    }// flag is OK
+        hptr_array[SFVhit_id]->Fill(seg);
+        ++multiplicity;
+       }
+      }// flag is OK
     }
 
     hptr_array[SFVmul_id]->Fill(multiplicity);

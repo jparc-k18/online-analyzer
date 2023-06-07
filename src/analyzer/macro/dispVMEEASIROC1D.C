@@ -18,14 +18,12 @@ dispVMEEASIROC1D( void )
   // ----------------------------------
 
   int drawPlane = 53;
-
   // draw HighGain-2D
   { //
     int vmeeasiroc_hg_2d_id   = HistMaker::getUniqueID(kVMEEASIROC, 0, kHighGain, 11);
     int vmeeasiroc_chg_2d_id  = HistMaker::getUniqueID(kVMEEASIROC, 0, kHighGain, 101);
     TH1D *h_hg[NumOfSegVMEEASIROC];
     TH1D *h_chg[NumOfSegVMEEASIROC];
-    // TF1 *fgaus = new TF1("fgaus", "gaus", 700, 1000);
     TCanvas *c;
     for( int iPlane=0; iPlane<NumOfPlaneVMEEASIROC; ++iPlane ){
       int planeId = PlaneIdOfVMEEASIROC[iPlane];
@@ -52,7 +50,7 @@ dispVMEEASIROC1D( void )
 	h_chg[iSeg]->GetXaxis()->SetRangeUser(700, 1100);
 	h_chg[iSeg]->Draw("same");
 
-	if( iSeg%16 == 0 ) c->Update();
+	if( iSeg%16 == 15 ) c->Update();
       }
     }
   }

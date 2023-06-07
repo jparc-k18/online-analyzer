@@ -8405,6 +8405,20 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
 			     4096, 0, 4096,
 			     "ch", "ADC [ch]"));
     }
+
+    // ADC-2D HighGain Cut ------------------------------------------
+    target_id = getUniqueID(kVMEEASIROC, 0, kHighGain, 100);
+    sub_name = "CHG";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
+			     4096, 0, 4096,
+			     "ch", "ADC [ch]"));
+    }
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -8427,6 +8441,20 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
 			     4096, 0, 4096,
 			     "ch", "ADC [ch]"));
     }
+
+    // ADC-2D HighGain Cut ------------------------------------------
+    target_id = getUniqueID(kVMEEASIROC, 0, kLowGain, 100);
+    sub_name = "CLG";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
+      sub_dir->Add(createTH2(++target_id, title, // 1 origin
+			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
+			     4096, 0, 4096,
+			     "ch", "ADC [ch]"));
+    }
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -10374,4 +10402,3 @@ TList* HistMaker::createTF_GN2( Bool_t flag_ps )
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
-

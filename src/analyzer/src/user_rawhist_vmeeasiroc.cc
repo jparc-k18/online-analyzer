@@ -205,12 +205,19 @@ process_event( void )
     static const int k_lowgain  = gUnpacker.get_data_id("VMEEASIROC", "lowgain");
 
     // SequentialID
-    int vmeeasiroc_t_2d_id   = gHist.getSequentialID(kVMEEASIROC, 0, kTDC2D,   1);
-    int vmeeasiroc_tot_2d_id = gHist.getSequentialID(kVMEEASIROC, 0, kTOT2D,   1);
-    int vmeeasiroc_hg_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kHighGain, 11);
-    int vmeeasiroc_lg_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kLowGain, 11);
+    int vmeeasiroc_t_2d_id    = gHist.getSequentialID(kVMEEASIROC, 0, kTDC2D,   1);
+    int vmeeasiroc_tot_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kTOT2D,   1);
+    int vmeeasiroc_hg_2d_id   = gHist.getSequentialID(kVMEEASIROC, 0, kHighGain, 11);
+    int vmeeasiroc_chg_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kHighGain, 101);
+    int vmeeasiroc_lg_2d_id   = gHist.getSequentialID(kVMEEASIROC, 0, kLowGain, 11);
+    int vmeeasiroc_clg_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kLowGain, 101);
     int vmeeasiroc_multihit_2d_id = gHist.getSequentialID(kVMEEASIROC, 0, kMultiHitTdc, 21);
+
     int vmeeasiroc_hgvstot_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kHighGainvsTOT, 31);
+
+    // TDC gate range
+    static const int tdc_min = gUser.GetParameter("TdcVMEEASIROC", 0);
+    static const int tdc_max = gUser.GetParameter("TdcVMEEASIROC", 1);
 
     for(int l=0; l<NumOfPlaneVMEEASIROC; ++l){
       Int_t plane = PlaneIdOfVMEEASIROC[l]-1; // 0 origin
@@ -220,30 +227,48 @@ process_event( void )
       // Int_t multiplicity_ctot    = 0;
       // Int_t multiplicity_wt_ctot = 0;
 
-      for(int i = 0; i<NumOfSegVMEEASIROC; ++i){
+      for(int seg = 0; seg<NumOfSegVMEEASIROC; ++seg){
 
 	{ // tdc
-	  int nhit_l = gUnpacker.get_entries(k_device, plane, 0, i, k_leading );
+	  int nhit_l = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading );
+	  bool flag_hit_wt = false;
 	  for(int m = 0; m<nhit_l; ++m){
-	    int tdc = gUnpacker.get(k_device, plane, 0, i, k_leading, m);
-	    hptr_array[vmeeasiroc_t_2d_id+l]->Fill(i, tdc);
+	    int tdc = gUnpacker.get(k_device, plane, seg, 0, k_leading, m);
+	    hptr_array[vmeeasiroc_t_2d_id+l]->Fill(seg, tdc);
+	    if(tdc_min < tdc && tdc < tdc_max){ // w/ TDC cut
+	      flag_hit_wt = true;
+	    }
+	  }
+	  if(flag_hit_wt){
+	    // highgain w/ TDC cut
+	    int nhit_hg = gUnpacker.get_entries(k_device, plane, seg, 0, k_highgain);
+	    if( nhit_hg != 0 ){
+	      int adc_hg = gUnpacker.get(k_device, plane, seg, 0, k_highgain);
+	      hptr_array[vmeeasiroc_chg_2d_id+l]->Fill(seg, adc_hg);
+	    }
+	    // lowgain w/ TDC cut
+	    int nhit_lg = gUnpacker.get_entries(k_device, plane, seg, 0, k_lowgain);
+	    if( nhit_lg != 0 ){
+	      int adc_lg = gUnpacker.get(k_device, plane, seg, 0, k_lowgain);
+	      hptr_array[vmeeasiroc_clg_2d_id+l]->Fill(seg, adc_lg);
+	    }
 	  }
 	}
 
 	{ // tot
-	  int nhit_l = gUnpacker.get_entries(k_device, plane, 0, i, k_leading );
-	  int nhit_t = gUnpacker.get_entries(k_device, plane, 0, i, k_trailing );
+	  int nhit_l = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading );
+	  int nhit_t = gUnpacker.get_entries(k_device, plane, seg, 0, k_trailing );
 	  Int_t hit_l_max = 0;
 	  Int_t hit_t_max = 0;
-	  if(nhit_l != 0) hit_l_max = gUnpacker.get(k_device, plane, 0, i, k_leading,  nhit_l - 1);
-	  if(nhit_t != 0) hit_t_max = gUnpacker.get(k_device, plane, 0, i, k_trailing, nhit_t - 1);
+	  if(nhit_l != 0) hit_l_max = gUnpacker.get(k_device, plane, seg, 0, k_leading,  nhit_l - 1);
+	  if(nhit_t != 0) hit_t_max = gUnpacker.get(k_device, plane, seg, 0, k_trailing, nhit_t - 1);
 	  // tdc1st = 0;
 	  if(nhit_l == nhit_t && hit_l_max > hit_t_max){
 	    for(Int_t m = 0; m<nhit_l; ++m){
-	      int tdc = gUnpacker.get(k_device, plane, 0, i, k_leading, m);
-	      int tdc_t = gUnpacker.get(k_device, plane, 0, i, k_trailing, m);
+	      int tdc   = gUnpacker.get(k_device, plane, seg, 0, k_leading, m);
+	      int tdc_t = gUnpacker.get(k_device, plane, seg, 0, k_trailing, m);
 	      int tot = tdc - tdc_t;
-	      hptr_array[vmeeasiroc_tot_2d_id+l]->Fill(i, tot);
+	      hptr_array[vmeeasiroc_tot_2d_id+l]->Fill(seg, tot);
 	      // if(tot < tot_min) continue;
 	      // hptr_array[sdc3t_ctot_id + l]->Fill(tdc);
 	      // hptr_array[sdc3tot_ctot_id+l]->Fill(tot);
@@ -256,43 +281,43 @@ process_event( void )
 	}
 
       	{ // High gain
-	  int nhit_hg = gUnpacker.get_entries(k_device, plane, 0, i, k_highgain);
+	  int nhit_hg = gUnpacker.get_entries(k_device, plane, seg, 0, k_highgain);
 	  for(int m = 0; m<nhit_hg; ++m){
-	    int adc_hg = gUnpacker.get(k_device, plane, 0, i, k_highgain, m);
-	    hptr_array[vmeeasiroc_hg_2d_id+l]->Fill(i, adc_hg);
+	    int adc_hg = gUnpacker.get(k_device, plane, seg, 0, k_highgain, m);
+	    hptr_array[vmeeasiroc_hg_2d_id+l]->Fill(seg, adc_hg);
 	  }
 	}
 
 	{ // Low gain
-	  int nhit_lg = gUnpacker.get_entries(k_device, plane, 0, i, k_lowgain );
+	  int nhit_lg = gUnpacker.get_entries(k_device, plane, seg, 0, k_lowgain );
 	  for(int m = 0; m<nhit_lg; ++m){
-	    int adc_lg = gUnpacker.get(k_device, plane, 0, i, k_lowgain, m);
-	    hptr_array[vmeeasiroc_lg_2d_id+l]->Fill(i, adc_lg);
+	    int adc_lg = gUnpacker.get(k_device, plane, seg, 0, k_lowgain, m);
+	    hptr_array[vmeeasiroc_lg_2d_id+l]->Fill(seg, adc_lg);
 	  }
 	}
 
 	{ // multi hit
-	  int nhit_l = gUnpacker.get_entries(k_device, plane, 0, i, k_leading );
-	  hptr_array[vmeeasiroc_multihit_2d_id+l]->Fill(i, nhit_l);
+	  int nhit_l = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading );
+	  hptr_array[vmeeasiroc_multihit_2d_id+l]->Fill(seg, nhit_l);
 	}
 
       	{ // adc vs tot
-	  int nhit_hg = gUnpacker.get_entries(k_device, plane, 0, i, k_highgain);
-	  int nhit_l = gUnpacker.get_entries(k_device, plane, 0, i, k_leading );
-	  int nhit_t = gUnpacker.get_entries(k_device, plane, 0, i, k_trailing );
+	  int nhit_hg = gUnpacker.get_entries(k_device, plane, seg, 0, k_highgain);
+	  int nhit_l  = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading );
+	  int nhit_t  = gUnpacker.get_entries(k_device, plane, seg, 0, k_trailing );
 	  Int_t hit_l_max = 0;
 	  Int_t hit_t_max = 0;
-	  if(nhit_l != 0) hit_l_max = gUnpacker.get(k_device, plane, 0, i, k_leading,  nhit_l - 1);
-	  if(nhit_t != 0) hit_t_max = gUnpacker.get(k_device, plane, 0, i, k_trailing, nhit_t - 1);
+	  if(nhit_l != 0) hit_l_max = gUnpacker.get(k_device, plane, seg, 0, k_leading,  nhit_l - 1);
+	  if(nhit_t != 0) hit_t_max = gUnpacker.get(k_device, plane, seg, 0, k_trailing, nhit_t - 1);
 	  // tdc1st = 0;
 	  if(nhit_l == nhit_t && hit_l_max > hit_t_max){
 	    if(nhit_hg == nhit_l){
 	      for(Int_t m = 0; m<nhit_l; ++m){
-		int adc_hg = gUnpacker.get(k_device, plane, 0, i, k_highgain, m);
-		int tdc = gUnpacker.get(k_device, plane, 0, i, k_leading, m);
-		int tdc_t = gUnpacker.get(k_device, plane, 0, i, k_trailing, m);
+		int adc_hg = gUnpacker.get(k_device, plane, seg, 0, k_highgain, m);
+		int tdc    = gUnpacker.get(k_device, plane, seg, 0, k_leading, m);
+		int tdc_t  = gUnpacker.get(k_device, plane, seg, 0, k_trailing, m);
 		int tot = tdc - tdc_t;
-		hptr_array[vmeeasiroc_hgvstot_2d_id+l*NumOfSegVMEEASIROC+i]->Fill(adc_hg, tot);
+		hptr_array[vmeeasiroc_hgvstot_2d_id+l*NumOfSegVMEEASIROC+seg]->Fill(adc_hg, tot);
 		// if(tot < tot_min) continue;
 		// hptr_array[sdc3t_ctot_id + l]->Fill(tdc);
 		// hptr_array[sdc3tot_ctot_id+l]->Fill(tot);
@@ -304,7 +329,6 @@ process_event( void )
 	    }
 	  }
 	}
-
       }
     }
 

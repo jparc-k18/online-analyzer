@@ -114,7 +114,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(macro::Get("dispSDCout_hitpat"));
   tab_macro->Add(macro::Get("dispTOF"));
   tab_macro->Add(macro::Get("dispAC1"));
-  tab_macro->Add(macro::Get("dispLAC"));
+  //  tab_macro->Add(macro::Get("dispLAC"));
   tab_macro->Add(macro::Get("dispWC"));
   tab_macro->Add(macro::Get("dispMatrix"));
   tab_macro->Add(macro::Get("dispTriggerFlag"));
@@ -142,7 +142,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createSDC5());
   tab_hist->Add(gHist.createTOF());
   tab_hist->Add(gHist.createAC1());
-  tab_hist->Add(gHist.createLAC());
+  //  tab_hist->Add(gHist.createLAC());
   tab_hist->Add(gHist.createWC());
   tab_hist->Add(gHist.createTPC());
   tab_hist->Add(gHist.createCorrelation());
@@ -1760,51 +1760,51 @@ process_event()
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
-  //------------------------------------------------------------------
-  //LAC
-  //------------------------------------------------------------------
-  {
-    // data typep
-    static const Int_t k_device = gUnpacker.get_device_id("LAC");
-    static const Int_t k_u      = 0; // up
-    static const Int_t k_tdc    = gUnpacker.get_data_id("LAC","tdc");
-    static const Int_t lachit_id = gHist.getSequentialID(kLAC, 0, kHitPat);
-    static const Int_t lacmul_id = gHist.getSequentialID(kLAC, 0, kMulti);
+//   //------------------------------------------------------------------
+//   //LAC
+//   //------------------------------------------------------------------
+//   {
+//     // data typep
+//     static const Int_t k_device = gUnpacker.get_device_id("LAC");
+//     static const Int_t k_u      = 0; // up
+//     static const Int_t k_tdc    = gUnpacker.get_data_id("LAC","tdc");
+//     static const Int_t lachit_id = gHist.getSequentialID(kLAC, 0, kHitPat);
+//     static const Int_t lacmul_id = gHist.getSequentialID(kLAC, 0, kMulti);
 
-    // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("TdcLAC", 0);
-    static const Int_t tdc_max = gUser.GetParameter("TdcLAC", 1);
+//     // TDC gate range
+//     static const Int_t tdc_min = gUser.GetParameter("TdcLAC", 0);
+//     static const Int_t tdc_max = gUser.GetParameter("TdcLAC", 1);
 
-    Int_t lact_id   = gHist.getSequentialID(kLAC, 0, kTDC);
-    Int_t multiplicity = 0;
-    for(Int_t seg = 0; seg<NumOfSegLAC; ++seg) {
-      Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-      Bool_t is_in_gate = false;
-      for(Int_t m = 0; m<nhit; ++m) {
-	Int_t tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
-	hptr_array[lact_id + seg]->Fill(tdc);
+//     Int_t lact_id   = gHist.getSequentialID(kLAC, 0, kTDC);
+//     Int_t multiplicity = 0;
+//     for(Int_t seg = 0; seg<NumOfSegLAC; ++seg) {
+//       Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
+//       Bool_t is_in_gate = false;
+//       for(Int_t m = 0; m<nhit; ++m) {
+// 	Int_t tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
+// 	hptr_array[lact_id + seg]->Fill(tdc);
 
-	if (tdc_min < tdc && tdc < tdc_max) is_in_gate = true;
-      }
+// 	if (tdc_min < tdc && tdc < tdc_max) is_in_gate = true;
+//       }
 
-      // Hit pattern && multiplicity
-      if (is_in_gate) {
-	hptr_array[lachit_id]->Fill(seg);
-	++multiplicity;
-      }
-    }
+//       // Hit pattern && multiplicity
+//       if (is_in_gate) {
+// 	hptr_array[lachit_id]->Fill(seg);
+// 	++multiplicity;
+//       }
+//     }
 
-    hptr_array[lacmul_id]->Fill(multiplicity);
+//     hptr_array[lacmul_id]->Fill(multiplicity);
 
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }
+// #if 0
+//     // Debug, dump data relating this detector
+//     gUnpacker.dump_data_device(k_device);
+// #endif
+//   }
 
-#if DEBUG
-  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-#endif
+// #if DEBUG
+//   std::cout << __FILE__ << " " << __LINE__ << std::endl;
+// #endif
 
 
   // SAC3  -----------------------------------------------------------

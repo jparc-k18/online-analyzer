@@ -5828,99 +5828,99 @@ TList* HistMaker::createTOFMT( Bool_t flag_ps )
   return top_dir;
 }
 
-// -------------------------------------------------------------------------
-// createLAC
-// -------------------------------------------------------------------------
-TList* HistMaker::createLAC( Bool_t flag_ps )
-{
-  // Determine the detector name
-  TString strDet = CONV_STRING(kLAC);
-  // name list of crearted detector
-  name_created_detectors_.push_back(strDet);
-  if(flag_ps){
-    // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet);
-  }
+// // -------------------------------------------------------------------------
+// // createLAC
+// // -------------------------------------------------------------------------
+// TList* HistMaker::createLAC( Bool_t flag_ps )
+// {
+//   // Determine the detector name
+//   TString strDet = CONV_STRING(kLAC);
+//   // name list of crearted detector
+//   name_created_detectors_.push_back(strDet);
+//   if(flag_ps){
+//     // name list which are displayed in Ps tab
+//     name_ps_files_.push_back(strDet);
+//   }
 
-  // Declaration of the directory
-  // Just type conversion from TString to char*
-  const char* nameDetector = strDet.Data();
-  TList *top_dir = new TList;
-  top_dir->SetName(nameDetector);
+//   // Declaration of the directory
+//   // Just type conversion from TString to char*
+//   const char* nameDetector = strDet.Data();
+//   TList *top_dir = new TList;
+//   top_dir->SetName(nameDetector);
 
-#if 0
-  // ADC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    TString strSubDir  = CONV_STRING(kADC);
-    const char* nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
+// #if 0
+//   // ADC---------------------------------------------------------
+//   {
+//     // Declaration of the sub-directory
+//     TString strSubDir  = CONV_STRING(kADC);
+//     const char* nameSubDir = strSubDir.Data();
+//     TList *sub_dir = new TList;
+//     sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
-    Int_t target_id = getUniqueID(kLAC, 0, kADC, 0);
-    for(Int_t i = 0; i<NumOfSegLAC; ++i){
-      const char* title = NULL;
-      Int_t seg = i+1; // 1 origin
-      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     0x1000, 0, 0x1000,
-			     "ADC [ch]", ""));
-    }
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
-#endif
+//     // Make histogram and add it
+//     Int_t target_id = getUniqueID(kLAC, 0, kADC, 0);
+//     for(Int_t i = 0; i<NumOfSegLAC; ++i){
+//       const char* title = NULL;
+//       Int_t seg = i+1; // 1 origin
+//       title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+//       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+// 			     0x1000, 0, 0x1000,
+// 			     "ADC [ch]", ""));
+//     }
+//     // insert sub directory
+//     top_dir->Add(sub_dir);
+//   }
+// #endif
 
-  // TDC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    TString strSubDir  = CONV_STRING(kTDC);
-    const char* nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
+//   // TDC---------------------------------------------------------
+//   {
+//     // Declaration of the sub-directory
+//     TString strSubDir  = CONV_STRING(kTDC);
+//     const char* nameSubDir = strSubDir.Data();
+//     TList *sub_dir = new TList;
+//     sub_dir->SetName(nameSubDir);
 
-    // Make histogram and add it
-    Int_t target_id = getUniqueID(kLAC, 0, kTDC, 0);
-    for(Int_t i = 0; i<NumOfSegLAC; ++i){
-      const char* title = NULL;
-      if(i < NumOfSegLAC){
-	Int_t seg = i+1; // 1 origin
-	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-      }
+//     // Make histogram and add it
+//     Int_t target_id = getUniqueID(kLAC, 0, kTDC, 0);
+//     for(Int_t i = 0; i<NumOfSegLAC; ++i){
+//       const char* title = NULL;
+//       if(i < NumOfSegLAC){
+// 	Int_t seg = i+1; // 1 origin
+// 	title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+//       }
 
-      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     0x1000, 0, 0x1000,
-			     "TDC [ch]", ""));
-    }
+//       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+// 			     0x1000, 0, 0x1000,
+// 			     "TDC [ch]", ""));
+//     }
 
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
+//     // insert sub directory
+//     top_dir->Add(sub_dir);
+//   }
 
-  // Hit parttern -----------------------------------------------
-  {
-    const char* title = "LAC_hit_pattern";
-    Int_t target_id = getUniqueID(kLAC, 0, kHitPat, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-			   NumOfSegLAC, 0, NumOfSegLAC,
-			   "Segment", ""));
-  }
+//   // Hit parttern -----------------------------------------------
+//   {
+//     const char* title = "LAC_hit_pattern";
+//     Int_t target_id = getUniqueID(kLAC, 0, kHitPat, 0);
+//     // Add to the top directory
+//     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+// 			   NumOfSegLAC, 0, NumOfSegLAC,
+// 			   "Segment", ""));
+//   }
 
-  // Multiplicity -----------------------------------------------
-  {
-    const char* title = "LAC_multiplicity";
-    Int_t target_id = getUniqueID(kLAC, 0, kMulti, 0);
-    // Add to the top directory
-    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-			   NumOfSegLAC, 0, NumOfSegLAC,
-			   "Multiplicity", ""));
-  }
+//   // Multiplicity -----------------------------------------------
+//   {
+//     const char* title = "LAC_multiplicity";
+//     Int_t target_id = getUniqueID(kLAC, 0, kMulti, 0);
+//     // Add to the top directory
+//     top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+// 			   NumOfSegLAC, 0, NumOfSegLAC,
+// 			   "Multiplicity", ""));
+//   }
 
-  // Return the TList pointer which is added into TGFileBrowser
-  return top_dir;
-}
+//   // Return the TList pointer which is added into TGFileBrowser
+//   return top_dir;
+// }
 
 // -------------------------------------------------------------------------
 // createAC1

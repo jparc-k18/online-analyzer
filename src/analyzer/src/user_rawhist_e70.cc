@@ -1714,11 +1714,11 @@ process_event()
 
     for(Int_t seg = 0; seg<NumOfSegAC1; ++seg) {
       // ADC
-      if(seg>NumOfSegAC1-3){
+      if(seg>NumOfSegAC1-5 && seg<NumOfSegAC1-1){
         Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
         if (nhit_a!=0) {
 	  Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-	  hptr_array[ac1a_id + seg-NumOfSegAC1+2 ]->Fill(adc);
+	  hptr_array[ac1a_id + seg-NumOfSegAC1+4 ]->Fill(adc);
         }
       }
 
@@ -1736,13 +1736,13 @@ process_event()
       }// for tdc
 
       if (is_in_gate) {
-        if(seg>NumOfSegAC1-3){
+        if(seg>NumOfSegAC1-5 && seg<NumOfSegAC1-1){
 	  if (gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0) {
 	    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-	    hptr_array[ac1awt_id + seg-NumOfSegAC1+2 ]->Fill(adc);
+	    hptr_array[ac1awt_id + seg-NumOfSegAC1+4 ]->Fill(adc);
 	  }
         }
-      	else{
+      	if(seg<NumOfSegAC1-4){
 	++multiplicity;
       	hptr_array[ac1hit_id]->Fill(seg);
 	}

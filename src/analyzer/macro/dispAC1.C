@@ -9,7 +9,7 @@ void dispAC1()
   Updater::setUpdating(true);
   // ----------------------------------
 
-  int n_seg = 20;
+  int n_seg = 22;
 
 
 
@@ -17,10 +17,10 @@ void dispAC1()
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(2,1);
+    c->Divide(3,1);
     int base_id = HistMaker::getUniqueID(kAC1, 0, kADC);
     int adcwtdc_id = HistMaker::getUniqueID(kAC1, 0 , kADCwTDC);
-    for(int i = 0; i<2; ++i){
+    for(int i = 0; i<3; ++i){
       c->cd(i+1);
       gPad->SetLogy();
       TH1 *h = (TH1*)GHist::get(base_id + i);

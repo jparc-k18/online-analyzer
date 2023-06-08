@@ -5952,10 +5952,15 @@ TList* HistMaker::createAC1( Bool_t flag_ps )
 
     // Make histogram and add it
     Int_t target_id = getUniqueID(kAC1, 0, kADC, 0);
-    for(Int_t i = 0; i<2; ++i){
+    for(Int_t i = 0; i<3; ++i){
       Int_t seg = i+1;
       const char* title = NULL;
-      title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg);
+      if(i<2){
+        title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg);
+      }
+      else{
+        title = Form("%s_%s_ALLSUM", nameDetector, nameSubDir, seg);
+      }
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
@@ -5971,10 +5976,15 @@ TList* HistMaker::createAC1( Bool_t flag_ps )
 
     // Make histogram and add it
     Int_t target_id = getUniqueID(kAC1, 0, kADCwTDC, 0);
-    for(Int_t i = 0; i<2; ++i){
+    for(Int_t i = 0; i<3; ++i){
       Int_t seg = i+1;
       const char* title = NULL;
-      title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg);
+      if(i<2){
+        title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg);
+      }
+      else{
+        title = Form("%s_%s_ALLSUM", nameDetector, nameSubDir);
+      }
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
@@ -6000,7 +6010,12 @@ TList* HistMaker::createAC1( Bool_t flag_ps )
         title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
       }
       else{
-        title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg-18);
+	if(i<20){
+          title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg-18);
+        }
+	else{
+          title = Form("%s_%s_ALLSUM%d", nameDetector, nameSubDir, seg-20);
+	}
       }
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
@@ -6010,13 +6025,13 @@ TList* HistMaker::createAC1( Bool_t flag_ps )
   { ///// Hit parttern
     Int_t target_id = getUniqueID(kAC1, 0, kHitPat, 0);
     top_dir->Add(createTH1(++target_id, "AC1_hit_pattern", // 1 origin
-			   NumOfSegAC1-2, 0, NumOfSegAC1-2,
+			   NumOfSegAC1-4, 0, NumOfSegAC1-4,
 			   "PMT No", ""));
   }
   { ///// Multiplicity
     Int_t target_id = getUniqueID(kAC1, 0, kMulti, 0);
     top_dir->Add(createTH1(++target_id, "AC1_multiplicity", // 1 origin
-			   NumOfSegAC1-2, 0, NumOfSegAC1-2,
+			   NumOfSegAC1-4, 0, NumOfSegAC1-4,
 			   "Multiplicity", ""));
   }
   return top_dir;
@@ -7254,7 +7269,7 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
 
     // AC1 vs TOF -----------------------------------------------
     top_dir->Add( createTH2( ++target_id, "AC1_TOF", // 1 origin
-                             NumOfSegAC1-2, 0, NumOfSegAC1-2,
+                             NumOfSegAC1-4, 0, NumOfSegAC1-4,
                              NumOfSegTOF, 0, NumOfSegTOF,
                              "AC1 PMT No", "TOF seg" ) );
 

@@ -1912,7 +1912,7 @@ process_event()
       }// for(m)
 
       if (is_in_gate) {
-       if(seg<NumOfSegSFV-2){
+       if(seg<NumOfSegSFV-1){
   //      // ADC w/TDC
   //      if (gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0) {
   //        Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);

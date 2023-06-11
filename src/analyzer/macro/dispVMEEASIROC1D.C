@@ -17,43 +17,254 @@ dispVMEEASIROC1D( void )
   Updater::setUpdating(true);
   // ----------------------------------
 
-  int drawPlane = 53;
-  // draw HighGain-2D
-  { //
-    int vmeeasiroc_hg_2d_id   = HistMaker::getUniqueID(kVMEEASIROC, 0, kHighGain, 11);
-    int vmeeasiroc_chg_2d_id  = HistMaker::getUniqueID(kVMEEASIROC, 0, kHighGain, 101);
-    TH1D *h_hg[NumOfSegVMEEASIROC];
-    TH1D *h_chg[NumOfSegVMEEASIROC];
-    TCanvas *c;
-    for( int iPlane=0; iPlane<NumOfPlaneVMEEASIROC; ++iPlane ){
-      int planeId = PlaneIdOfVMEEASIROC[iPlane];
-      if( planeId != drawPlane ) continue;
-      TH2 *h_hg_2d  = (TH2*)GHist::get( vmeeasiroc_hg_2d_id + iPlane );
-      TH2 *h_chg_2d = (TH2*)GHist::get( vmeeasiroc_chg_2d_id + iPlane );
-      if( !h_hg_2d || !h_chg_2d ) continue;
-      for( int iSeg = 0; iSeg < NumOfSegVMEEASIROC; ++iSeg ){
-	if( iSeg%16 == 0 ){
-	  c = (TCanvas*)gROOT->FindObject(Form("c%d", iSeg/16+1));
-	  c->Clear();
-	  c->Divide(4, 4);
-	}
-	c->cd(iSeg%16+1);
-	h_hg[iSeg] = h_hg_2d->ProjectionY(Form("VMEEASIROC%d_Ch%d_HG", planeId, iSeg), iSeg+1, iSeg+1);
-	h_hg[iSeg]->SetTitle(Form("VMEEASIROC%d_Ch%d_HG", planeId, iSeg));
-	h_hg[iSeg]->Rebin(2);
-	h_hg[iSeg]->GetXaxis()->SetRangeUser(700, 1100);
-	h_hg[iSeg]->Draw();
-	h_chg[iSeg] = h_chg_2d->ProjectionY(Form("VMEEASIROC%d_Ch%d_CHG", planeId, iSeg), iSeg+1, iSeg+1);
-	h_chg[iSeg]->SetTitle(Form("VMEEASIROC%d_Ch%d_CHG", planeId, iSeg));
-	h_chg[iSeg]->Rebin(2);
-	h_chg[iSeg]->SetLineColor(kRed);
-	h_chg[iSeg]->GetXaxis()->SetRangeUser(700, 1100);
-	h_chg[iSeg]->Draw("same");
-
-	if( iSeg%16 == 15 ) c->Update();
-      }
+  // draw TDC-2D
+  { // aft01
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
+    c->Clear();
+    c->Divide(3, 5);
+    int vmeeasiroc_t_2d_id = HistMaker::getUniqueID(kVMEEASIROC, 0, kTDC2D,   1);
+    for( int i=0; i<NumOfPlaneVMEEASIROC; ++i ){
+      int planeId = PlaneIdOfVMEEASIROC[i];
+      if( i >= 12 ) break;
+      c->cd(i+1);
+      TH2 *h = (TH2*)GHist::get( vmeeasiroc_t_2d_id + i );
+      if( !h ) continue;
+      TH1D *hh =  h->ProjectionY(Form("VMEEASIROC_TDC_%d_1D", planeId), 1, NumOfSegVMEEASIROC);
+      hh->SetTitle(Form("VMEEASIROC_TDC_%d_1D", planeId));
+      hh->Draw();
     }
+    c->Update();
   }
+
+  // draw TDC-2D
+  { // aft02
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
+    c->Clear();
+    c->Divide(3, 5);
+    int vmeeasiroc_t_2d_id = HistMaker::getUniqueID(kVMEEASIROC, 0, kTDC2D,   1);
+    for( int i=0; i<NumOfPlaneVMEEASIROC; ++i ){
+      int planeId = PlaneIdOfVMEEASIROC[i];
+      if( i < 12 ) continue;
+      c->cd((i-12)+1);
+      TH2 *h = (TH2*)GHist::get( vmeeasiroc_t_2d_id + i );
+      if( !h ) continue;
+      TH1D *hh =  h->ProjectionY(Form("VMEEASIROC_TDC_%d_1D", planeId), 1, NumOfSegVMEEASIROC);
+      hh->SetTitle(Form("VMEEASIROC_TDC_%d_1D", planeId));
+      hh->Draw();
+    }
+    c->Update();
+  }
+
+  // draw TOT-2D
+  { // aft01
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
+    c->Clear();
+    c->Divide(3, 5);
+    int vmeeasiroc_tot_2d_id = HistMaker::getUniqueID(kVMEEASIROC, 0, kTOT2D,   1);
+    for( int i=0; i<NumOfPlaneVMEEASIROC; ++i ){
+      int planeId = PlaneIdOfVMEEASIROC[i];
+      if( i >= 12 ) break;
+      c->cd(i+1);
+      TH2 *h = (TH2*)GHist::get( vmeeasiroc_tot_2d_id + i );
+      if( !h ) continue;
+      TH1D *hh =  h->ProjectionY(Form("VMEEASIROC_TOT_%d_1D", planeId), 1, NumOfSegVMEEASIROC);
+      hh->SetTitle(Form("VMEEASIROC_TOT_%d_1D", planeId));
+      hh->Draw();
+    }
+    c->Update();
+  }
+
+  // draw TOT-2D
+  { // aft02
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
+    c->Clear();
+    c->Divide(3, 5);
+    int vmeeasiroc_tot_2d_id = HistMaker::getUniqueID(kVMEEASIROC, 0, kTOT2D,   1);
+    for( int i=0; i<NumOfPlaneVMEEASIROC; ++i ){
+      int planeId = PlaneIdOfVMEEASIROC[i];
+      if( i < 12 ) continue;
+      c->cd((i-12)+1);
+      TH2 *h = (TH2*)GHist::get( vmeeasiroc_tot_2d_id + i );
+      if( !h ) continue;
+      TH1D *hh =  h->ProjectionY(Form("VMEEASIROC_TOT_%d_1D", planeId), 1, NumOfSegVMEEASIROC);
+      hh->SetTitle(Form("VMEEASIROC_TOT_%d_1D", planeId));
+      hh->Draw();
+    }
+    c->Update();
+  }
+
+  // draw HighGain-2D
+  { // aft01
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
+    c->Clear();
+    c->Divide(3, 5);
+    int vmeeasiroc_hg_2d_id  = HistMaker::getUniqueID(kVMEEASIROC, 0, kHighGain, 11);
+    for( int i=0; i<NumOfPlaneVMEEASIROC; ++i ){
+      int planeId = PlaneIdOfVMEEASIROC[i];
+      if( i >= 12 ) break;
+      c->cd(i+1);
+      TH2 *h = (TH2*)GHist::get( vmeeasiroc_hg_2d_id + i );
+      if( !h ) continue;
+      TH1D *hh =  h->ProjectionY(Form("VMEEASIROC_HighGain_%d_1D", planeId), 1, NumOfSegVMEEASIROC);
+      hh->SetTitle(Form("VMEEASIROC_HighGain_%d_1D", planeId));
+      hh->Draw();
+
+      // double stddev_mean = 0.;
+      // for( int iSeg = 0; iSeg < NumOfSegVMEEASIROC; ++iSeg ){
+      // 	TH1I *h_seg  = (TH1I*)h->ProjectionY(Form("h_seg_%d", iSeg), iSeg+1, iSeg+1);
+      // 	stddev_mean += h_seg->GetStdDev();
+      // 	if( iSeg == NumOfSegVMEEASIROC/2-1 ){
+      // 	  stddev_mean /= NumOfSegVMEEASIROC/2.;
+      // 	  double xpos  = h->GetXaxis()->GetBinCenter(h->GetNbinsX())*0.1;
+      // 	  double ypos  = h->GetYaxis()->GetBinCenter(h->GetNbinsY())*0.5;
+      // 	  TLatex *text = new TLatex(xpos, ypos, Form("1st half stddev %.2f", stddev_mean));
+      // 	  text->SetTextSize(0.08);
+      // 	  text->Draw();
+      // 	  stddev_mean = 0.;
+      // 	  continue;
+      // 	}
+      // 	else if( iSeg == NumOfSegVMEEASIROC-1 ){
+      // 	  stddev_mean /= NumOfSegVMEEASIROC/2.;
+      // 	  double xpos  = h->GetXaxis()->GetBinCenter(h->GetNbinsX())*0.6;
+      // 	  double ypos  = h->GetYaxis()->GetBinCenter(h->GetNbinsY())*0.5;
+      // 	  TLatex *text = new TLatex(xpos, ypos, Form("2nd half stddev %.2f", stddev_mean));
+      // 	  text->SetTextSize(0.08);
+      // 	  text->Draw();
+      // 	}
+      // }
+    }
+    c->Update();
+  }
+
+  // draw HighGain-2D
+  { // aft02
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c6");
+    c->Clear();
+    c->Divide(3, 5);
+    int vmeeasiroc_hg_2d_id  = HistMaker::getUniqueID(kVMEEASIROC, 0, kHighGain, 11);
+    for( int i=0; i<NumOfPlaneVMEEASIROC; ++i ){
+      int planeId = PlaneIdOfVMEEASIROC[i];
+      if( i < 12 ) continue;
+      c->cd((i-12)+1);
+      TH2 *h = (TH2*)GHist::get( vmeeasiroc_hg_2d_id + i );
+      if( !h ) continue;
+      TH1D *hh =  h->ProjectionY(Form("VMEEASIROC_HighGain_%d_1D", planeId), 1, NumOfSegVMEEASIROC);
+      hh->SetTitle(Form("VMEEASIROC_HighGain_%d_1D", planeId));
+      hh->Draw();
+
+      // double stddev_mean = 0.;
+      // for( int iSeg = 0; iSeg < NumOfSegVMEEASIROC; ++iSeg ){
+      // 	TH1I *h_seg  = (TH1I*)h->ProjectionY(Form("h_seg_%d", iSeg), iSeg+1, iSeg+1);
+      // 	stddev_mean += h_seg->GetStdDev();
+      // 	if( iSeg == NumOfSegVMEEASIROC/2-1 ){
+      // 	  stddev_mean /= NumOfSegVMEEASIROC/2.;
+      // 	  double xpos  = h->GetXaxis()->GetBinCenter(h->GetNbinsX())*0.1;
+      // 	  double ypos  = h->GetYaxis()->GetBinCenter(h->GetNbinsY())*0.5;
+      // 	  TLatex *text = new TLatex(xpos, ypos, Form("1st half stddev %.2f", stddev_mean));
+      // 	  text->SetTextSize(0.08);
+      // 	  text->Draw();
+      // 	  stddev_mean = 0.;
+      // 	  continue;
+      // 	}
+      // 	else if( iSeg == NumOfSegVMEEASIROC-1 ){
+      // 	  stddev_mean /= NumOfSegVMEEASIROC/2.;
+      // 	  double xpos  = h->GetXaxis()->GetBinCenter(h->GetNbinsX())*0.6;
+      // 	  double ypos  = h->GetYaxis()->GetBinCenter(h->GetNbinsY())*0.5;
+      // 	  TLatex *text = new TLatex(xpos, ypos, Form("2nd half stddev %.2f", stddev_mean));
+      // 	  text->SetTextSize(0.08);
+      // 	  text->Draw();
+      // 	}
+      // }
+    }
+    c->Update();
+  }
+
+  // draw LowGain-2D
+  { // aft01
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c7");
+    c->Clear();
+    c->Divide(3, 5);
+    int vmeeasiroc_lg_2d_id  = HistMaker::getUniqueID(kVMEEASIROC, 0, kLowGain, 11);
+    for( int i=0; i<NumOfPlaneVMEEASIROC; ++i ){
+      int planeId = PlaneIdOfVMEEASIROC[i];
+      if( i >= 12 ) break;
+      c->cd(i+1);
+      TH2 *h = (TH2*)GHist::get( vmeeasiroc_lg_2d_id + i );
+      if( !h ) continue;
+      TH1D *hh =  h->ProjectionY(Form("VMEEASIROC_LowGain_%d_1D", planeId), 1, NumOfSegVMEEASIROC);
+      hh->SetTitle(Form("VMEEASIROC_LowGain_%d_1D", planeId));
+      hh->Draw();
+
+      // double stddev_mean = 0.;
+      // for( int iSeg = 0; iSeg < NumOfSegVMEEASIROC; ++iSeg ){
+      // 	TH1I *h_seg  = (TH1I*)h->ProjectionY(Form("h_seg_%d", iSeg), iSeg+1, iSeg+1);
+      // 	stddev_mean += h_seg->GetStdDev();
+      // 	if( iSeg == NumOfSegVMEEASIROC/2-1 ){
+      // 	  stddev_mean /= NumOfSegVMEEASIROC/2.;
+      // 	  double xpos  = h->GetXaxis()->GetBinCenter(h->GetNbinsX())*0.1;
+      // 	  double ypos  = h->GetYaxis()->GetBinCenter(h->GetNbinsY())*0.5;
+      // 	  TLatex *text = new TLatex(xpos, ypos, Form("1st half stddev %.2f", stddev_mean));
+      // 	  text->SetTextSize(0.08);
+      // 	  text->Draw();
+      // 	  stddev_mean = 0.;
+      // 	  continue;
+      // 	}
+      // 	else if( iSeg == NumOfSegVMEEASIROC-1 ){
+      // 	  stddev_mean /= NumOfSegVMEEASIROC/2.;
+      // 	  double xpos  = h->GetXaxis()->GetBinCenter(h->GetNbinsX())*0.6;
+      // 	  double ypos  = h->GetYaxis()->GetBinCenter(h->GetNbinsY())*0.5;
+      // 	  TLatex *text = new TLatex(xpos, ypos, Form("2nd half stddev %.2f", stddev_mean));
+      // 	  text->SetTextSize(0.08);
+      // 	  text->Draw();
+      // 	}
+      // }
+    }
+    c->Update();
+  }
+
+  // draw LowGain-2D
+  { // aft02
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c8");
+    c->Clear();
+    c->Divide(3, 5);
+    int vmeeasiroc_lg_2d_id  = HistMaker::getUniqueID(kVMEEASIROC, 0, kLowGain, 11);
+    for( int i=0; i<NumOfPlaneVMEEASIROC; ++i ){
+      int planeId = PlaneIdOfVMEEASIROC[i];
+      if( i < 12 ) continue;
+      c->cd((i-12)+1);
+      TH2 *h = (TH2*)GHist::get( vmeeasiroc_lg_2d_id + i );
+      if( !h ) continue;
+      TH1D *hh =  h->ProjectionY(Form("VMEEASIROC_LowGain_%d_1D", planeId), 1, NumOfSegVMEEASIROC);
+      hh->SetTitle(Form("VMEEASIROC_LowGain_%d_1D", planeId));
+      hh->Draw();
+
+      // double stddev_mean = 0.;
+      // for( int iSeg = 0; iSeg < NumOfSegVMEEASIROC; ++iSeg ){
+      // 	TH1I *h_seg  = (TH1I*)h->ProjectionY(Form("h_seg_%d", iSeg), iSeg+1, iSeg+1);
+      // 	stddev_mean += h_seg->GetStdDev();
+      // 	if( iSeg == NumOfSegVMEEASIROC/2-1 ){
+      // 	  stddev_mean /= NumOfSegVMEEASIROC/2.;
+      // 	  double xpos  = h->GetXaxis()->GetBinCenter(h->GetNbinsX())*0.1;
+      // 	  double ypos  = h->GetYaxis()->GetBinCenter(h->GetNbinsY())*0.5;
+      // 	  TLatex *text = new TLatex(xpos, ypos, Form("1st half stddev %.2f", stddev_mean));
+      // 	  text->SetTextSize(0.08);
+      // 	  text->Draw();
+      // 	  stddev_mean = 0.;
+      // 	  continue;
+      // 	}
+      // 	else if( iSeg == NumOfSegVMEEASIROC-1 ){
+      // 	  stddev_mean /= NumOfSegVMEEASIROC/2.;
+      // 	  double xpos  = h->GetXaxis()->GetBinCenter(h->GetNbinsX())*0.6;
+      // 	  double ypos  = h->GetYaxis()->GetBinCenter(h->GetNbinsY())*0.5;
+      // 	  TLatex *text = new TLatex(xpos, ypos, Form("2nd half stddev %.2f", stddev_mean));
+      // 	  text->SetTextSize(0.08);
+      // 	  text->Draw();
+      // 	}
+      // }
+    }
+    c->Update();
+  }
+
 
   // You must write these lines for the thread safe
   // ----------------------------------

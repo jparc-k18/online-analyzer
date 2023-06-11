@@ -90,6 +90,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("split33"));
   tab_macro->Add(macro::Get("dispVMEEASIROC"));
   tab_macro->Add(macro::Get("dispVMEEASIROC1D"));
+  tab_macro->Add(macro::Get("dispVMEEASIROC_AwT"));
   tab_macro->Add(macro::Get("dispDAQ"));
   // tab_macro->Add(macro::Get("auto_monitor_all"));
 

@@ -2360,6 +2360,7 @@ process_event()
   // E72Parasite -----------------------------------------------------------
   static const Int_t e72para_id = gHist.getSequentialID(kE72Parasite, 0, kHitPat);
   Bool_t is_T1_fired = false, is_T2_fired = false;
+  Bool_t is_BH2_fired = false;
   // T1 -----------------------------------------------------------
   {
     // data type
@@ -2423,7 +2424,89 @@ process_event()
     hptr_array[m_id]->Fill(multiplicity);
   }//T2
 
-  //if (!(is_T1_fired && is_T2_fired)) return 0;
+  // E42BH2  -----------------------------------------------------------
+  {
+    // data type
+    static const Int_t k_device = gUnpacker.get_device_id("E42BH2");
+    static const Int_t k_adc    = gUnpacker.get_data_id("E42BH2","adc");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("E42BH2","tdc");
+
+    static const Int_t a_id   = gHist.getSequentialID(kE42BH2, 0, kADC);
+    static const Int_t t_id   = gHist.getSequentialID(kE42BH2, 0, kTDC);
+    static const Int_t awt_id = gHist.getSequentialID(kE42BH2, 0, kADCwTDC);
+    static const Int_t h_id   = gHist.getSequentialID(kE42BH2, 0, kHitPat);
+    static const Int_t m_id   = gHist.getSequentialID(kE42BH2, 0, kMulti);
+
+    // TDC gate range
+    static const Int_t tdc_min = gUser.GetParameter("TdcE42BH2", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcE42BH2", 1);
+
+    std::vector<std::vector<Int_t>> hit_flag(NumOfSegE42BH2);
+    for(Int_t seg = 0; seg<NumOfSegE42BH2; ++seg) {
+      hit_flag[seg].resize(3);
+      for(Int_t ud=0; ud<3; ++ud) {
+	hit_flag[seg][ud] = 0;
+      }
+    }
+    Int_t multiplicity = 0;
+    Int_t seg = 4;
+    for(Int_t ud=0; ud<2; ++ud) {
+      // ADC
+      UInt_t adc = 0;
+      Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, ud, k_adc);
+      if (nhit_a!=0) {
+	adc = gUnpacker.get(k_device, 0, seg, ud, k_adc);
+	hptr_array[a_id + ud]->Fill(adc);
+      }
+      // TDC
+      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, ud, k_tdc);
+
+      for(Int_t m = 0; m<nhit_t; ++m) {
+	Int_t tdc = gUnpacker.get(k_device, 0, seg, ud, k_tdc, m);
+	hptr_array[t_id + ud]->Fill(tdc);
+
+	if (tdc_min < tdc && tdc < tdc_max && adc > 0) {
+	  hit_flag[seg][ud] = 1;
+	}// tdc range is ok
+      }// for(m)
+
+      if (hit_flag[seg][ud] == 1) {
+	// ADC w/TDC
+	hptr_array[awt_id + ud]->Fill(adc);
+      }
+    }//ud
+
+    for(Int_t seg = 0; seg<NumOfSegE42BH2; ++seg) {
+      Int_t ud=2;
+      // TDC
+      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, ud, k_tdc);
+
+      for(Int_t m = 0; m<nhit_t; ++m) {
+	Int_t tdc = gUnpacker.get(k_device, 0, seg, ud, k_tdc, m);
+	hptr_array[t_id + seg + 2]->Fill(tdc);
+
+	if (tdc_min < tdc && tdc < tdc_max) {
+	  hit_flag[seg][ud] = 1;
+	}// tdc range is ok
+      }// for(m)
+
+      if (hit_flag[seg][ud] == 1) {
+	hptr_array[h_id]->Fill(seg);
+	++multiplicity;
+	if( seg>=2 && seg<=5) is_BH2_fired = true;
+      }// flag is OK
+    }//seg
+
+    hptr_array[m_id]->Fill(multiplicity);
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }//E42BH2
+
+  // apply T1 & T2 & BH2[seg3-6] cut 
+  //if (!(is_T1_fired && is_T2_fired && is_BH2_fired)) return 0;
   //hptr_array[e72para_id]->Fill(e72parasite::kT1);
   //hptr_array[e72para_id]->Fill(e72parasite::kT2);
 
@@ -2770,88 +2853,6 @@ process_event()
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-
-
-  // E42BH2  -----------------------------------------------------------
-  {
-    // data type
-    static const Int_t k_device = gUnpacker.get_device_id("E42BH2");
-    static const Int_t k_adc    = gUnpacker.get_data_id("E42BH2","adc");
-    static const Int_t k_tdc    = gUnpacker.get_data_id("E42BH2","tdc");
-
-    static const Int_t a_id   = gHist.getSequentialID(kE42BH2, 0, kADC);
-    static const Int_t t_id   = gHist.getSequentialID(kE42BH2, 0, kTDC);
-    static const Int_t awt_id = gHist.getSequentialID(kE42BH2, 0, kADCwTDC);
-    static const Int_t h_id   = gHist.getSequentialID(kE42BH2, 0, kHitPat);
-    static const Int_t m_id   = gHist.getSequentialID(kE42BH2, 0, kMulti);
-
-    // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("TdcE42BH2", 0);
-    static const Int_t tdc_max = gUser.GetParameter("TdcE42BH2", 1);
-
-    std::vector<std::vector<Int_t>> hit_flag(NumOfSegE42BH2);
-    for(Int_t seg = 0; seg<NumOfSegE42BH2; ++seg) {
-      hit_flag[seg].resize(3);
-      for(Int_t ud=0; ud<3; ++ud) {
-	hit_flag[seg][ud] = 0;
-      }
-    }
-    Int_t multiplicity = 0;
-    Int_t seg = 4;
-    for(Int_t ud=0; ud<2; ++ud) {
-      // ADC
-      UInt_t adc = 0;
-      Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, ud, k_adc);
-      if (nhit_a!=0) {
-	adc = gUnpacker.get(k_device, 0, seg, ud, k_adc);
-	hptr_array[a_id + ud]->Fill(adc);
-      }
-      // TDC
-      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, ud, k_tdc);
-
-      for(Int_t m = 0; m<nhit_t; ++m) {
-	Int_t tdc = gUnpacker.get(k_device, 0, seg, ud, k_tdc, m);
-	hptr_array[t_id + ud]->Fill(tdc);
-
-	if (tdc_min < tdc && tdc < tdc_max && adc > 0) {
-	  hit_flag[seg][ud] = 1;
-	}// tdc range is ok
-      }// for(m)
-
-      if (hit_flag[seg][ud] == 1) {
-	// ADC w/TDC
-	hptr_array[awt_id + ud]->Fill(adc);
-      }
-    }//ud
-
-    for(Int_t seg = 0; seg<NumOfSegE42BH2; ++seg) {
-      Int_t ud=2;
-      // TDC
-      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, ud, k_tdc);
-
-      for(Int_t m = 0; m<nhit_t; ++m) {
-	Int_t tdc = gUnpacker.get(k_device, 0, seg, ud, k_tdc, m);
-	hptr_array[t_id + seg + 2]->Fill(tdc);
-
-	if (tdc_min < tdc && tdc < tdc_max) {
-	  hit_flag[seg][ud] = 1;
-	}// tdc range is ok
-      }// for(m)
-
-      if (hit_flag[seg][ud] == 1) {
-	hptr_array[h_id]->Fill(seg);
-	++multiplicity;
-      }// flag is OK
-    }//seg
-
-    hptr_array[m_id]->Fill(multiplicity);
-
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }//E42BH2
-
 
   return 0;
 } //process_event()

@@ -17,10 +17,10 @@ void dispAC1()
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(3,1);
+    c->Divide(2,2);
     int base_id = HistMaker::getUniqueID(kAC1, 0, kADC);
     int adcwtdc_id = HistMaker::getUniqueID(kAC1, 0 , kADCwTDC);
-    for(int i = 0; i<3; ++i){
+    for(int i = 0; i<4; ++i){
       c->cd(i+1);
       gPad->SetLogy();
       TH1 *h = (TH1*)GHist::get(base_id + i);

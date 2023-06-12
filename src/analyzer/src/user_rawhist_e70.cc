@@ -122,7 +122,8 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(macro::Get("dispCorrelation"));
   tab_macro->Add(macro::Get("effBcOut"));
   tab_macro->Add(macro::Get("effSdcInOut"));
-  tab_macro->Add(macro::Get("effWC"));
+  tab_macro->Add(macro::Get("effAC1WC"));
+  tab_macro->Add(macro::Get("effALL"));
   tab_macro->Add(macro::Get("dispBH2Fit"));
   tab_macro->Add(macro::Get("dispDAQ"));
   //  tab_macro->Add(macro::Get("dispAcEfficiency"));
@@ -1721,6 +1722,13 @@ process_event()
 	  hptr_array[ac1a_id + seg-NumOfSegAC1+4 ]->Fill(adc);
         }
       }
+      if(seg>NumOfSegAC1-2){
+        Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg-1, 0, k_adc);
+        if (nhit_a!=0) {
+	  Int_t adc = gUnpacker.get(k_device, 0, seg-1, 0, k_adc);
+	  hptr_array[ac1a_id + seg-NumOfSegAC1+4 ]->Fill(adc);
+        }
+      }
 
       // INDIVISUAL TDC
       Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
@@ -1742,9 +1750,17 @@ process_event()
 	    hptr_array[ac1awt_id + seg-NumOfSegAC1+4 ]->Fill(adc);
 	  }
         }
-      	if(seg<NumOfSegAC1-4){
-	++multiplicity;
-      	hptr_array[ac1hit_id]->Fill(seg);
+      	else{
+	  if(seg>NumOfSegAC1-2){
+	    if (gUnpacker.get_entries(k_device, 0, seg-1, 0, k_adc)>0) {
+	      Int_t adc = gUnpacker.get(k_device, 0, seg-1, 0, k_adc);
+	      hptr_array[ac1awt_id + seg-NumOfSegAC1+4 ]->Fill(adc);
+	    }
+	  }
+	  else{
+	    	++multiplicity;
+      	        hptr_array[ac1hit_id]->Fill(seg);
+	  }
 	}
       }
     }
@@ -2650,7 +2666,7 @@ process_event()
 #endif
   }//E42BH2
 
-  // apply T1 & T2 & BH2[seg3-6] cut 
+  // apply T1 & T2 & BH2[seg3-6] cut
 #if 0
   if (!(is_T1_fired && is_T2_fired && is_BH2_fired)) return 0;
   hptr_array[e72para_id]->Fill(e72parasite::kT1);

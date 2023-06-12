@@ -15,32 +15,32 @@ void dispHitPat()
     c->cd();
   }
 
-  gROOT->SetStyle("Plain");
-  // TPDF *pdf = new TPDF("/home/sks/PSFile/pro/hitpat_e40.pdf", 112);
+  // gROOT->SetStyle("Plain");
+  // // TPDF *pdf = new TPDF("/home/sks/PSFile/pro/hitpat_e40.pdf", 112);
 
-  // Title
+  // // Title
+  // {
+  //   //    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
+  //   TCanvas *c = new TCanvas("c0", "c0");
+  //   //    pdf->NewPage();
+  //   c->UseCurrentStyle();
+  //   c->Divide(1,1);
+  //   c->cd(1);
+  //   c->GetPad(1)->Range(0,0,100,100);
+  //   TText text;
+  //   text.SetTextSize(0.2);
+  //   text.SetTextAlign(22);
+  //   TTimeStamp stamp;
+  //   stamp.Add( -stamp.GetZoneOffset() );
+  //   text.SetTextSize(0.1);
+  //   text.DrawText(50.,50., stamp.AsString("s") );
+  //   c->Update();
+  //   c->cd();
+  //   c->GetPad(1)->Close();
+  //   delete c;
+  //   c = NULL;
+  // }
   {
-    //    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
-    TCanvas *c = new TCanvas("c0", "c0");
-    //    pdf->NewPage();
-    c->UseCurrentStyle();
-    c->Divide(1,1);
-    c->cd(1);
-    c->GetPad(1)->Range(0,0,100,100);
-    TText text;
-    text.SetTextSize(0.2);
-    text.SetTextAlign(22);
-    TTimeStamp stamp;
-    stamp.Add( -stamp.GetZoneOffset() );
-    text.SetTextSize(0.1);
-    text.DrawText(50.,50., stamp.AsString("s") );
-    c->Update();
-    c->cd();
-    c->GetPad(1)->Close();
-    delete c;
-    c = NULL;
-  }
-{
   // draw ADC
   TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
   c->Clear();
@@ -96,7 +96,7 @@ void dispHitPat()
   // draw ADC
   TCanvas *c2 = (TCanvas*)gROOT->FindObject("c2");
   c2->Clear();
-  c2->Divide(3,2);
+  c2->Divide(4,2);
 
   TH1* h = NULL;
 
@@ -113,26 +113,38 @@ void dispHitPat()
   h->SetMinimum(0);
   h->Draw();
 
-  c2->cd(3);
-  base_id = HistMaker::getUniqueID(kSCH, 0, kHitPat);
-  h = (TH1*)GHist::get(base_id);
-  h->SetMinimum(0);
-  h->Draw();
+  // c2->cd(3);
+  // base_id = HistMaker::getUniqueID(kSCH, 0, kHitPat);
+  // h = (TH1*)GHist::get(base_id);
+  // h->SetMinimum(0);
+  // h->Draw();
 
-  c2->cd(4);
+  c2->cd(3);
   base_id = HistMaker::getUniqueID(kSDC3, 0, kHitPat, 1);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
-  c2->cd(5);
+  c2->cd(4);
   base_id = HistMaker::getUniqueID(kSDC4, 0, kHitPat, 3);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();
 
-  c2->cd(6);
+  c2->cd(5);
   base_id = HistMaker::getUniqueID(kTOF, 0, kHitPat);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
+
+  c2->cd(6);
+  base_id = HistMaker::getUniqueID(kAC1, 0, kHitPat);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
+
+  c2->cd(7);
+  base_id = HistMaker::getUniqueID(kWC, 0, kHitPat);
   h = (TH1*)GHist::get(base_id);
   h->SetMinimum(0);
   h->Draw();

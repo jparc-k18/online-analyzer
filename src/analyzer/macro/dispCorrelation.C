@@ -15,9 +15,9 @@ dispCorrelation( void )
     if( !c )
       return;
     c->Clear();
-    c->Divide( 3, 2 );
+    c->Divide( 4, 2 );
     const auto base_id = HistMaker::getUniqueID( kCorrelation, 0, 0 );
-    for( Int_t i=0; i<6; ++i ){
+    for( Int_t i=0; i<8; ++i ){
       c->cd( i+1 ); //->SetGrid();
       auto h = GHist::get( base_id+i );
       if( !h ) continue;

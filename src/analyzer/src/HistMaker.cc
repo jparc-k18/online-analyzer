@@ -5952,17 +5952,22 @@ TList* HistMaker::createAC1( Bool_t flag_ps )
 
     // Make histogram and add it
     Int_t target_id = getUniqueID(kAC1, 0, kADC, 0);
-    for(Int_t i = 0; i<3; ++i){
+    for(Int_t i = 0; i<4; ++i){
       Int_t seg = i+1;
       const char* title = NULL;
       if(i<2){
         title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg);
       }
       else{
-        title = Form("%s_%s_ALLSUM", nameDetector, nameSubDir, seg);
+	if(i<3){
+          title = Form("%s_%s_ALLSUM", nameDetector, nameSubDir);
+        }
+        else{
+          title = Form("%s_%s_ALLSUM_trig", nameDetector, nameSubDir);
+        }
       }
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     0x1000, 0, 0x1000,
+	  		     0x1000, 0, 0x1000,
 			     "ADC [ch]", ""));
     }
     // insert sub directory
@@ -5976,14 +5981,19 @@ TList* HistMaker::createAC1( Bool_t flag_ps )
 
     // Make histogram and add it
     Int_t target_id = getUniqueID(kAC1, 0, kADCwTDC, 0);
-    for(Int_t i = 0; i<3; ++i){
+    for(Int_t i = 0; i<4; ++i){
       Int_t seg = i+1;
       const char* title = NULL;
       if(i<2){
         title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg);
       }
       else{
-        title = Form("%s_%s_ALLSUM", nameDetector, nameSubDir);
+        if(i<3){
+          title = Form("%s_%s_ALLSUM", nameDetector, nameSubDir);
+        }
+        else{
+          title = Form("%s_%s_ALLSUM_trig", nameDetector, nameSubDir);
+        }
       }
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     0x1000, 0, 0x1000,
@@ -6014,7 +6024,12 @@ TList* HistMaker::createAC1( Bool_t flag_ps )
           title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg-18);
         }
 	else{
-          title = Form("%s_%s_ALLSUM%d", nameDetector, nameSubDir, seg-20);
+	  if(i==20){
+            title = Form("%s_%s_ALLSUM", nameDetector, nameSubDir);
+	  }
+	  else{
+            title = Form("%s_%s_ALLSUM_trig", nameDetector, nameSubDir);
+	  }
 	}
       }
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin

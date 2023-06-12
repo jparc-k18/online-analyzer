@@ -183,7 +183,7 @@ ScalerAnalyzer::Decode()
       static Channel ch = Find("BH2-SUM");
       m_info[ch.first][ch.second].data = 0;
       // static const Int_t n = GetFlag(kScalerE42) ? NumOfSegBH2_E42 : NumOfSegBH2;
-      static const Int_t n = 5;
+      static const Int_t n = NumOfSegBH2;
       for (Int_t i=0; i<n; ++i){
 	m_info[ch.first][ch.second].data += Get(Form("BH2-%02d", i+1));
       }

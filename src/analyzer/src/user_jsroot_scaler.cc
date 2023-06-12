@@ -50,7 +50,7 @@ using namespace hddaq;
 
 namespace
 {
-HttpServer&   gHttp = HttpServer::GetInstance();
+HttpServer& gHttp = HttpServer::GetInstance();
 ScalerAnalyzer scaler_on;
 ScalerAnalyzer scaler_off;
 const std::chrono::milliseconds flush_interval(100);
@@ -66,9 +66,9 @@ process_begin(const std::vector<std::string>& argv)
 
   gHttp.SetPort(9092);
   gHttp.Open();
-  gHttp.SetItemField("/","_monitoring","100");
-  gHttp.SetItemField("/","_layout","vert3");
-  gHttp.SetItemField("/","_drawitem","[ScalerOn,ScalerOff,Tag]");
+  gHttp.SetItemField("/", "_monitoring", "100");
+  gHttp.SetItemField("/", "_layout", "vert3");
+  gHttp.SetItemField("/", "_drawitem", "[ScalerOn,ScalerOff,Tag]");
   gHttp.CreateItem("/ScalerOn", "DAQ Scaler On");
   gHttp.SetItemField("/ScalerOn", "_kind", "Text");
   gHttp.CreateItem("/ScalerOff", "DAQ Scaler Off");
@@ -119,21 +119,19 @@ process_begin(const std::vector<std::string>& argv)
     scaler_on.Set(c, r++, ScalerInfo("BH2-03",     0, 66));
     scaler_on.Set(c, r++, ScalerInfo("BH2-04",     0, 67));
     scaler_on.Set(c, r++, ScalerInfo("BH2-05",     0, 68));
-    scaler_on.Set(c, r++, ScalerInfo("BAC",        0, 18));
-    scaler_on.Set(c, r++, ScalerInfo("PVAC",       0, 20));
-    scaler_on.Set(c, r++, ScalerInfo("FAC",        0, 21));
-    scaler_on.Set(c, r++, ScalerInfo("SCH",        0, 11));
-    scaler_on.Set(c, r++, ScalerInfo("TOF",        0, 22));
-    scaler_on.Set(c, r++, ScalerInfo("LAC",        0, 23));
-    scaler_on.Set(c, r++, ScalerInfo("WC",         0, 24));
+    scaler_on.Set(c, r++, ScalerInfo("BH2-06",     0, 69));
+    scaler_on.Set(c, r++, ScalerInfo("BH2-07",     0, 70));
+    scaler_on.Set(c, r++, ScalerInfo("BH2-08",     0, 71));
   }
 
   {
     Int_t c = ScalerAnalyzer::kCenter;
     Int_t r = 0;
     scaler_on.Set(c, r++, ScalerInfo("10M-Clock",    0,  0));
-    scaler_on.Set(c, r++, ScalerInfo("K-in",         0, 39));
-    scaler_on.Set(c, r++, ScalerInfo("Pi-in",        0, 40));
+    scaler_on.Set(c, r++, ScalerInfo("TM",           0,  9));
+    scaler_on.Set(c, r++, ScalerInfo("SY",           0, 10));
+    scaler_on.Set(c, r++, ScalerInfo("K-beam",       0, 39));
+    scaler_on.Set(c, r++, ScalerInfo("Pi-beam",      0, 40));
     scaler_on.Set(c, r++, ScalerInfo("BH1-1/100-PS", 1, 11));
     scaler_on.Set(c, r++, ScalerInfo("BH1-1/1e5-PS", 1, 12));
     scaler_on.Set(c, r++, ScalerInfo("TOF-24",       0, 29));
@@ -144,36 +142,38 @@ process_begin(const std::vector<std::string>& argv)
     // scaler_on.Set(c, r++, ScalerInfo("Other2",       0, 26));
     scaler_on.Set(c, r++, ScalerInfo("Other3",       0, 27));
     scaler_on.Set(c, r++, ScalerInfo("Other4",       0, 28));
-    scaler_on.Set(c, r++, ScalerInfo("LSO1",         2, 48));
-    scaler_on.Set(c, r++, ScalerInfo("LSO2",         2, 49));
-    scaler_on.Set(c, r++, ScalerInfo("LSO1xGe13",    2, 50));
-    scaler_on.Set(c, r++, ScalerInfo("LSO2xGe24",    2, 51));
-    scaler_on.Set(c, r++, ScalerInfo("GeCoin1",      2, 52));
-    scaler_on.Set(c, r++, ScalerInfo("GeCoin2",      2, 53));
-    scaler_on.Set(c, r++, ScalerInfo("LSO1High",     2, 54));
-    scaler_on.Set(c, r++, ScalerInfo("LSO2High",     2, 55));
-    scaler_on.Set(c, r++, ScalerInfo("GeHigh1",      2, 56));
-    scaler_on.Set(c, r++, ScalerInfo("GeHigh2",      2, 57));
+    // scaler_on.Set(c, r++, ScalerInfo("LSO1",         2, 48));
+    // scaler_on.Set(c, r++, ScalerInfo("LSO2",         2, 49));
+    // scaler_on.Set(c, r++, ScalerInfo("LSO1xGe13",    2, 50));
+    // scaler_on.Set(c, r++, ScalerInfo("LSO2xGe24",    2, 51));
+    // scaler_on.Set(c, r++, ScalerInfo("GeCoin1",      2, 52));
+    // scaler_on.Set(c, r++, ScalerInfo("GeCoin2",      2, 53));
+    // scaler_on.Set(c, r++, ScalerInfo("LSO1High",     2, 54));
+    // scaler_on.Set(c, r++, ScalerInfo("LSO2High",     2, 55));
+    // scaler_on.Set(c, r++, ScalerInfo("GeHigh1",      2, 56));
+    // scaler_on.Set(c, r++, ScalerInfo("GeHigh2",      2, 57));
     scaler_on.Set(c, r++, ScalerInfo("BEAM-A",       0, 35));
     scaler_on.Set(c, r++, ScalerInfo("BEAM-B",       0, 36));
     scaler_on.Set(c, r++, ScalerInfo("BEAM-C",       0, 37));
     scaler_on.Set(c, r++, ScalerInfo("BEAM-D",       0, 38));
     scaler_on.Set(c, r++, ScalerInfo("BEAM-E",       0, 39));
     scaler_on.Set(c, r++, ScalerInfo("BEAM-F",       0, 40));
+    scaler_on.Set(c, r++, ScalerInfo("BAC",        0, 18));
+    scaler_on.Set(c, r++, ScalerInfo("TOF",        0, 22));
+    scaler_on.Set(c, r++, ScalerInfo("AC1",        0, 23));
+    scaler_on.Set(c, r++, ScalerInfo("WC",         0, 24));
   }
 
   {
     Int_t c = ScalerAnalyzer::kRight;
     Int_t r = 0;
     scaler_on.Set(c, r++, ScalerInfo("Spill",        -1, -1));
-    scaler_on.Set(c, r++, ScalerInfo("TM",            0,  9));
-    scaler_on.Set(c, r++, ScalerInfo("SY",            0, 10));
     scaler_on.Set(c, r++, ScalerInfo("Real-Time",     0,  1));
     scaler_on.Set(c, r++, ScalerInfo("Live-Time",     0,  2));
     scaler_on.Set(c, r++, ScalerInfo("L1-Req",        0,  3));
     scaler_on.Set(c, r++, ScalerInfo("L1-Acc",        0,  4));
     // scaler_on.Set(c, r++, ScalerInfo("MstClr",        0,  5));
-    scaler_on.Set(c, r++, ScalerInfo("Clear",         0,  6));
+    // scaler_on.Set(c, r++, ScalerInfo("Clear",         0,  6));
     scaler_on.Set(c, r++, ScalerInfo("L2-Req",        0,  7));
     scaler_on.Set(c, r++, ScalerInfo("L2-Acc",        0,  8));
     scaler_on.Set(c, r++, ScalerInfo("TRIG-A",        0, 41));
@@ -255,6 +255,8 @@ process_event()
     gHttp.SetItemField("/Tag", "value", ss.str().c_str());
   }
 
+  const Int_t MaxDispRow = 24;
+
   // Scaler Spill On
   auto now = std::chrono::duration_cast<std::chrono::milliseconds>
     (std::chrono::system_clock::now().time_since_epoch());
@@ -279,13 +281,13 @@ process_event()
        << "<td width=\"100\">" << " : " << "</td>"
        << "<td align=\"right\" width=\"100\">" << end_mark << "</td>"
        << "<tr><td></td><td></td><td></td></tr>";
-    for(Int_t j=0; j<27; ++j){
+    for(Int_t j=0; j<MaxDispRow; ++j){
       ss << "<tr>";
       for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
 	// for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
         TString n = scaler_on.GetScalerName(i, j);
-        if(n.Contains("n/a"))
-          continue;
+        // if(n.Contains("n/a"))
+        //   continue;
 	ss << "<td>";
 	if(i != 0)
 	  ss << " : ";
@@ -302,11 +304,11 @@ process_event()
        << "</td>"
        << "<td> : Live/Real</td>"
        << "<td align=\"right\">"
-       << Form("%.6f", scaler_on.Fraction("Live-Time","Real-Time"))
+       << Form("%.6f", scaler_on.Fraction("Live-Time", "Real-Time"))
        << "</td>"
        << "<td> : DAQ-Eff</td>"
        << "<td align=\"right\">"
-       << Form("%.6f", scaler_on.Fraction("L1-Acc","L1-Req"))
+       << Form("%.6f", scaler_on.Fraction("L1-Acc", "L1-Req"))
        << "</td>"
        << "</tr></tr>"
        << "<td>L1Req/BH2</td>"
@@ -315,7 +317,7 @@ process_event()
        << "</td>"
        << "<td> : L2-Eff</td>"
        << "<td align=\"right\">"
-       << Form("%.6f", scaler_on.Fraction("L2-Acc","L1-Acc"))
+       << Form("%.6f", scaler_on.Fraction("L2-Acc", "L1-Acc"))
        << "</td>"
        << "<td> : Duty-Factor</td>"
        << "<td align=\"right\">"
@@ -345,13 +347,13 @@ process_event()
        << "<td width=\"100\">" << " : " << "</td>"
        << "<td align=\"right\" width=\"100\">" << end_mark << "</td>"
        << "<tr><td></td><td></td><td></td></tr>";
-    for(Int_t j=0; j<27; ++j){
+    for(Int_t j=0; j<MaxDispRow; ++j){
       // for(Int_t j=0; j<ScalerAnalyzer::MaxRow; ++j){
       ss << "<tr>";
       for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
         TString n = scaler_off.GetScalerName(i, j);
-        if(n.Contains("n/a"))
-          continue;
+        // if(n.Contains("n/a"))
+        //   continue;
 	ss << "<td>";
 	if(i != 0)
 	  ss << " : ";
@@ -368,11 +370,11 @@ process_event()
        << "</td>"
        << "<td> : Live/Real</td>"
        << "<td align=\"right\">"
-       << Form("%.6f", scaler_off.Fraction("Live-Time","Real-Time"))
+       << Form("%.6f", scaler_off.Fraction("Live-Time", "Real-Time"))
        << "</td>"
        << "<td> : DAQ-Eff</td>"
        << "<td align=\"right\">"
-       << Form("%.6f", scaler_off.Fraction("L1-Acc","L1-Req"))
+       << Form("%.6f", scaler_off.Fraction("L1-Acc", "L1-Req"))
        << "</td>"
        << "</tr></tr>"
        << "<td>L1Req/BH2</td>"
@@ -381,7 +383,7 @@ process_event()
        << "</td>"
        << "<td> : L2-Eff</td>"
        << "<td align=\"right\">"
-       << Form("%.6f", scaler_off.Fraction("L2-Acc","L1-Acc"))
+       << Form("%.6f", scaler_off.Fraction("L2-Acc", "L1-Acc"))
        << "</td>"
        << "<td> : Duty-Factor</td>"
        << "<td align=\"right\">"

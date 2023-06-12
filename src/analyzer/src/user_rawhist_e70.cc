@@ -2352,6 +2352,151 @@ process_event()
 #endif
   }//BAC
 
+
+  // TF_TF  -----------------------------------------------------------
+  {
+    // data type
+    static const Int_t k_device = gUnpacker.get_device_id("TF_TF");
+    static const Int_t k_adc    = gUnpacker.get_data_id("TF_TF","adc");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("TF_TF","tdc");
+
+    static const Int_t a_id   = gHist.getSequentialID(kTF_TF, 0, kADC);
+    static const Int_t t_id   = gHist.getSequentialID(kTF_TF, 0, kTDC);
+
+    // TDC gate range
+    static const Int_t tdc_min = gUser.GetParameter("TdcTF_TF", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcTF_TF", 1);
+
+    for(Int_t seg = 0; seg<NumOfSegTF_TF; ++seg) {
+      // ADC
+      Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      if (nhit_a!=0) {
+	Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	hptr_array[a_id + seg]->Fill(adc);
+      }
+      // TDC
+      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      Bool_t is_in_gate = false;
+
+      for(Int_t m = 0; m<nhit_t; ++m) {
+        Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+        hptr_array[t_id + seg]->Fill(tdc);
+
+        if (tdc_min < tdc && tdc < tdc_max) {
+          is_in_gate = true;
+        }// tdc range is ok
+      }// for(m)
+
+    }
+
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }//TF_TF
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+
+  // TF_GN1  -----------------------------------------------------------
+  {
+    // data type
+    static const Int_t k_device = gUnpacker.get_device_id("TF_GN1");
+    //static const Int_t k_adc    = gUnpacker.get_data_id("TF_GN1","adc");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("TF_GN1","tdc");
+
+    //static const Int_t a_id   = gHist.getSequentialID(kTF_GN1, 0, kADC);
+    static const Int_t t_id   = gHist.getSequentialID(kTF_GN1, 0, kTDC);
+
+    // TDC gate range
+    static const Int_t tdc_min = gUser.GetParameter("TdcTF_GN1", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcTF_GN1", 1);
+
+    for(Int_t seg = 0; seg<NumOfSegTF_GN1; ++seg) {
+      // ADC
+    //  Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+    //  if (nhit_a!=0) {
+    //    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+    //    hptr_array[a_id + seg]->Fill(adc);
+    //  }
+      // TDC
+      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      Bool_t is_in_gate = false;
+
+      for(Int_t m = 0; m<nhit_t; ++m) {
+        Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+        hptr_array[t_id + seg]->Fill(tdc);
+
+        if (tdc_min < tdc && tdc < tdc_max) {
+          is_in_gate = true;
+        }// tdc range is ok
+      }// for(m)
+
+    }
+
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }//TF_GN1
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+
+  // TF_GN2  -----------------------------------------------------------
+  {
+    // data type
+    static const Int_t k_device = gUnpacker.get_device_id("TF_GN2");
+    //static const Int_t k_adc    = gUnpacker.get_data_id("TF_GN2","adc");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("TF_GN2","tdc");
+
+    //static const Int_t a_id   = gHist.getSequentialID(kTF_GN2, 0, kADC);
+    static const Int_t t_id   = gHist.getSequentialID(kTF_GN2, 0, kTDC);
+
+    // TDC gate range
+    static const Int_t tdc_min = gUser.GetParameter("TdcTF_GN2", 0);
+    static const Int_t tdc_max = gUser.GetParameter("TdcTF_GN2", 1);
+
+    for(Int_t seg = 0; seg<NumOfSegTF_GN2; ++seg) {
+      // ADC
+    //  Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+    //  if (nhit_a!=0) {
+    //    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+    //    hptr_array[a_id + seg]->Fill(adc);
+    //  }
+      // TDC
+      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      Bool_t is_in_gate = false;
+
+      for(Int_t m = 0; m<nhit_t; ++m) {
+        Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+        hptr_array[t_id + seg]->Fill(tdc);
+
+        if (tdc_min < tdc && tdc < tdc_max) {
+          is_in_gate = true;
+        }// tdc range is ok
+      }// for(m)
+
+    }
+
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }//TF_GN2
+
+#if DEBUG
+  std::cout << __FILE__ << " " << __LINE__ << std::endl;
+#endif
+
+
   // ======================== E72E90 ==============================
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
@@ -2506,9 +2651,12 @@ process_event()
   }//E42BH2
 
   // apply T1 & T2 & BH2[seg3-6] cut 
-  //if (!(is_T1_fired && is_T2_fired && is_BH2_fired)) return 0;
-  //hptr_array[e72para_id]->Fill(e72parasite::kT1);
-  //hptr_array[e72para_id]->Fill(e72parasite::kT2);
+#if 0
+  if (!(is_T1_fired && is_T2_fired && is_BH2_fired)) return 0;
+  hptr_array[e72para_id]->Fill(e72parasite::kT1);
+  hptr_array[e72para_id]->Fill(e72parasite::kT2);
+  hptr_array[e72para_id]->Fill(e72parasite::kE42BH2);
+#endif
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
@@ -2709,151 +2857,6 @@ process_event()
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-
-
-  // TF_TF  -----------------------------------------------------------
-  {
-    // data type
-    static const Int_t k_device = gUnpacker.get_device_id("TF_TF");
-    static const Int_t k_adc    = gUnpacker.get_data_id("TF_TF","adc");
-    static const Int_t k_tdc    = gUnpacker.get_data_id("TF_TF","tdc");
-
-    static const Int_t a_id   = gHist.getSequentialID(kTF_TF, 0, kADC);
-    static const Int_t t_id   = gHist.getSequentialID(kTF_TF, 0, kTDC);
-
-    // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("TdcTF_TF", 0);
-    static const Int_t tdc_max = gUser.GetParameter("TdcTF_TF", 1);
-
-    for(Int_t seg = 0; seg<NumOfSegTF_TF; ++seg) {
-      // ADC
-      Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
-      if (nhit_a!=0) {
-	Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-	hptr_array[a_id + seg]->Fill(adc);
-      }
-      // TDC
-      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      Bool_t is_in_gate = false;
-
-      for(Int_t m = 0; m<nhit_t; ++m) {
-        Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
-        hptr_array[t_id + seg]->Fill(tdc);
-
-        if (tdc_min < tdc && tdc < tdc_max) {
-          is_in_gate = true;
-        }// tdc range is ok
-      }// for(m)
-
-    }
-
-
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }//TF_TF
-
-#if DEBUG
-  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-#endif
-
-
-  // TF_GN1  -----------------------------------------------------------
-  {
-    // data type
-    static const Int_t k_device = gUnpacker.get_device_id("TF_GN1");
-    //static const Int_t k_adc    = gUnpacker.get_data_id("TF_GN1","adc");
-    static const Int_t k_tdc    = gUnpacker.get_data_id("TF_GN1","tdc");
-
-    //static const Int_t a_id   = gHist.getSequentialID(kTF_GN1, 0, kADC);
-    static const Int_t t_id   = gHist.getSequentialID(kTF_GN1, 0, kTDC);
-
-    // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("TdcTF_GN1", 0);
-    static const Int_t tdc_max = gUser.GetParameter("TdcTF_GN1", 1);
-
-    for(Int_t seg = 0; seg<NumOfSegTF_GN1; ++seg) {
-      // ADC
-    //  Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
-    //  if (nhit_a!=0) {
-    //    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-    //    hptr_array[a_id + seg]->Fill(adc);
-    //  }
-      // TDC
-      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      Bool_t is_in_gate = false;
-
-      for(Int_t m = 0; m<nhit_t; ++m) {
-        Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
-        hptr_array[t_id + seg]->Fill(tdc);
-
-        if (tdc_min < tdc && tdc < tdc_max) {
-          is_in_gate = true;
-        }// tdc range is ok
-      }// for(m)
-
-    }
-
-
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }//TF_GN1
-
-#if DEBUG
-  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-#endif
-
-
-  // TF_GN2  -----------------------------------------------------------
-  {
-    // data type
-    static const Int_t k_device = gUnpacker.get_device_id("TF_GN2");
-    //static const Int_t k_adc    = gUnpacker.get_data_id("TF_GN2","adc");
-    static const Int_t k_tdc    = gUnpacker.get_data_id("TF_GN2","tdc");
-
-    //static const Int_t a_id   = gHist.getSequentialID(kTF_GN2, 0, kADC);
-    static const Int_t t_id   = gHist.getSequentialID(kTF_GN2, 0, kTDC);
-
-    // TDC gate range
-    static const Int_t tdc_min = gUser.GetParameter("TdcTF_GN2", 0);
-    static const Int_t tdc_max = gUser.GetParameter("TdcTF_GN2", 1);
-
-    for(Int_t seg = 0; seg<NumOfSegTF_GN2; ++seg) {
-      // ADC
-    //  Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
-    //  if (nhit_a!=0) {
-    //    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-    //    hptr_array[a_id + seg]->Fill(adc);
-    //  }
-      // TDC
-      Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-      Bool_t is_in_gate = false;
-
-      for(Int_t m = 0; m<nhit_t; ++m) {
-        Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
-        hptr_array[t_id + seg]->Fill(tdc);
-
-        if (tdc_min < tdc && tdc < tdc_max) {
-          is_in_gate = true;
-        }// tdc range is ok
-      }// for(m)
-
-    }
-
-
-#if 0
-    // Debug, dump data relating this detector
-    gUnpacker.dump_data_device(k_device);
-#endif
-  }//TF_GN2
-
-#if DEBUG
-  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-#endif
-
   return 0;
 } //process_event()
 

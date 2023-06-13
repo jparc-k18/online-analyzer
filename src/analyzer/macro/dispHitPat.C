@@ -52,7 +52,7 @@ void dispHitPat()
 {
   TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
   c->Clear();
-  c->Divide(6,3);
+  c->Divide(6,4);
 
   TH1* h = NULL;
 
@@ -122,6 +122,31 @@ void dispHitPat()
     hh->Draw("same");
   }
 
+  c->cd(19);
+  base_id = HistMaker::getUniqueID(kTOF, 0, kHitPat);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
+
+  c->cd(20);
+  base_id = HistMaker::getUniqueID(kAC1, 0, kHitPat);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
+
+  c->cd(21);
+  base_id = HistMaker::getUniqueID(kWC, 0, kHitPat);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
+
+  c->cd(22);
+  base_id = HistMaker::getUniqueID(kSFV, 0, kHitPat);
+  h = (TH1*)GHist::get(base_id);
+  h->SetMinimum(0);
+  h->Draw();
+
+
   c->Update();
 
   c->cd(0);
@@ -130,7 +155,7 @@ void dispHitPat()
 {
   TCanvas *c2 = (TCanvas*)gROOT->FindObject("c2");
   c2->Clear();
-  c2->Divide(8,4);
+  c2->Divide(6,4);
 
   TH1* h = NULL;
   TH1* hh = NULL;
@@ -154,7 +179,7 @@ void dispHitPat()
   base_id = HistMaker::getUniqueID(kSDC2, 0, kHitPat);
   base_id_ctot = HistMaker::getUniqueID(kSDC2, 0, kHitPat, 1+kTOTcutOffset);
   for(int i=0; i<n_layersdc2; i++){
-    c2->cd(i+9);
+    c2->cd(i+7);
     h = (TH1*)GHist::get(base_id + i);
     h->SetMinimum(0);
     if( !h ) continue;
@@ -169,7 +194,7 @@ void dispHitPat()
   base_id = HistMaker::getUniqueID(kSDC3, 0, kHitPat);
   base_id_ctot = HistMaker::getUniqueID(kSDC3, 0, kHitPat, 11);
   for(int i=0; i<n_layersdc3; i++){
-    c2->cd(i+9+n_layersdc2);
+    c2->cd(i+7+n_layersdc2);
     h = (TH1*)GHist::get(base_id + i);
     h->SetMinimum(0);
     if( !h ) continue;
@@ -184,7 +209,7 @@ void dispHitPat()
   base_id = HistMaker::getUniqueID(kSDC4, 0, kHitPat);
   base_id_ctot = HistMaker::getUniqueID(kSDC4, 0, kHitPat, 11);
   for(int i=0; i<n_layersdc4; i++){
-    c2->cd(i+9+n_layersdc2+n_layersdc3);
+    c2->cd(i+7+n_layersdc2+n_layersdc3);
     h = (TH1*)GHist::get(base_id + i);
     h->SetMinimum(0);
     if( !h ) continue;
@@ -200,7 +225,7 @@ void dispHitPat()
   base_id = HistMaker::getUniqueID(kSDC5, 0, kHitPat);
   base_id_ctot = HistMaker::getUniqueID(kSDC5, 0, kHitPat, 11);
   for(int i=0; i<n_layersdc5; i++){
-    c2->cd(i+9+n_layersdc2+n_layersdc3+n_layersdc4);
+    c2->cd(i+7+n_layersdc2+n_layersdc3+n_layersdc4);
     h = (TH1*)GHist::get(base_id + i);
     h->SetMinimum(0);
     if( !h ) continue;
@@ -211,34 +236,6 @@ void dispHitPat()
     hh->SetLineColor( kRed );
     hh->Draw("same");
   }
-
-  c2->cd(25);
-  base_id = HistMaker::getUniqueID(kTOF, 0, kHitPat);
-  h = (TH1*)GHist::get(base_id);
-  h->SetMinimum(0);
-  h->Draw();
-
-  c2->cd(26);
-  base_id = HistMaker::getUniqueID(kAC1, 0, kHitPat);
-  h = (TH1*)GHist::get(base_id);
-  h->SetMinimum(0);
-  h->Draw();
-
-  c2->cd(27);
-  base_id = HistMaker::getUniqueID(kWC, 0, kHitPat);
-  h = (TH1*)GHist::get(base_id);
-  h->SetMinimum(0);
-  h->Draw();
-
-  c2->cd(28);
-  base_id = HistMaker::getUniqueID(kSAC3, 0, kTDC);
-  h = (TH1*)GHist::get(base_id);
-  h->SetMinimum(0);
-  h->Draw();
-  c2->cd(29);
-  h = (TH1*)GHist::get(base_id + 1);
-  h->SetMinimum(0);
-  h->Draw();
 
   c2->Update();
 

@@ -13,7 +13,7 @@ void effALL( void )
     Int_t n_layer = 6;
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(6,3);
+    c->Divide(6,4);
     Int_t base_id = HistMaker::getUniqueID(kBH1, 0, kMulti);
     c->cd(1);
     {
@@ -119,6 +119,82 @@ void effALL( void )
 
     c->Modified();
     c->Update();
+
+
+    base_id = HistMaker::getUniqueID(kTOF, 0, kMulti);
+    c->cd(19);
+    {
+      TH1 *h_wt = GHist::get(base_id);
+      h_wt->Draw();
+      double Nof0     = h_wt->GetBinContent(1);
+      double NofTotal = h_wt->GetEntries();
+      double eff      = 1. - (double)Nof0/NofTotal;
+
+      double xpos  = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
+      double ypos  = h_wt->GetMaximum()*0.8;
+      TLatex *text = new TLatex(xpos, ypos, Form("eff. %.2f", eff));
+      text->SetTextSize(0.08);
+      text->Draw();
+    }
+    c->Modified();
+    c->Update();
+
+    base_id = HistMaker::getUniqueID(kAC1, 0, kMulti);
+    c->cd(20);
+    {
+      TH1 *h_wt = GHist::get(base_id);
+      h_wt->Draw();
+      double Nof0     = h_wt->GetBinContent(1);
+      double NofTotal = h_wt->GetEntries();
+      double eff      = 1. - (double)Nof0/NofTotal;
+
+      double xpos  = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
+      double ypos  = h_wt->GetMaximum()*0.8;
+      TLatex *text = new TLatex(xpos, ypos, Form("eff. %.2f", eff));
+      text->SetTextSize(0.08);
+      text->Draw();
+    }
+    c->Modified();
+    c->Update();
+
+
+    base_id = HistMaker::getUniqueID(kWC, 0, kMulti);
+    c->cd(21);
+    {
+      TH1 *h_wt = GHist::get(base_id);
+      h_wt->Draw();
+      double Nof0     = h_wt->GetBinContent(1);
+      double NofTotal = h_wt->GetEntries();
+      double eff      = 1. - (double)Nof0/NofTotal;
+
+      double xpos  = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
+      double ypos  = h_wt->GetMaximum()*0.8;
+      TLatex *text = new TLatex(xpos, ypos, Form("eff. %.2f", eff));
+      text->SetTextSize(0.08);
+      text->Draw();
+    }
+    c->Modified();
+    c->Update();
+
+
+    base_id = HistMaker::getUniqueID(kSFV, 0, kMulti);
+    c->cd(22);
+    {
+      TH1 *h_wt = GHist::get(base_id);
+      h_wt->Draw();
+      double Nof0     = h_wt->GetBinContent(1);
+      double NofTotal = h_wt->GetEntries();
+      double eff      = 1. - (double)Nof0/NofTotal;
+
+      double xpos  = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
+      double ypos  = h_wt->GetMaximum()*0.8;
+      TLatex *text = new TLatex(xpos, ypos, Form("eff. %.2f", eff));
+      text->SetTextSize(0.08);
+      text->Draw();
+    }
+    c->Modified();
+    c->Update();
+
   }
 
   // draw Multi with plane efficiency SDC1
@@ -126,7 +202,7 @@ void effALL( void )
     Int_t n_layer = 6;
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
     c->Clear();
-    c->Divide(6,5);
+    c->Divide(6,4);
     Int_t base_id = HistMaker::getUniqueID(kSDC1, 0, kMulti);
     for( Int_t i=0; i<n_layer; ++i ){
       c->cd(i+1);
@@ -234,53 +310,6 @@ void effALL( void )
     }
     c->Modified();
     c->Update();
-
-    base_id = HistMaker::getUniqueID(kTOF, 0, kMulti);
-    c->cd(25);
-    {
-      TH1 *h_wt = GHist::get(base_id);
-      h_wt->Draw();
-      double Nof0     = h_wt->GetBinContent(1);
-      double NofTotal = h_wt->GetEntries();
-      double eff      = 1. - (double)Nof0/NofTotal;
-
-      double xpos  = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
-      double ypos  = h_wt->GetMaximum()*0.8;
-      TLatex *text = new TLatex(xpos, ypos, Form("eff. %.2f", eff));
-      text->SetTextSize(0.08);
-      text->Draw();
-    }
-
-    base_id = HistMaker::getUniqueID(kAC1, 0, kMulti);
-    c->cd(26);
-    {
-      TH1 *h_wt = GHist::get(base_id);
-      h_wt->Draw();
-      double Nof0     = h_wt->GetBinContent(1);
-      double NofTotal = h_wt->GetEntries();
-      double eff      = 1. - (double)Nof0/NofTotal;
-
-      double xpos  = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
-      double ypos  = h_wt->GetMaximum()*0.8;
-      TLatex *text = new TLatex(xpos, ypos, Form("eff. %.2f", eff));
-      text->SetTextSize(0.08);
-      text->Draw();
-    }
-    base_id = HistMaker::getUniqueID(kWC, 0, kMulti);
-    c->cd(27);
-    {
-      TH1 *h_wt = GHist::get(base_id);
-      h_wt->Draw();
-      double Nof0     = h_wt->GetBinContent(1);
-      double NofTotal = h_wt->GetEntries();
-      double eff      = 1. - (double)Nof0/NofTotal;
-
-      double xpos  = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
-      double ypos  = h_wt->GetMaximum()*0.8;
-      TLatex *text = new TLatex(xpos, ypos, Form("eff. %.2f", eff));
-      text->SetTextSize(0.08);
-      text->Draw();
-    }
   }
 
   // You must write these lines for the thread safe

@@ -5969,24 +5969,25 @@ TList* HistMaker::createSAC3( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-//  { // SUM ADCwTDC---------------------------------------------------------
-//    TString strSubDir  = CONV_STRING(kADCwTDC); // Declaration of the sub-directory
-//    const char* nameSubDir = strSubDir.Data();
-//    TList *sub_dir = new TList;
-//    sub_dir->SetName(nameSubDir);
-//
-//    // Make histogram and add it
-//    Int_t target_id = getUniqueID(kSAC3, 0, kADCwTDC, 0);
-//    for(Int_t i = 0; i<2; ++i){
-//      Int_t seg = i+1;
-//      const char* title = NULL;
-//      title = Form("%s_%s_SUM%d", nameDetector, nameSubDir, seg);
-//      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-//			     0x1000, 0, 0x1000,
-//			     "ADC [ch]", ""));
-//    }
-//    top_dir->Add(sub_dir);
-//  }
+  { // SUM ADCwTDC---------------------------------------------------------
+    TString strSubDir  = CONV_STRING(kADCwTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kSAC3, 0, kADCwTDC, 0);
+    //for(Int_t i = 0; i<2; ++i){
+    for(Int_t i = 0; i<NumOfSegSAC3; ++i){
+      Int_t seg = i+1;
+      const char* title = NULL;
+      title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
 
 
   // TDC SUM and INDIVISUAL---------------------------------------------------------

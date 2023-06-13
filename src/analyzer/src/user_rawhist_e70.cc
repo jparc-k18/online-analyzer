@@ -148,7 +148,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createTPC());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createTriggerFlag());
-  tab_hist->Add(gHist.createMsT());
+  // tab_hist->Add(gHist.createMsT());
 #if FLAG_DAQ
   tab_hist->Add(gHist.createDAQ());
 #endif
@@ -1832,7 +1832,7 @@ process_event()
 
     static const Int_t a_id   = gHist.getSequentialID(kSAC3, 0, kADC);
     static const Int_t t_id   = gHist.getSequentialID(kSAC3, 0, kTDC);
-//    static const Int_t awt_id = gHist.getSequentialID(kE90SAC, 0, kADCwTDC);
+    static const Int_t awt_id = gHist.getSequentialID(kSAC3, 0, kADCwTDC);
 //    static const Int_t h_id   = gHist.getSequentialID(kE90SAC, 0, kHitPat);
 //    static const Int_t m6_id   = gHist.getSequentialID(kE90SAC, 0, kMulti, 1);
 //    static const Int_t m8_id   = gHist.getSequentialID(kE90SAC, 0, kMulti, 2);
@@ -1862,16 +1862,17 @@ process_event()
         }// tdc range is ok
       }// for(m)
 
-  //    if (is_in_gate) {
-  //      // ADC w/TDC
-  //      if (gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0) {
-  //        Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-  //        hptr_array[awt_id + seg]->Fill(adc);
-  //      }
-  //      hptr_array[h_id]->Fill(seg);
-  //      hptr_array[e72para_id]->Fill(e72parasite::kE90SAC1 + seg);
-  //      ++multiplicity[seg];
-  //    }// flag is OK
+      if (is_in_gate) {
+        // ADC w/TDC
+	// SAC3 segment 1 is dummy, only segment 0 is used. 
+        if (gUnpacker.get_entries(k_device, 0, 0, 0, k_adc)>0) {
+          Int_t adc = gUnpacker.get(k_device, 0, 0, 0, k_adc);
+          hptr_array[awt_id + seg]->Fill(adc);
+        }
+        //hptr_array[h_id]->Fill(seg);
+        //hptr_array[e72para_id]->Fill(e72parasite::kE90SAC1 + seg);
+        //++multiplicity[seg];
+      }// flag is OK
     }
 
   //  hptr_array[m6_id]->Fill(multiplicity[0]);

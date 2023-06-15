@@ -122,6 +122,13 @@ process_begin(const std::vector<std::string>& argv)
     scaler_on.Set(c, r++, ScalerInfo("BH2-06",     0, 69));
     scaler_on.Set(c, r++, ScalerInfo("BH2-07",     0, 70));
     scaler_on.Set(c, r++, ScalerInfo("BH2-08",     0, 71));
+    scaler_on.Set( c, r++, ScalerInfo( "AFT-01",     0, 80 ) );
+    scaler_on.Set( c, r++, ScalerInfo( "AFT-02",     0, 81 ) );
+    scaler_on.Set( c, r++, ScalerInfo( "AFT-03",     0, 82 ) );
+    scaler_on.Set(c, r++, ScalerInfo("V792gate-1",    2, 2));
+    scaler_on.Set(c, r++, ScalerInfo("V792gate-2",    2, 3));
+    scaler_on.Set(c, r++, ScalerInfo("V792gate-3",    2, 4));
+
   }
 
   {
@@ -130,11 +137,12 @@ process_begin(const std::vector<std::string>& argv)
     scaler_on.Set(c, r++, ScalerInfo("10M-Clock",    0,  0));
     scaler_on.Set(c, r++, ScalerInfo("TM",           0,  9));
     scaler_on.Set(c, r++, ScalerInfo("SY",           0, 10));
-    scaler_on.Set(c, r++, ScalerInfo("K-beam",       0, 39));
-    scaler_on.Set(c, r++, ScalerInfo("Pi-beam",      0, 40));
+    scaler_on.Set(c, r++, ScalerInfo("K-Beam",       0, 39));
+    scaler_on.Set(c, r++, ScalerInfo("Pi-Beam",      0, 40));
+    scaler_on.Set(c, r++, ScalerInfo("Beam",      0, 36));
     scaler_on.Set(c, r++, ScalerInfo("BH1-1/100-PS", 1, 11));
     scaler_on.Set(c, r++, ScalerInfo("BH1-1/1e5-PS", 1, 12));
-    scaler_on.Set(c, r++, ScalerInfo("TOF-24",       0, 29));
+    //    scaler_on.Set(c, r++, ScalerInfo("TOF-24",       0, 29));
     scaler_on.Set(c, r++, ScalerInfo("Mtx2D-1",      0, 32));
     scaler_on.Set(c, r++, ScalerInfo("Mtx2D-2",      0, 33));
     scaler_on.Set(c, r++, ScalerInfo("Mtx3D",        0, 34));
@@ -162,6 +170,12 @@ process_begin(const std::vector<std::string>& argv)
     scaler_on.Set(c, r++, ScalerInfo("TOF",        0, 22));
     scaler_on.Set(c, r++, ScalerInfo("AC1",        0, 23));
     scaler_on.Set(c, r++, ScalerInfo("WC",         0, 24));
+    scaler_on.Set( c, r++, ScalerInfo( "AFT-04",     0, 83 ) );
+    scaler_on.Set( c, r++, ScalerInfo( "AFT-05",     0, 84 ) );
+    scaler_on.Set( c, r++, ScalerInfo( "AFT-06",     0, 85 ) );
+    scaler_on.Set(c, r++, ScalerInfo("V792gate-4",    2, 5));
+    scaler_on.Set(c, r++, ScalerInfo("V792gate-5",    2, 6));
+    scaler_on.Set(c, r++, ScalerInfo("V792gate-6",    2, 7));
   }
 
   {
@@ -193,6 +207,11 @@ process_begin(const std::vector<std::string>& argv)
     scaler_on.Set(c, r++, ScalerInfo("Clock-PS",      0, 56));
     scaler_on.Set(c, r++, ScalerInfo("Reserve2-PS",   0, 57));
     scaler_on.Set(c, r++, ScalerInfo("Level1-PS",     0, 58));
+    scaler_on.Set( c, r++, ScalerInfo( "AFT-07",      0, 86));
+    scaler_on.Set( c, r++, ScalerInfo( "AFT-08",      0, 87));
+    scaler_on.Set( c, r++, ScalerInfo( "AFT-09",      0, 88));
+    scaler_on.Set(c, r++, ScalerInfo("V792gate-7",    2, 8));
+    scaler_on.Set(c, r++, ScalerInfo("V792gate-8",    2, 9));
   }
 
   for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
@@ -255,7 +274,7 @@ process_event()
     gHttp.SetItemField("/Tag", "value", ss.str().c_str());
   }
 
-  const Int_t MaxDispRow = 24;
+  const Int_t MaxDispRow = 30;
 
   // Scaler Spill On
   auto now = std::chrono::duration_cast<std::chrono::milliseconds>
@@ -298,9 +317,9 @@ process_event()
       ss << "</tr>";
     }
     ss << "<tr><td></td><td></td><td></td></tr>"
-       << "<tr><td>BH2/TM</td>"
+       << "<tr><td>K-Beam/TM</td>"
        << "<td align=\"right\">"
-       << Form("%.6f", scaler_on.Fraction("BH2", "TM"))
+       << Form("%.6f", scaler_on.Fraction("K-Beam", "TM"))
        << "</td>"
        << "<td> : Live/Real</td>"
        << "<td align=\"right\">"
@@ -311,9 +330,9 @@ process_event()
        << Form("%.6f", scaler_on.Fraction("L1-Acc", "L1-Req"))
        << "</td>"
        << "</tr></tr>"
-       << "<td>L1Req/BH2</td>"
+       << "<td>L1Req/K-Beam</td>"
        << "<td align=\"right\">"
-       << Form("%.6f", scaler_on.Fraction("L1-Req", "BH2"))
+       << Form("%.6f", scaler_on.Fraction("L1-Req", "K-Beam"))
        << "</td>"
        << "<td> : L2-Eff</td>"
        << "<td align=\"right\">"
@@ -364,9 +383,9 @@ process_event()
       ss << "</tr>";
     }
     ss << "<tr><td></td><td></td><td></td></tr>"
-       << "<tr><td>BH2/TM</td>"
+       << "<tr><td>K-Beam/TM</td>"
        << "<td align=\"right\">"
-       << Form("%.6f", scaler_off.Fraction("BH2", "TM"))
+       << Form("%.6f", scaler_off.Fraction("K-Beam", "TM"))
        << "</td>"
        << "<td> : Live/Real</td>"
        << "<td align=\"right\">"
@@ -377,9 +396,9 @@ process_event()
        << Form("%.6f", scaler_off.Fraction("L1-Acc", "L1-Req"))
        << "</td>"
        << "</tr></tr>"
-       << "<td>L1Req/BH2</td>"
+       << "<td>L1Req/K-Beam</td>"
        << "<td align=\"right\">"
-       << Form("%.6f", scaler_off.Fraction("L1-Req", "BH2"))
+       << Form("%.6f", scaler_off.Fraction("L1-Req", "K-Beam"))
        << "</td>"
        << "<td> : L2-Eff</td>"
        << "<td align=\"right\">"

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 . $(dirname $(readlink -f $0))/setebhost
-program=jsroot_e42
+program=jsroot_e70
 
 #_______________________________________________________________________________
 # if [ -z $ROOTSYS ]; then
@@ -14,7 +14,7 @@ program=jsroot_e42
 top_dir=$(dirname $(readlink -f $0))/..
 server=$top_dir/bin/$program
 
-conf=/param/conf/analyzer_jsroot.conf
+conf=/param/conf/analyzer.conf
 if [ -z "$1" ]; then
     data=${ebhost}:8901
 else

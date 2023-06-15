@@ -103,6 +103,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispAFT1D"));
   tab_macro->Add(macro::Get("dispAFT2D"));
   tab_macro->Add(macro::Get("dispAFTpoly2D"));
+  tab_macro->Add(macro::Get("effAFT"));
   tab_macro->Add(macro::Get("dispDAQ"));
 
   // Add histograms to the Hist tab
@@ -383,7 +384,6 @@ process_event( void )
 	// hitpat & multiplicity of hit on both ends
 	if( flag_hit_wt[seg][kU] && flag_hit_wt[seg][kD] ){
 	  ++cmultiplicity_both[l];
-	  hptr_array[aft_cmul_id+kUorD*NumOfPlaneAFT+l]->Fill(cmultiplicity_both[l]);
 	  hptr_array[aft_chit_id+kUorD*NumOfPlaneAFT+l]->Fill(seg);
 	  double posx = gAftHelper.GetX( l, seg );
 	  double posz = gAftHelper.GetZ( l, seg );
@@ -392,9 +392,10 @@ process_event( void )
 	}
 
       } // for in NumOfSegAFT
+      hptr_array[aft_cmul_id+kUorD*NumOfPlaneAFT+l]->Fill(cmultiplicity_both[l]);
       if( l%2==1 ){
 	int cmultiplicity_both_XY = cmultiplicity_both[l-1] + cmultiplicity_both[l];
-	hptr_array[aft_cmul_id+(kUorD+1)*NumOfPlaneAFT+l/2+1]->Fill(cmultiplicity_both_XY);
+	hptr_array[aft_cmul_id+(kUorD+1)*NumOfPlaneAFT+l/2]->Fill(cmultiplicity_both_XY);
       }
     } // for in NumOfPlaneAFT
 

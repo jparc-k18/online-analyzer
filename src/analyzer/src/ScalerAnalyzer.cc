@@ -302,7 +302,7 @@ ScalerAnalyzer::DrawOneLine(const TString& title1, const TString& val1,
     line.SetLineColor(kBlack);
     line.DrawLine(0.34, y-0.5*ystep, 0.34, y+0.5*ystep);
     line.DrawLine(0.66, y-0.5*ystep, 0.66, y+0.5*ystep);
-    if (i==0 || i==4 || i==13)
+    if (i==0 || i==3 || i==14)
       line.DrawLine(0.05, y-0.5*ystep, 0.95, y-0.5*ystep);
   }
   ++i;
@@ -578,33 +578,31 @@ ScalerAnalyzer::PrintScalerSheet()
     DrawOneLine("LSO2xGe24", "GeHigh2", "Other4");
   } else {
     DrawOneLine(mode, SeparateComma(Get("Spill")),
-		"BH1", SeparateComma(Get("BH1")),
+		"Clock", SeparateComma(Get("10M-Clock")),
 		"TM", SeparateComma(Get("TM")));
-    DrawOneLine("Clock", SeparateComma(Get("10M-Clock")),
-		"BH2", SeparateComma(Get("BH2")),
-		"SY", SeparateComma(Get("SY")));
-    DrawOneLine("K-in", SeparateComma(Get("BEAM-E")),
+    DrawOneLine("K-Beam", SeparateComma(Get("BEAM-A")),
 		"BH1-SUM", SeparateComma(Get("BH1-SUM")),
-		"BH1-1/100-PS", SeparateComma(Get("BH1-1/100-PS")));
-    DrawOneLine("#pi-in", SeparateComma(Get("BEAM-F")),
+		"SY", SeparateComma(Get("SY")));
+    DrawOneLine("#pi-Beam", SeparateComma(Get("BEAM-E")),
 		"BH2-SUM", SeparateComma(Get("BH2-SUM")),
-		"TOF-24", SeparateComma(Get("TOF-24")));
+		"Beam", SeparateComma(Get("BEAM-B")));
 
-    DrawOneLine("BH1",  "TRIG-A",  "L1-Req"   );
-    DrawOneLine("BH2",  "TRIG-B",  "L1-Acc"   );
-    DrawOneLine("BAC",  "TRIG-C",  "Clear"    );
-    DrawOneLine("PVAC", "TRIG-D",  "L2-Req"   );
-    DrawOneLine("FAC",  "TRIG-E",  "L2-Acc"   );
-    DrawOneLine("SCH",  "TRIG-F",  "LSO1xGe13");
-    DrawOneLine("TOF",  "Mtx2D-1", "LSO2xGe24");
-    DrawOneLine("LAC",  "Mtx2D-2", "GeCoin1"  );
-    DrawOneLine("WC",   "Mtx3D",   "GeCoin2"  );
-    //DrawOneLine("TOF-24", "Other4",   "p-Scat" );
+    DrawOneLine("BH1", "TOF", "L1-Req");
+    DrawOneLine("BH2", "AC1", "L1-Acc");
+    DrawOneLine("BAC", "WC", "L2-Req");
+    DrawOneLine("Mtx2D-1", "Mtx2D-2", "L2-Acc");
+    DrawOneLine("TRIG-A", "TRIG-A-PS", "TRIG-E");
+    DrawOneLine("TRIG-B", "TRIG-B-PS", "TRIG-F");
+    DrawOneLine("TRIG-C", "TRIG-C-PS", "TRIG-E-PS");
+    DrawOneLine("TRIG-D", "TRIG-D-PS", "TRIG-F-PS");
+    DrawOneLine("AFT-01", "AFT-04", "AFT-07");
+    DrawOneLine("AFT-02", "AFT-05", "AFT-08");
+    DrawOneLine("AFT-03", "AFT-06", "AFT-09");
 
-    DrawOneLine("BH2/TM",   Form("%.6lf", Fraction("BH2","TM")),
+    DrawOneLine("K-Beam/TM",   Form("%.6lf", Fraction("K-Beam","TM")),
 		"Live/Real", Form("%.6lf", Fraction("Live-Time","Real-Time")),
 		"DAQ Eff",   Form("%.6lf", Fraction("L1-Acc","L1-Req")));
-    DrawOneLine("L1Req/BH2", Form("%.6lf", Fraction("L1-Req","BH2")),
+    DrawOneLine("L1Req/K-Beam", Form("%.6lf", Fraction("L1-Req","K-Beam")),
 		"L2 Eff",       Form("%.6lf", Fraction("L2-Acc","L1-Acc")),
 		"Duty Factor",  Form("%.6lf", Duty()));
   }

@@ -136,9 +136,9 @@ process_begin(const std::vector<std::string>& argv)
     scaler_on.Set(c, r++, ScalerInfo("10M-Clock",    0,  0));
     scaler_on.Set(c, r++, ScalerInfo("TM",           0,  9));
     scaler_on.Set(c, r++, ScalerInfo("SY",           0, 10));
-    scaler_on.Set(c, r++, ScalerInfo("K-Beam",       0, 39));
-    scaler_on.Set(c, r++, ScalerInfo("Pi-Beam",      0, 40));
-    scaler_on.Set(c, r++, ScalerInfo("Beam",      0, 36));
+    scaler_on.Set(c, r++, ScalerInfo("K-Beam",       0, 35));
+    scaler_on.Set(c, r++, ScalerInfo("Pi-Beam",      0, 39));
+    scaler_on.Set(c, r++, ScalerInfo("Beam",         0, 36));
     scaler_on.Set(c, r++, ScalerInfo("BH1-1/100-PS", 1, 11));
     scaler_on.Set(c, r++, ScalerInfo("BH1-1/1e5-PS", 1, 12));
     //    scaler_on.Set(c, r++, ScalerInfo("TOF-24",       0, 29));
@@ -273,7 +273,7 @@ process_event()
     gHttp.SetItemField("/Tag", "value", ss.str().c_str());
   }
 
-  const Int_t MaxDispRow = 30;
+  const Int_t MaxDispRow = 29;
 
   // Scaler Spill On
   auto now = std::chrono::duration_cast<std::chrono::milliseconds>
@@ -433,7 +433,7 @@ process_event()
     if(host.Contains("k18term4") &&
        event_number > 1 && prev_spill != curr_spill){
       std::cout << "exec tagslip sound!" << std::endl;
-      gSystem->Exec("ssh axis@eb0 \"aplay ~/sound/tagslip.wav\" &");
+      gSystem->Exec("ssh k18epics.monitor.k18net \"aplay ~/sound/tagslip.wav\" &");
     }
     prev_spill = curr_spill;
   }

@@ -17,7 +17,7 @@ void dispSAC3()
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(1,1);
+    c->Divide(2,1);
     int base_id = HistMaker::getUniqueID(kSAC3, 0, kADC);
     //int adcwtdc_id = HistMaker::getUniqueID(kSAC3, 0 , kADCwTDC);
     for(int i = 0; i<1; ++i){
@@ -27,18 +27,53 @@ void dispSAC3()
       if( !h ) continue;
       h->GetXaxis()->SetRangeUser( 0 , 4096 );
       h->Draw();
-      //TH1 *hh =(TH1*)GHist::get(adcwtdc_id + i);
-      //if( !hh ) continue;
-      //hh->GetXaxis()->SetRangeUser( 0 , 4096 );
-      //hh->SetLineColor( kRed );
-      //hh->Draw("same");
+     // TH1 *hh =(TH1*)GHist::get(adcwtdc_id + i);
+     // if( !hh ) continue;
+     // hh->GetXaxis()->SetRangeUser( 0 , 4096 );
+     // hh->SetLineColor( kRed );
+     // hh->Draw("same");
 
       }
     c->Update();
   }
-  // draw TDC
+  // draw ADC and ADCwTDC
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
+    c->Clear();
+    c->Divide(2,1);
+    int base_id = HistMaker::getUniqueID(kSAC3, 0, kADC);
+    int adcwtdc_id = HistMaker::getUniqueID(kSAC3, 0 , kADCwTDC);
+//    for(int i = 0; i<1; ++i){
+//      c->cd(i+1);
+//      gPad->SetLogy();
+//      TH1 *h1 = (TH1*)GHist::get(base_id + i);
+//      if( !h ) continue;
+//      h->GetXaxis()->SetRangeUser( 0 , 4096 );
+//      h->Draw();
+//      TH1 *hh =(TH1*)GHist::get(adcwtdc_id + i);
+//      if( !hh ) continue;
+//      hh->GetXaxis()->SetRangeUser( 0 , 4096 );
+//      hh->SetLineColor( kRed );
+//      hh->Draw("same");
+      c->cd(i+1);
+      gPad->SetLogy();
+      TH1 *h1 = (TH1*)GHist::get(base_id + i);
+      if( !h ) continue;
+      h->GetXaxis()->SetRangeUser( 0 , 4096 );
+      h->Draw();
+      TH1 *hh =(TH1*)GHist::get(adcwtdc_id + i);
+      if( !hh ) continue;
+      hh->GetXaxis()->SetRangeUser( 0 , 4096 );
+      hh->SetLineColor( kRed );
+      hh->Draw("same");
+
+
+//      }
+    c->Update();
+  }
+  // draw TDC
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
     c->Clear();
     c->Divide(2,1);
     int base_id = HistMaker::getUniqueID(kSAC3, 0, kTDC);

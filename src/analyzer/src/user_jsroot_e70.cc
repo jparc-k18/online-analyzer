@@ -2900,18 +2900,18 @@ process_event(void)
     gErrorIgnoreLevel = prev_level;
   }
 
-  if(!gUnpacker.is_good()){
-    std::cout << "[Warning] Tag is not good." << std::endl;
-    static const TString host(gSystem->Getenv("HOSTNAME"));
-    static auto prev_time = std::time(0);
-    auto        curr_time = std::time(0);
-    if(host.Contains("k18term4") &&
-       event_number > 1 && curr_time - prev_time > 5){
-      std::cout << "exec tagslip sound!" << std::endl;
-      gSystem->Exec("ssh axis@eb0 \"aplay ~/sound/tagslip.wav\" &");
-    }
-    prev_time = curr_time;
-  }
+  // if(!gUnpacker.is_good()){
+  //   std::cout << "[Warning] Tag is not good." << std::endl;
+  //   static const TString host(gSystem->Getenv("HOSTNAME"));
+  //   static auto prev_time = std::time(0);
+  //   auto        curr_time = std::time(0);
+  //   if(host.Contains("k18term4") &&
+  //      event_number > 1 && curr_time - prev_time > 5){
+  //     std::cout << "exec tagslip sound!" << std::endl;
+  //     gSystem->Exec("ssh k18epics.monitor.k18net \"aplay ~/sound/tagslip.wav\" &");
+  //   }
+  //   prev_time = curr_time;
+  // }
 
   gSystem->ProcessEvents();
 

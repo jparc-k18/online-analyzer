@@ -91,12 +91,14 @@ dispAFT1D( void )
       c->Divide(8, 5);
       for( int i=0; i<NumOfPlaneAFT; ++i ){
 	c->cd(i+1);
+	gPad->SetLogy();
 	TH1 *h = (TH1*)GHist::get( ++aft_hg_id );
 	if( !h ) continue;
+	h->Rebin(4);
 	h->Draw();
 	TH1 *hh = (TH1*)GHist::get( ++aft_chg_id );
 	if( !hh ) continue;
-	// hh->GetXaxis()->SetRangeUser( 0, 4096 );
+	hh->Rebin(4);
 	hh->SetLineColor( kRed );
 	hh->Draw("same");
 	for( int i = 0; i < 4; i++ ){
@@ -126,12 +128,14 @@ dispAFT1D( void )
       c->Divide(8, 5);
       for( int i=0; i<NumOfPlaneAFT; ++i ){
 	c->cd(i+1);
+	gPad->SetLogy();
 	TH1 *h = (TH1*)GHist::get( ++aft_lg_id );
 	if( !h ) continue;
+	h->Rebin(4);
 	h->Draw();
 	TH1 *hh = (TH1*)GHist::get( ++aft_clg_id );
 	if( !hh ) continue;
-	// hh->GetXaxis()->SetRangeUser( 0, 4096 );
+	hh->Rebin(4);
 	hh->SetLineColor( kRed );
 	hh->Draw("same");
 	for( int i = 0; i < 4; i++ ){

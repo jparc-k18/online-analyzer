@@ -98,13 +98,12 @@ process_begin(const std::vector<std::string>& argv)
     scaler_main.Set(c, r++, ScalerInfo("BH2-06",     0, 69));
     scaler_main.Set(c, r++, ScalerInfo("BH2-07",     0, 70));
     scaler_main.Set(c, r++, ScalerInfo("BH2-08",     0, 71));
-    scaler_main.Set(c, r++, ScalerInfo("n/a",          -1, -1));
     scaler_main.Set(c, r++, ScalerInfo("V792gate-1",    2, 2));
     scaler_main.Set(c, r++, ScalerInfo("V792gate-2",    2, 3));
     scaler_main.Set(c, r++, ScalerInfo("V792gate-3",    2, 4));
-    scaler_main.Set( c, r++, ScalerInfo( "AFT-01",     0, 80 ) );
-    scaler_main.Set( c, r++, ScalerInfo( "AFT-02",     0, 81 ) );
-    scaler_main.Set( c, r++, ScalerInfo( "AFT-03",     0, 82 ) );
+    scaler_main.Set(c, r++, ScalerInfo("AFT-01",     0, 80));
+    scaler_main.Set(c, r++, ScalerInfo("AFT-02",     0, 81));
+    scaler_main.Set(c, r++, ScalerInfo("AFT-03",     0, 82));
   }
 
   {
@@ -114,8 +113,8 @@ process_begin(const std::vector<std::string>& argv)
     //    scaler_main.Set(c, r++, ScalerInfo("10M-Clock-scr03",    2, 1));
     scaler_main.Set(c, r++, ScalerInfo("TM",           0,  9));
     scaler_main.Set(c, r++, ScalerInfo("SY",           0, 10));
-    scaler_main.Set(c, r++, ScalerInfo("K-beam",       0, 35));
-    scaler_main.Set(c, r++, ScalerInfo("Pi-beam",      0, 39));
+    scaler_main.Set(c, r++, ScalerInfo("K-Beam",       0, 35));
+    scaler_main.Set(c, r++, ScalerInfo("Pi-Beam",      0, 39));
     scaler_main.Set(c, r++, ScalerInfo("Beam",      0, 36));
     scaler_main.Set(c, r++, ScalerInfo("BH1-1/100-PS", 1, 11));
     scaler_main.Set(c, r++, ScalerInfo("BH1-1/1e5-PS", 1, 12));
@@ -137,13 +136,12 @@ process_begin(const std::vector<std::string>& argv)
     scaler_main.Set(c, r++, ScalerInfo("TOF",        0, 22));
     scaler_main.Set(c, r++, ScalerInfo("AC1",        0, 23));
     scaler_main.Set(c, r++, ScalerInfo("WC",         0, 24));
-    scaler_main.Set(c, r++, ScalerInfo("n/a",          -1, -1));
     scaler_main.Set(c, r++, ScalerInfo("V792gate-4",    2, 5));
     scaler_main.Set(c, r++, ScalerInfo("V792gate-5",    2, 6));
     scaler_main.Set(c, r++, ScalerInfo("V792gate-6",    2, 7));
-    scaler_main.Set( c, r++, ScalerInfo( "AFT-04",     0, 83 ) );
-    scaler_main.Set( c, r++, ScalerInfo( "AFT-05",     0, 84 ) );
-    scaler_main.Set( c, r++, ScalerInfo( "AFT-06",     0, 85 ) );
+    scaler_main.Set(c, r++, ScalerInfo("AFT-04",     0, 83));
+    scaler_main.Set(c, r++, ScalerInfo("AFT-05",     0, 84));
+    scaler_main.Set(c, r++, ScalerInfo("AFT-06",     0, 85));
   }
 
   {

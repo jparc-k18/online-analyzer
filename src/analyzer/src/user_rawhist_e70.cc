@@ -1864,7 +1864,7 @@ process_event()
 
       if (is_in_gate) {
         // ADC w/TDC
-	// SAC3 segment 1 is dummy, only segment 0 is used. 
+	// SAC3 segment 1 is dummy, only segment 0 is used.
         if (gUnpacker.get_entries(k_device, 0, 0, 0, k_adc)>0) {
           Int_t adc = gUnpacker.get(k_device, 0, 0, 0, k_adc);
           hptr_array[awt_id + seg]->Fill(adc);
@@ -2009,7 +2009,7 @@ process_event()
       for(Int_t m = 0; m<nhit; ++m) {
 	UInt_t tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
 	if (tdc!=0) {
-	  hptr_array[wct_id + seg]->Fill(tdc);
+ 	  hptr_array[wct_id + seg]->Fill(tdc);
 	  // ADC w/TDC
 	  if (tdc_min<tdc && tdc<tdc_max &&
 	      gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0) {
@@ -2379,6 +2379,7 @@ process_event()
 
     static const Int_t a_id   = gHist.getSequentialID(kTF_TF, 0, kADC);
     static const Int_t t_id   = gHist.getSequentialID(kTF_TF, 0, kTDC);
+    static const Int_t awt_id = gHist.getSequentialID(kTF_TF, 0, kADCwTDC);
 
     // TDC gate range
     static const Int_t tdc_min = gUser.GetParameter("TdcTF_TF", 0);
@@ -2403,8 +2404,18 @@ process_event()
           is_in_gate = true;
         }// tdc range is ok
       }// for(m)
-
+    if (is_in_gate) {
+        // ADC w/TDC
+        if (gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0) {
+          Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+          hptr_array[awt_id + seg]->Fill(adc);
+        }
+        //hptr_array[h_id]->Fill(seg);
+        //hptr_array[e72para_id]->Fill(e72parasite::kE90SAC1 + seg);
+        //++multiplicity[seg];
+      }// flag is OK
     }
+
 
 
 #if 0

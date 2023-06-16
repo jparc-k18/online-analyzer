@@ -118,6 +118,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(macro::Get("dispWC"));
   tab_macro->Add(macro::Get("dispMatrix"));
   tab_macro->Add(macro::Get("dispTriggerFlag"));
+  tab_macro->Add(macro::Get("dispBeamProfile_e70"));
   tab_macro->Add(macro::Get("dispHitPat"));
   tab_macro->Add(macro::Get("dispCorrelation"));
   tab_macro->Add(macro::Get("effBcOut"));

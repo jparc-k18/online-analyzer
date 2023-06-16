@@ -13,11 +13,12 @@ void effAFT()
   int n_layer = 6;
 
   // draw Multi with plane efficiency AFT
-  {TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
     c->Divide(3,3);
     int aft_cmul_id = HistMaker::getUniqueID(kAFT, 0, kMulti,  101);
-    for(int i = 0; i<NumOfPlaneAFT; ++i){  
+    for(int i = 0; i<NumOfPlaneAFT; ++i){
       if( i%4==0 ){
 	c->cd(i/4+1);
 	TH1 *h_wt  = (TH1*)GHist::get(aft_cmul_id+(kUorD+1)*NumOfPlaneAFT+(i+1)/2);
@@ -44,7 +45,7 @@ void effAFT()
     c->Clear();
     c->Divide(3,3);
     int aft_cmul_id = HistMaker::getUniqueID(kAFT, 0, kMulti,  101);
-    for(int i = 0; i<NumOfPlaneAFT; ++i){  
+    for(int i = 0; i<NumOfPlaneAFT; ++i){
       if( i%4==1 ){
 	c->cd(i/4+1);
 	TH1 *h_wt  = (TH1*)GHist::get(aft_cmul_id+(kUorD+1)*NumOfPlaneAFT+(i+1)/2);
@@ -66,34 +67,6 @@ void effAFT()
       c->Update();
     }
   }
-
-  // n_layer = 4;
-
-  // // draw Multi with plane efficiency HDC
-  // c = (TCanvas*)gROOT->FindObject("c2");
-  // c->Clear();
-  // c->Divide(2,2);
-  // int base_id = HistMaker::getUniqueID(kHDC, 0, kMulti);
-  // for(int i = 0; i<n_layer; ++i){
-  //   c->cd(i+1);
-  //   TH1 *h_wt  = GHist::get(base_id + i + n_layer);
-  //   h_wt->Draw();
-
-  //   double Nof0     = h_wt->GetBinContent(1);
-  //   double NofTotal = h_wt->GetEntries();
-  //   double eff      = 1. - (double)Nof0/NofTotal;
-
-  //   double xpos  = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
-  //   double ypos  = h_wt->GetMaximum()*0.8;
-  //   TLatex *text = new TLatex(xpos, ypos, Form("plane eff. %.2f", eff));
-  //   text->SetTextSize(0.08);
-  //   text->Draw();
-  // }
-
-  // c->Modified();
-  // c->Update();
-
-  // c->cd(0);
 
   // You must write these lines for the thread safe
   // ----------------------------------

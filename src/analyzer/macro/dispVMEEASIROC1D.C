@@ -10,7 +10,7 @@ using namespace hddaq::gui; // for Updater
 void
 dispVMEEASIROC1D( void )
 {
-  const UserParamMan& gUser = UserParamMan::GetInstance();
+
   // You must write these lines for the thread safe
   // ----------------------------------
   if(Updater::isUpdating()){return;}
@@ -55,6 +55,8 @@ dispVMEEASIROC1D( void )
     c->Update();
   }
 
+  const auto& gUser = UserParamMan::GetInstance();
+  const Double_t TotRef = gUser.GetParameter( "TotRefVMEEASIROC" );
   // draw TOT-2D
   { // aft01
     TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
@@ -70,6 +72,23 @@ dispVMEEASIROC1D( void )
       TH1D *hh =  h->ProjectionY(Form("VMEEASIROC_TOT_%d_1D", planeId), 1, NumOfSegVMEEASIROC);
       hh->SetTitle(Form("VMEEASIROC_TOT_%d_1D", planeId));
       hh->Draw();
+
+      Double_t peak = hh->GetMaximum();
+      auto l = new TLine( TotRef, 0, TotRef, peak );
+      l->SetLineColor( kRed );
+      l->Draw( "same" );
+
+      TLatex *text = new TLatex();
+      text->SetNDC();
+      text->SetTextSize(0.08);
+      if( i < 9 ){
+	if( i%3 == 0 || i%3 == 1 ) text->DrawLatex(0.75, 0.60, "AFT-X1-3");
+	if( i%3 == 2 ) text->DrawLatex(0.75, 0.60, "AFT-Y1-3");
+      }
+      else {
+	if( i%3 == 0 || i%3 == 1 ) text->DrawLatex(0.75, 0.60, "AFT-X4-6");
+	if( i%3 == 2 ) text->DrawLatex(0.75, 0.60, "AFT-Y4-6");
+      }
     }
     c->Update();
   }
@@ -89,6 +108,24 @@ dispVMEEASIROC1D( void )
       TH1D *hh =  h->ProjectionY(Form("VMEEASIROC_TOT_%d_1D", planeId), 1, NumOfSegVMEEASIROC);
       hh->SetTitle(Form("VMEEASIROC_TOT_%d_1D", planeId));
       hh->Draw();
+
+      Double_t peak = hh->GetMaximum();
+      auto l = new TLine( TotRef, 0, TotRef, peak );
+      l->SetLineColor( kRed );
+      l->Draw( "same" );
+
+      TLatex *text = new TLatex();
+      text->SetNDC();
+      text->SetTextSize(0.08);
+      if( i < 18 ){
+	if( i%3 == 0 || i%3 == 1 ) text->DrawLatex(0.75, 0.60, "AFT-X4-6");
+	if( i%3 == 2 ) text->DrawLatex(0.75, 0.60, "AFT-Y4-6");
+      }
+      else {
+	if( i%3 == 0 || i%3 == 1 ) text->DrawLatex(0.75, 0.60, "AFT-X7-9");
+	if( i%3 == 2 ) text->DrawLatex(0.75, 0.60, "AFT-Y7-9");
+      }
+
     }
     c->Update();
   }

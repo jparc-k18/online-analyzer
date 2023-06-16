@@ -102,7 +102,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("split33"));
   tab_macro->Add(macro::Get("dispAFT1D"));
   tab_macro->Add(macro::Get("dispAFT2D"));
-  tab_macro->Add(macro::Get("dispAFTpoly2D"));
+  tab_macro->Add(macro::Get("dispAFTHitPat"));
   tab_macro->Add(macro::Get("effAFT"));
   tab_macro->Add(macro::Get("dispDAQ"));
 
@@ -239,7 +239,7 @@ process_event( void )
     int aft_chg_id  = gHist.getSequentialID(kAFT, 0, kHighGain, 101);
     int aft_lg_id   = gHist.getSequentialID(kAFT, 0, kLowGain,    1);
     int aft_clg_id  = gHist.getSequentialID(kAFT, 0, kLowGain,  101);
-    int aft_pe_id   = gHist.getSequentialID(kAFT, 0, kPede,       1);
+    // int aft_pe_id   = gHist.getSequentialID(kAFT, 0, kPede,       1);
 
     int aft_t_2d_id    = gHist.getSequentialID(kAFT, 0, kTDC2D,        1);
     int aft_tot_2d_id  = gHist.getSequentialID(kAFT, 0, kTOT2D,        1);
@@ -248,7 +248,7 @@ process_event( void )
     int aft_chg_2d_id  = gHist.getSequentialID(kAFT, 0, kHighGain2D, 101);
     int aft_lg_2d_id   = gHist.getSequentialID(kAFT, 0, kLowGain2D,    1);
     int aft_clg_2d_id  = gHist.getSequentialID(kAFT, 0, kLowGain2D,  101);
-    int aft_pe_2d_id   = gHist.getSequentialID(kAFT, 0, kPede2D,       1);
+    // int aft_pe_2d_id   = gHist.getSequentialID(kAFT, 0, kPede2D,       1);
 
     int aft_hg_tot_id = gHist.getSequentialID(kAFT, 0, kHighGainXTOT, 1);
     int aft_lg_tot_id = gHist.getSequentialID(kAFT, 0, kLowGainXTOT,  1);
@@ -282,13 +282,13 @@ process_event( void )
 		hptr_array[aft_hg_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg);
 		hptr_array[aft_hg_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_hg);
 
-		double pedeAFT = 0.;
-		double gainAFT = 100.;
-		// pedeAFT = hman->GetPedestal(DetIdAFT,layer,i,0);
-		// gainAFT = hman->GetGain(DetIdAFT,layer,i,0);
-		double adc_pe = ((double)adc_hg - pedeAFT)/gainAFT;
-		hptr_array[aft_pe_id+ud*NumOfPlaneAFT+l]->Fill(adc_pe);
-		hptr_array[aft_pe_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_pe);
+		// double pedeAFT = 0.;
+		// double gainAFT = 100.;
+		// // pedeAFT = hman->GetPedestal(DetIdAFT,layer,i,0);
+		// // gainAFT = hman->GetGain(DetIdAFT,layer,i,0);
+		// double adc_pe = ((double)adc_hg - pedeAFT)/gainAFT;
+		// hptr_array[aft_pe_id+ud*NumOfPlaneAFT+l]->Fill(adc_pe);
+		// hptr_array[aft_pe_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_pe);
 	      }
 	    }
 	  }

@@ -150,24 +150,6 @@ dispAFT2D( void )
     }
   }
 
-  // draw pe UorD
-  {
-    int aft_pe_2d_id     = HistMaker::getUniqueID( kAFT, 0, kPede2D, 0 );
-    for( int ud=0; ud<2; ud++ ){
-      TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", ud+9));
-      c->Clear();
-      c->Divide(8, 5);
-      for( int i=0; i<NumOfPlaneAFT; ++i ){
-	c->cd(i+1);
-	TH2 *h = (TH2*)GHist::get( ++aft_pe_2d_id );
-	if( !h ) continue;
-	h->Draw("colz");
-      }
-      c->Update();
-    }
-  }
-
-
   // You must write these lines for the thread safe
   // ----------------------------------
   Updater::setUpdating(false);

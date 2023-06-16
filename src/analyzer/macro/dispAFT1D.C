@@ -155,25 +155,6 @@ dispAFT1D( void )
     }
   }
 
-  // draw pe UorD
-  {
-    int aft_pe_id     = HistMaker::getUniqueID( kAFT, 0, kPede, 0 );
-    for( int ud=0; ud<2; ud++ ){
-      TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", ud+9));
-      c->Clear();
-      c->Divide(8, 5);
-      for( int i=0; i<NumOfPlaneAFT; ++i ){
-	c->cd(i+1);
-	TH1 *h = (TH1*)GHist::get( ++aft_pe_id );
-	if( !h ) continue;
-	h->Draw();
-      }
-      c->Update();
-    }
-  }
-
-
-
 
   // You must write these lines for the thread safe
   // ----------------------------------

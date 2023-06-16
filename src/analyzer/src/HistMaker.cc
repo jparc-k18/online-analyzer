@@ -1650,7 +1650,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-    				200, -50, 150,
+    				150, 0, 150,
     				"TOT [ch]", ""));
       }
     }
@@ -1667,7 +1667,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-    				200, -50, 150,
+    				150, 0, 150,
     				"TOT [ch]", ""));
       }
     }
@@ -1762,31 +1762,31 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
-  // ADC Pedestal -----------------------------------------------
-  {
-    TString strSubDir  = CONV_STRING(kPedestal);
-    const char* nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
+  // // ADC Pedestal -----------------------------------------------
+  // {
+  //   TString strSubDir  = CONV_STRING(kPedestal);
+  //   const char* nameSubDir = strSubDir.Data();
+  //   TList *sub_dir = new TList;
+  //   sub_dir->SetName(nameSubDir);
 
-    Int_t target_id = getUniqueID(kAFT, 0, kPede, 0);
-    const char* sub_name = "Pedestal";
-    // Add to the top directory
-    for(Int_t ud=0; ud<2; ud++){
-      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
-    	const char* title = NULL;
-	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+  //   Int_t target_id = getUniqueID(kAFT, 0, kPede, 0);
+  //   const char* sub_name = "Pedestal";
+  //   // Add to the top directory
+  //   for(Int_t ud=0; ud<2; ud++){
+  //     for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  //   	const char* title = NULL;
+  // 	const TString layer_name = NameOfPlaneAFT[i%4];
+  //   	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+  //   	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
-  	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-  				1024, -200, 824,
-  				"ADC [ch]", ""));
-      }
-    }
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
+  // 	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+  // 				1024, -200, 824,
+  // 				"ADC [ch]", ""));
+  //     }
+  //   }
+  //   // insert sub directory
+  //   top_dir->Add(sub_dir);
+  // }
 
   // TDC-2D -------------------------------------------------------
   {
@@ -1837,7 +1837,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
   			       aft_nseg, 0, aft_nseg,
-  			       200, -50, 150,
+  			       150, 0, 150,
   			       "Fiber", "TOT [ch]"));
       }
     }
@@ -1856,7 +1856,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
   			       aft_nseg, 0, aft_nseg,
-  			       200, -50, 150,
+  			       150, 0, 150,
   			       "Fiber", "TOT [ch]"));
 
       }
@@ -1961,33 +1961,33 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
-  // ADC-2D Pedestal ----------------------------------------------
-  {
-    TString strSubDir  = CONV_STRING(kPedestal_2D);
-    const char* nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
+  // // ADC-2D Pedestal ----------------------------------------------
+  // {
+  //   TString strSubDir  = CONV_STRING(kPedestal_2D);
+  //   const char* nameSubDir = strSubDir.Data();
+  //   TList *sub_dir = new TList;
+  //   sub_dir->SetName(nameSubDir);
 
-    Int_t target_id = getUniqueID(kAFT, 0, kPede2D, 0);
-    const char* sub_name = "Pedestal";
-    // Add to the top directory
-    for(Int_t ud=0; ud<2; ud++){
-      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
-  	const char* title = NULL;
-	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+  //   Int_t target_id = getUniqueID(kAFT, 0, kPede2D, 0);
+  //   const char* sub_name = "Pedestal";
+  //   // Add to the top directory
+  //   for(Int_t ud=0; ud<2; ud++){
+  //     for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  // 	const char* title = NULL;
+  // 	const TString layer_name = NameOfPlaneAFT[i%4];
+  //   	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+  //   	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
 
-  	Int_t aft_nseg = NumOfSegAFT[i%4];
-  	sub_dir->Add(createTH2(++target_id, title, // 1 origin
-  			       aft_nseg, 0, aft_nseg,
-  			       4096/8,-200, 824,
-  			       "Fiber", "ADC [ch]"));
-      }
-    }
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
+  // 	Int_t aft_nseg = NumOfSegAFT[i%4];
+  // 	sub_dir->Add(createTH2(++target_id, title, // 1 origin
+  // 			       aft_nseg, 0, aft_nseg,
+  // 			       4096/8,-200, 824,
+  // 			       "Fiber", "ADC [ch]"));
+  //     }
+  //   }
+  //   // insert sub directory
+  //   top_dir->Add(sub_dir);
+  // }
 
   // ADC HighGain * TOT -----------------------------------------
   {
@@ -2008,7 +2008,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
   			      4096/8, 0, 4096,
-  			      200, -50, 150,
+  			      150, 0, 150,
   			      "HighGain [ch]", "TOT [ch]"));
       }
     }
@@ -2035,7 +2035,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
   			      4096/8, 0, 4096,
-  			      200, -50, 150,
+  			      150, 0, 150,
   			      "LowGain [ch]", "TOT [ch]"));
       }
     }
@@ -8030,7 +8030,7 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
       title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
-			     1024, 0, 1024,
+			     150, 0, 150,
 			     "ch", "TOT [ch]"));
     }
     // insert sub directory
@@ -8152,7 +8152,7 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
 	title = Form("%s_%s_%d_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i], j);
 	sub_sub_dir->Add(createTH2(++target_id, title, // 1 origin
 				   4096, 0, 4096,
-				   1024, 0, 1024,
+				   150, 0, 150,
 				   "ADC [ch]", "TOT [ch]"));
       }
       sub_dir->Add(sub_sub_dir);

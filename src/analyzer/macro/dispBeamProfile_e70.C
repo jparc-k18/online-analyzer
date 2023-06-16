@@ -70,10 +70,20 @@ void dispBeamProfile_e70()
   hh->Draw("same");
 
   c->cd(6);
-  base_id = HistMaker::getUniqueID(kBAC, 0, kHitPat);
-  h = (TH1*)GHist::get(base_id);
-  h->SetMinimum(0);
-  h->Draw();
+  base_id = HistMaker::getUniqueID(kBAC, 0, kMulti);
+  {
+    TH1 *h_wt = GHist::get(base_id);
+    h_wt->Draw();
+    double Nof0     = h_wt->GetBinContent(1);
+    double NofTotal = h_wt->GetEntries();
+    double eff      = 1. - (double)Nof0/NofTotal;
+
+    double xpos     = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
+    double ypos     = h_wt->GetMaximum()*0.8;
+    TLatex *text    = new TLatex(xpos, ypos, Form("eff. %.4f", eff));
+    text->SetTextSize(0.08);
+    text->Draw();
+  }
   c->Update();
 
   c->cd(0);

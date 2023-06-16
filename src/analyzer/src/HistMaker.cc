@@ -699,8 +699,8 @@ TList* HistMaker::createBC4( Bool_t flag_ps )
   top_dir->SetName(nameDetector);
 
   // layer configuration
-  const char* name_layer[NumOfLayersBC4] = {"v0", "v1", "u0", "u1", "x0", "x1"};
-  const char* name_Selflayer[NumOfDimBC4] = { "v0_v1", "u0_u1","x0_x1" };
+  const char* name_layer[NumOfLayersBC4] = {"u0", "u1", "v0", "v1", "x0", "x1"};
+  const char* name_Selflayer[NumOfDimBC4] = { "vu0_u1", "v0_v1","x0_x1" };
   //  const char* name_layer[NumOfLayersSDC3] = { "y0", "y1", "x0", "x1" };
 
   // TDC---------------------------------------------------------

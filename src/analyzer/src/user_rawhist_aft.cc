@@ -103,6 +103,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispAFT1D"));
   tab_macro->Add(macro::Get("dispAFT2D"));
   tab_macro->Add(macro::Get("dispAFTHitPat"));
+  tab_macro->Add(macro::Get("dispAFTTot"));
   tab_macro->Add(macro::Get("effAFT"));
   tab_macro->Add(macro::Get("dispDAQ"));
 

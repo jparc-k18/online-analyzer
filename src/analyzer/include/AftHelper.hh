@@ -91,8 +91,8 @@ private:
   const Int_t    m_npoly = 360;
 
 public:
-  Double_t     GetX( Int_t plane, Int_t seg );
-  Double_t     GetZ( Int_t plane, Int_t seg );
+  Double_t     GetX( Int_t plane, Int_t seg ) const;
+  Double_t     GetZ( Int_t plane, Int_t seg ) const;
   Double_t     GetPhi( void ) const { return m_phi; }
   Double_t     GetNPoly( void ) const { return m_npoly; }
   // AftParam* GetParam( Int_t asad, Int_t aget, Int_t ch ) const;

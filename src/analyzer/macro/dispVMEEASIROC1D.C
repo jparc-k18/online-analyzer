@@ -1,4 +1,4 @@
-// -*- C++ -*-
+/ -*- C++ -*-
 
 #include "DetectorID.hh"
 
@@ -17,7 +17,7 @@ dispVMEEASIROC1D( void )
   Updater::setUpdating(true);
   // ----------------------------------
 
-  // draw TDC-2D
+  // draw TDC-1D
   { // aft01
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
@@ -36,7 +36,7 @@ dispVMEEASIROC1D( void )
     c->Update();
   }
 
-  // draw TDC-2D
+  // draw TDC-1D
   { // aft02
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
     c->Clear();
@@ -57,7 +57,7 @@ dispVMEEASIROC1D( void )
 
   const auto& gUser = UserParamMan::GetInstance();
   const Double_t TotRef = gUser.GetParameter( "TotRefVMEEASIROC" );
-  // draw TOT-2D
+  // draw TOT-1D
   { // aft01
     TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
     c->Clear();
@@ -93,7 +93,7 @@ dispVMEEASIROC1D( void )
     c->Update();
   }
 
-  // draw TOT-2D
+  // draw TOT-1D
   { // aft02
     TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
     c->Clear();
@@ -130,7 +130,7 @@ dispVMEEASIROC1D( void )
     c->Update();
   }
 
-  // draw HighGain-2D
+  // draw HighGain-1D
   { // aft01
     TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
     c->Clear();
@@ -173,7 +173,7 @@ dispVMEEASIROC1D( void )
     c->Update();
   }
 
-  // draw HighGain-2D
+  // draw HighGain-1D
   { // aft02
     TCanvas *c = (TCanvas*)gROOT->FindObject("c6");
     c->Clear();
@@ -216,7 +216,7 @@ dispVMEEASIROC1D( void )
     c->Update();
   }
 
-  // draw LowGain-2D
+  // draw LowGain-1D
   { // aft01
     TCanvas *c = (TCanvas*)gROOT->FindObject("c7");
     c->Clear();
@@ -259,7 +259,7 @@ dispVMEEASIROC1D( void )
     c->Update();
   }
 
-  // draw LowGain-2D
+  // draw LowGain-1D
   { // aft02
     TCanvas *c = (TCanvas*)gROOT->FindObject("c8");
     c->Clear();

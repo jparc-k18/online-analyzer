@@ -164,7 +164,7 @@ AftHelper::~AftHelper( void )
 
 //_____________________________________________________________________________
 Double_t
-AftHelper::GetX( Int_t plane, Int_t seg )
+AftHelper::GetX( Int_t plane, Int_t seg ) const
 {
   Double_t centerx = m_posSeg0[plane%4] + seg*m_distance_seg;
   return centerx;
@@ -172,7 +172,7 @@ AftHelper::GetX( Int_t plane, Int_t seg )
 
 //_____________________________________________________________________________
 Double_t
-AftHelper::GetZ( Int_t plane, Int_t seg )
+AftHelper::GetZ( Int_t plane, Int_t seg ) const
 {
 
   Double_t centerz = m_posZ0;

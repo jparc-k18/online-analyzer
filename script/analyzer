@@ -18,7 +18,7 @@ bin_dir=$ana_dir/bin
 exe_file=$bin_dir/raw_hist_e70
 
 ##### data directory
-data_dir=$ana_dir/data
+data_dir=($ana_dir/data $ana_dir/data_bench)
 
 ##### configure file
 # Do NOT change here. Change symbolic link.

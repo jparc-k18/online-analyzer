@@ -14,5 +14,6 @@ param/*
 src/analyzer/dict/*
 src/main/dict/*
 data
+data_bench
 Makefile
 common.mk

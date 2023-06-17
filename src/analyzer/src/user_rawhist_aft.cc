@@ -257,7 +257,6 @@ process_event( void )
     int aft_hit_id     = gHist.getSequentialID(kAFT, 0, kHitPat,   1);
     int aft_chit_id    = gHist.getSequentialID(kAFT, 0, kHitPat, 101);
     int aft_mul_id     = gHist.getSequentialID(kAFT, 0, kMulti,    1);
-    int aft_cmul_id    = gHist.getSequentialID(kAFT, 0, kMulti,  101);
 
     int aft_cl_tdc_id     = gHist.getSequentialID(kAFT, kCluster, kTDC,        1);
     int aft_cl_tdc2d_id   = gHist.getSequentialID(kAFT, kCluster, kTDC2D,      1);
@@ -266,14 +265,11 @@ process_event( void )
     int aft_cl_lgadc_id   = gHist.getSequentialID(kAFT, kCluster, kLowGain,    1);
     int aft_cl_lgadc2d_id = gHist.getSequentialID(kAFT, kCluster, kLowGain2D,  1);
 
-    int cmultiplicity_both[NumOfPlaneAFT];
+    int multiplicity[NumOfPlaneAFT];
     for(int l=0; l<NumOfPlaneAFT; ++l){
-      int multiplicity = 0;
-      int cmultiplicity = 0;
-      cmultiplicity_both[l] = 0;
-      std::vector<std::vector<bool>> flag_hit_wt(NumOfSegAFT[l%4]);
+      std::vector<std::vector<bool>> flag_hit_wt(NumOfSegAFT[l%4], std::vector<bool>(kUorD, false));
+      multiplicity[l] = 0;
       for(int seg = 0; seg<NumOfSegAFT[l%4]; ++seg){
-	flag_hit_wt[seg].resize(kUorD);
 	for(int ud=0; ud<kUorD; ud++){
 	  { // highgain
 	    int nhit_hg = gUnpacker.get_entries(k_device, l, seg, ud, k_highgain);
@@ -307,36 +303,32 @@ process_event( void )
 
 	  { // TDC
 	    int nhit_l = gUnpacker.get_entries(k_device, l, seg, ud, k_leading );
-	    flag_hit_wt[seg][ud] = false;
 	    if(nhit_l!=0){
-	      ++multiplicity;
-	      for(int m = 0; m<nhit_l; ++m){
-		// TDC & hitpat
+	      hptr_array[aft_hit_id+ud*NumOfPlaneAFT+l]->Fill(seg);
+	      for(int m = 0; m<nhit_l; ++m){ // multi hit
 		int tdc = gUnpacker.get(k_device, l, seg, ud, k_leading, m);
 		hptr_array[aft_t_id+ud*NumOfPlaneAFT+l]->Fill(tdc);
 		hptr_array[aft_t_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, tdc);
-		hptr_array[aft_hit_id+ud*NumOfPlaneAFT+l]->Fill(seg);
-		if(tdc_min < tdc && tdc < tdc_max){ // w/ TDC cut
+		if(tdc_min < tdc && tdc < tdc_max){ // hit flag
 		  flag_hit_wt[seg][ud] = true;
-		  hptr_array[aft_chit_id+ud*NumOfPlaneAFT+l]->Fill(seg);
 		}
 	      }
-	      if(flag_hit_wt[seg][ud]){
-		++cmultiplicity;
-		// highgain w/ TDC cut
-		int nhit_hg = gUnpacker.get_entries(k_device, l, seg, ud, k_highgain);
-		if( nhit_hg != 0 ){
-		  int adc_hg = gUnpacker.get(k_device, l, seg, ud, k_highgain, 0);
-		  hptr_array[aft_chg_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg);
-		  hptr_array[aft_chg_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_hg);
-		}
-		// lowgain w/ TDC cut
-		int nhit_lg = gUnpacker.get_entries(k_device, l, seg, ud, k_lowgain);
-		if( nhit_lg != 0 ){
-		  int adc_lg = gUnpacker.get(k_device, l, seg, ud, k_lowgain, 0);
-		  hptr_array[aft_clg_id+ud*NumOfPlaneAFT+l]->Fill(adc_lg);
-		  hptr_array[aft_clg_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_lg);
-		}
+	    }
+	    if(flag_hit_wt[seg][ud]){
+	      hptr_array[aft_chit_id+ud*NumOfPlaneAFT+l]->Fill(seg);
+	      // highgain w/ TDC cut
+	      int nhit_hg = gUnpacker.get_entries(k_device, l, seg, ud, k_highgain);
+	      if( nhit_hg != 0 ){
+		int adc_hg = gUnpacker.get(k_device, l, seg, ud, k_highgain, 0);
+		hptr_array[aft_chg_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg);
+		hptr_array[aft_chg_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_hg);
+	      }
+	      // lowgain w/ TDC cut
+	      int nhit_lg = gUnpacker.get_entries(k_device, l, seg, ud, k_lowgain);
+	      if( nhit_lg != 0 ){
+		int adc_lg = gUnpacker.get(k_device, l, seg, ud, k_lowgain, 0);
+		hptr_array[aft_clg_id+ud*NumOfPlaneAFT+l]->Fill(adc_lg);
+		hptr_array[aft_clg_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_lg);
 	      }
 	    }
 	  }
@@ -378,25 +370,20 @@ process_event( void )
 	    }
 	  }
 
-	  hptr_array[aft_mul_id+ud*NumOfPlaneAFT+l]->Fill(multiplicity);
-	  hptr_array[aft_cmul_id+ud*NumOfPlaneAFT+l]->Fill(cmultiplicity);
 	} // for in Up or Down
-
-	// hitpat & multiplicity of hit on both ends
-	if( flag_hit_wt[seg][kU] && flag_hit_wt[seg][kD] ){
-	  ++cmultiplicity_both[l];
+	if( flag_hit_wt[seg][kU] && flag_hit_wt[seg][kD] ){ // hitpat & multiplicity of hit on both ends
+	  ++multiplicity[l];
 	  hptr_array[aft_chit_id+kUorD*NumOfPlaneAFT+l]->Fill(seg);
 	  double posx = gAftHelper.GetX( l, seg );
 	  double posz = gAftHelper.GetZ( l, seg );
 	  if( l%4 == 0 || l%4 == 1 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+0]->Fill(posz, posx);
 	  if( l%4 == 2 || l%4 == 3 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+1]->Fill(posz, posx);
 	}
-
       } // for in NumOfSegAFT
-      hptr_array[aft_cmul_id+kUorD*NumOfPlaneAFT+l]->Fill(cmultiplicity_both[l]);
+      hptr_array[aft_mul_id+l]->Fill(multiplicity[l]);
       if( l%2==1 ){
-	int cmultiplicity_both_XY = cmultiplicity_both[l-1] + cmultiplicity_both[l];
-	hptr_array[aft_cmul_id+(kUorD+1)*NumOfPlaneAFT+l/2]->Fill(cmultiplicity_both_XY);
+	int multiplicity_pair = multiplicity[l-1] + multiplicity[l];
+	hptr_array[aft_mul_id+NumOfPlaneAFT+l/2]->Fill(multiplicity_pair);
       }
     } // for in NumOfPlaneAFT
 

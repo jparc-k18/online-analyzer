@@ -2128,47 +2128,20 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     Int_t target_id = getUniqueID(kAFT, 0, kMulti, 0);
     const char* sub_name = "Multi";
     // Add to the top directory
-    for(Int_t ud=0; ud<2; ud++){
-      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
-    	const char* title = NULL;
-	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-
-  	Int_t aft_nseg = NumOfSegAFT[i%4];
-  	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
-  				aft_nseg, 0, aft_nseg,
-  				"Fiber", ""));
-      }
-    }
-
-    // Multiplicity (after cut) -----------------------------------
-    target_id = getUniqueID(kAFT, 0, kMulti, 100);
-    sub_name = "CMulti";
-    // Add to the top directory
-    for(Int_t ud=0; ud<3; ud++){
-      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
-    	const char* title = NULL;
-	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	else if( ud == 2 ) title = Form("%s_%s_%d_%s",  nameDetector, sub_name, i/4+1, layer_name.Data()); // for multipliticy defined by hits on both edges
-
-  	Int_t aft_nseg = NumOfSegAFT[i%4];
-  	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
-  				aft_nseg, 0, aft_nseg,
-  				"Fiber", ""));
-      }
-    }
-
     for(Int_t i=0; i<NumOfPlaneAFT; ++i){
-      if( i%4 == 0 || i%4 == 2 ) continue;
-      const char* title = NULL;
-      if( i%4 == 1 ) title = Form("%s_%s_%d_X", nameDetector, sub_name, i/4+1);
-      else if( i%4 == 3 ) title = Form("%s_%s_%d_Y", nameDetector, sub_name, i/4+1);
-      Int_t aft_nseg = NumOfSegAFT[i%4]*2;
+      const TString layer_name = NameOfPlaneAFT[i%4];
+      const char* title = Form("%s_%s_%d_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+      Int_t aft_nseg = NumOfSegAFT[i%4];
       sub_dir->Add(createTH1( ++target_id, title, // 1 origin
-			      aft_nseg, 0, aft_nseg,
+			      aft_nseg+1, 0, aft_nseg+1,
+			      "Fiber", ""));
+    }
+    for(Int_t i=0; i<NumOfPlaneAFT/2; ++i){
+      const TString layer_name = (i%2 == 0) ? "X" : "Y";
+      const char* title = Form("%s_%s_%d_%s", nameDetector, sub_name, i/2+1, layer_name.Data());
+      Int_t aft_nseg = 2*NumOfSegAFT[(2*i)%4];
+      sub_dir->Add(createTH1( ++target_id, title, // 1 origin
+			      aft_nseg+1, 0, aft_nseg+1,
 			      "Fiber", ""));
     }
 

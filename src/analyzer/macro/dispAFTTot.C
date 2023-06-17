@@ -53,7 +53,7 @@ dispAFTTot( void )
 	TF1 f("f", "gaus", 0., 100.);
 	f.SetLineColor(kRed);
 	Double_t p = h_X[i]->GetBinCenter(h_X[i]->GetMaximumBin());
-	if(p < 30.) p = 60.;
+	if(p < 30.) p = 70.;
 	Double_t w = 10.;
 	for(Int_t ifit=0; ifit<3; ++ifit){
 	  Double_t fmin = p - w;
@@ -68,6 +68,7 @@ dispAFTTot( void )
 	text->SetText(0.500, 0.700, Form("%.2f", p));
 	text->Draw();
 	auto l = new TLine( TotRef, 0, TotRef, h_X[i]->GetMaximum() );
+	l->SetLineColor(kRed);
 	l->Draw();
       }
       {
@@ -76,7 +77,7 @@ dispAFTTot( void )
 	TF1 f("f", "gaus", 0., 100.);
 	f.SetLineColor(kRed);
 	Double_t p = h_Y[i]->GetBinCenter(h_Y[i]->GetMaximumBin());
-	if(p < 30.) p = 60.;
+	if(p < 30.) p = 70.;
 	Double_t w = 10.;
 	for(Int_t ifit=0; ifit<3; ++ifit){
 	  Double_t fmin = p - w;
@@ -91,6 +92,7 @@ dispAFTTot( void )
 	text->SetText(0.500, 0.700, Form("%.2f", p));
 	text->Draw();
 	auto l = new TLine( TotRef, 0, TotRef, h_Y[i]->GetMaximum() );
+	l->SetLineColor(kRed);
 	l->Draw();
       }
     }

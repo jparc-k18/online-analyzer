@@ -111,6 +111,9 @@ my_tgt_jsroot_e03	:= $(bin_dir)/jsroot_e03
 my_obj_jsroot_e42	:= $(core_obj) user_jsroot_e42.o
 my_tgt_jsroot_e42	:= $(bin_dir)/jsroot_e42
 
+my_obj_jsroot_e70	:= $(core_obj) user_jsroot_e70.o
+my_tgt_jsroot_e70	:= $(bin_dir)/jsroot_e70
+
 my_obj_jsroot_scaler	:= $(core_obj) user_jsroot_scaler.o
 my_tgt_jsroot_scaler	:= $(bin_dir)/jsroot_scaler
 
@@ -209,6 +212,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_scaler_e72) \
 	$(my_tgt_scaler_sch) \
 	$(my_tgt_scaler_daq) \
+	$(my_tgt_jsroot_e70) \
 	$(my_tgt_jsroot_beamprofile) \
 	$(my_tgt_jsroot_scaler) \
 	$(my_tgt_jsroot_scaler_hbx) \
@@ -426,11 +430,18 @@ $(eval $(call make-lib,$(my_lib_jsroot_e03),$(my_obj_jsroot_e03)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_e03),$(my_lib_jsroot_e03)))
 #
 #______________________________________________________________________________
-my_obj_jsroot_e42	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_e42))
-my_obj_jsroot_e42	:= $(my_obj_jsroot_e42)
-my_lib_jsroot_e42	:= libmyjsroot_e42.so
+my_obj_jsroot_e42 := $(addprefix $(my_dir)/src/,$(my_obj_jsroot_e42))
+my_obj_jsroot_e42 := $(my_obj_jsroot_e42)
+my_lib_jsroot_e42 := libmyjsroot_e42.so
 $(eval $(call make-lib,$(my_lib_jsroot_e42),$(my_obj_jsroot_e42)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_e42),$(my_lib_jsroot_e42)))
+#
+#______________________________________________________________________________
+my_obj_jsroot_e70 := $(addprefix $(my_dir)/src/,$(my_obj_jsroot_e70))
+my_obj_jsroot_e70 := $(my_obj_jsroot_e70)
+my_lib_jsroot_e70 := libmyjsroot_e70.so
+$(eval $(call make-lib,$(my_lib_jsroot_e70),$(my_obj_jsroot_e70)))
+$(eval $(call make-nogui-target,$(my_tgt_jsroot_e70),$(my_lib_jsroot_e70)))
 #
 #______________________________________________________________________________
 my_obj_jsroot_scaler	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_scaler))
@@ -518,7 +529,7 @@ $(eval $(call make-gui-target,$(my_tgt_beamprofile_e40),$(my_lib_beamprofile_e40
 #______________________________________________________________________________
 my_obj_beamprofile_e42	:= $(addprefix $(my_dir)/src/,$(my_obj_beamprofile_e42))
 my_obj_beamprofile_e42	:= $(my_obj_beamprofile_e42)
-my_lib_beamprofile_e42 := libmybeamprofile_e42.so
+my_lib_beamprofile_e42	:= libmybeamprofile_e42.so
 $(eval $(call make-lib,$(my_lib_beamprofile_e42),$(my_obj_beamprofile_e42)))
 $(eval $(call make-gui-target,$(my_tgt_beamprofile_e42),$(my_lib_beamprofile_e42)))
 

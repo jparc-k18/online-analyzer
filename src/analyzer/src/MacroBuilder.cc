@@ -2001,7 +2001,7 @@ DAQ()
     HistMaker::getUniqueID(kDAQ, kVME, kHitPat2D),
     HistMaker::getUniqueID(kDAQ, kEASIROC, kHitPat2D),
     HistMaker::getUniqueID(kDAQ, kHUL, kHitPat2D),
-    HistMaker::getUniqueID(kDAQ, kCoBo, kHitPat2D),
+    HistMaker::getUniqueID(kDAQ, kVMEEASIROC, kHitPat2D),
     // HistMaker::getUniqueID(kDAQ,  kCLite,   kHitPat2D),
     // HistMaker::getUniqueID(kDAQ,  kOpt,     kHitPat2D),
   };

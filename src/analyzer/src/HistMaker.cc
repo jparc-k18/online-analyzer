@@ -7094,6 +7094,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
   std::vector<Int_t> hul_fe_id;
   std::vector<Int_t> ea0c_fe_id;
   std::vector<Int_t> cobo_fe_id;
+  std::vector<Int_t> vea0c_fe_id;
   for( auto&& c : gUnpacker.get_root()->get_child_list() ){
     if( !c.second )
       continue;
@@ -7107,6 +7108,8 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
       ea0c_fe_id.push_back(id);
     if(n.Contains("cobo"))
       cobo_fe_id.push_back(id);
+    if(n.Contains("aft"))
+      vea0c_fe_id.push_back(id);
   }
 
   { //___ EB
@@ -7198,17 +7201,29 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
   //   }
   // }
 
-  { //___ CoBo
-    auto h = createTH2(getUniqueID( kDAQ, kCoBo, kHitPat2D),
-		       "Data size CoBo nodes",
-		       cobo_fe_id.size(), 0, cobo_fe_id.size(),
-		       100, 0, 200000,
-		       "CoBo node ID", "Data size [words]");
-    for(Int_t i=0, n=cobo_fe_id.size(); i<n; ++i){
-      h->GetXaxis()->SetBinLabel(i+1, "0x"+TString::Itoa(cobo_fe_id[i], 16));
+  { //___ VEASIROC
+    auto h = createTH2(getUniqueID(kDAQ, kVMEEASIROC, kHitPat2D),
+		       "Data size VME EASIROC nodes",
+		       vea0c_fe_id.size(), 0, vea0c_fe_id.size(),
+		       100, 0, 1000,
+		       "VME EASIROC node ID", "Data size [words]");
+    for(Int_t i=0, n=vea0c_fe_id.size(); i<n; ++i){
+      h->GetXaxis()->SetBinLabel(i+1, "0x"+TString::Itoa(vea0c_fe_id[i], 16));
     }
     top_dir->Add(h);
   }
+
+  // { //___ CoBo
+  //   auto h = createTH2(getUniqueID( kDAQ, kCoBo, kHitPat2D),
+  // 		       "Data size CoBo nodes",
+  // 		       cobo_fe_id.size(), 0, cobo_fe_id.size(),
+  // 		       100, 0, 200000,
+  // 		       "CoBo node ID", "Data size [words]");
+  //   for(Int_t i=0, n=cobo_fe_id.size(); i<n; ++i){
+  //     h->GetXaxis()->SetBinLabel(i+1, "0x"+TString::Itoa(cobo_fe_id[i], 16));
+  //   }
+  //   top_dir->Add(h);
+  // }
 
   return top_dir;
 }

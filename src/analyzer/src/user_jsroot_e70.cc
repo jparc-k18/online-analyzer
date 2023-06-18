@@ -321,7 +321,6 @@ process_event(void)
   }
 #endif
 
-  UInt_t cobo_data_size = 0;
 #if FLAG_DAQ
   { ///// DAQ
     //___ node id
@@ -329,7 +328,7 @@ process_event(void)
     std::vector<Int_t> vme_fe_id;
     std::vector<Int_t> hul_fe_id;
     std::vector<Int_t> ea0c_fe_id;
-    std::vector<Int_t> cobo_fe_id;
+    std::vector<Int_t> vea0c_fe_id;
     for(auto&& c : gUnpacker.get_root()->get_child_list()){
       if(!c.second) continue;
       TString n = c.second->get_name();
@@ -340,8 +339,8 @@ process_event(void)
 	hul_fe_id.push_back(id);
       if(n.Contains("easiroc"))
 	ea0c_fe_id.push_back(id);
-      if(n.Contains("cobo"))
-	cobo_fe_id.push_back(id);
+      if(n.Contains("aft"))
+	vea0c_fe_id.push_back(id);
     }
 
     //___ sequential id
@@ -349,7 +348,7 @@ process_event(void)
     static const Int_t vme_hid = gHist.getSequentialID(kDAQ, kVME, kHitPat2D);
     static const Int_t hul_hid = gHist.getSequentialID(kDAQ, kHUL, kHitPat2D);
     static const Int_t ea0c_hid = gHist.getSequentialID(kDAQ, kEASIROC, kHitPat2D);
-    static const Int_t cobo_hid = gHist.getSequentialID(kDAQ, kCoBo, kHitPat2D);
+    static const Int_t vea0c_hid = gHist.getSequentialID(kDAQ, kVMEEASIROC, kHitPat2D);
 
     { //___ EB
       auto data_size = gUnpacker.get_node_header(k_eb, DAQNode::k_data_size);
@@ -377,11 +376,10 @@ process_event(void)
       }
     }
 
-    { //___ CoBo node
-      for(Int_t i=0, n=cobo_fe_id.size(); i<n; ++i){
-        auto data_size = gUnpacker.get_node_header(cobo_fe_id[i], DAQNode::k_data_size);
-        hptr_array[cobo_hid]->Fill(i, data_size);
-	cobo_data_size += data_size;
+    { //___ VMEEASIROC node
+      for(Int_t i=0, n=vea0c_fe_id.size(); i<n; ++i){
+        auto data_size = gUnpacker.get_node_header(vea0c_fe_id[i], DAQNode::k_data_size);
+        hptr_array[vea0c_hid]->Fill(i, data_size);
       }
     }
   }

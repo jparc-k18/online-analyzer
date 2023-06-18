@@ -88,11 +88,11 @@ GetEnvelopeYfitSigma() { return envelope_yfit_sigma; }
 
 //_____________________________________________________________________________
 TCanvas*
-Correlation(void)
+Correlation()
 {
   auto c1 = new TCanvas(__func__, __func__);
-  c1->Divide(3, 2);
-  for(Int_t i=0; i<6; ++i){
+  c1->Divide(4, 2);
+  for(Int_t i=0; i<8; ++i){
     c1->cd(i+1);
     auto h = GHist::get(HistMaker::getUniqueID(kCorrelation, 0, 0, i+1));
     if(!h) continue;
@@ -103,7 +103,7 @@ Correlation(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CorrelationFHT(void)
+CorrelationFHT()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(2, 2);
@@ -118,7 +118,7 @@ CorrelationFHT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-HitPattern(void)
+HitPattern()
 {
   return HitPatternE03();
   // return HitPatternE40();
@@ -126,7 +126,7 @@ HitPattern(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BH1ADC(void)
+BH1ADC()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(6, 4);
@@ -151,7 +151,7 @@ BH1ADC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BH1TDC(void)
+BH1TDC()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(6, 4);
@@ -172,7 +172,7 @@ BH1TDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BFT(void)
+BFT()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(1, 2);
@@ -214,7 +214,7 @@ BFT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BAC(void)
+BAC()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(2, 1);
@@ -250,7 +250,7 @@ BAC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BH2ADC(void)
+BH2ADC()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -275,7 +275,7 @@ BH2ADC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BH2TDC(void)
+BH2TDC()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -296,7 +296,7 @@ BH2TDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-T0(void)
+T0()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -317,7 +317,7 @@ T0(void)
 
 //_____________________________________________________________________________
 TCanvas*
-ACs(void)
+ACs()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -362,7 +362,7 @@ ACs(void)
 
 //_____________________________________________________________________________
 TCanvas*
-HTOFADCU(void)
+HTOFADCU()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(6, 6);
@@ -384,7 +384,7 @@ HTOFADCU(void)
 
 //_____________________________________________________________________________
 TCanvas*
-HTOFADCD(void)
+HTOFADCD()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(6, 6);
@@ -406,7 +406,7 @@ HTOFADCD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-HTOFTDCU(void)
+HTOFTDCU()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(6, 6);
@@ -425,7 +425,7 @@ HTOFTDCU(void)
 
 //_____________________________________________________________________________
 TCanvas*
-HTOFTDCD(void)
+HTOFTDCD()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(6, 6);
@@ -444,7 +444,7 @@ HTOFTDCD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BeamHitMulti(void)
+BeamHitMulti()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   std::vector<Int_t> id = {
@@ -467,7 +467,7 @@ BeamHitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-FBHTDC(void)
+FBHTDC()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(8,4);
@@ -483,7 +483,7 @@ FBHTDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-FBHTOT(void)
+FBHTOT()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(8,4);
@@ -499,7 +499,7 @@ FBHTOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-FBHHitMulti(void)
+FBHHitMulti()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
 
@@ -525,7 +525,7 @@ FBHHitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SFTTDCTOT(void)
+SFTTDCTOT()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(1,2);
@@ -576,7 +576,7 @@ SFTTDCTOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SFTHitMulti(void)
+SFTHitMulti()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(1,2);
@@ -625,7 +625,7 @@ SFTHitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SFT2D(void)
+SFT2D()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(1,1);
@@ -655,7 +655,7 @@ SFT2D(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SCHTDCU(void)
+SCHTDCU()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(8, 4);
@@ -670,7 +670,7 @@ SCHTDCU(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SCHTDCD(void)
+SCHTDCD()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(8, 4);
@@ -685,7 +685,7 @@ SCHTDCD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SCHTOTU(void)
+SCHTOTU()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(8, 4);
@@ -700,7 +700,7 @@ SCHTOTU(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SCHTOTD(void)
+SCHTOTD()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(8, 4);
@@ -715,7 +715,7 @@ SCHTOTD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SCHHitMulti(void)
+SCHHitMulti()
 {
   auto c1 = new TCanvas(__func__, __func__);
   std::vector<Int_t> id = {
@@ -738,7 +738,7 @@ SCHHitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TOFADCU(void)
+TOFADCU()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(5, 4);
@@ -759,7 +759,7 @@ TOFADCU(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TOFADCD(void)
+TOFADCD()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(5, 4);
@@ -780,7 +780,7 @@ TOFADCD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TOFTDCU(void)
+TOFTDCU()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(5, 4);
@@ -795,7 +795,7 @@ TOFTDCU(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TOFTDCD(void)
+TOFTDCD()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(5, 4);
@@ -810,7 +810,7 @@ TOFTDCD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TOF_HT(void)
+TOF_HT()
 {
   Int_t id = HistMaker::getUniqueID(kTOF_HT, 0, kTDC, 1);
 
@@ -827,7 +827,7 @@ TOF_HT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BVHTDC(void)
+BVHTDC()
 {
   auto c1 = new TCanvas(__func__, __func__);
   auto base_id = HistMaker::getUniqueID(kBVH, 0, kTDC);
@@ -843,7 +843,7 @@ BVHTDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-LACTDC(void)
+LACTDC()
 {
   auto base_id = HistMaker::getUniqueID(kLAC, 0, kTDC);
   auto c1 = new TCanvas(__func__, __func__);
@@ -859,7 +859,7 @@ LACTDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-AC1TDC(void)
+AC1TDC()
 {
   auto base_id = HistMaker::getUniqueID(kAC1, 0, kTDC);
   auto c1 = new TCanvas(__func__, __func__);
@@ -875,7 +875,7 @@ AC1TDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-WCADCU(void)
+WCADCU()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 3);
@@ -896,7 +896,7 @@ WCADCU(void)
 
 //_____________________________________________________________________________
 TCanvas*
-WCADCD(void)
+WCADCD()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 3);
@@ -917,7 +917,7 @@ WCADCD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-WCADCSUM(void)
+WCADCSUM()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 3);
@@ -938,7 +938,7 @@ WCADCSUM(void)
 
 //_____________________________________________________________________________
 TCanvas*
-WCTDCU(void)
+WCTDCU()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 3);
@@ -953,7 +953,7 @@ WCTDCU(void)
 
 //_____________________________________________________________________________
 TCanvas*
-WCTDCD(void)
+WCTDCD()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 3);
@@ -968,7 +968,7 @@ WCTDCD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-WCTDCSUM(void)
+WCTDCSUM()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 3);
@@ -983,7 +983,7 @@ WCTDCSUM(void)
 
 //_____________________________________________________________________________
 TCanvas*
-LC(void)
+LC()
 {
   Int_t id = HistMaker::getUniqueID(kLC, 0, kTDC, 1);
 
@@ -1000,7 +1000,7 @@ LC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-ScatHitMulti(void)
+ScatHitMulti()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   std::vector<Int_t> id = {
@@ -1025,7 +1025,7 @@ ScatHitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TPC(void)
+TPC()
 {
   std::vector<Int_t> id = {
     HistMaker::getUniqueID(kTPC, 0, kADC),
@@ -1046,7 +1046,7 @@ TPC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TPC2D(void)
+TPC2D()
 {
   std::vector<Int_t> id = {
     HistMaker::getUniqueID(kTPC, 0, kADC2D, 3),
@@ -1068,7 +1068,7 @@ TPC2D(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TPC3D(void)
+TPC3D()
 {
   std::vector<Int_t> id = {
     HistMaker::getUniqueID(kTPC, 2, kTDC2D),
@@ -1090,7 +1090,7 @@ TPC3D(void)
 }
 //_____________________________________________________________________________
 TCanvas*
-TPCADCPAD(void)
+TPCADCPAD()
 {
   auto id = HistMaker::getUniqueID(kTPC, 0, kADC2D);
   auto c1 = new TCanvas(__func__, __func__);
@@ -1115,7 +1115,7 @@ TPCADCPAD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TPCHTOFPAD(void)
+TPCHTOFPAD()
 {
   auto id = HistMaker::getUniqueID(kTPC, 0, kADC2D, 3);
   auto id_htof = HistMaker::getUniqueID(kHTOF, 0, kHitPat, 2);
@@ -1156,7 +1156,7 @@ TPCHTOFPAD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TPCTDCPAD(void)
+TPCTDCPAD()
 {
   auto id = HistMaker::getUniqueID(kTPC, 0, kADC2D, 3);
   auto c1 = new TCanvas(__func__, __func__);
@@ -1181,7 +1181,7 @@ TPCTDCPAD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TPCFADC(void)
+TPCFADC()
 {
   auto id = HistMaker::getUniqueID(kTPC, 0, kFADC);
   auto c1 = new TCanvas(__func__, __func__);
@@ -1193,7 +1193,7 @@ TPCFADC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TriggerFlagU(void)
+TriggerFlagU()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -1209,7 +1209,7 @@ TriggerFlagU(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TriggerFlagD(void)
+TriggerFlagD()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -1225,7 +1225,7 @@ TriggerFlagD(void)
 
 //_____________________________________________________________________________
 TCanvas*
-TriggerFlagHitPat(void)
+TriggerFlagHitPat()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->cd(1);//->SetLogy();
@@ -1236,7 +1236,7 @@ TriggerFlagHitPat(void)
 
 //_____________________________________________________________________________
 TCanvas*
-MsTTDC(void)
+MsTTDC()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(6, 4);
@@ -1252,7 +1252,7 @@ MsTTDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-MsTHitPat(void)
+MsTHitPat()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(2, 2);
@@ -1274,7 +1274,7 @@ MsTHitPat(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BC3TDCTOT(void)
+BC3TDCTOT()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4,3);
@@ -1307,7 +1307,7 @@ BC3TDCTOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BC3HitMulti(void)
+BC3HitMulti()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(3,4);
@@ -1335,7 +1335,7 @@ BC3HitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BC4TDCTOT(void)
+BC4TDCTOT()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4,3);
@@ -1368,7 +1368,7 @@ BC4TDCTOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BC4HitMulti(void)
+BC4HitMulti()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(3,4);
@@ -1396,7 +1396,7 @@ BC4HitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SDC1TDCTOT(void)
+SDC1TDCTOT()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 3);
@@ -1428,7 +1428,7 @@ SDC1TDCTOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SDC1HitMulti(void)
+SDC1HitMulti()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 3);
@@ -1456,7 +1456,7 @@ SDC1HitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SDC2TDCTOT(void)
+SDC2TDCTOT()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -1499,7 +1499,7 @@ SDC2TDCTOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SDC2HitMulti(void)
+SDC2HitMulti()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -1527,7 +1527,7 @@ SDC2HitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SAC(void)
+SAC()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(1,2);
@@ -1581,7 +1581,7 @@ SAC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SDC3TDCTOT(void)
+SDC3TDCTOT()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(1, 2);
@@ -1629,7 +1629,7 @@ SDC3TDCTOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SDC3HitMulti(void)
+SDC3HitMulti()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(1, 2);
@@ -1665,7 +1665,7 @@ SDC3HitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SDC4TDCTOT(void)
+SDC4TDCTOT()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(1, 2);
@@ -1716,7 +1716,7 @@ SDC4TDCTOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SDC4HitMulti(void)
+SDC4HitMulti()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(1,2);
@@ -1755,7 +1755,7 @@ SDC4HitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SDC5TDCTOT(void)
+SDC5TDCTOT()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(1, 2);
@@ -1792,7 +1792,7 @@ SDC5TDCTOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SDC5HitMulti(void)
+SDC5HitMulti()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(1,2);
@@ -1831,7 +1831,7 @@ SDC5HitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-HitPatternBeam(void)
+HitPatternBeam()
 {
   std::vector<Int_t> hist_id = {
     HistMaker::getUniqueID(kBH1,  0, kHitPat),
@@ -1856,19 +1856,21 @@ HitPatternBeam(void)
 
 //_____________________________________________________________________________
 TCanvas*
-HitPatternScat(void)
+HitPatternScat()
 {
   std::vector<Int_t> hist_id = {
-    HistMaker::getUniqueID(kHTOF, 0, kHitPat),
     HistMaker::getUniqueID(kSDC1, 0, kHitPat, 3),
-    HistMaker::getUniqueID(kSDC2, 0, kHitPat),
-    HistMaker::getUniqueID(kSCH, 0, kHitPat),
-    HistMaker::getUniqueID(kSDC3, 0, kHitPat),
+    HistMaker::getUniqueID(kSDC2, 0, kHitPat, 1),
+    HistMaker::getUniqueID(kSDC3, 0, kHitPat, 1),
+    HistMaker::getUniqueID(kSDC3, 0, kHitPat, 3),
+    HistMaker::getUniqueID(kSDC4, 0, kHitPat, 1),
     HistMaker::getUniqueID(kSDC4, 0, kHitPat, 3),
+    HistMaker::getUniqueID(kSDC5, 0, kHitPat, 1),
+    HistMaker::getUniqueID(kSDC5, 0, kHitPat, 3),
     HistMaker::getUniqueID(kTOF, 0, kHitPat),
-    HistMaker::getUniqueID(kBVH, 0, kHitPat),
-    HistMaker::getUniqueID(kLAC, 0, kHitPat),
-    HistMaker::getUniqueID(kWC, 0, kHitPat)
+    HistMaker::getUniqueID(kAC1, 0, kHitPat),
+    HistMaker::getUniqueID(kWC,  0, kHitPat),
+    HistMaker::getUniqueID(kSFV, 0, kHitPat),
   };
 
   TCanvas *c1 = new TCanvas(__func__, __func__);
@@ -1885,7 +1887,7 @@ HitPatternScat(void)
 
 //_____________________________________________________________________________
 TCanvas*
-HitPatternE03(void)
+HitPatternE03()
 {
   std::vector<Int_t> hist_id_1 = {
     HistMaker::getUniqueID(kBH1,  0, kHitPat),
@@ -1933,7 +1935,7 @@ HitPatternE03(void)
 
 //_____________________________________________________________________________
 TCanvas*
-HitPatternE40(void)
+HitPatternE40()
 {
   std::vector<Int_t> id = {
     HistMaker::getUniqueID(kBH1,  0, kHitPat),
@@ -1992,7 +1994,7 @@ HitPatternE40(void)
 
 //_____________________________________________________________________________
 TCanvas*
-DAQ(void)
+DAQ()
 {
   std::vector<Int_t> hist_id = {
     HistMaker::getUniqueID(kDAQ, kEB, kHitPat),
@@ -2016,7 +2018,7 @@ DAQ(void)
 
 //_____________________________________________________________________________
 TCanvas*
-GeADC(void)
+GeADC()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 5);
@@ -2044,7 +2046,7 @@ GeADC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-GeCRM(void)
+GeCRM()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -2060,7 +2062,7 @@ GeCRM(void)
 
 //_____________________________________________________________________________
 TCanvas*
-GeTFA(void)
+GeTFA()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -2076,7 +2078,7 @@ GeTFA(void)
 
 //_____________________________________________________________________________
 TCanvas*
-GeRST(void)
+GeRST()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -2092,7 +2094,7 @@ GeRST(void)
 
 //_____________________________________________________________________________
 TCanvas*
-GeMultiCRM(void)
+GeMultiCRM()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -2108,7 +2110,7 @@ GeMultiCRM(void)
 
 //_____________________________________________________________________________
 TCanvas*
-GeMultiTFA(void)
+GeMultiTFA()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -2124,7 +2126,7 @@ GeMultiTFA(void)
 
 //_____________________________________________________________________________
 TCanvas*
-GeTFACRM(void)
+GeTFACRM()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -2140,7 +2142,7 @@ GeTFACRM(void)
 
 //_____________________________________________________________________________
 TCanvas*
-GeTFAADC(void)
+GeTFAADC()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -2156,7 +2158,7 @@ GeTFAADC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BGOTDC(void)
+BGOTDC()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(8, 6);
@@ -2171,7 +2173,7 @@ BGOTDC(void)
 }
 
 //_____________________________________________________________________________
-TCanvas* GeRSTADC(void)
+TCanvas* GeRSTADC()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 4);
@@ -2187,7 +2189,7 @@ TCanvas* GeRSTADC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-FHT1TDC(void)
+FHT1TDC()
 {
   const int FHTOffset = 200;
 
@@ -2215,7 +2217,7 @@ FHT1TDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-FHT1TOT(void)
+FHT1TOT()
 {
   const int FHTOffset = 200;
 
@@ -2243,7 +2245,7 @@ FHT1TOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-FHT1HitMulti(void)
+FHT1HitMulti()
 {
   const int FHTOffset = 200;
 
@@ -2272,7 +2274,7 @@ FHT1HitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-FHT2TDC(void)
+FHT2TDC()
 {
   const int FHTOffset = 200;
 
@@ -2300,7 +2302,7 @@ FHT2TDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-FHT2TOT(void)
+FHT2TOT()
 {
   const int FHTOffset = 200;
 
@@ -2328,7 +2330,7 @@ FHT2TOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-FHT2HitMulti(void)
+FHT2HitMulti()
 {
   const int FHTOffset = 200;
 
@@ -2357,7 +2359,7 @@ FHT2HitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTTDC(void)
+CFTTDC()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2372,7 +2374,7 @@ CFTTDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTTDC2D(void)
+CFTTDC2D()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2387,7 +2389,7 @@ CFTTDC2D(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTTOT(void)
+CFTTOT()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2402,7 +2404,7 @@ CFTTOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTTOT2D(void)
+CFTTOT2D()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2417,7 +2419,7 @@ CFTTOT2D(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTHighGain(void)
+CFTHighGain()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2432,7 +2434,7 @@ CFTHighGain(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTHighGain2D(void)
+CFTHighGain2D()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2447,7 +2449,7 @@ CFTHighGain2D(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTLowGain(void)
+CFTLowGain()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2462,7 +2464,7 @@ CFTLowGain(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTLowGain2D(void)
+CFTLowGain2D()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2477,7 +2479,7 @@ CFTLowGain2D(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTPedestal(void)
+CFTPedestal()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2492,7 +2494,7 @@ CFTPedestal(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTPedestal2D(void)
+CFTPedestal2D()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2507,7 +2509,7 @@ CFTPedestal2D(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTHitPat(void)
+CFTHitPat()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2526,7 +2528,7 @@ CFTHitPat(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTMulti(void)
+CFTMulti()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2545,7 +2547,7 @@ CFTMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTClusterHighGain(void)
+CFTClusterHighGain()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2560,7 +2562,7 @@ CFTClusterHighGain(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTClusterHighGain2D(void)
+CFTClusterHighGain2D()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2575,7 +2577,7 @@ CFTClusterHighGain2D(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTClusterLowGain(void)
+CFTClusterLowGain()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2590,7 +2592,7 @@ CFTClusterLowGain(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTClusterLowGain2D(void)
+CFTClusterLowGain2D()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2605,7 +2607,7 @@ CFTClusterLowGain2D(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTClusterTDC(void)
+CFTClusterTDC()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2620,7 +2622,7 @@ CFTClusterTDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-CFTClusterTDC2D(void)
+CFTClusterTDC2D()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2635,7 +2637,7 @@ CFTClusterTDC2D(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BGOFADC(void)
+BGOFADC()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(6, 4);
@@ -2652,7 +2654,7 @@ BGOFADC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BGOADC(void)
+BGOADC()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(6, 4);
@@ -2672,7 +2674,7 @@ BGOADC(void)
 
 //_____________________________________________________________________________
 // TCanvas*
-// BGOTDC(void)
+// BGOTDC()
 // {
 //   TCanvas *c1 = new TCanvas(__func__, __func__);
 //   c1->Divide(6, 4);
@@ -2688,7 +2690,7 @@ BGOADC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BGOADCTDC2D(void)
+BGOADCTDC2D()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(2, 2);
@@ -2708,7 +2710,7 @@ BGOADCTDC2D(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BGOHitMulti(void)
+BGOHitMulti()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4, 2);
@@ -2741,7 +2743,7 @@ BGOHitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-PiIDTDC(void)
+PiIDTDC()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(8, 4);
@@ -2757,7 +2759,7 @@ PiIDTDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-PiIDHighGain(void)
+PiIDHighGain()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(8, 4);
@@ -2777,7 +2779,7 @@ PiIDHighGain(void)
 
 //_____________________________________________________________________________
 TCanvas*
-PiIDLowGain(void)
+PiIDLowGain()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(8, 4);
@@ -2797,7 +2799,7 @@ PiIDLowGain(void)
 
 //_____________________________________________________________________________
 TCanvas*
-PiIDHitMulti(void)
+PiIDHitMulti()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(2, 2);
@@ -2819,7 +2821,7 @@ PiIDHitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-HitPatternE07(void)
+HitPatternE07()
 {
   std::vector<Int_t> id = {
     HistMaker::getUniqueID(kBH1,  0, kHitPat),
@@ -2845,7 +2847,7 @@ HitPatternE07(void)
 
 //_____________________________________________________________________________
 TCanvas*
-EMC(void)
+EMC()
 {
   Int_t id = HistMaker::getUniqueID(kEMC, 0, kXYpos);
   TH1 *h = GHist::get(id);
@@ -2859,7 +2861,7 @@ EMC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SSD1ADCTDC(void)
+SSD1ADCTDC()
 {
   Int_t id[kAorT] = {
     HistMaker::getUniqueID(kSSD1, 0, kADC2D),
@@ -2881,7 +2883,7 @@ SSD1ADCTDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SSD2ADCTDC(void)
+SSD2ADCTDC()
 {
   Int_t id[kAorT] = {
     HistMaker::getUniqueID(kSSD2, 0, kADC2D),
@@ -2903,7 +2905,7 @@ SSD2ADCTDC(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SSD1HitMulti(void)
+SSD1HitMulti()
 {
   Int_t id[kAorT] = {
     HistMaker::getUniqueID(kSSD1, 0, kHitPat),
@@ -2925,7 +2927,7 @@ SSD1HitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SSD2HitMulti(void)
+SSD2HitMulti()
 {
   Int_t id[kAorT] = {
     HistMaker::getUniqueID(kSSD2, 0, kHitPat),
@@ -2947,7 +2949,7 @@ SSD2HitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SSD1CHitMulti(void)
+SSD1CHitMulti()
 {
   Int_t id[kAorT] = {
     HistMaker::getUniqueID(kSSD1, 0, kHitPat),
@@ -2971,7 +2973,7 @@ SSD1CHitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SSD2CHitMulti(void)
+SSD2CHitMulti()
 {
   Int_t id[kAorT] = {
     HistMaker::getUniqueID(kSSD2, 0, kHitPat),
@@ -2995,7 +2997,7 @@ SSD2CHitMulti(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SSD1dETime(void)
+SSD1dETime()
 {
   std::vector<Int_t> id = {
     HistMaker::getUniqueID(kSSD1, 0, kDeltaE),
@@ -3019,7 +3021,7 @@ SSD1dETime(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SSD2dETime(void)
+SSD2dETime()
 {
   std::vector<Int_t> id = {
     HistMaker::getUniqueID(kSSD2, 0, kDeltaE),
@@ -3043,7 +3045,7 @@ SSD2dETime(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SSD12Chisqr(void)
+SSD12Chisqr()
 {
   std::vector<Int_t> id = {
     HistMaker::getUniqueID(kSSD1, 0, kChisqr),
@@ -3065,7 +3067,7 @@ SSD12Chisqr(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BcOutEfficiency(void)
+BcOutEfficiency()
 {
   std::vector<Int_t> hist_id = {
     HistMaker::getUniqueID(kBC3, 0, kMulti, NumOfLayersBC3),
@@ -3089,13 +3091,14 @@ BcOutEfficiency(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SdcInOutEfficiency(void)
+SdcInOutEfficiency()
 {
   std::vector<Int_t> hist_id = {
     HistMaker::getUniqueID(kSDC1, 0, kMulti, NumOfLayersSDC1),
     HistMaker::getUniqueID(kSDC2, 0, kMulti, NumOfLayersSDC2),
     HistMaker::getUniqueID(kSDC3, 0, kMulti, NumOfLayersSDC3),
-    HistMaker::getUniqueID(kSDC4, 0, kMulti, NumOfLayersSDC4)
+    HistMaker::getUniqueID(kSDC4, 0, kMulti, NumOfLayersSDC4),
+    HistMaker::getUniqueID(kSDC5, 0, kMulti, NumOfLayersSDC5)
   };
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(1, hist_id.size());
@@ -3139,12 +3142,22 @@ SdcInOutEfficiency(void)
     h2->Draw();
     h1->Draw("same");
   }
+  c1->cd(5)->Divide(NumOfLayersSDC5, 1);
+  for(Int_t i=0; i<NumOfLayersSDC5; ++i){
+    c1->cd(5)->cd(i+1);
+    auto h1 = GHist::get(hist_id[4]+i+1);
+    auto h2 = GHist::get(hist_id[4]+i+11);
+    if(!h1 || !h2) continue;
+    h2->GetXaxis()->SetRangeUser(0, 20);
+    h2->Draw();
+    h1->Draw("same");
+  }
   return c1;
 }
 
 //_____________________________________________________________________________
 TCanvas*
-CFTEfficiency(void)
+CFTEfficiency()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4,4);
@@ -3163,7 +3176,7 @@ CFTEfficiency(void)
 
 //_____________________________________________________________________________
 TCanvas*
-SSDEfficiency(void)
+SSDEfficiency()
 {
   std::vector<Int_t> id = {
     HistMaker::getUniqueID(kSSD1, 0, kMulti),
@@ -3185,7 +3198,54 @@ SSDEfficiency(void)
 
 //_____________________________________________________________________________
 TCanvas*
-BFTSCHTOT(void)
+BFTTOT()
+{
+  auto c1 = new TCanvas(__func__, __func__);
+  c1->Divide(2, 1);
+  std::vector<Int_t> hist_id = {
+    HistMaker::getUniqueID(kBFT, 0, kADC, 1),
+    HistMaker::getUniqueID(kBFT, 0, kADC, 2),
+  };
+  for(Int_t i=0, n=hist_id.size(); i<n; ++i){
+    c1->cd(i+1);
+    auto h = GHist::get(hist_id[i]);
+    if(!h) continue;
+    h->GetXaxis()->SetRangeUser(-20, 100);
+    h->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+BFTAFTTOT()
+{
+  auto c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 2);
+  std::vector<Int_t> hist_id = {
+    HistMaker::getUniqueID(kBFT, 0, kADC, 1),
+    HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+1),
+    HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+2),
+    HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+3),
+    HistMaker::getUniqueID(kBFT, 0, kADC, 2),
+    HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+4),
+    HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+5),
+    HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+6)
+  };
+  for(Int_t i=0, n=hist_id.size(); i<n; ++i){
+    c1->cd(i+1);
+    auto h = GHist::get(hist_id[i]);
+    if(!h) continue;
+    h->GetXaxis()->SetRangeUser(-20, 100);
+    h->Draw();
+  }
+
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+BFTSCHTOT()
 {
   auto c1 = new TCanvas(__func__, __func__);
   c1->Divide(3, 1);
@@ -3207,7 +3267,7 @@ BFTSCHTOT(void)
 
 //_____________________________________________________________________________
 // TCanvas*
-// BFTSFTSCHTOT(void)
+// BFTSFTSCHTOT()
 // {
 //   TCanvas *c1 = new TCanvas(__func__, __func__);
 //   c1->Divide(4,2);
@@ -3233,7 +3293,7 @@ BFTSCHTOT(void)
 
 //_____________________________________________________________________________
 TCanvas*
-FHTTOT(void)
+FHTTOT()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(4,2);
@@ -3310,7 +3370,7 @@ BeamProfileXY(ParticleType p)
 
 //_____________________________________________________________________________
 TCanvas*
-BeamProfileFF(void)
+BeamProfileFF()
 {
   TCanvas *c1 = new TCanvas(__func__, __func__);
   c1->Divide(2, 2);
@@ -3346,8 +3406,554 @@ BeamEnvelope(ParticleType p)
 }
 
 //_____________________________________________________________________________
+TCanvas*
+AFTTDCU()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kTDC, 0);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Draw();
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("TDC_#U_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTTDCD()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kTDC, NumOfPlaneAFT);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Draw();
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("TDC_#D_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTTOTU()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kTOT, 0);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Draw();
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("TOT_#U_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTTOTD()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kTOT, NumOfPlaneAFT);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Draw();
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("TOT_#D_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTHGU()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kHighGain, 0);
+  Int_t cid = HistMaker::getUniqueID(kAFT, 0, kHighGain, 100);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Rebin(4);
+    h->Draw();
+    TH1 *hh = (TH1*)GHist::get(++cid);
+    if(!hh) continue;
+    hh->Rebin(4);
+    hh->SetLineColor(kRed);
+    hh->Draw("same");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("HG_#U_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTHGD()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kHighGain, NumOfPlaneAFT);
+  Int_t cid = HistMaker::getUniqueID(kAFT, 0, kHighGain, NumOfPlaneAFT+100);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Rebin(4);
+    h->Draw();
+    TH1 *hh = (TH1*)GHist::get(++cid);
+    if(!hh) continue;
+    hh->Rebin(4);
+    hh->SetLineColor(kRed);
+    hh->Draw("same");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("HG_#D_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTLGU()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kLowGain, 0);
+  Int_t cid = HistMaker::getUniqueID(kAFT, 0, kLowGain, 100);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Rebin(4);
+    h->Draw();
+    TH1 *hh = (TH1*)GHist::get(++cid);
+    if(!hh) continue;
+    hh->Rebin(4);
+    hh->SetLineColor(kRed);
+    hh->Draw("same");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("LG_#U_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTLGD()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kLowGain, NumOfPlaneAFT);
+  Int_t cid = HistMaker::getUniqueID(kAFT, 0, kLowGain, NumOfPlaneAFT+100);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Rebin(4);
+    h->Draw();
+    TH1 *hh = (TH1*)GHist::get(++cid);
+    if(!hh) continue;
+    hh->Rebin(4);
+    hh->SetLineColor(kRed);
+    hh->Draw("same");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("LG_#D_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTHitPatX()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t cid = HistMaker::getUniqueID(kAFT, 0, kHitPat, 101);
+  c1->Divide(6, 3);
+  for(Int_t l=0; l<NumOfPlaneAFT; l++){
+    if(l%4 != 0 && l%4 != 1) continue;
+    c1->cd(l/2+1+l%2);
+    TH2 *h = (TH2*)GHist::get(cid+kUorD*NumOfPlaneAFT+l);
+    if(h) h->Draw("colz");
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTHitPatY()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t cid = HistMaker::getUniqueID(kAFT, 0, kHitPat, 101);
+  c1->Divide(6, 3);
+  for(Int_t l=0; l<NumOfPlaneAFT; l++){
+    if(l%4 != 2 && l%4 != 3) continue;
+    c1->cd(l/2+l%2);
+    TH2 *h = (TH2*)GHist::get(cid+kUorD*NumOfPlaneAFT+l);
+    if(h) h->Draw("colz");
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTTDCU2D()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kTDC2D, 0);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("TDC_#U_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw("colz");
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTTDCD2D()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kTDC2D, NumOfPlaneAFT);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("TDC_#D_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw("colz");
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTTOTU2D()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kTOT2D, 0);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("TOT_#U_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw("colz");
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTTOTD2D()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kTOT2D, NumOfPlaneAFT);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("TOT_#D_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw("colz");
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTHGU2D()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kHighGain2D, 0);
+  // Int_t cid = HistMaker::getUniqueID(kAFT, 0, kHighGain2D, 100);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    // h->Rebin2D(4);
+    h->Draw("colz");
+    // TH1 *hh = (TH1*)GHist::get(++cid);
+    // if(!hh) continue;
+    // hh->Rebin(4);
+    // hh->SetLineColor(kRed);
+    // hh->Draw("same");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("HG_#U_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTHGD2D()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kHighGain2D, NumOfPlaneAFT);
+  // Int_t cid = HistMaker::getUniqueID(kAFT, 0, kHighGain2D, NumOfPlaneAFT+100);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    // h->Rebin2D(4);
+    h->Draw("colz");
+    // TH1 *hh = (TH1*)GHist::get(++cid);
+    // if(!hh) continue;
+    // hh->Rebin(4);
+    // hh->SetLineColor(kRed);
+    // hh->Draw("same");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("HG_#D_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTLGU2D()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kLowGain2D, 0);
+  // Int_t cid = HistMaker::getUniqueID(kAFT, 0, kLowGain2D, 100);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    // h->Rebin2D(4);
+    h->Draw("colz");
+    // TH1 *hh = (TH1*)GHist::get(++cid);
+    // if(!hh) continue;
+    // hh->Rebin(4);
+    // hh->SetLineColor(kRed);
+    // hh->Draw("same");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("LG_#U_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTLGD2D()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kLowGain2D, NumOfPlaneAFT);
+  // Int_t cid = HistMaker::getUniqueID(kAFT, 0, kLowGain2D, NumOfPlaneAFT+100);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    // h->Rebin2D(4);
+    h->Draw("colz");
+    // TH1 *hh = (TH1*)GHist::get(++cid);
+    // if(!hh) continue;
+    // hh->Rebin(4);
+    // hh->SetLineColor(kRed);
+    // hh->Draw("same");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("LG_#D_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTMulti()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kMulti, 0);
+  c1->Divide(8, 5);
+  for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  for(Int_t i=0; i<4; ++i){
+    c1->cd(NumOfPlaneAFT+i+1);
+    const TString layer_name = NameOfPlaneAFT[i%4];
+    TString title = Form("Multi_%s", layer_name.Data());
+    double xpos = 0.1;
+    double ypos = 0.5;
+    TLatex *text = new TLatex(xpos, ypos, title);
+    text->SetTextSize(0.15);
+    text->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+AFTEfficiency()
+{
+  TCanvas* c1 = new TCanvas(__func__, __func__);
+  Int_t id = HistMaker::getUniqueID(kAFT, 0, kMulti, NumOfPlaneAFT);
+  c1->Divide(6, 3);
+  for(Int_t i=0; i<NumOfPlaneAFT/2; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get(++id);
+    if(!h) continue;
+    h->Draw("colz");
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
 void
-UpdateBcOutEfficiency(void)
+UpdateBcOutEfficiency()
 {
   static auto c1 = dynamic_cast<TCanvas*>(gROOT->FindObject("BcOutEfficiency"));
   if(!c1)
@@ -3388,17 +3994,18 @@ UpdateBcOutEfficiency(void)
 
 //_____________________________________________________________________________
 void
-UpdateSdcInOutEfficiency(void)
+UpdateSdcInOutEfficiency()
 {
   static auto c1 = dynamic_cast<TCanvas*>(gROOT->FindObject("SdcInOutEfficiency"));
   if(!c1)
     return;
   static std::vector<TString> name = {
-    "SDC1_Multi_v0", "SDC1_Multi_v1", "SDC1_Multi_x0", "SDC1_Multi_x1",
-    "SDC1_Multi_u0", "SDC1_Multi_u1",
-    "SDC2_Multi_x0", "SDC2_Multi_x1", "SDC2_Multi_y0", "SDC2_Multi_y1",
+    "SDC1_Multi_u0", "SDC1_Multi_u1", "SDC1_Multi_x0", "SDC1_Multi_x1",
+    "SDC1_Multi_v0", "SDC1_Multi_v1",
+    "SDC2_Multi_v0", "SDC2_Multi_v1", "SDC2_Multi_u0", "SDC2_Multi_u1",
     "SDC3_Multi_x0", "SDC3_Multi_x1", "SDC3_Multi_y0", "SDC3_Multi_y1",
-    "SDC4_Multi_y0", "SDC4_Multi_y1", "SDC4_Multi_x0", "SDC4_Multi_x1"
+    "SDC4_Multi_y0", "SDC4_Multi_y1", "SDC4_Multi_x0", "SDC4_Multi_x1",
+    "SDC5_Multi_y0", "SDC5_Multi_y1", "SDC5_Multi_x0", "SDC5_Multi_x1"
   };
   static std::vector<TLatex*> tex(name.size()*2);
   for(Int_t i=0, n=name.size(); i<n; ++i){
@@ -3410,6 +4017,8 @@ UpdateSdcInOutEfficiency(void)
       c1->cd(3)->cd(i+1-NumOfLayersSDC1-NumOfLayersSDC2);
     else if(i< NumOfLayersSDC1+NumOfLayersSDC2+NumOfLayersSDC3+NumOfLayersSDC4)
       c1->cd(4)->cd(i+1-NumOfLayersSDC1-NumOfLayersSDC2-NumOfLayersSDC3);
+    else
+      c1->cd(5)->cd(i+1-NumOfLayersSDC1-NumOfLayersSDC2-NumOfLayersSDC3-NumOfLayersSDC4);
     auto h1 = dynamic_cast<TH1*>(gPad->FindObject(name[i]+"_wTDC"));
     TString n2 = name[i]+"_wTDC";
     n2.ReplaceAll("_Multi", "_CMulti");
@@ -3438,7 +4047,7 @@ UpdateSdcInOutEfficiency(void)
 
 //_____________________________________________________________________________
 void
-UpdateCFTEfficiency(void)
+UpdateCFTEfficiency()
 {
   static TCanvas *c1 = (TCanvas*)gROOT->FindObject("CFTEfficiency");
   if(!c1)
@@ -3472,7 +4081,44 @@ UpdateCFTEfficiency(void)
 
 //_____________________________________________________________________________
 void
-UpdateSSDEfficiency(void)
+UpdateAFTEfficiency()
+{
+  static TCanvas *c1 = (TCanvas*)gROOT->FindObject("AFTEfficiency");
+  if(!c1)
+    return;
+  static std::vector<TString> name = {
+    "AFT_Multi_1_X", "AFT_Multi_1_Y",
+    "AFT_Multi_2_X", "AFT_Multi_2_Y",
+    "AFT_Multi_3_X", "AFT_Multi_3_Y",
+    "AFT_Multi_4_X", "AFT_Multi_4_Y",
+    "AFT_Multi_5_X", "AFT_Multi_5_Y",
+    "AFT_Multi_6_X", "AFT_Multi_6_Y",
+    "AFT_Multi_7_X", "AFT_Multi_7_Y",
+    "AFT_Multi_8_X", "AFT_Multi_8_Y",
+    "AFT_Multi_9_X", "AFT_Multi_9_Y",
+  };
+  static std::vector<TText*> tex(name.size());
+
+  for(Int_t i=0, n=name.size(); i<n; ++i){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)gPad->FindObject(name[i]);
+    if(!h){ std::cout << "!?!?!?" << std::endl; continue; }
+    Double_t zero = h->GetBinContent(1);
+    Double_t all  = h->GetEntries();
+    Double_t eff  = 1. - zero/all;
+    if(tex[i]) delete tex[i];
+    tex[i] = new TText;
+    tex[i]->SetNDC();
+    tex[i]->SetTextSize(0.130);
+    tex[i]->SetText(0.300,0.600,Form("eff. %.3f",
+				     eff));
+    tex[i]->Draw();
+  }
+}
+
+//_____________________________________________________________________________
+void
+UpdateSSDEfficiency()
 {
   static TCanvas *c1 = (TCanvas*)gROOT->FindObject("SSDEfficiency");
   if(!c1)
@@ -3501,7 +4147,7 @@ UpdateSSDEfficiency(void)
 
 //_____________________________________________________________________________
 void
-UpdateT0PeakFitting(void)
+UpdateT0PeakFitting()
 {
   {
     static auto c1 = dynamic_cast<TCanvas*>(gROOT->FindObject("T0"));
@@ -3538,16 +4184,62 @@ UpdateT0PeakFitting(void)
 
 //_____________________________________________________________________________
 void
-UpdateTOTPeakFitting(void)
+UpdateTOTPeakFitting()
 {
-  UpdateTOTPeakFittingE03();
+  UpdateTOTPeakFittingE70();
+  // UpdateTOTPeakFittingE03();
   // UpdateTOTPeakFittingE03();
   // UpdateTOTPeakFittingE40();
 }
 
 //_____________________________________________________________________________
 void
-UpdateTOTPeakFittingE03(void)
+UpdateTOTPeakFittingE70()
+{
+  static auto c1 = dynamic_cast<TCanvas*>(gROOT->FindObject("BFTAFTTOT"));
+  if(!c1)
+    return;
+  static std::vector<TString> name = {
+    "BFT_TOT_U", "AFT_TOT_X1-3", "AFT_TOT_X4-6", "AFT_TOT_X7-9",
+    "BFT_TOT_D", "AFT_TOT_Y1-3", "AFT_TOT_Y4-6", "AFT_TOT_Y7-9",
+  };
+  static std::vector<Double_t> optval = {
+    gUser.GetParameter("TotRefBFT"), gUser.GetParameter("TotRefAFT"),
+    gUser.GetParameter("TotRefAFT"), gUser.GetParameter("TotRefAFT"),
+    gUser.GetParameter("TotRefBFT"), gUser.GetParameter("TotRefAFT"),
+    gUser.GetParameter("TotRefAFT"), gUser.GetParameter("TotRefAFT"),
+  };
+  static std::vector<TLine*> line(name.size());
+  static std::vector<TText*> tex(name.size());
+  for(Int_t i=0, n=name.size(); i<n; ++i){
+    c1->cd(i+1);
+    auto h = dynamic_cast<TH1*>(gPad->FindObject(name[i]));
+    TF1 f("f", "gaus", 0., 100.);
+    Double_t p = h->GetBinCenter(h->GetMaximumBin());
+    if(p < 20.) p = optval[i];
+    Double_t w = 10.;
+    for(Int_t ifit=0; ifit<3; ++ifit){
+      Double_t fmin = p - w;
+      Double_t fmax = p + w;
+      h->Fit("f", "Q", "", fmin, fmax);
+      p = f.GetParameter(1);
+      w = f.GetParameter(2) * 1.;
+    }
+    if(tex[i]) delete tex[i];
+    tex[i] = new TText;
+    tex[i]->SetNDC();
+    tex[i]->SetTextSize(0.100);
+    tex[i]->SetText(0.200, 0.750, Form("%.2f", p));
+    tex[i]->Draw();
+    if(line[i]) delete line[i];
+    line[i] = new TLine(optval[i], 0., optval[i], h->GetMaximum());
+    line[i]->Draw();
+  }
+}
+
+//_____________________________________________________________________________
+void
+UpdateTOTPeakFittingE03()
 {
   static auto c1 = dynamic_cast<TCanvas*>(gROOT->FindObject("BFTSCHTOT"));
   if(!c1)
@@ -3591,7 +4283,7 @@ UpdateTOTPeakFittingE03(void)
 
 //_____________________________________________________________________________
 void
-UpdateTOTPeakFittingE40(void)
+UpdateTOTPeakFittingE40()
 {
   {
     static TCanvas *c1 = (TCanvas*)gROOT->FindObject("BFTSFTSCHTOT");

@@ -29,22 +29,25 @@ dispAFTTot( void )
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
     c->Divide(3, 2);
-    int aft_tot_id  = HistMaker::getUniqueID( kAFT, 0, kTOT, 1 );
-    int aft_ctot_id = HistMaker::getUniqueID( kAFT, 0, kTOT, 101 );
-    TH1D *h_X[3];
-    TH1D *h_Y[3];
-    for( int i = 0; i < 3; i++ ){
-      h_X[i] = new TH1D( name[i], name[i], 150, 0, 150);
-      h_Y[i] = new TH1D( name[i+3], name[i+3], 150, 0, 150);
+    Int_t aft_tot_id  = HistMaker::getUniqueID(kAFT, 0, kTOT);
+    TH1* h_X[3];
+    TH1* h_Y[3];
+    for(Int_t i=0; i<3; i++){
+      std::cout << aft_tot_id + kUorD*NumOfPlaneAFT + i + 0 << std::endl;
+      h_X[i] = (TH1*)GHist::get(aft_tot_id + kUorD*NumOfPlaneAFT + i + 0);
+      h_Y[i] = (TH1*)GHist::get(aft_tot_id + kUorD*NumOfPlaneAFT + i + 3);
+      // if(!h_X[i] || !h_Y[i]) return;
+      // h_X[i]->Reset();
+      // h_Y[i]->Reset();
     }
-    for( int ud=0; ud<2; ud++ ){
-      for( int i=0; i<NumOfPlaneAFT; ++i ){
-	TH1 *h = (TH1*)GHist::get( aft_tot_id + i );
-	if( !h ) continue;
-	if( i%4 == 0 || i%4 == 1 ) h_X[i/12]->Add(h);
-	if( i%4 == 2 || i%4 == 3 ) h_Y[i/12]->Add(h);
-      }
-    }
+    // for( int ud=0; ud<2; ud++ ){
+    //   for( int i=0; i<NumOfPlaneAFT; ++i ){
+    // 	TH1 *h = (TH1*)GHist::get( aft_tot_id + i +ud*NumOfPlaneAFT);
+    // 	// if( !h ) continue;
+    // 	if( i%4 == 0 || i%4 == 1 ) h_X[i/12]->Add(h);
+    // 	if( i%4 == 2 || i%4 == 3 ) h_Y[i/12]->Add(h);
+    //   }
+    // }
 
     for( int i = 0; i < 3; i++ ){
       {

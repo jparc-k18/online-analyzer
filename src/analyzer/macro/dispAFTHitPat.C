@@ -56,6 +56,67 @@ dispAFTHitPat( void )
     }
   }
 
+    // draw Hitpattern
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
+    int aft_hit_id = HistMaker::getUniqueID( kAFT, 0, kHitPat, 1 );
+    c->Clear();
+    c->Divide(6, 3);
+    for( int l = 0; l < NumOfPlaneAFT; l++ ){
+      if( l%4 != 0 && l%4 != 1 ) continue;
+      c->cd(l/2+1+l%2);
+      TH2 *h = (TH2*)GHist::get( aft_hit_id+l );
+      if( h ) h->Draw("colz");
+    }
+    c->Update();
+  }
+
+    // draw Hitpattern
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c6");
+    int aft_hit_id = HistMaker::getUniqueID( kAFT, 0, kHitPat, 1 );
+    c->Clear();
+    c->Divide(6, 3);
+    for( int l = 0; l < NumOfPlaneAFT; l++ ){
+      if( l%4 != 0 && l%4 != 1 ) continue;
+      c->cd(l/2+1+l%2);
+      TH2 *h = (TH2*)GHist::get( aft_hit_id+NumOfPlaneAFT+l );
+      if( h ) h->Draw("colz");
+    }
+    c->Update();
+  }
+
+    // draw Hitpattern
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c7");
+    int aft_hit_id = HistMaker::getUniqueID( kAFT, 0, kHitPat, 1 );
+    c->Clear();
+    c->Divide(6, 3);
+    for( int l = 0; l < NumOfPlaneAFT; l++ ){
+      if( l%4 != 2 && l%4 != 3 ) continue;
+      c->cd(l/2+l%2);
+      TH2 *h = (TH2*)GHist::get( aft_hit_id+l );
+      if( h ) h->Draw("colz");
+    }
+    c->Update();
+  }
+
+    // draw Hitpattern
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c8");
+    int aft_hit_id = HistMaker::getUniqueID( kAFT, 0, kHitPat, 1 );
+    c->Clear();
+    c->Divide(6, 3);
+    for( int l = 0; l < NumOfPlaneAFT; l++ ){
+      if( l%4 != 2 && l%4 != 3 ) continue;
+      c->cd(l/2+l%2);
+      TH2 *h = (TH2*)GHist::get( aft_hit_id+NumOfPlaneAFT+l );
+      if( h ) h->Draw("colz");
+    }
+    c->Update();
+  }
+
+
 
   // You must write these lines for the thread safe
   // ----------------------------------

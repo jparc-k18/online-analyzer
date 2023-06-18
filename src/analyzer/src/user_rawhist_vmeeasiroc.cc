@@ -213,6 +213,7 @@ process_event( void )
     int vmeeasiroc_lg_2d_id   = gHist.getSequentialID(kVMEEASIROC, 0, kLowGain, 11);
     int vmeeasiroc_clg_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kLowGain, 101);
     int vmeeasiroc_multihit_2d_id = gHist.getSequentialID(kVMEEASIROC, 0, kMultiHitTdc, 21);
+    int vmeeasiroc_hit_id     = gHist.getSequentialID(kVMEEASIROC, 0, kHitPat,   1);
 
     int vmeeasiroc_hgvstot_2d_id  = gHist.getSequentialID(kVMEEASIROC, 0, kHighGainvsTOT, 31);
 
@@ -233,6 +234,7 @@ process_event( void )
 	{ // tdc
 	  int nhit_l = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading );
 	  bool flag_hit_wt = false;
+	  if( nhit_l!=0 ) hptr_array[vmeeasiroc_hit_id+l]->Fill(seg);
 	  for(int m = 0; m<nhit_l; ++m){
 	    int tdc = gUnpacker.get(k_device, plane, seg, 0, k_leading, m);
 	    hptr_array[vmeeasiroc_t_2d_id+l]->Fill(seg, tdc);

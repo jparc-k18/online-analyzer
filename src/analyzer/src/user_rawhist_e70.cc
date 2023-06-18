@@ -252,8 +252,9 @@ process_event()
       trigger_flag[trigger::kL1SpillOff] ||
       trigger_flag[trigger::kSpillOnEnd] ||
       trigger_flag[trigger::kSpillOffEnd];
-    hddaq::cerr << "#W Trigger flag is missing : "
-		<< trigger_flag << std::endl;
+    if(!l1_flag)
+      hddaq::cerr << "#W Trigger flag is missing : "
+		  << trigger_flag << std::endl;
 
 #if 0
     gUnpacker.dump_data_device(k_device);

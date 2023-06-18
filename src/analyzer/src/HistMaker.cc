@@ -1655,6 +1655,15 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       }
     }
 
+    // draw TOT for each MPPC vias
+    std::vector<TString> name = {
+      "AFT_TOT_X1-3", "AFT_TOT_X4-6", "AFT_TOT_X7-9",
+      "AFT_TOT_Y1-3", "AFT_TOT_Y4-6", "AFT_TOT_Y7-9"
+    };
+    for(Int_t i=0, n=name.size(); i<n; ++i){
+      sub_dir->Add(createTH1(++target_id, name[i], 150, 0, 150));
+    }
+
   // CTOT---------------------------------------------------------
     target_id = getUniqueID(kAFT, 0, kTOT, 100);
     sub_name = "CTOT";
@@ -8131,6 +8140,26 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
       sub_dir->Add(sub_sub_dir);
     }
     // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+    // Hit parttern -----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kHitPattern);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kVMEEASIROC, 0, kHitPat, 0);
+    const char* sub_name = "HitPat";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfPlaneVMEEASIROC; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
+			     "ch", ""));
+    }
     top_dir->Add(sub_dir);
   }
 

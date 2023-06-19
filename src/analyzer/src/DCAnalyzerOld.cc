@@ -183,10 +183,15 @@ void DCRHC::pushback( int DetectorID )
 //______________________________________________________________________________
 void DCRHC::pushback_BcOut( void )
 {
-  static const double MinTdcBC3 = gUser.GetParameter("BC3_TDC", 0);
-  static const double MaxTdcBC3 = gUser.GetParameter("BC3_TDC", 1);
-  static const double MinTdcBC4 = gUser.GetParameter("BC4_TDC", 0);
-  static const double MaxTdcBC4 = gUser.GetParameter("BC4_TDC", 1);
+  // static const double MinTdcBC3 = gUser.GetParameter("BC3_TDC", 0);
+  // static const double MaxTdcBC3 = gUser.GetParameter("BC3_TDC", 1);
+  // static const double MinTdcBC4 = gUser.GetParameter("BC4_TDC", 0);
+  // static const double MaxTdcBC4 = gUser.GetParameter("BC4_TDC", 1);
+
+  static const double MinTdcBC3 = gUser.GetParameter("TdcBC3", 0);
+  static const double MaxTdcBC3 = gUser.GetParameter("TdcBC3", 1);
+  static const double MinTdcBC4 = gUser.GetParameter("TdcBC4", 0);
+  static const double MaxTdcBC4 = gUser.GetParameter("TdcBC4", 1);
 
   for( int layer=0; layer<NumOfLayersBcOut; ++layer ){
       m_hitwire[layer].clear();

@@ -198,6 +198,8 @@ my_tgt_pwo	:= $(bin_dir)/pwo_hist
 my_obj_ktune_y2020      := $(core_obj) user_ktune_y2020.o $(gui_obj)
 my_tgt_ktune_y2020      := $(bin_dir)/ktune_y2020
 
+my_obj_ktune_e70      := $(core_obj) user_ktune_e70.o $(gui_obj)
+my_tgt_ktune_e70      := $(bin_dir)/ktune_e70
 
 
 #______________________________________________________________________________

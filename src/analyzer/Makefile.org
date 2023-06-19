@@ -202,6 +202,7 @@ my_obj_ktune_e70      := $(core_obj) user_ktune_e70.o $(gui_obj)
 my_tgt_ktune_e70      := $(bin_dir)/ktune_e70
 
 
+
 #______________________________________________________________________________
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_event_display) \
@@ -222,6 +223,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_jsroot_totmonitor) \
 	$(my_tgt_vme01debug) \
 	$(my_tgt_ktune_y2020) \
+	$(my_tgt_ktune_e70) \
 	$(core_dict_lib)
 #	$(my_old_tgt)
 
@@ -630,3 +632,11 @@ my_obj_ktune_y2020      := $(my_obj_ktune_y2020) \
 my_lib_ktune_y2020      := libmyktune_y2020.so
 $(eval $(call make-lib,$(my_lib_ktune_y2020),$(my_obj_ktune_y2020)))
 $(eval $(call make-gui-target,$(my_tgt_ktune_y2020),$(my_lib_ktune_y2020)))
+
+#______________________________________________________________________________
+my_obj_ktune_e70      := $(addprefix $(my_dir)/src/,$(my_obj_ktune_e70))
+my_obj_ktune_e70      := $(my_obj_ktune_e70) \
+		        $(my_dir)/dict/GuiPs_Dict.o
+my_lib_ktune_e70      := libmyktune_e70.so
+$(eval $(call make-lib,$(my_lib_ktune_e70),$(my_obj_ktune_e70)))
+$(eval $(call make-gui-target,$(my_tgt_ktune_e70),$(my_lib_ktune_e70)))

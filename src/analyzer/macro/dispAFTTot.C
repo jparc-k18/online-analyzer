@@ -67,9 +67,9 @@ dispAFTTot( void )
 	}
 	TLatex *text = new TLatex();
 	text->SetNDC();
-	text->SetTextSize(0.100);
-	text->SetText(0.500, 0.700, Form("%.2f", p));
-	text->Draw();
+	text->SetTextSize(0.07);
+	text->DrawLatex(0.500, 0.700, Form("%.1f", p));
+	text->DrawLatex(0.500, 0.630, Form("Ref : %.1f", TotRef));
 	auto l = new TLine( TotRef, 0, TotRef, h_X[i]->GetMaximum() );
 	l->SetLineColor(kRed);
 	l->Draw();
@@ -91,9 +91,9 @@ dispAFTTot( void )
 	}
 	TLatex *text = new TLatex();
 	text->SetNDC();
-	text->SetTextSize(0.100);
-	text->SetText(0.500, 0.700, Form("%.2f", p));
-	text->Draw();
+	text->SetTextSize(0.07);
+	text->DrawLatex(0.500, 0.700, Form("%.1f", p));
+	text->DrawLatex(0.500, 0.630, Form("Ref : %.1f", TotRef));
 	auto l = new TLine( TotRef, 0, TotRef, h_Y[i]->GetMaximum() );
 	l->SetLineColor(kRed);
 	l->Draw();

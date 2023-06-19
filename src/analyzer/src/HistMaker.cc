@@ -1998,6 +1998,60 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   //   top_dir->Add(sub_dir);
   // }
 
+  // TOT * TDC -----------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kTOTXTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kTOTXTDC, 0);
+    const char* sub_name = "TOTXTDC";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+
+  	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
+				150, 0, 150,
+				1024, 0, 1024,
+				"TOT [ch]", "TDC [ch]"));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC HighGain * TDC -----------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kHighGainXTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kAFT, 0, kHighGainXTDC, 0);
+    const char* sub_name = "HGXTDC";
+    // Add to the top directory
+    for(Int_t ud=0; ud<2; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+  	const char* title = NULL;
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+
+  	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
+  			      4096/8, 0, 4096,
+  			      1024, 0, 1024,
+  			      "HighGain [ch]", "TDC [ch]"));
+      }
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
   // ADC HighGain * TOT -----------------------------------------
   {
     TString strSubDir  = CONV_STRING(kHighGainXTOT);

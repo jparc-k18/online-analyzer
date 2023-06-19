@@ -251,6 +251,8 @@ process_event( void )
     int aft_clg_2d_id  = gHist.getSequentialID(kAFT, 0, kLowGain2D,  101);
     // int aft_pe_2d_id   = gHist.getSequentialID(kAFT, 0, kPede2D,       1);
 
+    int aft_tot_t_id = gHist.getSequentialID(kAFT, 0, kTOTXTDC, 1);
+    int aft_hg_t_id = gHist.getSequentialID(kAFT, 0, kHighGainXTDC, 1);
     int aft_hg_tot_id = gHist.getSequentialID(kAFT, 0, kHighGainXTOT, 1);
     int aft_lg_tot_id = gHist.getSequentialID(kAFT, 0, kLowGainXTOT,  1);
 
@@ -312,6 +314,11 @@ process_event( void )
 		if(tdc_min < tdc && tdc < tdc_max){ // hit flag
 		  flag_hit_wt[seg][ud] = true;
 		}
+		int nhit_hg = gUnpacker.get_entries(k_device, l, seg, ud, k_highgain);
+		if( nhit_hg != 0 ){
+		  int adc_hg = gUnpacker.get(k_device, l, seg, ud, k_highgain, 0);
+		  hptr_array[aft_hg_t_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg, tdc);
+		}
 	      }
 	    }
 	    if(flag_hit_wt[seg][ud]){
@@ -347,6 +354,7 @@ process_event( void )
 		int tot   = tdc - tdc_t;
 		hptr_array[aft_tot_id+ud*NumOfPlaneAFT+l]->Fill(tot);
 		hptr_array[aft_tot_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, tot);
+		hptr_array[aft_tot_t_id+ud*NumOfPlaneAFT+l]->Fill(tot, tdc);
 
 		if(l%4 == 0 || l%4 == 1)
 		  hptr_array[aft_tot_id+kUorD*NumOfPlaneAFT + l/12 + 0]->Fill(tot);

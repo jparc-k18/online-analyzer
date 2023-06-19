@@ -30,7 +30,7 @@ void effAFT()
       double xpos  = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
       double ypos  = h_wt->GetMaximum()*0.8;
       TLatex *text = new TLatex(xpos, ypos, Form("plane eff. %.2f", eff));
-      text->SetTextSize(0.08);
+      text->SetTextSize(0.06);
       text->Draw();
       c->Modified();
       c->Update();

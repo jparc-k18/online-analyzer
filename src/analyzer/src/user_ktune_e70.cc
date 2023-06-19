@@ -606,8 +606,16 @@ process_event( void )
     // Sequential ID
     static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
 
+    // TDC gate range
+    static const UInt_t tdc_min_bh1 = gUser.GetParameter("TdcBH1", 0);
+    static const UInt_t tdc_max_bh1 = gUser.GetParameter("TdcBH1", 1);
+    static const UInt_t tdc_min_bh2 = gUser.GetParameter("TdcBH2", 0);
+    static const UInt_t tdc_max_bh2 = gUser.GetParameter("TdcBH2", 1);
+
+
     // BH2
-    double t0  = -999;
+    //    double t0  = -999;
+    double t0  = 1e10;
     double ofs = 0;
     //    double ofs_bh2seg[8] = {+0.15,
     //			    +0.05,
@@ -617,15 +625,16 @@ process_event( void )
     //			    -1.05,
     //			    -0.90,
     //			    -0.85};
-    double ofs_bh2seg[8] = {1.00,
-			    1.00,
-			    1.00,
-			    1.00,
-			    1.00,
-			    1.00,
-			    1.00,
-			    1.00};
-    double ofs_bh1seg[11] = {1.20,
+    double ofs_bh2seg[8] = {0.00,
+			    0.00,
+			    0.00,
+			    0.00,
+			    0.00,
+			    0.00,
+			    0.00,
+			    0.00};
+    //  double ofs_bh1seg[11] = {1.20,
+    double ofs_bh1seg[11] = {0.0,
 			     0.00,
 			     0.00,
 			     0.00,
@@ -635,29 +644,59 @@ process_event( void )
 			     0.00};
 
     //int seg = 0;
-    for(int seg=0;seg<NumOfSegBH2; ++seg){
-      int nhitu = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
-      //int nhitd = gUnpacker.get_entries(k_d_bh2, 0, seg, k_d, k_tdc);
-      //if( nhitu != 0 ){
-      for(int multi=0; multi<nhitu; multi++){
-	int tdcu = gUnpacker.get(k_d_bh2, 0, seg, k_u, k_tdc, multi);
-	//int tdcd = gUnpacker.get(k_d_bh2, 0, seg, k_d, k_tdc);
-	if( tdcu != 0 ){
+    // for(int seg=0;seg<NumOfSegBH2; ++seg){
+    //   int nhitu = gUnpacker.get_entries(k_d_bh2, 0, seg, k_u, k_tdc);
+    //   int nhitd = gUnpacker.get_entries(k_d_bh2, 0, seg, k_d, k_tdc);
+    //   //if( nhitu != 0 ){
+    //   for(int multi=0; multi<nhitu; multi++){
+    // 	int tdcu = gUnpacker.get(k_d_bh2, 0, seg, k_u, k_tdc, multi);
+
+    // 	//int tdcd = gUnpacker.get(k_d_bh2, 0, seg, k_d, k_tdc);
+    // 	if( tdcu != 0 ){
+    // 	  HodoParamMan& hodoMan = HodoParamMan::GetInstance();
+    // 	  double bh2ut;
+    // 	  hodoMan.GetTime(cid_bh2, plid, seg, k_u, tdcu, bh2ut);
+    // 	  //hodoMan.GetTime(cid_bh2, plid, seg, k_d, tdcd, bh2dt);
+    // 	  if( fabs(bh2ut)<fabs(t0) ){
+    // 	    t0 = (bh2ut);
+    // 	    ofs=ofs_bh2seg[seg];
+    // 	    segBh2=seg;
+    // 	  }
+    // 	  if( -10 < bh2ut && bh2ut < 10 ){
+    // 	    nhbh2_flag++;
+    // 	  }
+    // 	}//if(tdc)
+    //   }// if(nhit)
+    // }
+    for(Int_t seg=0; seg<NumOfSegBH2; ++seg) {
+      Int_t nhitu = gUnpacker.get_entries(k_d_bh2, 0, seg, kU, k_tdc);
+      Int_t nhitd = gUnpacker.get_entries(k_d_bh2, 0, seg, kD, k_tdc);
+      for(Int_t mu=0; mu<nhitu; ++mu) {
+	auto tdcu = gUnpacker.get(k_d_bh2, 0, seg, kU, k_tdc, mu);
+	if (tdcu < tdc_min_bh2 || tdc_max_bh2 < tdcu) continue;
+	for(Int_t md=0; md<nhitd; ++md) {
+	  auto tdcd = gUnpacker.get(k_d_bh2, 0, seg, kD, k_tdc, md);
+	  if (tdcd < tdc_min_bh2 || tdc_max_bh2 < tdcd) continue;
 	  HodoParamMan& hodoMan = HodoParamMan::GetInstance();
-	  double bh2ut;
-	  hodoMan.GetTime(cid_bh2, plid, seg, k_u, tdcu, bh2ut);
-	  //hodoMan.GetTime(cid_bh2, plid, seg, k_d, tdcd, bh2dt);
-	  if( fabs(bh2ut)<fabs(t0) ){
-	    t0 = (bh2ut);
-	    ofs=ofs_bh2seg[seg];
+	  Double_t bh2ut, bh2dt;
+	  hodoMan.GetTime(cid_bh2, plid, seg, kU, tdcu, bh2ut);
+	  hodoMan.GetTime(cid_bh2, plid, seg, kD, tdcd, bh2dt);
+	  Double_t bh2mt = (bh2ut + bh2dt)/2.;
+	  if (TMath::Abs(t0) > TMath::Abs(bh2mt)) {
+	    hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
+	    t0 = bh2ut;
 	    segBh2=seg;
 	  }
-	  if( -10 < bh2ut && bh2ut < 10 ){
+	  if( -10 < bh2mt && bh2mt < 10 ){
 	    nhbh2_flag++;
-	  }
-	}//if(tdc)
-      }// if(nhit)
+     	  }
+	}
+      }
     }
+
+
+
+
 
 
     // BH1

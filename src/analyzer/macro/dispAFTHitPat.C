@@ -29,6 +29,7 @@ dispAFTHitPat( void )
       c->cd(l/2+1+l%2);
       TH1 *h = (TH1*)GHist::get( aft_hit_id+l );
       if( !h ) continue;
+      h->SetMinimum(0);
       h->Draw();
       TH1 *hh = (TH1*)GHist::get( aft_chit_id+l );
       if( !hh ) continue;
@@ -49,6 +50,7 @@ dispAFTHitPat( void )
       c->cd(l/2+1+l%2);
       TH1 *h = (TH1*)GHist::get( aft_hit_id+l );
       if( !h ) continue;
+      h->SetMinimum(0);
       h->Draw();
       TH1 *hh = (TH1*)GHist::get( aft_chit_id+l );
       if( !hh ) continue;
@@ -69,6 +71,7 @@ dispAFTHitPat( void )
       c->cd(l/2+l%2);
       TH1 *h = (TH1*)GHist::get( aft_hit_id+l );
       if( !h ) continue;
+      h->SetMinimum(0);
       h->Draw();
       TH1 *hh = (TH1*)GHist::get( aft_chit_id+l );
       if( !hh ) continue;
@@ -89,6 +92,7 @@ dispAFTHitPat( void )
       c->cd(l/2+l%2);
       TH1 *h = (TH1*)GHist::get( aft_hit_id+l );
       if( !h ) continue;
+      h->SetMinimum(0);
       h->Draw();
       TH1 *hh = (TH1*)GHist::get( aft_chit_id+l );
       if( !hh ) continue;
@@ -108,6 +112,7 @@ dispAFTHitPat( void )
       if( l%4 != 0 && l%4 != 1 ) continue;
       c->cd(l/2+1+l%2);
       TH1 *h = (TH1*)GHist::get( aft_chit_id+l );
+      h->SetMinimum(0);
       if( h ) h->Draw();
     }
     c->Update();
@@ -122,6 +127,7 @@ dispAFTHitPat( void )
       if( l%4 != 2 && l%4 != 3 ) continue;
       c->cd(l/2+l%2);
       TH1 *h = (TH1*)GHist::get( aft_chit_id+l );
+      h->SetMinimum(0);
       if( h ) h->Draw();
     }
     c->Update();

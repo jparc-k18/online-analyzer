@@ -3652,7 +3652,10 @@ AFTHitPatX()
     if(l%4 != 0 && l%4 != 1) continue;
     c1->cd(l/2+1+l%2);
     TH2 *h = (TH2*)GHist::get(cid+kUorD*NumOfPlaneAFT+l);
-    if(h) h->Draw("colz");
+    if(h){
+      h->SetMinimum(0);
+      h->Draw("colz");
+    }
   }
   return c1;
 }
@@ -3668,7 +3671,10 @@ AFTHitPatY()
     if(l%4 != 2 && l%4 != 3) continue;
     c1->cd(l/2+l%2);
     TH2 *h = (TH2*)GHist::get(cid+kUorD*NumOfPlaneAFT+l);
-    if(h) h->Draw("colz");
+    if(h){
+      h->SetMinimum(0);
+      h->Draw("colz");
+    }
   }
   return c1;
 }

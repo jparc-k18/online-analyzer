@@ -126,7 +126,7 @@ process_begin( const std::vector<std::string>& argv )
   gPsMaker.getListOfOption(optList);
 
   hddaq::gui::GuiPs& gPsTab = hddaq::gui::GuiPs::getInstance();
-  gPsTab.setFilename(Form("%s/PSFile/pro/default_catch.ps", std::getenv("HOME")));
+  gPsTab.setFilename(Form("%s/PSFile/pro/default_aft.ps", std::getenv("HOME")));
   gPsTab.initialize(optList, detList);
   // ----------------------------------------------------------
 

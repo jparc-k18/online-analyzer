@@ -146,7 +146,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createAC1());
   //  tab_hist->Add(gHist.createLAC());
   tab_hist->Add(gHist.createWC());
-  tab_hist->Add(gHist.createTPC());
+  // tab_hist->Add(gHist.createTPC());
   tab_hist->Add(gHist.createCorrelation());
   tab_hist->Add(gHist.createTriggerFlag());
   // tab_hist->Add(gHist.createMsT());
@@ -1247,7 +1247,6 @@ process_event()
     static const Int_t sdc4mulwt_ctot_id
       = gHist.getSequentialID(kSDC4, 0, kMulti, 1+NumOfLayersSDC4 + 10);
     static const Int_t sdc4self_corr_id  = gHist.getSequentialID(kSDC4, kSelfCorr, 0, 1);
-
 
     // TDC & HitPat & Multi
     for(Int_t l=0; l<NumOfLayersSDC4; ++l) {
@@ -2681,7 +2680,7 @@ process_event()
   }//E42BH2
 
   // apply T1 & T2 & BH2[seg3-6] cut
-#if 0
+#if 1
   if (!(is_T1_fired && is_T2_fired && is_BH2_fired)) return 0;
   hptr_array[e72para_id]->Fill(e72parasite::kT1);
   hptr_array[e72para_id]->Fill(e72parasite::kT2);

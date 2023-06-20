@@ -4216,7 +4216,7 @@ UpdateTOTPeakFittingE70()
     auto h = dynamic_cast<TH1*>(gPad->FindObject(name[i]));
     TF1 f("f", "gaus", 0., 100.);
     Double_t p = h->GetBinCenter(h->GetMaximumBin());
-    if(p < 20.) p = optval[i];
+    if(p < 30.) p = optval[i];
     Double_t w = 10.;
     for(Int_t ifit=0; ifit<3; ++ifit){
       Double_t fmin = p - w;

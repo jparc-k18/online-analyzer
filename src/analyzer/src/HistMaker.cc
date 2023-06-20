@@ -2207,6 +2207,15 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 			      aft_nseg+1, 0, aft_nseg+1,
 			      "Fiber", ""));
     }
+    sub_name = "AllMulti";
+    for(Int_t i=0; i<NumOfPlaneAFT/2; ++i){
+      const TString layer_name = (i%2 == 0) ? "X" : "Y";
+      const char* title = Form("%s_%s_%d_%s", nameDetector, sub_name, i/2+1, layer_name.Data());
+      Int_t aft_nseg = 2*NumOfSegAFT[(2*i)%4];
+      sub_dir->Add(createTH1( ++target_id, title, // 1 origin
+			      aft_nseg+1, 0, aft_nseg+1,
+			      "Fiber", ""));
+    }
 
     // insert sub directory
     top_dir->Add(sub_dir);

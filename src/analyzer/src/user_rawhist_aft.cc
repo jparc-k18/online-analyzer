@@ -268,9 +268,11 @@ process_event( void )
     int aft_cl_lgadc2d_id = gHist.getSequentialID(kAFT, kCluster, kLowGain2D,  1);
 
     int multiplicity[NumOfPlaneAFT];
+    int multiplicity_pair[NumOfPlaneAFT/2];
     for(int l=0; l<NumOfPlaneAFT; ++l){
       std::vector<std::vector<bool>> flag_hit_wt(NumOfSegAFT[l%4], std::vector<bool>(kUorD, false));
       multiplicity[l] = 0;
+      if( l%2==1 ) multiplicity_pair[l/2] = 0;
       for(int seg = 0; seg<NumOfSegAFT[l%4]; ++seg){
 	for(int ud=0; ud<kUorD; ud++){
 	  { // highgain
@@ -396,13 +398,24 @@ process_event( void )
       } // for in NumOfSegAFT
       hptr_array[aft_mul_id+l]->Fill(multiplicity[l]);
       if( l%2==1 ){
-	int multiplicity_pair = multiplicity[l-1] + multiplicity[l];
-	hptr_array[aft_mul_id+NumOfPlaneAFT+l/2]->Fill(multiplicity_pair);
+	multiplicity_pair[l/2] = multiplicity[l-1] + multiplicity[l];
+	hptr_array[aft_mul_id+NumOfPlaneAFT+l/2]->Fill(multiplicity_pair[l/2]);
       }
     } // for in NumOfPlaneAFT
 
+    for( int i = 0; i < NumOfPlaneAFT/2; i++ ){
+      bool flag = true;
+      for( int j = 0; j < NumOfPlaneAFT/2; j++ ){
+	if( j == i ) continue;
+	if( multiplicity_pair[j] == 0 ){
+	  flag = false;
+	  break;
+	}
+      }
+      if( flag ) hptr_array[aft_mul_id+NumOfPlaneAFT+NumOfPlaneAFT/2+i]->Fill(multiplicity_pair[i]);
+    }
 
-  //   //clustering analysis
+    //   //clustering analysis
   // hodoAna->DecodeAFTHits(rawData);
   // // Fiber Cluster
   // for(int p = 0; p<NumOfPlaneAFT; ++p){

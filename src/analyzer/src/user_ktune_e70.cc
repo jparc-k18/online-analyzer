@@ -684,10 +684,12 @@ process_event( void )
 	  Double_t bh2mt = (bh2ut + bh2dt)/2.;
 	  if (TMath::Abs(t0) > TMath::Abs(bh2mt)) {
 	    hodoMan.GetTime(cid_bh2, plid, seg, 2, 0, ofs);
-	    t0 = bh2ut;
+	    //t0 = bh2ut;
+	    t0 = bh2mt;
 	    segBh2=seg;
 	  }
 	  if( -10 < bh2mt && bh2mt < 10 ){
+	  //if( -500 < bh2mt && bh2mt < 500 ){
 	    nhbh2_flag++;
      	  }
 	}
@@ -717,8 +719,10 @@ process_event( void )
 	      double mt = (bh1tu+bh1td)/2.;
 	      mt = mt + ofs_bh1seg[seg];
 	      if( fabs(mt)<10 ){
+	      //if( fabs(mt)<1000 ){
 		//double btof = mt-(t0+ofs)-0.07;
-		btof = mt-(t0+ofs)-0.07-0.1;
+		//		btof = mt-(t0+ofs)-0.07-0.1;
+		btof = mt-(t0+ofs);
 		//hptr_array[btof_id]->Fill(btof);
 		nhbh1_flag++;
 	      }

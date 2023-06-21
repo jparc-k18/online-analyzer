@@ -51,6 +51,17 @@ void dispSAC3()
       hh->SetLineColor( kRed );
       //hh->SetTitle("SAC3_ADCwTDC_1");
       hh->Draw("same");
+      //efficiency
+      Double_t NofTotal = h->GetEntries();
+      Double_t NofYes   = hh->GetEntries();
+      Double_t eff      = NofYes/NofTotal;
+      Double_t xpos     = h->GetXaxis()->GetBinCenter( h->GetNbinsX() )*0.4;
+      Double_t ypos     = h->GetMaximum()*0.7;
+      auto text = new TLatex( xpos, ypos, Form( "eff. %.3f", eff ) );
+      text->SetTextSize( 0.09 );
+      text->Draw();
+      //efficiency end
+
 
       c->cd(1+1);
       gPad->SetLogy();
@@ -62,6 +73,16 @@ void dispSAC3()
       hh->SetLineColor( kRed );
       //hh->SetTitle("SAC3_ADCwTDC_2");
       hh->Draw("same");
+      //efficiency
+      NofTotal = h->GetEntries();
+      NofYes   = hh->GetEntries();
+      eff      = NofYes/NofTotal;
+      xpos     = h->GetXaxis()->GetBinCenter( h->GetNbinsX() )*0.4;
+      ypos     = h->GetMaximum()*0.7;
+      text = new TLatex( xpos, ypos, Form( "eff. %.3f", eff ) );
+      text->SetTextSize( 0.09 );
+      text->Draw();
+      //efficiency end
 
     c->Update();
   }

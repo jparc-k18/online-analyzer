@@ -137,7 +137,7 @@ void dispE72E90Eff()
       double ypos = h->GetBinContent(i+1)*1.2;
       double eff = 0;
       if(NofT1) {
-	eff = h->GetBinContent(i+1)/NofT1;
+	eff = (double)h->GetBinContent(i+1)/NofT1;
       }
       text[i] = new TLatex(xpos, ypos, Form("%.2f",eff));
       text[i]->SetTextSize(0.05);

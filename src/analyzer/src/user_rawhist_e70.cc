@@ -2680,7 +2680,7 @@ process_event()
   }//E42BH2
 
   // apply T1 & T2 & BH2[seg3-6] cut
-#if 1
+#if 0
   if (!(is_T1_fired && is_T2_fired && is_BH2_fired)) return 0;
   hptr_array[e72para_id]->Fill(e72parasite::kT1);
   hptr_array[e72para_id]->Fill(e72parasite::kT2);

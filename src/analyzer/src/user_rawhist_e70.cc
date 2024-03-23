@@ -280,7 +280,6 @@ process_event()
     }
   }
 #endif
-
   UInt_t cobo_data_size = 0;
 #if FLAG_DAQ
   { ///// DAQ
@@ -323,7 +322,7 @@ process_event()
       }
     }
 
-    { // EASIROC & VMEEASIROC node
+    { // EASIROC
       for(Int_t i=0, n=ea0c_fe_id.size(); i<n; ++i) {
 	auto data_size = gUnpacker.get_node_header(ea0c_fe_id[i], DAQNode::k_data_size);
 	hptr_array[ea0c_hid]->Fill(i, data_size);
@@ -337,11 +336,10 @@ process_event()
       }
     }
 
-    { //___ CoBo node
+    { //___ Cobo node
       for(Int_t i=0, n=cobo_fe_id.size(); i<n; ++i) {
 	auto data_size = gUnpacker.get_node_header(cobo_fe_id[i], DAQNode::k_data_size);
 	hptr_array[cobo_hid]->Fill(i, data_size);
-	cobo_data_size += data_size;
       }
     }
   }
@@ -1106,6 +1104,8 @@ process_event()
     static const Int_t sdc3t_ctot_id    = gHist.getSequentialID(kSDC3, 0, kTDC,    11);
     static const Int_t sdc3tot_ctot_id  = gHist.getSequentialID(kSDC3, 0, kADC,    11);
     static const Int_t sdc3t1st_ctot_id = gHist.getSequentialID(kSDC3, 0, kTDC2D,  11);
+    static const Int_t sdc3t2D_id       = gHist.getSequentialID(kSDC3, 0, kTDC2D,  21);
+    static const Int_t sdc3t2D_ctot_id  = gHist.getSequentialID(kSDC3, 0, kTDC2D,  31);
     static const Int_t sdc3hit_ctot_id  = gHist.getSequentialID(kSDC3, 0, kHitPat, 11);
     static const Int_t sdc3mul_ctot_id  = gHist.getSequentialID(kSDC3, 0, kMulti,  11);
     static const Int_t sdc3mulwt_ctot_id
@@ -1149,6 +1149,9 @@ process_event()
 	  hptr_array[sdc3t_id + l]->Fill(tdc);
 	  if (tdc1st<tdc) tdc1st = tdc;
 
+	  // tdc 2D
+	  hptr_array[sdc3t2D_id + l]->Fill(w,tdc);
+
 	  // Drift time check
 	  if (tdc_min < tdc && tdc < tdc_max) {
 	    flag_hit_wt = true;
@@ -1171,6 +1174,7 @@ process_event()
 	    hptr_array[sdc3tot_id+l]->Fill(tot);
 	    if (tot < tot_min) continue;
 	    hptr_array[sdc3t_ctot_id + l]->Fill(tdc);
+	    hptr_array[sdc3t2D_ctot_id + l]->Fill(w,tdc); //2D
 	    hptr_array[sdc3tot_ctot_id+l]->Fill(tot);
 	    if (tdc1st<tdc) tdc1st = tdc;
 	    if (tdc_min < tdc && tdc < tdc_max) {
@@ -1242,6 +1246,8 @@ process_event()
     static const Int_t sdc4t_ctot_id    = gHist.getSequentialID(kSDC4, 0, kTDC,    11);
     static const Int_t sdc4tot_ctot_id  = gHist.getSequentialID(kSDC4, 0, kADC,    11);
     static const Int_t sdc4t1st_ctot_id = gHist.getSequentialID(kSDC4, 0, kTDC2D,  11);
+    static const Int_t sdc4t2D_id       = gHist.getSequentialID(kSDC4, 0, kTDC2D,  21);
+    static const Int_t sdc4t2D_ctot_id  = gHist.getSequentialID(kSDC4, 0, kTDC2D,  31);
     static const Int_t sdc4hit_ctot_id  = gHist.getSequentialID(kSDC4, 0, kHitPat, 11);
     static const Int_t sdc4mul_ctot_id  = gHist.getSequentialID(kSDC4, 0, kMulti,  11);
     static const Int_t sdc4mulwt_ctot_id
@@ -1284,6 +1290,9 @@ process_event()
 	  hptr_array[sdc4t_id + l]->Fill(tdc);
 	  if (tdc1st<tdc) tdc1st = tdc;
 
+	  // tdc 2D
+	  hptr_array[sdc4t2D_id + l]->Fill(w,tdc);
+
 	  // Drift time check
 	  if (tdc_min < tdc && tdc < tdc_max) {
 	    flag_hit_wt = true;
@@ -1306,6 +1315,7 @@ process_event()
 	    hptr_array[sdc4tot_id+l]->Fill(tot);
 	    if (tot < tot_min) continue;
 	    hptr_array[sdc4t_ctot_id + l]->Fill(tdc);
+	    hptr_array[sdc4t2D_ctot_id + l]->Fill(w,tdc); //2D
 	    hptr_array[sdc4tot_ctot_id+l]->Fill(tot);
 	    if (tdc1st<tdc) tdc1st = tdc;
 	    if (tdc_min < tdc && tdc < tdc_max) {
@@ -1378,6 +1388,8 @@ process_event()
     static const Int_t sdc5t_ctot_id    = gHist.getSequentialID(kSDC5, 0, kTDC,    11);
     static const Int_t sdc5tot_ctot_id  = gHist.getSequentialID(kSDC5, 0, kADC,    11);
     static const Int_t sdc5t1st_ctot_id = gHist.getSequentialID(kSDC5, 0, kTDC2D,  11);
+    static const Int_t sdc5t2D_id       = gHist.getSequentialID(kSDC5, 0, kTDC2D,  21);
+    static const Int_t sdc5t2D_ctot_id  = gHist.getSequentialID(kSDC5, 0, kTDC2D,  31);
     static const Int_t sdc5hit_ctot_id  = gHist.getSequentialID(kSDC5, 0, kHitPat, 11);
     static const Int_t sdc5mul_ctot_id  = gHist.getSequentialID(kSDC5, 0, kMulti,  11);
     static const Int_t sdc5mulwt_ctot_id
@@ -1426,6 +1438,9 @@ process_event()
 	  hptr_array[sdc5t_id + l]->Fill(tdc);
 	  if (tdc1st<tdc) tdc1st = tdc;
 
+	  // tdc 2D
+	  hptr_array[sdc5t2D_id + l]->Fill(w,tdc);
+
 	  // Drift time check
 	  if (tdc_min < tdc && tdc < tdc_max) {
 	    flag_hit_wt = true;
@@ -1448,6 +1463,7 @@ process_event()
 	    hptr_array[sdc5tot_id+l]->Fill(tot);
 	    if (tot < tot_min) continue;
 	    hptr_array[sdc5t_ctot_id + l]->Fill(tdc);
+	    hptr_array[sdc5t2D_ctot_id + l]->Fill(w,tdc); //2D
 	    hptr_array[sdc5tot_ctot_id+l]->Fill(tot);
 	    if (tdc1st<tdc) tdc1st = tdc;
 	    if (tdc_min < tdc && tdc < tdc_max) {

@@ -4123,6 +4123,28 @@ TList* HistMaker::createSDC3( Bool_t flag_ps )
 			     "TDC [ch]", ""));
     }
 
+    // TDC 2D ---------------------------------------------------
+    target_id = getUniqueID(kSDC3, 0, kTDC2D, 20);
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s2D_%s", nameDetector, nameSubDir, name_layer[i]);
+      sub_dir->Add(createTH2(target_id + i+1, title,
+			     NumOfWireSDC3, 0, NumOfWireSDC3,
+			     1500, 0, 1500,
+			     "Wire Number","TDC [ch]"));
+    }
+
+    // TDC 2D wTOTCUT ---------------------------------------------------
+    target_id = getUniqueID(kSDC3, 0, kTDC2D, 30);
+    for(Int_t i = 0; i<NumOfLayersSDC3; ++i){
+      const char* title = NULL;
+      title = Form("%s_C%s2_%s", nameDetector, nameSubDir, name_layer[i]);
+      sub_dir->Add(createTH2(target_id + i+1, title,
+			     NumOfWireSDC3, 0, NumOfWireSDC3,
+			     1500, 0, 1500,
+			     "Wire Number","TDC [ch]"));
+    }
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -4350,6 +4372,28 @@ TList* HistMaker::createSDC4( Bool_t flag_ps )
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
 			     1500, 0, 1500,
 			     "TDC [ch]", ""));
+    }
+
+    // TDC 2D ---------------------------------------------------
+    target_id = getUniqueID(kSDC4, 0, kTDC2D, 20);
+    for(Int_t i = 0; i<NumOfLayersSDC4; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s2D_%s", nameDetector, nameSubDir, name_layer[i]);
+      sub_dir->Add(createTH2(target_id + i+1, title,
+			     NumOfWireSDC4, 0, NumOfWireSDC4,
+			     1500, 0, 1500,
+			     "Wire Number","TDC [ch]"));
+    }
+
+    // TDC 2D wTOTCUT ---------------------------------------------------
+    target_id = getUniqueID(kSDC4, 0, kTDC2D, 30);
+    for(Int_t i = 0; i<NumOfLayersSDC4; ++i){
+      const char* title = NULL;
+      title = Form("%s_C%s2_%s", nameDetector, nameSubDir, name_layer[i]);
+      sub_dir->Add(createTH2(target_id + i+1, title,
+			     NumOfWireSDC4, 0, NumOfWireSDC4,
+			     1500, 0, 1500,
+			     "Wire Number","TDC [ch]"));
     }
 
     // insert sub directory
@@ -4582,6 +4626,34 @@ TList* HistMaker::createSDC5( Bool_t flag_ps )
 			     "TDC [ch]", ""));
     }
 
+    // TDC 2D ---------------------------------------------------
+    target_id = getUniqueID(kSDC5, 0, kTDC2D, 20);
+    for(Int_t i = 0; i<NumOfLayersSDC5; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s2D_%s", nameDetector, nameSubDir, name_layer[i]);
+      Int_t NumOfWireSDC5 = 0;
+      if(name_layer[i]=="y0" || name_layer[i]=="y1") NumOfWireSDC5 = NumOfWireSDC5Y;
+      if(name_layer[i]=="x0" || name_layer[i]=="x1") NumOfWireSDC5 = NumOfWireSDC5X;
+      sub_dir->Add(createTH2(target_id + i+1, title,
+			     NumOfWireSDC5, 0, NumOfWireSDC5,
+			     1500, 0, 1500,
+			     "Wire Number","TDC [ch]"));
+    }
+
+    // TDC 2D wTOTCUT ---------------------------------------------------
+    target_id = getUniqueID(kSDC5, 0, kTDC2D, 30);
+    for(Int_t i = 0; i<NumOfLayersSDC5; ++i){
+      const char* title = NULL;
+      title = Form("%s_C%s2_%s", nameDetector, nameSubDir, name_layer[i]);
+      Int_t NumOfWireSDC5 = 0;
+      if(name_layer[i]=="y0" || name_layer[i]=="y1") NumOfWireSDC5 = NumOfWireSDC5Y;
+      if(name_layer[i]=="x0" || name_layer[i]=="x1") NumOfWireSDC5 = NumOfWireSDC5X;
+      sub_dir->Add(createTH2(target_id + i+1, title,
+			     NumOfWireSDC5, 0, NumOfWireSDC5,
+			     1500, 0, 1500,
+			     "Wire Number","TDC [ch]"));
+    }
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -4596,7 +4668,6 @@ TList* HistMaker::createSDC5( Bool_t flag_ps )
 
     Int_t target_id = getUniqueID(kSDC5, 0, kADC, 0);
     for(Int_t i = 0; i<NumOfLayersSDC5; ++i){
-
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin

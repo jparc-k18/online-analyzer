@@ -350,6 +350,7 @@ process_event(void)
     static const Int_t ea0c_hid = gHist.getSequentialID(kDAQ, kEASIROC, kHitPat2D);
     static const Int_t vea0c_hid = gHist.getSequentialID(kDAQ, kVMEEASIROC, kHitPat2D);
 
+
     { //___ EB
       auto data_size = gUnpacker.get_node_header(k_eb, DAQNode::k_data_size);
       hptr_array[eb_hid]->Fill(data_size);
@@ -362,7 +363,7 @@ process_event(void)
       }
     }
 
-    { // EASIROC & VMEEASIROC node
+    { // EASIROC
       for(Int_t i=0, n=ea0c_fe_id.size(); i<n; ++i){
         auto data_size = gUnpacker.get_node_header(ea0c_fe_id[i], DAQNode::k_data_size);
         hptr_array[ea0c_hid]->Fill(i, data_size);

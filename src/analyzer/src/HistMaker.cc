@@ -2088,7 +2088,8 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
   			      4096/8, 0, 4096,
-  			      1024, 0, 1024,
+  			      // 1024, 0, 1024,
+  			      4096, 0, 4096,
   			      "HighGain [ch]", "TDC [ch]"));
       }
     }
@@ -2221,6 +2222,25 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     sub_dir->Add( h_hit_poly_x );
     sub_dir->Add( h_hit_poly_y );
 
+    //with adc
+    sub_name = "CHitPat_wa";
+    // Add to the top directory
+    for(Int_t ud=0; ud<3; ud++){
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+    	const char* title = NULL;
+	const TString layer_name = NameOfPlaneAFT[i%4];
+    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+  	else if( ud == 2 ) title = Form("%s_%s_%d_%s",  nameDetector, sub_name, i/4+1, layer_name.Data()); // for hitpattern defined by hits on both edges
+
+  	Int_t aft_nseg = NumOfSegAFT[i%4];
+  	sub_dir->Add(createTH1( ++target_id, title, // 1 origin
+  				aft_nseg, 0, aft_nseg,
+  				"Fiber", ""));
+      }
+    }
+    //2D Hit pattern
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -2252,6 +2272,24 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 			      "Fiber", ""));
     }
     sub_name = "AllMulti";
+    for(Int_t i=0; i<NumOfPlaneAFT/2; ++i){
+      const TString layer_name = (i%2 == 0) ? "X" : "Y";
+      const char* title = Form("%s_%s_%d_%s", nameDetector, sub_name, i/2+1, layer_name.Data());
+      Int_t aft_nseg = 2*NumOfSegAFT[(2*i)%4];
+      sub_dir->Add(createTH1( ++target_id, title, // 1 origin
+			      aft_nseg+1, 0, aft_nseg+1,
+			      "Fiber", ""));
+    }
+    // Multi with HG
+    sub_name = "CMulti";
+    for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+      const TString layer_name = NameOfPlaneAFT[i%4];
+      const char* title = Form("%s_%s_%d_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+      Int_t aft_nseg = NumOfSegAFT[i%4];
+      sub_dir->Add(createTH1( ++target_id, title, // 1 origin
+			      aft_nseg+1, 0, aft_nseg+1,
+			      "Fiber", ""));
+    }
     for(Int_t i=0; i<NumOfPlaneAFT/2; ++i){
       const TString layer_name = (i%2 == 0) ? "X" : "Y";
       const char* title = Form("%s_%s_%d_%s", nameDetector, sub_name, i/2+1, layer_name.Data());
@@ -8226,7 +8264,8 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
       title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
-			     1024, 0, 1024,
+			     // 1024, 0, 1024,
+			     4096, 0, 4096,
 			     "ch", "TDC [ch]"));
     }
     // insert sub directory

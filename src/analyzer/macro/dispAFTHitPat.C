@@ -35,6 +35,10 @@ dispAFTHitPat( void )
       if( !hh ) continue;
       hh->SetLineColor(kRed);
       hh->Draw("same");
+      TH1 *hhh = (TH1*)GHist::get( aft_chit_id+(kUorD+1)*NumOfPlaneAFT+kUorD+l );
+      if( !hhh ) continue;
+      hhh->SetLineColor(kBlue);
+      hhh->Draw("same");
     }
     c->Update();
   }
@@ -56,6 +60,10 @@ dispAFTHitPat( void )
       if( !hh ) continue;
       hh->SetLineColor(kRed);
       hh->Draw("same");
+      TH1 *hhh = (TH1*)GHist::get( aft_chit_id+(kUorD+1)*NumOfPlaneAFT+kUorD+l );
+      if( !hhh ) continue;
+      hhh->SetLineColor(kBlue);
+      hhh->Draw("same");
     }
     c->Update();
   }
@@ -77,6 +85,10 @@ dispAFTHitPat( void )
       if( !hh ) continue;
       hh->SetLineColor(kRed);
       hh->Draw("same");
+      TH1 *hhh = (TH1*)GHist::get( aft_chit_id+(kUorD+1)*NumOfPlaneAFT+kUorD+l );
+      if( !hhh ) continue;
+      hhh->SetLineColor(kBlue);
+      hhh->Draw("same");
     }
     c->Update();
   }
@@ -98,6 +110,10 @@ dispAFTHitPat( void )
       if( !hh ) continue;
       hh->SetLineColor(kRed);
       hh->Draw("same");
+      TH1 *hhh = (TH1*)GHist::get( aft_chit_id+(kUorD+1)*NumOfPlaneAFT+kUorD+l );
+      if( !hhh ) continue;
+      hhh->SetLineColor(kBlue);
+      hhh->Draw("same");
     }
     c->Update();
   }
@@ -114,6 +130,10 @@ dispAFTHitPat( void )
       TH1 *h = (TH1*)GHist::get( aft_chit_id+l );
       h->SetMinimum(0);
       if( h ) h->Draw();
+      TH1 *hh = (TH1*)GHist::get( aft_chit_id+3*NumOfPlaneAFT+kUorD+l );
+      if( !hh ) continue;
+      hh->SetLineColor(kBlue);
+      hh->Draw("same");
     }
     c->Update();
   }
@@ -129,6 +149,10 @@ dispAFTHitPat( void )
       TH1 *h = (TH1*)GHist::get( aft_chit_id+l );
       h->SetMinimum(0);
       if( h ) h->Draw();
+      TH1 *hh = (TH1*)GHist::get( aft_chit_id+3*NumOfPlaneAFT+kUorD+l );
+      if( !hh ) continue;
+      hh->SetLineColor(kBlue);
+      hh->Draw("same");
     }
     c->Update();
   }

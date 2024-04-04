@@ -269,10 +269,17 @@ process_event( void )
 
     int multiplicity[NumOfPlaneAFT];
     int multiplicity_pair[NumOfPlaneAFT/2];
+    int multiplicity_wa[NumOfPlaneAFT];
+    int multiplicity_pair_wa[NumOfPlaneAFT/2];
     for(int l=0; l<NumOfPlaneAFT; ++l){
       std::vector<std::vector<bool>> flag_hit_wt(NumOfSegAFT[l%4], std::vector<bool>(kUorD, false));
+      std::vector<std::vector<bool>> flag_hit_wa(NumOfSegAFT[l%4], std::vector<bool>(kUorD, false));
       multiplicity[l] = 0;
-      if( l%2==1 ) multiplicity_pair[l/2] = 0;
+      multiplicity_wa[l] = 0;
+      if( l%2==1 ) {
+	multiplicity_pair[l/2] = 0;
+	multiplicity_pair_wa[l/2] = 0;
+      }
       for(int seg = 0; seg<NumOfSegAFT[l%4]; ++seg){
 	for(int ud=0; ud<kUorD; ud++){
 	  { // highgain
@@ -331,6 +338,11 @@ process_event( void )
 		int adc_hg = gUnpacker.get(k_device, l, seg, ud, k_highgain, 0);
 		hptr_array[aft_chg_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg);
 		hptr_array[aft_chg_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, adc_hg);
+		//adc flag for multiplicity
+		if(adc_hg > 1000.){
+		  flag_hit_wa[seg][ud] = true;
+		  hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+kUorD+ud*NumOfPlaneAFT+l]->Fill(seg);
+		}
 	      }
 	      // lowgain w/ TDC cut
 	      int nhit_lg = gUnpacker.get_entries(k_device, l, seg, ud, k_lowgain);
@@ -394,12 +406,20 @@ process_event( void )
 	  double posz = gAftHelper.GetZ( l, seg );
 	  if( l%4 == 0 || l%4 == 1 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+0]->Fill(posz, posx);
 	  if( l%4 == 2 || l%4 == 3 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+1]->Fill(posz, posx);
+	  //multiplicity with adc
+	  if( flag_hit_wa[seg][kU] && flag_hit_wa[seg][kD] ){
+	    ++multiplicity_wa[l];
+	    hptr_array[aft_chit_id+(2*kUorD+1)*NumOfPlaneAFT+kUorD+l]->Fill(seg);
+	  }
 	}
       } // for in NumOfSegAFT
       hptr_array[aft_mul_id+l]->Fill(multiplicity[l]);
+      hptr_array[aft_mul_id+2*NumOfPlaneAFT+l]->Fill(multiplicity_wa[l]);
       if( l%2==1 ){
 	multiplicity_pair[l/2] = multiplicity[l-1] + multiplicity[l];
+	multiplicity_pair_wa[l/2] = multiplicity_wa[l-1] + multiplicity_wa[l];
 	hptr_array[aft_mul_id+NumOfPlaneAFT+l/2]->Fill(multiplicity_pair[l/2]);
+	hptr_array[aft_mul_id+3*NumOfPlaneAFT+l/2]->Fill(multiplicity_pair_wa[l/2]);
       }
     } // for in NumOfPlaneAFT
 

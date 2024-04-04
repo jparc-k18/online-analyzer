@@ -371,9 +371,9 @@ process_event( void )
 		hptr_array[aft_tot_t_id+ud*NumOfPlaneAFT+l]->Fill(tot, tdc);
 
 		if(l%4 == 0 || l%4 == 1)
-		  hptr_array[aft_tot_id+kUorD*NumOfPlaneAFT + l/12 + 0]->Fill(tot);
+		  hptr_array[aft_tot_id+kUorD*NumOfPlaneAFT + ud + 0]->Fill(tot);
 		if(l%4 == 2 || l%4 == 3)
-		  hptr_array[aft_tot_id+kUorD*NumOfPlaneAFT + l/12 + 3]->Fill(tot);
+		  hptr_array[aft_tot_id+kUorD*NumOfPlaneAFT + ud + 2]->Fill(tot);
 
 		if(tdc_min < tdc && tdc < tdc_max){
 		  // tot w/ TDC cut

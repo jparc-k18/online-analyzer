@@ -21,83 +21,35 @@ dispAFTTot( void )
   // draw TOT for each MPPC vias
   {
 
-    static std::vector<TString> name = {
-      "AFT_TOT_X1-3", "AFT_TOT_X4-6", "AFT_TOT_X7-9",
-      "AFT_TOT_Y1-3", "AFT_TOT_Y4-6", "AFT_TOT_Y7-9"
-    };
-
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(3, 2);
-    Int_t aft_tot_id  = HistMaker::getUniqueID(kAFT, 0, kTOT);
-    TH1* h_X[3];
-    TH1* h_Y[3];
-    for(Int_t i=0; i<3; i++){
-      std::cout << aft_tot_id + kUorD*NumOfPlaneAFT + i + 0 << std::endl;
-      h_X[i] = (TH1*)GHist::get(aft_tot_id + kUorD*NumOfPlaneAFT + i + 0);
-      h_Y[i] = (TH1*)GHist::get(aft_tot_id + kUorD*NumOfPlaneAFT + i + 3);
-      // if(!h_X[i] || !h_Y[i]) return;
-      // h_X[i]->Reset();
-      // h_Y[i]->Reset();
-    }
-    // for( int ud=0; ud<2; ud++ ){
-    //   for( int i=0; i<NumOfPlaneAFT; ++i ){
-    // 	TH1 *h = (TH1*)GHist::get( aft_tot_id + i +ud*NumOfPlaneAFT);
-    // 	// if( !h ) continue;
-    // 	if( i%4 == 0 || i%4 == 1 ) h_X[i/12]->Add(h);
-    // 	if( i%4 == 2 || i%4 == 3 ) h_Y[i/12]->Add(h);
-    //   }
-    // }
-
-    for( int i = 0; i < 3; i++ ){
-      {
-	c->cd(i+1);
-	h_X[i]->Draw();
-	TF1 f("f", "gaus", 0., 100.);
-	f.SetLineColor(kRed);
-	Double_t p = h_X[i]->GetBinCenter(h_X[i]->GetMaximumBin());
-	if(p < 30.) p = 70.;
-	Double_t w = 10.;
-	for(Int_t ifit=0; ifit<3; ++ifit){
-	  Double_t fmin = p - w;
-	  Double_t fmax = p + w;
-	  h_X[i]->Fit("f", "Q", "", fmin, fmax);
-	  p = f.GetParameter(1);
-	  w = f.GetParameter(2) * 1.;
-	}
-	TLatex *text = new TLatex();
-	text->SetNDC();
-	text->SetTextSize(0.07);
-	text->DrawLatex(0.500, 0.700, Form("%.1f", p));
-	text->DrawLatex(0.500, 0.630, Form("Ref : %.1f", TotRef));
-	auto l = new TLine( TotRef, 0, TotRef, h_X[i]->GetMaximum() );
-	l->SetLineColor(kRed);
-	l->Draw();
+    c->Divide(2, 2);
+    Int_t aft_tot_id  = HistMaker::getUniqueID(kAFT, 0, kTOT, 1);
+    TH1* h[4];
+    for(Int_t i=0; i<4; i++){
+      c->cd(i+1);
+      h[i] = (TH1*)GHist::get(aft_tot_id + kUorD*NumOfPlaneAFT + i);
+      h[i]->Draw();
+      TF1 f("f", "gaus", 0., 100.);
+      f.SetLineColor(kRed);
+      Double_t p = h[i]->GetBinCenter(h[i]->GetMaximumBin());
+      if(p < 30.) p = 70.;
+      Double_t w = 10.;
+      for(Int_t ifit=0; ifit<3; ++ifit){
+	Double_t fmin = p - w;
+	Double_t fmax = p + w;
+	h[i]->Fit("f", "Q", "", fmin, fmax);
+	p = f.GetParameter(1);
+	w = f.GetParameter(2) * 1.;
       }
-      {
-	c->cd(i+4);
-	h_Y[i]->Draw();
-	TF1 f("f", "gaus", 0., 100.);
-	f.SetLineColor(kRed);
-	Double_t p = h_Y[i]->GetBinCenter(h_Y[i]->GetMaximumBin());
-	if(p < 30.) p = 70.;
-	Double_t w = 10.;
-	for(Int_t ifit=0; ifit<3; ++ifit){
-	  Double_t fmin = p - w;
-	  Double_t fmax = p + w;
-	  h_Y[i]->Fit("f", "Q", "", fmin, fmax);
-	  p = f.GetParameter(1);
-	  w = f.GetParameter(2) * 1.;
-	}
-	TLatex *text = new TLatex();
-	text->SetNDC();
-	text->SetTextSize(0.07);
-	text->DrawLatex(0.500, 0.700, Form("%.1f", p));
-	text->DrawLatex(0.500, 0.630, Form("Ref : %.1f", TotRef));
-	auto l = new TLine( TotRef, 0, TotRef, h_Y[i]->GetMaximum() );
-	l->SetLineColor(kRed);
-	l->Draw();
-      }
+      TLatex *text = new TLatex();
+      text->SetNDC();
+      text->SetTextSize(0.07);
+      text->DrawLatex(0.500, 0.700, Form("%.1f", p));
+      text->DrawLatex(0.500, 0.630, Form("Ref : %.1f", TotRef));
+      auto l = new TLine( TotRef, 0, TotRef, h[i]->GetMaximum() );
+      l->SetLineColor(kRed);
+      l->Draw();
     }
     c->Update();
   }

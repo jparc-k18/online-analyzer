@@ -488,7 +488,7 @@ TList* HistMaker::createBC3( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kBC3, 0, kTDC2D, 0);
@@ -739,7 +739,7 @@ TList* HistMaker::createBC4( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kBC4, 0, kTDC2D, 0);
@@ -3673,7 +3673,7 @@ TList* HistMaker::createSDC1( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC1, 0, kTDC2D, 0);
@@ -3926,7 +3926,7 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC2, 0, kTDC2D, 0);
@@ -7471,6 +7471,74 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
       h->GetXaxis()->SetBinLabel(i+1, "0x"+TString::Itoa(vea0c_fe_id[i], 16));
     }
     top_dir->Add(h);
+  }
+
+  { //___ MultiHitTdc
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kMultiHitTdc);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kDAQ, 0, kMultiHitTdc);
+    const char* sub_name = "MultiHitTdc";
+    { // BC3
+      const char* name_layer[NumOfLayersBC3] = {"x0", "x1", "v0", "v1", "u0", "u1"};
+      TString strDet = CONV_STRING(kBC3);
+      const char* nameDetector = strDet.Data();
+      // Add to the top directory
+      for(Int_t i=0; i<NumOfLayersBC3; ++i){
+	const char* title = NULL;
+	title = Form("%s_%s_%s", nameDetector, sub_name, name_layer[i]);
+	sub_dir->Add(createTH2(target_id++, title, // 1 origin
+			       NumOfWireBC3, 0, NumOfWireBC3,
+			       20, 0, 20,
+			       "ch", "MultiHitTdc"));
+      }
+    }
+    { // BC4
+      const char* name_layer[NumOfLayersBC4] = {"u0", "u1", "v0", "v1", "x0", "x1"};
+      TString strDet = CONV_STRING(kBC4);
+      const char* nameDetector = strDet.Data();
+      // Add to the top directory
+      for(Int_t i=0; i<NumOfLayersBC4; ++i){
+	const char* title = NULL;
+	title = Form("%s_%s_%s", nameDetector, sub_name, name_layer[i]);
+	sub_dir->Add(createTH2(target_id++, title, // 1 origin
+			       NumOfWireBC4, 0, NumOfWireBC4,
+			       20, 0, 20,
+			       "ch", "MultiHitTdc"));
+      }
+    }
+    { // SDC1
+      const char* name_layer[NumOfLayersSDC1] = {"u0", "u1", "x0", "x1", "v0", "v1"};
+      TString strDet = CONV_STRING(kSDC1);
+      const char* nameDetector = strDet.Data();
+      // Add to the top directory
+      for(Int_t i=0; i<NumOfLayersSDC1; ++i){
+	const char* title = NULL;
+	title = Form("%s_%s_%s", nameDetector, sub_name, name_layer[i]);
+	sub_dir->Add(createTH2(target_id++, title, // 1 origin
+			       NumOfWireSDC1, 0, NumOfWireSDC1,
+			       20, 0, 20,
+			       "ch", "MultiHitTdc"));
+      }
+    }
+    { // SDC2
+      const char* name_layer[NumOfLayersSDC2] = { "v0", "v1", "u0", "u1" };
+      TString strDet = CONV_STRING(kSDC2);
+      const char* nameDetector = strDet.Data();
+      // Add to the top directory
+      for(Int_t i=0; i<NumOfLayersSDC2; ++i){
+	const char* title = NULL;
+	title = Form("%s_%s_%s", nameDetector, sub_name, name_layer[i]);
+	sub_dir->Add(createTH2(target_id++, title, // 1 origin
+			       NumOfWireSDC2, 0, NumOfWireSDC2,
+			       20, 0, 20,
+			       "ch", "MultiHitTdc"));
+      }
+    }
+    top_dir->Add(sub_dir);
   }
 
   // { //___ CoBo

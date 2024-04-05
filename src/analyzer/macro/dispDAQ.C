@@ -1,4 +1,5 @@
 // -*- C++ -*-
+#include "DetectorID.hh"
 
 using hddaq::gui::Updater;
 
@@ -32,6 +33,22 @@ dispDAQ( void )
       gPad->SetGrid();
       TH1 *h = GHist::get( hist_id[i] );
       if( h ) h->Draw("colz");
+    }
+    c->Update();
+  }
+
+  {
+    auto c = dynamic_cast<TCanvas*>( gROOT->FindObject("c2") );
+    c->Clear();
+    c->Divide( 6, 4 );
+    Int_t target_id = HistMaker::getUniqueID(kDAQ, 0, kMultiHitTdc);
+    Int_t n = NumOfLayersBcOut+NumOfLayersSdcIn;
+    for( Int_t i=0; i<n; i++ ){
+      c->cd(i+1);
+      gPad->SetGrid();
+      TH1 *h = GHist::get( target_id++ );
+      if( h ) h->Draw("colz");
+      else std::cout << "check" << std::endl;
     }
     c->Update();
   }

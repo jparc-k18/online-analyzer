@@ -3681,7 +3681,7 @@ TList* HistMaker::createSDC1( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "TDC [ch]", ""));
     }
 
@@ -3692,7 +3692,7 @@ TList* HistMaker::createSDC1( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC1, 0, kTDC2D, kTOTcutOffset);
@@ -3700,7 +3700,7 @@ TList* HistMaker::createSDC1( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_C%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "TDC [ch]", ""));
     }
 
@@ -3711,7 +3711,7 @@ TList* HistMaker::createSDC1( Bool_t flag_ps )
       title = Form("%s_%s2D_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH2(target_id + i+1, title,
 			     NumOfWireSDC1, 0, NumOfWireSDC1,
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "Wire Number","TDC [ch]"));
     }
 
@@ -3722,7 +3722,7 @@ TList* HistMaker::createSDC1( Bool_t flag_ps )
       title = Form("%s_C%s2D_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH2(target_id + i+1, title,
 			     NumOfWireSDC1, 0, NumOfWireSDC1,
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "Wire Number","TDC [ch]"));
     }
 
@@ -3934,7 +3934,7 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "TDC [ch]", ""));
     }
 
@@ -3945,7 +3945,7 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC2, 0, kTDC2D, kTOTcutOffset);
@@ -3953,7 +3953,7 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_C%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "TDC [ch]", ""));
     }
 
@@ -3964,7 +3964,7 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
       title = Form("%s_%s2D_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH2(target_id + i+1, title,
 			     NumOfWireSDC2, 0, NumOfWireSDC2,
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "Wire Number","TDC [ch]"));
     }
 
@@ -3975,7 +3975,7 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
       title = Form("%s_C%s2D_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH2(target_id + i+1, title,
 			     NumOfWireSDC2, 0, NumOfWireSDC2,
-			     1500, 0, 1500,
+			     5000, 0, 5000,
 			     "Wire Number","TDC [ch]"));
     }
 

@@ -106,6 +106,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispAFTTot"));
   tab_macro->Add(macro::Get("effAFT"));
   tab_macro->Add(macro::Get("dispDAQ"));
+  tab_macro->Add(macro::Get("dispAFT_Eff_Hitpat_Yadc"));
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
@@ -399,7 +400,7 @@ process_event( void )
 	  }
 
 	} // for in Up or Down
-	if( flag_hit_wt[seg][kU] && flag_hit_wt[seg][kD] ){ // hitpat & multiplicity of hit on both ends
+	if( flag_hit_wt[seg][kU] && flag_hit_wt[seg][kD] ){ // hitpat & multiplicity of hit on both endsw
 	  ++multiplicity[l];
 	  hptr_array[aft_chit_id+kUorD*NumOfPlaneAFT+l]->Fill(seg);
 	  double posx = gAftHelper.GetX( l, seg );

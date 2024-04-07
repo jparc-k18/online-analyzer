@@ -533,6 +533,7 @@ process_event()
     static const Int_t bc3mulwt_id
       = gHist.getSequentialID(kBC3, 0, kMulti, 1+NumOfLayersBC3);
 
+    static const Int_t bc3t_wide_id    = gHist.getSequentialID(kBC3, 0, kTDC,    11);
     static const Int_t bc3t_ctot_id    = gHist.getSequentialID(kBC3, 0, kTDC,    1+kTOTcutOffset);
     static const Int_t bc3tot_ctot_id  = gHist.getSequentialID(kBC3, 0, kADC,    1+kTOTcutOffset);
     static const Int_t bc3t1st_ctot_id = gHist.getSequentialID(kBC3, 0, kTDC2D,  1+kTOTcutOffset);
@@ -579,6 +580,7 @@ process_event()
 	for(Int_t m = 0; m<nhit_l; ++m) {
 	  tdc = gUnpacker.get(k_device, l, 0, w, k_leading, m);
 	  hptr_array[bc3t_id + l]->Fill(tdc);
+	  hptr_array[bc3t_wide_id + l]->Fill(tdc); //TDCwide
 	  if (tdc1st<tdc) tdc1st = tdc;
 
 	  // tdc 2D
@@ -674,6 +676,7 @@ process_event()
     static const Int_t bc4mulwt_id
       = gHist.getSequentialID(kBC4, 0, kMulti, 1+NumOfLayersBC4);
 
+    static const Int_t bc4t_wide_id    = gHist.getSequentialID(kBC4, 0, kTDC, 11);
     static const Int_t bc4t_ctot_id    = gHist.getSequentialID(kBC4, 0, kTDC,    1+kTOTcutOffset);
     static const Int_t bc4tot_ctot_id  = gHist.getSequentialID(kBC4, 0, kADC,    1+kTOTcutOffset);
     static const Int_t bc4t1st_ctot_id = gHist.getSequentialID(kBC4, 0, kTDC2D,  1+kTOTcutOffset);
@@ -720,6 +723,7 @@ process_event()
 	for(Int_t m = 0; m<nhit_l; ++m) {
 	  tdc = gUnpacker.get(k_device, l, 0, w, k_leading, m);
 	  hptr_array[bc4t_id + l]->Fill(tdc);
+	  hptr_array[bc4t_wide_id + l]->Fill(tdc); //TDCwide
 	  if (tdc1st<tdc) tdc1st = tdc;
 
 	  // tdc 2D
@@ -870,6 +874,7 @@ process_event()
     static const Int_t sdc1mulwt_id
       = gHist.getSequentialID(kSDC1, 0, kMulti, 1+NumOfLayersSDC1);
 
+    static const Int_t sdc1t_wide_id    = gHist.getSequentialID(kSDC1, 0, kTDC,    11);
     static const Int_t sdc1t_ctot_id    = gHist.getSequentialID(kSDC1, 0, kTDC,    1+kTOTcutOffset);
     static const Int_t sdc1tot_ctot_id  = gHist.getSequentialID(kSDC1, 0, kADC,    1+kTOTcutOffset);
     static const Int_t sdc1t1st_ctot_id = gHist.getSequentialID(kSDC1, 0, kTDC2D,  1+kTOTcutOffset);
@@ -916,6 +921,7 @@ process_event()
 	for(Int_t m = 0; m<nhit_l; ++m) {
 	  tdc = gUnpacker.get(k_device, l, 0, w, k_leading, m);
 	  hptr_array[sdc1t_id + l]->Fill(tdc);
+	  hptr_array[sdc1t_wide_id + l]->Fill(tdc); //TDCwide
 	  if (tdc1st<tdc) tdc1st = tdc;
 
 	  // tdc 2D
@@ -1011,7 +1017,9 @@ process_event()
     static const Int_t sdc2mul_id  = gHist.getSequentialID(kSDC2, 0, kMulti);
     static const Int_t sdc2mulwt_id
       = gHist.getSequentialID(kSDC2, 0, kMulti, 1+NumOfLayersSDC2);
-    static const Int_t sdc2mul2D_id  = gHist.getSequentialID(kSDC2, 0, kMulti2D);
+
+    static const Int_t sdc2t_wide_id    = gHist.getSequentialID(kSDC2, 0, kTDC,    11);
+    static const Int_t sdc2mul2D_id     = gHist.getSequentialID(kSDC2, 0, kMulti2D);
     static const Int_t sdc2t_ctot_id    = gHist.getSequentialID(kSDC2, 0, kTDC,    1+kTOTcutOffset);
     static const Int_t sdc2tot_ctot_id  = gHist.getSequentialID(kSDC2, 0, kADC,    1+kTOTcutOffset);
     static const Int_t sdc2t1st_ctot_id = gHist.getSequentialID(kSDC2, 0, kTDC2D,  1+kTOTcutOffset);
@@ -1060,6 +1068,7 @@ process_event()
 	for(Int_t m = 0; m<nhit_l; ++m) {
 	  tdc = gUnpacker.get(k_device, l, 0, w, k_leading, m);
 	  hptr_array[sdc2t_id + l]->Fill(tdc);
+	  hptr_array[sdc2t_wide_id + l]->Fill(tdc); //TDCwide
 	  if (tdc1st<tdc) tdc1st = tdc;
 
 	  // tdc 2D

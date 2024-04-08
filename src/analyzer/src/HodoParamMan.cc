@@ -119,7 +119,10 @@ HodoParamMan::Initialize( void )
 		      << " key = " << key << std::endl;
 	  delete pre_param;
 	}
-      }else if(at == 3){// for fiber position correction
+      }
+      else if(at == 2){
+      }
+      else if(at == 3){// for fiber position correction
 	if(input_line  >> p2 >> p3>> p4 >> p5 ){
 	  HodoFParam *pre_param = m_FPContainer[key];
 	  HodoFParam *param = new HodoFParam(p0,p1,p2,p3,p4,p5);
@@ -194,7 +197,7 @@ double HodoParamMan::GetPar( int cid, int plid, int seg, int ud, int i ) const
 {
   HodoFParam *map=GetFmap(cid,plid,seg,ud);
   if(!map) return -1;
-  
+
   double par=0;
   if(i==0)par=map->par0();
   else if(i==1)par=map->par1();
@@ -207,7 +210,7 @@ double HodoParamMan::GetPar( int cid, int plid, int seg, int ud, int i ) const
 }
 
 
-//______________________________________________________________________________                                             
+//______________________________________________________________________________
 double
 HodoParamMan::GetOffset(int cid, int plid, int seg, int ud) const
 {
@@ -218,7 +221,7 @@ HodoParamMan::GetOffset(int cid, int plid, int seg, int ud) const
 
 }
 
-//______________________________________________________________________________                                             
+//______________________________________________________________________________
 double
 HodoParamMan::GetGain(int cid, int plid, int seg, int ud) const
 {

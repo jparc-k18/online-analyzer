@@ -846,6 +846,19 @@ process_event()
 #endif
   }
 
+  { // BH2MTLR
+    static const auto device_id = gUnpacker.get_device_id("BH2MTLR");
+    static const auto tdc_id = gUnpacker.get_data_id("BH2MTLR", "tdc");
+    static const auto tdc_hid = gHist.getSequentialID(kBH2, 0, kTDC, 20);
+    for(Int_t seg=0; seg<NumOfSegBH2; ++seg) {
+      for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, seg, 0, tdc_id);
+	  m<n; ++m) {
+	auto tdc = gUnpacker.get(device_id, 0, seg, 0, tdc_id, m);
+	if (tdc != 0) hptr_array[tdc_hid + seg]->Fill(tdc);
+      }
+    }
+  }
+
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif

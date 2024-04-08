@@ -517,7 +517,7 @@ TList* HistMaker::createBC3( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,			
+			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kBC3, 0, kTDC2D, kTOTcutOffset);
@@ -757,7 +757,7 @@ TList* HistMaker::createBC4( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,			
+			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
 
@@ -778,7 +778,7 @@ TList* HistMaker::createBC4( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,			 
+			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kBC4, 0, kTDC2D, kTOTcutOffset);
@@ -1073,6 +1073,18 @@ TList* HistMaker::createBH2( Bool_t flag_ps )
 			     //			     10000, 0, 400000,
 			     50000, 0, 2000000,
 			     "TDC [ch]", ""));
+    }
+
+    // BH2MTLR(BH2 mean timer low reso.) ----------------------------------------------------
+    // Make histogram and add it
+    target_id = getUniqueID(kBH2, 0, kTDC, 20);
+    for(Int_t i = 0; i<NumOfSegBH2; ++i){
+      Int_t seg = i+1; // 1 origin
+      const char* title = Form("%s_MT_%s_%d", nameDetector, nameSubDir, seg);
+      sub_dir->Add(createTH1(target_id++, title, // 1 origin
+			     5000, 0, 5000,
+			     "TDC [ch]", ""));
+
     }
 
     // insert sub directory
@@ -3693,7 +3705,7 @@ TList* HistMaker::createSDC1( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,			 
+			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC1, 0, kTDC2D, 0);
@@ -3701,7 +3713,7 @@ TList* HistMaker::createSDC1( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,			
+			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
 
@@ -3722,7 +3734,7 @@ TList* HistMaker::createSDC1( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,			
+			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC1, 0, kTDC2D, kTOTcutOffset);
@@ -3730,7 +3742,7 @@ TList* HistMaker::createSDC1( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_C%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,		       
+			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
 
@@ -3956,7 +3968,7 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,			     
+			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC2, 0, kTDC2D, 0);
@@ -3964,7 +3976,7 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,			   
+			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
     //TDCwide
@@ -3984,7 +3996,7 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_C%s_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,		       
+			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
     target_id = getUniqueID(kSDC2, 0, kTDC2D, kTOTcutOffset);
@@ -3992,7 +4004,7 @@ TList* HistMaker::createSDC2( Bool_t flag_ps )
       const char* title = NULL;
       title = Form("%s_C%s1st_%s", nameDetector, nameSubDir, name_layer[i]);
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-			     1500, 0, 1500,			  
+			     1500, 0, 1500,
 			     "TDC [ch]", ""));
     }
 

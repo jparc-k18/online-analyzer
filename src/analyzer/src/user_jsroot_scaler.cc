@@ -433,7 +433,7 @@ process_event()
     if(host.Contains("k18term4") &&
        event_number > 1 && prev_spill != curr_spill){
       std::cout << "exec tagslip sound!" << std::endl;
-      // gSystem->Exec("ssh k18epics.monitor.k18net \"aplay ~/sound/tagslip.wav\" &");
+      gSystem->Exec("ssh k18epics.monitor.k18net \"aplay ~/sound/tagslip.wav\" &");
     }
     prev_spill = curr_spill;
   }

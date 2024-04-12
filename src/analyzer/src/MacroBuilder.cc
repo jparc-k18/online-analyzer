@@ -2018,6 +2018,23 @@ DAQ()
 
 //_____________________________________________________________________________
 TCanvas*
+BcOutSdcInMultiHit()
+{
+  Int_t target_id = HistMaker::getUniqueID(kDAQ, 0, kMultiHitTdc);
+  auto c1 = new TCanvas(__func__, __func__);
+  c1->Divide(6, 4);
+  Int_t n = NumOfLayersBcOut+NumOfLayersSdcIn;
+  for(Int_t i=0; i<n; ++i){
+    c1->cd(i + 1); //->SetGrid();
+    auto h1 = GHist::get( target_id++);
+    if(!h1) continue;
+    h1->Draw("colz");
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
 GeADC()
 {
   auto c1 = new TCanvas(__func__, __func__);

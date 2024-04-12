@@ -206,6 +206,7 @@ process_begin(const std::vector<std::string>& argv)
   gHttp.Register(http::Correlation());
   gHttp.Register(http::BFTAFTTOT());
   gHttp.Register(http::DAQ());
+  gHttp.Register(http::BcOutSdcInMultiHit());
 
   for(Int_t i=0, n=hptr_array.size(); i<n; ++i){
     hptr_array[i]->SetDirectory(0);
@@ -349,6 +350,7 @@ process_event(void)
     static const Int_t hul_hid = gHist.getSequentialID(kDAQ, kHUL, kHitPat2D);
     static const Int_t ea0c_hid = gHist.getSequentialID(kDAQ, kEASIROC, kHitPat2D);
     static const Int_t vea0c_hid = gHist.getSequentialID(kDAQ, kVMEEASIROC, kHitPat2D);
+    Int_t multihit_hid = gHist.getSequentialID(kDAQ, 0, kMultiHitTdc);
 
 
     { //___ EB
@@ -383,7 +385,54 @@ process_event(void)
         hptr_array[vea0c_hid]->Fill(i, data_size);
       }
     }
+    { //___ MultiHitTdc
+      { // BC3
+	static const Int_t k_device   = gUnpacker.get_device_id("BC3");
+	static const Int_t k_leading  = gUnpacker.get_data_id("BC3", "leading");
+	for(Int_t l=0; l<NumOfLayersBC3; ++l) {
+	  for(Int_t w=0; w<NumOfWireBC3; ++w) {
+	    Int_t nhit_l = gUnpacker.get_entries(k_device, l, 0, w, k_leading);
+	    hptr_array[multihit_hid]->Fill(w, nhit_l);
+	  }
+	  ++multihit_hid;
+	}
+      }
+      { // BC4
+	static const Int_t k_device   = gUnpacker.get_device_id("BC4");
+	static const Int_t k_leading  = gUnpacker.get_data_id("BC4", "leading");
+	for(Int_t l=0; l<NumOfLayersBC4; ++l) {
+	  for(Int_t w=0; w<NumOfWireBC4; ++w) {
+	    Int_t nhit_l = gUnpacker.get_entries(k_device, l, 0, w, k_leading);
+	    hptr_array[multihit_hid]->Fill(w, nhit_l);
+	  }
+	  ++multihit_hid;
+	}
+      }
+      { // SDC1
+	static const Int_t k_device   = gUnpacker.get_device_id("SDC1");
+	static const Int_t k_leading  = gUnpacker.get_data_id("SDC1", "leading");
+	for(Int_t l=0; l<NumOfLayersSDC1; ++l) {
+	  for(Int_t w=0; w<NumOfWireSDC1; ++w) {
+	    Int_t nhit_l = gUnpacker.get_entries(k_device, l, 0, w, k_leading);
+	    hptr_array[multihit_hid]->Fill(w, nhit_l);
+	  }
+	  ++multihit_hid;
+	}
+      }
+      { // SDC2
+	static const Int_t k_device   = gUnpacker.get_device_id("SDC2");
+	static const Int_t k_leading  = gUnpacker.get_data_id("SDC2", "leading");
+	for(Int_t l=0; l<NumOfLayersSDC2; ++l) {
+	  for(Int_t w=0; w<NumOfWireSDC2; ++w) {
+	    Int_t nhit_l = gUnpacker.get_entries(k_device, l, 0, w, k_leading);
+	    hptr_array[multihit_hid]->Fill(w, nhit_l);
+	  }
+	  ++multihit_hid;
+	}
+      }
+    }
   }
+
 
 #endif
 

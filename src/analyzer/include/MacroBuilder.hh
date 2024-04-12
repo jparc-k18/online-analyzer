@@ -94,6 +94,7 @@ TCanvas* BFTAFTTOT();
 TCanvas* BFTSCHTOT();
 TCanvas* BFTSFTSCHTOT();
 TCanvas* DAQ();
+TCanvas* BcOutSdcInMultiHit();
 void     UpdateTOTPeakFitting();
 
 // BeamProfile

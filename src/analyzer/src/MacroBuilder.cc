@@ -3221,16 +3221,14 @@ TCanvas*
 BFTAFTTOT()
 {
   auto c1 = new TCanvas(__func__, __func__);
-  c1->Divide(4, 2);
+  c1->Divide(3, 2);
   std::vector<Int_t> hist_id = {
     HistMaker::getUniqueID(kBFT, 0, kADC, 1),
     HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+1),
     HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+2),
-    HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+3),
     HistMaker::getUniqueID(kBFT, 0, kADC, 2),
+    HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+3),
     HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+4),
-    HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+5),
-    HistMaker::getUniqueID(kAFT, 0, kTOT, kUorD*NumOfPlaneAFT+6)
   };
   for(Int_t i=0, n=hist_id.size(); i<n; ++i){
     c1->cd(i+1);
@@ -4206,13 +4204,12 @@ UpdateTOTPeakFittingE70()
   if(!c1)
     return;
   static std::vector<TString> name = {
-    "BFT_TOT_U", "AFT_TOT_X1-3", "AFT_TOT_X4-6", "AFT_TOT_X7-9",
-    "BFT_TOT_D", "AFT_TOT_Y1-3", "AFT_TOT_Y4-6", "AFT_TOT_Y7-9",
-  };
+    "BFT_TOT_U", "AFT_TOT_X-U", "AFT_TOT_X-D",
+    "BFT_TOT_D", "AFT_TOT_Y-U", "AFT_TOT_Y-D",
+ };
   static std::vector<Double_t> optval = {
     gUser.GetParameter("TotRefBFT"), gUser.GetParameter("TotRefAFT"),
-    gUser.GetParameter("TotRefAFT"), gUser.GetParameter("TotRefAFT"),
-    gUser.GetParameter("TotRefBFT"), gUser.GetParameter("TotRefAFT"),
+    gUser.GetParameter("TotRefAFT"), gUser.GetParameter("TotRefBFT"),
     gUser.GetParameter("TotRefAFT"), gUser.GetParameter("TotRefAFT"),
   };
   static std::vector<TLine*> line(name.size());
@@ -4241,6 +4238,7 @@ UpdateTOTPeakFittingE70()
     line[i] = new TLine(optval[i], 0., optval[i], h->GetMaximum());
     line[i]->Draw();
   }
+
 }
 
 //_____________________________________________________________________________

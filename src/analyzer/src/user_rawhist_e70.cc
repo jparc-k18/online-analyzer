@@ -308,6 +308,7 @@ process_event()
     static const Int_t hul_hid = gHist.getSequentialID(kDAQ, kHUL, kHitPat2D);
     static const Int_t ea0c_hid = gHist.getSequentialID(kDAQ, kEASIROC, kHitPat2D);
     static const Int_t vea0c_hid = gHist.getSequentialID(kDAQ, kVMEEASIROC, kHitPat2D);
+    static const Int_t hulof_hid = gHist.getSequentialID(kDAQ, kHULOverflow, kHitPat2D);
     Int_t multihit_hid = gHist.getSequentialID(kDAQ, 0, kMultiHitTdc);
 
     { //___ EB
@@ -388,6 +389,14 @@ process_event()
 	  ++multihit_hid;
 	}
       }
+
+      // { // HUL node overflow
+      // 	for(Int_t i=0, n=hul_fe_id.size(); i<n; ++i) {
+      // 	  auto overflow = gUnpacker.get_node_header(hul_fe_id[i], DAQNode::);
+      // 	  hptr_array[hul_hid]->Fill(i, overflow);
+      // 	}
+      // }
+
     }
   }
 

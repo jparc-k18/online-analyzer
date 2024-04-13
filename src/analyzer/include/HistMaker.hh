@@ -67,7 +67,7 @@ enum SubDetectorType {
   kHul2D, kHul3D, kSelfCorr,
   // DAQ unique sub ID
   kEB, kTKO, kVME, kCLite, kEASIROC, kCAMAC, kCoBo,
-  kMiscNode, kHUL, kOpt,
+  kMiscNode, kHUL, kOpt, kHULOverflow,
   sizeSubDetectorType,
   factorSubDetectorType = 100000
 };

@@ -67,6 +67,23 @@ void dispSDC1( void )
       if( !hh ) continue;
       hh->SetLineColor( kRed );
       hh->Draw("same");
+      TF1 f("f", "gaus", 0., 100.);
+      f.SetLineColor(kBlue);
+      Double_t p = h->GetBinCenter(h->GetMaximumBin());
+      // if(p < 30.) p = 70.;
+      Double_t w = 10.;
+      for(Int_t ifit=0; ifit<3; ++ifit){
+	Double_t fmin = p - w;
+	Double_t fmax = p + w;
+	h->Fit("f", "Q", "", fmin, fmax);
+	p = f.GetParameter(1);
+	w = f.GetParameter(2) * 1.;
+      }
+      f.Draw("same");
+      TLatex *text = new TLatex();
+      text->SetNDC();
+      text->SetTextSize(0.07);
+      text->DrawLatex(0.400, 0.500, Form("%.1f", p));
     }
     c->Update();
   }

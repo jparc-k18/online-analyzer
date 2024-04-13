@@ -63,6 +63,7 @@ dispDAQ( void )
     Int_t target_id = HistMaker::getUniqueID(kBH2, 0, kTDC, 20);
     for( Int_t i=0; i<NumOfSegBH2; i++ ){
       c->cd(i+1);
+      c->GetPad(i+1)->SetLogy();
       TH1 *h = GHist::get( target_id+i );
       if( h ) h->Draw();
     }

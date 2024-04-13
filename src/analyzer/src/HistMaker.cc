@@ -7604,6 +7604,17 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 			       "ch", "MultiHitTdc"));
       }
     }
+    { // BH2MTLR
+      TString strDet = CONV_STRING(kBH2);
+      const char* nameDetector = strDet.Data();
+      // Add to the top directory
+      const char* title = Form("%s_MT_%s", nameDetector, nameSubDir);
+      sub_dir->Add(createTH2(target_id++, title, // 1 origin
+			     NumOfSegBH2, 0, NumOfSegBH2,
+			     20, 0, 20,
+			     "ch", "MultiHitTdc"));
+    }
+
     top_dir->Add(sub_dir);
   }
 

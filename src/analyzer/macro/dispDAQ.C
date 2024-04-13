@@ -42,10 +42,11 @@ dispDAQ( void )
     c->Clear();
     c->Divide( 6, 4 );
     Int_t target_id = HistMaker::getUniqueID(kDAQ, 0, kMultiHitTdc);
-    Int_t n = NumOfLayersBcOut+NumOfLayersSdcIn;
+    Int_t n = NumOfLayersBcOut+NumOfLayersSdcIn+1;
     for( Int_t i=0; i<n; i++ ){
       c->cd(i+1);
       gPad->SetGrid();
+      c->GetPad(i+1)->SetLogz();
       TH1 *h = GHist::get( target_id++ );
       h->SetStats(0);
       if( h ) h->Draw("colz");

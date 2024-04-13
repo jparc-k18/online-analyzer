@@ -389,6 +389,15 @@ process_event()
 	  ++multihit_hid;
 	}
       }
+      { // BH2MTLR
+	static const auto device_id = gUnpacker.get_device_id("BH2MTLR");
+	static const auto tdc_id = gUnpacker.get_data_id("BH2MTLR", "tdc");
+	for(Int_t seg=0; seg<NumOfSegBH2; ++seg) {
+	  Int_t nhit_l = gUnpacker.get_entries(device_id, 0, seg, 0, tdc_id);
+	  hptr_array[multihit_hid]->Fill(seg, nhit_l);
+	}
+	++multihit_hid;
+      }
 
       // { // HUL node overflow
       // 	for(Int_t i=0, n=hul_fe_id.size(); i<n; ++i) {

@@ -47,8 +47,11 @@ dispDAQ( void )
       c->cd(i+1);
       gPad->SetGrid();
       TH1 *h = GHist::get( target_id++ );
+      h->SetStats(0);
       if( h ) h->Draw("colz");
-      else std::cout << "check" << std::endl;
+      TF1 *f = new TF1("f", "16", 0., 100.);
+      f->SetLineColor(kBlack);
+      f->Draw("same");
     }
     c->Update();
   }

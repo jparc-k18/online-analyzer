@@ -107,6 +107,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("effAFT"));
   tab_macro->Add(macro::Get("dispDAQ"));
   tab_macro->Add(macro::Get("dispAFT_Eff_Hitpat_Yadc"));
+  tab_macro->Add(macro::Get("dispAFT_TOTxTDC"));
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
@@ -217,12 +218,65 @@ process_event( void )
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
 
+  // std::vector<Int_t> hitseg_bh2;
+  // { ///// BH2
+  //   static const auto bh2_device_id = gUnpacker.get_device_id("BH2");
+  //   static const auto bh2_adc_id = gUnpacker.get_data_id("BH2", "adc");
+  //   static const auto bh2_tdc_id = gUnpacker.get_data_id("BH2", "tdc");
+  //   static const auto bh2_tdc_min = gUser.GetParameter("TdcBH2", 0);
+  //   static const auto bh2_tdc_max = gUser.GetParameter("TdcBH2", 1);
+  //   static const auto bh2_adc_hid = gHist.getSequentialID(kBH2, 0, kADC);
+  //   static const auto bh2_tdc_hid = gHist.getSequentialID(kBH2, 0, kTDC);
+  //   static const auto bh2_awt_hid = gHist.getSequentialID(kBH2, 0, kADCwTDC);
+  //   static const auto bh2_hit_hid = gHist.getSequentialID(kBH2, 0, kHitPat);
+  //   static const auto bh2_mul_hid = gHist.getSequentialID(kBH2, 0, kMulti);
+  //   std::vector<std::vector<Int_t>> hit_flag(NumOfSegBH2);
+  //   bool flag_hit_wbh2 = false; //for AFT
+
+  //   UInt_t bh2_multiplicity = 0;
+  //   for(Int_t seg=0; seg<NumOfSegBH2; ++seg) {
+  //     hit_flag[seg].resize(kUorD);
+  //     for(Int_t ud=0; ud<2; ++ud) {
+  // 	auto nhit = gUnpacker.get_entries(bh2_device_id, 0, seg, ud, bh2_adc_id);
+  // 	UInt_t adc = 0;
+  // 	if (nhit != 0) {
+  // 	  adc = gUnpacker.get(bh2_device_id, 0, seg, ud, bh2_adc_id);
+  // 	  //hptr_array[bh2_adc_hid + seg + ud*NumOfSegBH2]->Fill(adc);
+  // 	}
+  // 	// TDC
+  // 	for(Int_t m=0, n=gUnpacker.get_entries(bh2_device_id, 0, seg, ud, bh2_tdc_id);
+  // 	    m<n; ++m) {
+  // 	  auto tdc = gUnpacker.get(bh2_device_id, 0, seg, ud, bh2_tdc_id, m);
+  // 	  if (tdc != 0) {
+  // 	    //hptr_array[bh2_tdc_hid + seg + ud*NumOfSegBH2]->Fill(tdc);
+  // 	    if (bh2_tdc_min < tdc && tdc < bh2_tdc_max && adc > 0) {
+  // 	      hit_flag[seg][ud] = 1;
+  // 	    }
+  // 	  }
+  // 	}
+  // 	if (hit_flag[seg][ud] == 1) {
+  // 	  //hptr_array[bh2_awt_hid + seg + ud*NumOfSegBH2]->Fill(adc);
+  // 	}
+  //     }
+  //     if (hit_flag[seg][kU] == 1 && hit_flag[seg][kD] == 1) {
+  // 	++bh2_multiplicity;
+  // 	//hptr_array[bh2_hit_hid]->Fill(seg);
+  // 	hitseg_bh2.push_back(seg);
+  // 	if(seg == 3 || seg == 4 || seg == 5 || seg == 6){
+  // 	  //if(seg == 4 || seg == 5){
+  // 	  flag_hit_wbh2 = true;
+  // 	}
+  //     }
+  //   }
+    //hptr_array[bh2_mul_hid]->Fill(multiplicity);
+    // }
+
 //  if( trigger_flag[SpillEndFlag] ) return 0;
 
   //------------------------------------------------------------------
   // AFT
   //------------------------------------------------------------------
-  {
+    {
     // data type
     static const int k_device   = gUnpacker.get_device_id("AFT");
     static const int k_leading  = gUnpacker.get_data_id("AFT" , "leading");
@@ -272,6 +326,7 @@ process_event( void )
     int multiplicity_pair[NumOfPlaneAFT/2];
     int multiplicity_wa[NumOfPlaneAFT];
     int multiplicity_pair_wa[NumOfPlaneAFT/2];
+
     for(int l=0; l<NumOfPlaneAFT; ++l){
       std::vector<std::vector<bool>> flag_hit_wt(NumOfSegAFT[l%4], std::vector<bool>(kUorD, false));
       std::vector<std::vector<bool>> flag_hit_wa(NumOfSegAFT[l%4], std::vector<bool>(kUorD, false));
@@ -327,7 +382,8 @@ process_event( void )
 		int nhit_hg = gUnpacker.get_entries(k_device, l, seg, ud, k_highgain);
 		if( nhit_hg != 0 ){
 		  int adc_hg = gUnpacker.get(k_device, l, seg, ud, k_highgain, 0);
-		  hptr_array[aft_hg_t_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg, tdc);
+		  //hptr_array[aft_hg_t_id+ud*NumOfPlaneAFT+l]->Fill(adc_hg, tdc);
+		  hptr_array[aft_hg_t_id+ud*NumOfPlaneAFT+l]->Fill(tdc, adc_hg);
 		}
 	      }
 	    }
@@ -371,6 +427,16 @@ process_event( void )
 		hptr_array[aft_tot_2d_id+ud*NumOfPlaneAFT+l]->Fill(seg, tot);
 		hptr_array[aft_tot_t_id+ud*NumOfPlaneAFT+l]->Fill(tot, tdc);
 
+		//tot * tdc seg by seg for aft correction
+		if( ud == 0 && l == 0){
+		  if(seg==0) hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+0]->Fill(tot, tdc);
+		  if(seg==31) hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+1]->Fill(tot, tdc);
+		}
+		if( ud == 0 && l == 1 ){
+		  if(seg==0) hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+2]->Fill(tot, tdc);
+		  if(seg==8) hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+3]->Fill(tot, tdc);
+		}
+
 		if(l%4 == 0 || l%4 == 1)
 		  hptr_array[aft_tot_id+kUorD*NumOfPlaneAFT + ud + 0]->Fill(tot);
 		if(l%4 == 2 || l%4 == 3)
@@ -403,15 +469,23 @@ process_event( void )
 	if( flag_hit_wt[seg][kU] && flag_hit_wt[seg][kD] ){ // hitpat & multiplicity of hit on both endsw
 	  ++multiplicity[l];
 	  hptr_array[aft_chit_id+kUorD*NumOfPlaneAFT+l]->Fill(seg);
-	  double posx = gAftHelper.GetX( l, seg );
-	  double posz = gAftHelper.GetZ( l, seg );
-	  if( l%4 == 0 || l%4 == 1 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+0]->Fill(posz, posx);
-	  if( l%4 == 2 || l%4 == 3 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+1]->Fill(posz, posx);
+	  // double posx = gAftHelper.GetX( l, seg );
+	  // double posz = gAftHelper.GetZ( l, seg );
+	  // if( l%4 == 0 || l%4 == 1 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+0]->Fill(posz, posx);
+	  // if( l%4 == 2 || l%4 == 3 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+1]->Fill(posz, posx);
 	  //multiplicity with adc
-	  if( flag_hit_wa[seg][kU] && flag_hit_wa[seg][kD] ){
+	  if( flag_hit_wa[seg][kU] && flag_hit_wa[seg][kD]){
+	    double posx = gAftHelper.GetX( l, seg );
+	    double posz = gAftHelper.GetZ( l, seg );
+	    if( l%4 == 0 || l%4 == 1 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+0]->Fill(posz, posx);
+	    if( l%4 == 2 || l%4 == 3 ) hptr_array[aft_chit_id+(kUorD+1)*NumOfPlaneAFT+1]->Fill(posz, posx);
 	    ++multiplicity_wa[l];
 	    hptr_array[aft_chit_id+(2*kUorD+1)*NumOfPlaneAFT+kUorD+l]->Fill(seg);
 	  }
+	  //if( flag_hit_wa[seg][kU] && flag_hit_wa[seg][kD] && flag_hit_wbh2){
+	  //  ++multiplicity_wa[l];
+	  //   hptr_array[aft_chit_id+(2*kUorD+1)*NumOfPlaneAFT+kUorD+l]->Fill(seg);w
+	  // }
 	}
       } // for in NumOfSegAFT
       hptr_array[aft_mul_id+l]->Fill(multiplicity[l]);
@@ -436,6 +510,14 @@ process_event( void )
       if( flag ) hptr_array[aft_mul_id+NumOfPlaneAFT+NumOfPlaneAFT/2+i]->Fill(multiplicity_pair[i]);
     }
 
+    // w/bh2 and AFT-X1, Y9 plane (to study efficiency for 0.4GeV/c pi- beam in 20240413)
+    // if(multiplicity_pair_wa[0] != 0 && multiplicity_pair_wa[17] != 0){
+    //   for( int i = 0; i < NumOfPlaneAFT; i++ ){
+    // 	  if(i%2 == 1){
+    // 	    hptr_array[aft_mul_id+3*NumOfPlaneAFT+i/2]->Fill(multiplicity_pair_wa[i/2]);
+    // 	  }
+    //   }
+    // }
     //   //clustering analysis
   // hodoAna->DecodeAFTHits(rawData);
   // // Fiber Cluster

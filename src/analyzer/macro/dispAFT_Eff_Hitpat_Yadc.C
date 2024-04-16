@@ -141,13 +141,20 @@ dispAFT_Eff_Hitpat_Yadc( void )
     for( int l = 0; l < NumOfPlaneAFT; l++ ){
       if( l%4 != 0 && l%4 != 1 ) continue;
       c->cd(l/2+1+l%2);
+      // TH1 *h = (TH1*)GHist::get( aft_chit_id+l );
+      // h->SetMinimum(0);
+      // if( h ) h->Draw();
+      // TH1 *hh = (TH1*)GHist::get( aft_chit_id+3*NumOfPlaneAFT+kUorD+l );
+      // if( !hh ) continue;
+      // hh->SetLineColor(kBlue);
+      // hh->Draw("same");
       TH1 *h = (TH1*)GHist::get( aft_chit_id+l );
-      h->SetMinimum(0);
-      if( h ) h->Draw();
       TH1 *hh = (TH1*)GHist::get( aft_chit_id+3*NumOfPlaneAFT+kUorD+l );
-      if( !hh ) continue;
+      h->SetMinimum(0);
       hh->SetLineColor(kBlue);
-      hh->Draw("same");
+      if( hh ) hh->Draw();
+      if( !h ) continue;
+      h->Draw("same");
     }
     c->Update();
   }
@@ -160,13 +167,21 @@ dispAFT_Eff_Hitpat_Yadc( void )
     for( int l = 0; l < NumOfPlaneAFT; l++ ){
       if( l%4 != 2 && l%4 != 3 ) continue;
       c->cd(l/2+l%2);
+      // TH1 *h = (TH1*)GHist::get( aft_chit_id+l );
+      // h->SetMinimum(0);
+      // if( h ) h->Draw();
+      // TH1 *hh = (TH1*)GHist::get( aft_chit_id+3*NumOfPlaneAFT+kUorD+l );
+      // if( !hh ) continue;
+      // hh->SetLineColor(kBlue);
+      // hh->Draw("same");
+
       TH1 *h = (TH1*)GHist::get( aft_chit_id+l );
-      h->SetMinimum(0);
-      if( h ) h->Draw();
       TH1 *hh = (TH1*)GHist::get( aft_chit_id+3*NumOfPlaneAFT+kUorD+l );
-      if( !hh ) continue;
+      h->SetMinimum(0);
       hh->SetLineColor(kBlue);
-      hh->Draw("same");
+      if( hh ) hh->Draw();
+      if( !h ) continue;
+      h->Draw("same");
     }
     c->Update();
   }

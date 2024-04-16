@@ -2097,6 +2097,31 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 				"TOT [ch]", "TDC [ch]"));
       }
     }
+    //TOT * TDC segment by segment for AFT correction
+    const char* title = NULL;
+    const TString layer_name = NameOfPlaneAFT[0];
+    title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name.Data(), 0);
+    sub_dir->Add(createTH2( ++target_id, title ,
+				150, 0, 150,
+				1024, 0, 1024,
+				"TOT [ch]", "TDC [ch]"));
+    title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name.Data(), 31);
+    sub_dir->Add(createTH2( ++target_id, title ,
+				150, 0, 150,
+				1024, 0, 1024,
+				"TOT [ch]", "TDC [ch]"));
+    const TString layer_name_y = NameOfPlaneAFT[2];
+    title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name_y.Data(), 0);
+    sub_dir->Add(createTH2( ++target_id, title ,
+				150, 0, 150,
+				1024, 0, 1024,
+				"TOT [ch]", "TDC [ch]"));
+    title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name_y.Data(), 8);
+    sub_dir->Add(createTH2( ++target_id, title ,
+				150, 0, 150,
+				1024, 0, 1024,
+				"TOT [ch]", "TDC [ch]"));
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -2122,7 +2147,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   			      4096/8, 0, 4096,
   			      // 1024, 0, 1024,
   			      4096, 0, 4096,
-  			      "HighGain [ch]", "TDC [ch]"));
+  			      "TDC [ch]", "HighGain [ch]"));
       }
     }
     // insert sub directory
@@ -8409,7 +8434,7 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
       title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
-			     1024, 0, 1024,
+			     4096, 0, 4095,
 			     "ch", "TDC [ch]"));
     }
     // insert sub directory

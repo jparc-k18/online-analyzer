@@ -18,6 +18,9 @@ void dispBAC1_y2020()
   TCanvas *c2 = (TCanvas*)gROOT->FindObject("c2");
   c2->Clear();
   c2->Divide(3,2);
+  TCanvas *c3 = (TCanvas*)gROOT->FindObject("c3");
+  c3->Clear();
+  c3->Divide(2,2);
 
   c->cd(1);
   gPad->SetLogy();
@@ -272,6 +275,80 @@ void dispBAC1_y2020()
 
   c2->cd(0);
 
+  // You must write these lines for the thread safe
+  // ----------------------------------
+  Updater::setUpdating(false);
+  // ----------------------------------
+
+  c3->cd(1);
+  {
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+4);
+    h->GetXaxis()->SetRangeUser(0,5);
+    h->Draw();
+    int bin0 = h->GetBinContent(1);
+    int bin1 = h->GetBinContent(2);
+    std::stringstream oss;
+    oss.str("");
+    oss << "Eff[pi]: " << std::fixed << std::setprecision(2) << ((double)bin1/(double)bin0)*100. << "%";
+    TText *t1 = new TText(0.5,0.8,oss.str().c_str());
+    t1->SetNDC(1);
+    t1->SetTextColor(kBlack);
+    t1->SetTextSize(0.06);
+    t1->Draw("same");
+  }
+
+  c3->cd(2);
+  {
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+5);
+    h->GetXaxis()->SetRangeUser(0,5);
+    h->Draw();
+    int bin0 = h->GetBinContent(1);
+    int bin1 = h->GetBinContent(2);
+    std::stringstream oss;
+    oss.str("");
+    oss << "Eff[K]: " << std::fixed << std::setprecision(2) << ((double)bin1/(double)bin0)*100. << "%";
+    TText *t1 = new TText(0.5,0.8,oss.str().c_str());
+    t1->SetNDC(1);
+    t1->SetTextColor(kBlack);
+    t1->SetTextSize(0.06);
+    t1->Draw("same");
+  }
+
+  c3->cd(3);
+  {
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+4+19+8);
+    h->GetXaxis()->SetRangeUser(0,5);
+    h->Draw();
+    int bin0 = h->GetBinContent(1);
+    int bin1 = h->GetBinContent(2);
+    std::stringstream oss;
+    oss.str("");
+    oss << "Eff[pi]: " << std::fixed << std::setprecision(2) << ((double)bin1/(double)bin0)*100. << "%";
+    TText *t1 = new TText(0.5,0.8,oss.str().c_str());
+    t1->SetNDC(1);
+    t1->SetTextColor(kBlack);
+    t1->SetTextSize(0.06);
+    t1->Draw("same");
+  }
+  c3->cd(4);
+  {
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+5+19+8);
+    h->GetXaxis()->SetRangeUser(0,5);
+    h->Draw();
+    int bin0 = h->GetBinContent(1);
+    int bin1 = h->GetBinContent(2);
+    std::stringstream oss;
+    oss.str("");
+    oss << "Eff[K]: " << std::fixed << std::setprecision(2) << ((double)bin1/(double)bin0)*100. << "%";
+    TText *t1 = new TText(0.5,0.8,oss.str().c_str());
+    t1->SetNDC(1);
+    t1->SetTextColor(kBlack);
+    t1->SetTextSize(0.06);
+    t1->Draw("same");
+  }
+  c3->Update();
+
+  c3->cd(0);
   // You must write these lines for the thread safe
   // ----------------------------------
   Updater::setUpdating(false);

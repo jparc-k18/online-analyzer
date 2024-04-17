@@ -238,8 +238,9 @@ DCDriftParamMan::DriftLength6( int PlaneId, double dt,
     else
       return dl;
     break;
-    // SDC1
+    // SDC1&2
   case 1: case 2: case 3: case 4: case 5: case 6:
+  case 7: case 8: case 9: case 10:
     if( dt<-10 || 150<dt ) // Loose drift time selection
       return 999.9;
     // if( dt>120. ){
@@ -253,10 +254,10 @@ DCDriftParamMan::DriftLength6( int PlaneId, double dt,
     else
       return dl;
     break;
-  case 7: case 8: case 9:
-    return 0.;
-    // SDC2
+    // SDC3, 4, 5
   case 31: case 32: case 33: case 34:
+  case 35: case 36: case 37: case 38:
+  case 39: case 40: case 41: case 42:
     if( dt<-20. || dt>150. )
       return 999.9;
     if( dl>4.5 || dt>120. )
@@ -266,17 +267,17 @@ DCDriftParamMan::DriftLength6( int PlaneId, double dt,
     else
       return dl;
     break;
-    //For SDC3
-  case 35: case 36: case 37: case 38:
-    if( dt<-20. || dt>300. )
-      return 999.9;
-    if( dl>10. || dt>250. )
-      return 10.0;
-    if( dl<0. )
-      return 0.;
-    else
-      return dl;
-    break;
+  //   //For SDC3
+  // case 35: case 36: case 37: case 38:
+  //   if( dt<-20. || dt>300. )
+  //     return 999.9;
+  //   if( dl>10. || dt>250. )
+  //     return 10.0;
+  //   if( dl<0. )
+  //     return 0.;
+  //   else
+  //     return dl;
+  //   break;
   default:
     hddaq::cerr << "#E " << func_name << " "
 		<< "invalid plane id : " << PlaneId << std::endl;

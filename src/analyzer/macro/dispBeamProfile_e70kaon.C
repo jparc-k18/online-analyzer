@@ -2,7 +2,7 @@
 using namespace hddaq::gui;
 #include<algorithm>
 
-void dispBeamProfile_e70()
+void dispBeamProfile_e70kaon()
 {
   // You must write these lines for the thread safe
   // ----------------------------------
@@ -82,7 +82,7 @@ void dispBeamProfile_e70()
     c->Divide(4,2);
 
     TLine *line[n_hist][2];
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat);
+    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat)+n_hist*3;
     for(int i=0; i<n_hist; i++){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get(base_id +i)->Clone();
@@ -113,7 +113,7 @@ void dispBeamProfile_e70()
     c->Divide(4,2);
 
     TLine *line[n_hist][2];
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat);
+    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat)+n_hist*3;
     for(int i=0; i<n_hist; i++){
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get(base_id +i + n_hist)->Clone();
@@ -142,7 +142,7 @@ void dispBeamProfile_e70()
     c->Clear();
     c->UseCurrentStyle();
     c->Divide(4,2);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat);
+    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat)+n_hist*3;
     TF1 *f = new TF1("f", "gaus");
     f->SetLineColor(kBlue);
     for(int i=0; i<n_hist; i++){
@@ -155,8 +155,7 @@ void dispBeamProfile_e70()
       sigma[0][i] = f->GetParameter("Sigma");
       gaus_mean[0][i] = f->GetParameter("Mean");
       h->Draw();
-      tex.DrawLatex(xpos, ypos, Form("%.2lf", gaus_mean[0][i]));
-      tex.DrawLatex(xpos, ypos-0.1, Form("%.2lf", sigma[0][i]));
+      tex.DrawLatex(xpos, ypos, Form("%.2lf", sigma[0][i]));
     }// for(i)
     c->Update();
     //    c->Print("~/PSFile/pro/beamprofile_e40.ps");
@@ -167,7 +166,7 @@ void dispBeamProfile_e70()
     c->Clear();
     c->UseCurrentStyle();
     c->Divide(4,2);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat);
+    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat)+n_hist*3;
     TF1 *f = new TF1("f", "gaus");
     f->SetLineColor(kBlue);
     for(int i=0; i<n_hist; i++){
@@ -180,8 +179,7 @@ void dispBeamProfile_e70()
       sigma[1][i] = f->GetParameter("Sigma");
       gaus_mean[1][i] = f->GetParameter("Mean");
       h->Draw();
-      tex.DrawLatex(xpos, ypos, Form("%.2lf", gaus_mean[1][i]));
-      tex.DrawLatex(xpos, ypos-0.1, Form("%.2lf", sigma[1][i]));
+      tex.DrawLatex(xpos, ypos, Form("%.2lf", sigma[1][i]));
     }// for(i)
     c->Update();
     //    c->Print("~/PSFile/pro/beamprofile_e40.ps");
@@ -217,7 +215,7 @@ void dispBeamProfile_e70()
       gr->SetMinimum(gmin);
       gr->Draw("AP");
       TGraph *gs = new TGraph(n_hist, ff, sigma[0] );
-      gs->SetTitle("BeamProfile X (sigma)");
+      gs->SetTitle("BeamProfile X (sigma) kaon");
       gs->GetXaxis()->SetTitle("From FF [mm]");
       gs->GetYaxis()->SetTitle("[mm]  ");
       gs->GetYaxis()->SetTitleOffset(1.2);
@@ -250,7 +248,7 @@ void dispBeamProfile_e70()
       double gmin = ymin-0.1*fabs(ymin);
       c->cd(2)->SetGrid();
       TGraph *gr = new TGraph(n_hist, ff, rms[1] );
-      gr->SetTitle("Ywidth (RMS=Red, Sigma=Blue)");
+      gr->SetTitle("Ywidth (RMS=Red, Sigma=Blue) kaon");
       gr->GetXaxis()->SetTitle("From FF [mm]");
       gr->GetYaxis()->SetTitle("[mm]  ");
       gr->GetYaxis()->SetTitleOffset(1.2);
@@ -294,7 +292,7 @@ void dispBeamProfile_e70()
       double gmin = ymin-0.1*fabs(ymin);
       c->cd(3)->SetGrid();
       TGraph *gm = new TGraph(n_hist, ff, mean[0] );
-      gm->SetTitle("Xpos (Mean=Red, Gaus Mean=Blue)");
+      gm->SetTitle("Xpos (Mean=Red, Gaus Mean=Blue) kaon");
       gm->GetXaxis()->SetTitle("From FF [mm]");
       gm->GetYaxis()->SetTitle("[mm]  ");
       gm->GetYaxis()->SetTitleOffset(1.2);
@@ -338,7 +336,7 @@ void dispBeamProfile_e70()
       double gmin = ymin-0.1*fabs(ymin);
       c->cd(4)->SetGrid();
       TGraph *gm = new TGraph(n_hist, ff, mean[1] );
-      gm->SetTitle("Ypos (Mean=Red, Gaus Mean=Blue)");
+      gm->SetTitle("Ypos (Mean=Red, Gaus Mean=Blue) kaon");
       gm->GetXaxis()->SetTitle("From FF [mm]");
       gm->GetYaxis()->SetTitle("[mm]  ");
       gm->GetYaxis()->SetTitleOffset(1.2);

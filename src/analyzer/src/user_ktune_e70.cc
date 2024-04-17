@@ -52,6 +52,7 @@ namespace analyzer
     const UserParamMan& gUser = UserParamMan::GetInstance();
 
     const Double_t dist_FF = 1200.;
+    const Double_t dist_D1 = 2100.62;
 
     std::vector<TH1*> hptr_array;
 
@@ -90,14 +91,23 @@ namespace analyzer
     //   };
 
 
-    enum HistName
+    enum HistName_FF
     {
-      FF_m400, FF_m200, FF_0, FF_200, FF_400, FF_600,
-      NHist
+      FF_m400, FF_m200, FF_0, FF_200, FF_400, FF_600, FF_800,
+      NHist_FF
     };
-    static const double FF_plus[NHist] =
+    static const double FF_plus[NHist_FF] =
       {
-       -400., -200., 0, 200., 400., 600.
+	-400., -200., 0, 200., 400., 600., 800.
+      };
+    enum HistName_D1
+    {
+      D1_400, D1_700, D1_1000, D1_1300, D1_1600, D1_1900,
+      NHist_D1
+    };
+    static const double D1_plus[NHist_D1] =
+      {
+	400., 700., 1000., 1300., 1600., 1900.
       };
     //static Double_t FF_plus = 0;
   }
@@ -148,14 +158,17 @@ process_begin( const std::vector<std::string>& argv )
     //sub_dir->Add(macro::Get("dispBAC2_y2020"));
     //sub_dir->Add(macro::Get("dispPVAC_y2020"));
     //sub_dir->Add(macro::Get("dispFAC_y2020"));
-    sub_dir->Add(macro::Get("dispE03targeting_y2020"));
+    sub_dir->Add(macro::Get("dispE70targeting"));
     tab_macro->Add(sub_dir);
   }
   tab_macro->Add(macro::Get("dispKtune202006"));
   tab_macro->Add(macro::Get("dispHitPat_y2020"));
   tab_macro->Add(macro::Get("dispHitPat_y2020kaon"));
-  tab_macro->Add(macro::Get("dispBeamProfile_e42_2021"));
-  tab_macro->Add(macro::Get("dispBeamProfile_e42_2021kaon"));
+  tab_macro->Add(macro::Get("dispBeamProfile_e70"));
+  tab_macro->Add(macro::Get("dispBeamProfile_e70kaon"));
+  tab_macro->Add(macro::Get("dispS2sProfile_e70"));
+  tab_macro->Add(macro::Get("dispS2sProfile_e70kaon"));
+  tab_macro->Add(macro::Get("dispSdcOutResidual"));
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
@@ -168,14 +181,14 @@ process_begin( const std::vector<std::string>& argv )
     Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat);
 
      // Profile X
-    for(int i = 0; i<NHist; ++i){
+    for(int i = 0; i<NHist_FF; ++i){
       char* title = Form("%s FF %d_X", nameSubDir, (int)FF_plus[i]);
       sub_dir->Add(gHist.createTH1(unique_id++, title,
     				    400,-200,200,
     				    "x position [mm]", ""));
     }
     // Profile Y
-    for(int i = 0; i<NHist; ++i){
+    for(int i = 0; i<NHist_FF; ++i){
       char* title = Form("%s FF %d_Y", nameSubDir, (int)FF_plus[i]);
       sub_dir->Add(gHist.createTH1(unique_id++, title,
     				    200,-100,100,
@@ -183,7 +196,7 @@ process_begin( const std::vector<std::string>& argv )
     }
     tab_hist->Add(sub_dir);
     // Profile XY
-    for(int i = 0; i<NHist; ++i){
+    for(int i = 0; i<NHist_FF; ++i){
       char* title = Form("%s FF %d_XY", nameSubDir, (int)FF_plus[i]);
       sub_dir->Add(gHist.createTH2(unique_id++, title,
     				   400,-200,200, 200,-100,100,
@@ -193,14 +206,14 @@ process_begin( const std::vector<std::string>& argv )
 
 
      // Profile X kaon
-    for(int i = 0; i<NHist; ++i){
+    for(int i = 0; i<NHist_FF; ++i){
       char* title = Form("%s FF %d_X kaon", nameSubDir, (int)FF_plus[i]);
       sub_dir->Add(gHist.createTH1(unique_id++, title,
     				    400,-200,200,
     				    "x position [mm]", ""));
     }
     // Profile Y kaon
-    for(int i = 0; i<NHist; ++i){
+    for(int i = 0; i<NHist_FF; ++i){
       char* title = Form("%s FF %d_Y kaon", nameSubDir, (int)FF_plus[i]);
       sub_dir->Add(gHist.createTH1(unique_id++, title,
     				    200,-100,100,
@@ -276,6 +289,71 @@ process_begin( const std::vector<std::string>& argv )
     sub_dir->Add( gHist.createTH1( gHist.getUniqueID(kMisc, 0, kChisqr, 2),
     				   "BcOut_Chisqr", 100, 0., 20. ) );
     tab_hist->Add(sub_dir);
+  }
+
+
+  //SdcOut
+  {
+    TList *top_dir = new TList;
+    const char* nameDetector = "SdcOut";
+    top_dir->SetName(nameDetector);
+
+    {
+      Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat, 100);
+      // Profile X
+      for(int i = 0; i<NHist_D1; ++i){
+	char* title = Form("%s D1 %d_X", nameDetector, (int)D1_plus[i]);
+	top_dir->Add(gHist.createTH1(unique_id++, title,
+				     1000,-500,500,
+				     "x position [mm]", ""));
+      }
+      // Profile Y
+      for(int i = 0; i<NHist_D1; ++i){
+	char* title = Form("%s D1 %d_Y", nameDetector, (int)D1_plus[i]);
+	top_dir->Add(gHist.createTH1(unique_id++, title,
+				     1000,-500,500,
+				     "y position [mm]", ""));
+      }
+      tab_hist->Add(top_dir);
+      // Profile XY
+      for(int i = 0; i<NHist_D1; ++i){
+	char* title = Form("%s D1 %d_XY", nameDetector, (int)D1_plus[i]);
+	top_dir->Add(gHist.createTH2(unique_id++, title,
+				     250,-500,500, 2500,-500,500,
+				     "x position [mm]", "y position [mm]"));
+      }
+      tab_hist->Add(top_dir);
+
+
+      // Profile X kaon
+      for(int i = 0; i<NHist_D1; ++i){
+	char* title = Form("%s D1 %d_X kaon", nameDetector, (int)D1_plus[i]);
+	top_dir->Add(gHist.createTH1(unique_id++, title,
+				     1000,-500,500,
+				     "x position [mm]", ""));
+      }
+      // Profile Y kaon
+      for(int i = 0; i<NHist_D1; ++i){
+	char* title = Form("%s D1 %d_Y kaon", nameDetector, (int)D1_plus[i]);
+	top_dir->Add(gHist.createTH1(unique_id++, title,
+				     1000,-500,500,
+				     "y position [mm]", ""));
+      }
+    }
+
+    TList *sub_dir = new TList;
+    const char* nameSubDir = "Residual";
+    sub_dir->SetName(nameSubDir);
+    {
+      Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat, 200);
+      for(int i = 0; i < NumOfLayersSdcOut; i++){
+	char* title = Form("%s layer%d %s", nameDetector, i, nameSubDir);
+	sub_dir->Add(gHist.createTH1(unique_id++, title,
+				     200, -1, 1,
+				     "Residual [mm]", ""));
+      }
+    }
+    top_dir->Add(sub_dir);
   }
 
   {
@@ -361,48 +439,48 @@ process_begin( const std::vector<std::string>& argv )
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+12, "X at E03TGT (FF+550)",
+  tab_hist->Add(gHist.createTH1(btof_id+12, "X at E70TGT (FF+400)",
                                300, -150, 150,
                                "x [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+13, "Y at E03TGT (FF+550)",
+  tab_hist->Add(gHist.createTH1(btof_id+13, "Y at E70TGT (FF+400)",
                                200, -50, 50,
                                "y [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+14, "X at E03TGT [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+14, "X at E70TGT [pi]",
                                300, -150, 150,
                                "x [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+15, "Y at E03TGT [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+15, "Y at E70TGT [pi]",
                                200, -50, 50,
                                "y [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+16, "X at E03TGT [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+16, "X at E70TGT [k]",
                                300, -150, 150,
                                "x [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+17, "Y at E03TGT [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+17, "Y at E70TGT [k]",
                                200, -50, 50,
                                "y [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+18, "X at E03TGT [p]",
+  tab_hist->Add(gHist.createTH1(btof_id+18, "X at E70TGT [p]",
                                300, -150, 150,
                                "x [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+19, "Y at E03TGT [p]",
+  tab_hist->Add(gHist.createTH1(btof_id+19, "Y at E70TGT [p]",
                                 200, -50, 50,
 				"y [mm]", ""
 				));
 
-  tab_hist->Add(gHist.createTH2(btof_id+20, "XY at E03TGT [pi]",
+  tab_hist->Add(gHist.createTH2(btof_id+20, "XY at E70TGT [pi]",
                                 150, -150, 150, 100, -50, 50,
 				"x [mm]", "y [mm]"
 				));
-  tab_hist->Add(gHist.createTH2(btof_id+21, "XY at E03TGT [k]",
+  tab_hist->Add(gHist.createTH2(btof_id+21, "XY at E70TGT [k]",
                                 150, -150, 150, 100, -50, 50,
 				"x [mm]", "y [mm]"
 				));
-  tab_hist->Add(gHist.createTH2(btof_id+22, "XY at E03TGT [p]",
+  tab_hist->Add(gHist.createTH2(btof_id+22, "XY at E70TGT [p]",
                                 150, -150, 150, 100, -50, 50,
 				"x [mm]", "y [mm]"
 				));
@@ -1837,10 +1915,10 @@ process_event( void )
 
     if(BcOutTrack){
       static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat);
-      static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist+1);
-      static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist*2+1);
+      static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist_FF+1);
+      static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist_FF*2+1);
 
-      for(int i = 0; i<NHist; ++i){
+      for(int i = 0; i<NHist_FF; ++i){
     	double xpos = BcOutAna.GetPosX(dist_FF+FF_plus[i]);
     	double ypos = BcOutAna.GetPosY(dist_FF+FF_plus[i]);
     	hptr_array[xpos_id+i]->Fill(xpos);
@@ -1848,16 +1926,16 @@ process_event( void )
     	hptr_array[xypos_id+i]->Fill(xpos, ypos);
 
 	if(k_flag==1){
-	  hptr_array[xpos_id+i+(NHist*3)]->Fill(xpos);
-	  hptr_array[ypos_id+i+(NHist*3)]->Fill(ypos);
+	  hptr_array[xpos_id+i+(NHist_FF*3)]->Fill(xpos);
+	  hptr_array[ypos_id+i+(NHist_FF*3)]->Fill(ypos);
 	}
       } // for i
 
-      //E03 target pos
+      //E70 target pos
       {
   	if( nhbh1_flag==1 && nhbh2_flag==1 ){
   	  static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
-  	  Double_t z = dist_FF+550.;
+  	  Double_t z = dist_FF+400.;
   	  //Double_t x = track->GetX(z); Double_t y = track->GetY(z);
 	  double x = BcOutAna.GetPosX(z);
 	  double y = BcOutAna.GetPosY(z);
@@ -1881,6 +1959,68 @@ process_event( void )
   	  }
   	}
       }
+
+
+    }
+  }
+
+  /////////// SdcOut
+  {
+    DCRHC SdcOutAna(DetIdSdcOut);
+    bool SdcOutTrack = SdcOutAna.TrackSearch(9);
+
+    if(SdcOutTrack){
+      static const int residual_id = gHist.getSequentialID(kMisc, 0, kHitPat, 200);
+      for( int layer = 0; layer < NumOfLayersSdcOut; layer++ ){
+	Double_t res = SdcOutAna.GetResidualSdcOut(layer);
+	hptr_array[residual_id+layer]->Fill(res);
+      }
+
+      static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat, 100);
+      static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist_D1+100);
+      static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist_D1*2+100);
+
+      for(int i = 0; i<NHist_D1; ++i){
+    	double xpos = SdcOutAna.GetPosX(dist_D1+D1_plus[i]);
+    	double ypos = SdcOutAna.GetPosY(dist_D1+D1_plus[i]);
+    	hptr_array[xpos_id+i]->Fill(xpos);
+    	hptr_array[ypos_id+i]->Fill(ypos);
+    	hptr_array[xypos_id+i]->Fill(xpos, ypos);
+
+	if(k_flag==1){
+	  hptr_array[xpos_id+i+(NHist_D1*3)]->Fill(xpos);
+	  hptr_array[ypos_id+i+(NHist_D1*3)]->Fill(ypos);
+	}
+      } // for i
+
+      // //E70 target pos
+      // {
+      // 	if( nhbh1_flag==1 && nhbh2_flag==1 ){
+      // 	  static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
+      // 	  Double_t z = dist_FF+400.;
+      // 	  //Double_t x = track->GetX(z); Double_t y = track->GetY(z);
+      // 	  double x = SdcOutAna.GetPosX(z);
+      // 	  double y = SdcOutAna.GetPosY(z);
+
+      // 	  hptr_array[btof_id+12]->Fill(x);
+      // 	  hptr_array[btof_id+13]->Fill(y);
+      // 	  if( pi_flag ){
+      // 	    hptr_array[btof_id+14]->Fill(x);
+      // 	    hptr_array[btof_id+15]->Fill(y);
+      // 	    hptr_array[btof_id+20]->Fill(x,y);
+      // 	  }
+      // 	  if( k_flag ){
+      // 	    hptr_array[btof_id+16]->Fill(x);
+      // 	    hptr_array[btof_id+17]->Fill(y);
+      // 	    hptr_array[btof_id+21]->Fill(x,y);
+      // 	  }
+      // 	  if( p_flag ){
+      // 	    hptr_array[btof_id+18]->Fill(x);
+      // 	    hptr_array[btof_id+19]->Fill(y);
+      // 	    hptr_array[btof_id+22]->Fill(x,y);
+      // 	  }
+      // 	}
+      // }
 
 
     }

@@ -72,7 +72,7 @@ void DCRHC::init_SdcIn( void )
   m_hitpos.resize(NumOfLayersSdcIn);
   m_tdc.resize(NumOfLayersSdcIn);
 
-  for(int id=1;id<8;++id)
+  for(int id=1;id<11;++id)
     {
       std::vector<double> tilt = angle(geomman.GetTiltAngle(id));
       sinvector.push_back(tilt[0]);
@@ -87,7 +87,7 @@ void DCRHC::init_SdcOut( void )
   m_hitpos.resize(NumOfLayersSdcOut);
   m_tdc.resize(NumOfLayersSdcOut);
 
-  for(int id=31;id<38;++id)
+  for(int id=31;id<43;++id)
     {
       std::vector<double> tilt = angle(geomman.GetTiltAngle(id));
       sinvector.push_back(tilt[0]);
@@ -183,11 +183,6 @@ void DCRHC::pushback( int DetectorID )
 //______________________________________________________________________________
 void DCRHC::pushback_BcOut( void )
 {
-  // static const double MinTdcBC3 = gUser.GetParameter("BC3_TDC", 0);
-  // static const double MaxTdcBC3 = gUser.GetParameter("BC3_TDC", 1);
-  // static const double MinTdcBC4 = gUser.GetParameter("BC4_TDC", 0);
-  // static const double MaxTdcBC4 = gUser.GetParameter("BC4_TDC", 1);
-
   static const double MinTdcBC3 = gUser.GetParameter("TdcBC3", 0);
   static const double MaxTdcBC3 = gUser.GetParameter("TdcBC3", 1);
   static const double MinTdcBC4 = gUser.GetParameter("TdcBC4", 0);
@@ -296,76 +291,106 @@ void DCRHC::pushback_SdcIn( void )
 //______________________________________________________________________________
 void DCRHC::pushback_SdcOut( void )
 {
-  static const double MinTdcSDC3 = gUser.GetParameter("SDC3_TDC", 0);
-  static const double MaxTdcSDC3 = gUser.GetParameter("SDC3_TDC", 1);
-  //  static const double MinTdcSDC4 = gUser.GetParameter("SDC4_TDC", 0);
-  //  static const double MaxTdcSDC4 = gUser.GetParameter("SDC4_TDC", 1);
+  static const double MinTdcSDC3 = gUser.GetParameter("TdcSDC3", 0);
+  static const double MaxTdcSDC3 = gUser.GetParameter("TdcSDC3", 1);
+  static const double MinTdcSDC4 = gUser.GetParameter("TdcSDC4", 0);
+  static const double MaxTdcSDC4 = gUser.GetParameter("TdcSDC4", 1);
+  static const double MinTdcSDC5 = gUser.GetParameter("TdcSDC5", 0);
+  static const double MaxTdcSDC5 = gUser.GetParameter("TdcSDC5", 1);
 
-  for(int layer=0;layer<NumOfLayersSdcOut;++layer)
-    m_hitwire[layer].clear();
+  for(int layer=0;layer<NumOfLayersSdcOut;++layer) m_hitwire[layer].clear();
+
   for( int layer=0; layer<NumOfLayersSDC3; ++layer ){
     for( int wire=0; wire<NumOfWireSDC3; ++wire ){
       int nhits = g_unpacker.get_entries( DetIdSDC3, layer, 0, wire, 0 );
       if( nhits==0 ) continue;
       for( int i=0; i<nhits; ++i ){
-	int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,2,i);
+	int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0,i);
 	if( tdc<MinTdcSDC3 && MaxTdcSDC3<tdc ) continue;
-	m_hitwire[layer + NumOfLayersSDC1].push_back(wire);
-	m_tdc[layer + NumOfLayersSDC1].push_back(tdc);
+	m_hitwire[layer].push_back(wire);
+	m_tdc[layer].push_back(tdc);
       }
     }
   }
 
-  for(int layer=0;layer<NumOfLayersSDC4;++layer)
-    {
-      ////// x-plane //////
-      if(layer==1 || layer==4)
-	{
-	  for(int wire=0;wire<NumOfWireSDC3x;++wire)
-	    {
-	      int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
-	      if(hit==0)continue;
-	      int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
-	      m_hitwire[layer].push_back(wire);
-	      m_tdc[layer].push_back(tdc);
-	    }
-	}
-      ////// u,v-plane //////
-      else
-	for(int wire=0;wire<NumOfWireSDC3uv;++wire)
-	  {
-	    int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
-	    if(hit==0)continue;
-	    int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
-	    m_hitwire[layer].push_back(wire);
-	    m_tdc[layer].push_back(tdc);
-	  }
+  for( int layer=0; layer<NumOfLayersSDC4; ++layer ){
+    for( int wire=0; wire<NumOfWireSDC4; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdSDC4, layer, 0, wire, 0 );
+      if( nhits==0 ) continue;
+      for( int i=0; i<nhits; ++i ){
+	int tdc = g_unpacker.get(DetIdSDC4,layer,0,wire,0,i);
+	if( tdc<MinTdcSDC4 && MaxTdcSDC4<tdc ) continue;
+	m_hitwire[layer+NumOfLayersSDC3].push_back(wire);
+	m_tdc[layer+NumOfLayersSDC3].push_back(tdc);
+      }
     }
-  for(int layer=0;layer<NumOfLayersSDC3;++layer)
-    {
-      ////// x-plane //////
-      if(layer==1 || layer==4)
-	{
-	  for(int wire=0;wire<NumOfWireSDC3x;++wire)
-	    {
-	      int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
-	      if(hit==0)continue;
-	      int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
-	      m_hitwire[layer + NumOfLayersSDC3].push_back(wire);
-	      m_tdc[layer + NumOfLayersSDC3].push_back(tdc);
-	    }
-	}
-      ////// u,v-plane //////
-      else
-	for(int wire=0;wire<NumOfWireSDC3uv;++wire)
-	  {
-	    int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
-	    if(hit==0)continue;
-	    int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
-	    m_hitwire[layer + NumOfLayersSDC3].push_back(wire);
-	    m_tdc[layer + NumOfLayersSDC3].push_back(tdc);
-	  }
+  }
+
+  for( int layer=0; layer<NumOfLayersSDC5; ++layer ){
+    int nwire = NumOfWireSDC5X;
+    if( layer == 0 || layer == 1 ) nwire = NumOfWireSDC5Y;
+    for( int wire=0; wire<nwire; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdSDC5, layer, 0, wire, 0 );
+      if( nhits==0 ) continue;
+      for( int i=0; i<nhits; ++i ){
+	int tdc = g_unpacker.get(DetIdSDC5,layer,0,wire,0,i);
+	if( tdc<MinTdcSDC5 && MaxTdcSDC5<tdc ) continue;
+	m_hitwire[layer+NumOfLayersSDC3+NumOfLayersSDC4].push_back(wire);
+	m_tdc[layer+NumOfLayersSDC3+NumOfLayersSDC4].push_back(tdc);
+      }
     }
+  }
+
+  // for(int layer=0;layer<NumOfLayersSDC4;++layer)
+  //   {
+  //     ////// x-plane //////
+  //     if(layer==1 || layer==4)
+  // 	{
+  // 	  for(int wire=0;wire<NumOfWireSDC3x;++wire)
+  // 	    {
+  // 	      int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
+  // 	      if(hit==0)continue;
+  // 	      int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
+  // 	      m_hitwire[layer].push_back(wire);
+  // 	      m_tdc[layer].push_back(tdc);
+  // 	    }
+  // 	}
+  //     ////// u,v-plane //////
+  //     else
+  // 	for(int wire=0;wire<NumOfWireSDC3uv;++wire)
+  // 	  {
+  // 	    int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
+  // 	    if(hit==0)continue;
+  // 	    int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
+  // 	    m_hitwire[layer].push_back(wire);
+  // 	    m_tdc[layer].push_back(tdc);
+  // 	  }
+  //   }
+  // for(int layer=0;layer<NumOfLayersSDC3;++layer)
+  //   {
+  //     ////// x-plane //////
+  //     if(layer==1 || layer==4)
+  // 	{
+  // 	  for(int wire=0;wire<NumOfWireSDC3x;++wire)
+  // 	    {
+  // 	      int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
+  // 	      if(hit==0)continue;
+  // 	      int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
+  // 	      m_hitwire[layer + NumOfLayersSDC3].push_back(wire);
+  // 	      m_tdc[layer + NumOfLayersSDC3].push_back(tdc);
+  // 	    }
+  // 	}
+  //     ////// u,v-plane //////
+  //     else
+  // 	for(int wire=0;wire<NumOfWireSDC3uv;++wire)
+  // 	  {
+  // 	    int hit = g_unpacker.get_entries(DetIdSDC3,layer,0,wire,0);
+  // 	    if(hit==0)continue;
+  // 	    int tdc = g_unpacker.get(DetIdSDC3,layer,0,wire,0);
+  // 	    m_hitwire[layer + NumOfLayersSDC3].push_back(wire);
+  // 	    m_tdc[layer + NumOfLayersSDC3].push_back(tdc);
+  // 	  }
+  //   }
 }
 //______________________________________________________________________________
 void DCRHC::pushback_Ssd( void )
@@ -415,7 +440,7 @@ void DCRHC::HitPosition( int DetectorID )
     {
       ////////// require Multiplicity = 1 /////////////
       if(m_hitwire[plane].size()!=1) continue;
-      int wireid = m_hitwire[plane][0]+1;
+      int wireid = m_hitwire[plane][0];
       double hitposition = geomman.CalcWirePosition(plid, wireid);
       m_hitpos[plane].push_back(hitposition);
     }
@@ -621,7 +646,7 @@ bool DCRHC::TrackSearch(int min_plane)
   makeDriftTime(detid);
   makeDriftLength(detid);
   ReHitPosition(detid);
-  //  hoge();
+    //  hoge();
   //  getchar();
   int num_plane=0;
   for(unsigned int i=0;i<m_hitwire.size();++i)
@@ -710,7 +735,7 @@ void DCRHC::makeDriftTime( int DetectorID )
 	    m_dtime[i].push_back(0);
 	    continue;
 	  }
-	  int wireid = m_hitwire[i][j]+1;
+	  int wireid = m_hitwire[i][j];
 	  //	  p0 = t0man.GetParam0(plid,wireid);
 	  //	  p1 = t0man.GetParam1(plid,wireid);
 	  //	  double drift_time = - (m_tdc[i][j] * p1) - p0;
@@ -758,7 +783,7 @@ void DCRHC::makeDriftLength( int DetectorID )
 	    m_dlength[i].push_back(0);
 	    continue;
 	  }
-	  int wireid = m_hitwire[i][j]+1;
+	  int wireid = m_hitwire[i][j];
 	  double dt;
 	  t = m_dtime[i][j];
 	  driftman.CalcDrift(plid, wireid, t, dt, drift_length);

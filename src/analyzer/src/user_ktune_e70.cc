@@ -1430,8 +1430,8 @@ process_event( void )
     // TDC gate range
     //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
     //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
-    static const int tdc_min = 1140;
-    static const int tdc_max = 1180;
+    static const int tdc_min = 720;
+    static const int tdc_max = 760;
 
     int multiplicity = 0;
     //for(int seg = 0; seg<NumOfSegBAC; ++seg){
@@ -1515,8 +1515,8 @@ process_event( void )
     // TDC gate range
     //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
     //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
-    static const int tdc_min = 1140;
-    static const int tdc_max = 1180;
+    static const int tdc_min = 600;
+    static const int tdc_max = 900;
 
     int multiplicity = 0;
     //for(int seg = 0; seg<NumOfSegBAC; ++seg){

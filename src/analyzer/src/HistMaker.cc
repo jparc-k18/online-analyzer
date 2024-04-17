@@ -1652,9 +1652,13 @@ TList* HistMaker::createBAC( Bool_t flag_ps )
 
   { // Multiplicity -----------------------------------------------
     Int_t target_id = getUniqueID(kBAC, 0, kMulti, 0);
-    top_dir->Add(createTH1(++target_id, "BAC_multiplicity",
+    for(Int_t i = 0; i<NumOfSegBAC; ++i){
+    const char* title = NULL;
+    title = Form("%s_%s", name_acs[i], "multiplicity");
+    top_dir->Add(createTH1(++target_id, title,
 			   NumOfSegBAC+1, 0, NumOfSegBAC+1,
 			   "Multiplicity", ""));
+    }
   }
 
   return top_dir;

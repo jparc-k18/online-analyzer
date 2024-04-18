@@ -8438,7 +8438,7 @@ TList* HistMaker::createVMEEASIROC( Bool_t flag_ps )
       title = Form("%s_%s_%d", nameDetector, sub_name, PlaneIdOfVMEEASIROC[i]);
       sub_dir->Add(createTH2(++target_id, title, // 1 origin
 			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
-			     4096, 0, 4095,
+			     4096, 0, 4096,
 			     "ch", "TDC [ch]"));
     }
     // insert sub directory

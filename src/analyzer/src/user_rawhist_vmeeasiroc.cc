@@ -92,6 +92,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispVMEEASIROC2D"));
   tab_macro->Add(macro::Get("dispVMEEASIROC_AwT"));
   tab_macro->Add(macro::Get("dispDAQ"));
+  tab_macro->Add(macro::Get("dispVMEEASIROC_2DHG"));
   // tab_macro->Add(macro::Get("auto_monitor_all"));
 
   // Add histograms to the Hist tab

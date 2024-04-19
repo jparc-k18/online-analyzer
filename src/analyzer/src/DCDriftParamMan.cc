@@ -17,12 +17,15 @@
 #include <string>
 #include <vector>
 
+
+#include <TMath.h>
 #include <std_ostream.hh>
 
 #include "DeleteUtility.hh"
 
 namespace
 {
+  const auto qnan = TMath::QuietNaN();
   const std::string& class_name("DCDriftParamMan");
 }
 
@@ -224,7 +227,7 @@ DCDriftParamMan::DriftLength6( int PlaneId, double dt,
   case 119: case 120: case 121: case 122: case 123: case 124:
     //if( dt<-10. || dt>50. ) // Tight drift time selection
     if (dt<-10 || dt>80) // Loose drift time selection
-      return 999.9;
+      return qnan;
     if( PlaneId==123 || PlaneId==124 ){
       if( dt>35 ) dt=35.;
       dl = dt*p1+dt*dt*p2+p3*pow(dt, 3.0)+p4*pow(dt, 4.0)+p5*pow(dt, 5.0);
@@ -240,9 +243,8 @@ DCDriftParamMan::DriftLength6( int PlaneId, double dt,
     break;
     // SDC1&2
   case 1: case 2: case 3: case 4: case 5: case 6:
-  case 7: case 8: case 9: case 10:
     if( dt<-10 || 150<dt ) // Loose drift time selection
-      return 999.9;
+      return qnan;
     // if( dt>120. ){
     //   dt = 120.;
     //   dl = dt*p1+dt*dt*p2+p3*pow(dt, 3.0)+p4*pow(dt, 4.0)+p5*pow(dt, 5.0);
@@ -254,12 +256,23 @@ DCDriftParamMan::DriftLength6( int PlaneId, double dt,
     else
       return dl;
     break;
+    // SDC2
+  case 7: case 8: case 9: case 10:
+    if(dt < -10. || dt > 150.)
+      return qnan;
+    if(dl > 2.5 || dt > 120.)
+      return 2.5;
+    if(dl < 0.)
+      return 0.;
+    else
+      return dl;
+    break;
     // SDC3, 4, 5
   case 31: case 32: case 33: case 34:
   case 35: case 36: case 37: case 38:
   case 39: case 40: case 41: case 42:
     if( dt<-20. || dt>150. )
-      return 999.9;
+      return qnan;
     if( dl>4.5 || dt>120. )
       return 4.5;
     if( dl<0. )

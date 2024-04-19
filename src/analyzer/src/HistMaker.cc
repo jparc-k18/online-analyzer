@@ -1704,7 +1704,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
     	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-    				1024, 0, 1024,
+    				4096, 0, 4096,
     				"TDC [ch]", ""));
       }
     }
@@ -1898,7 +1898,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
   			       aft_nseg, 0, aft_nseg,
-  			       1024, 0, 1024,
+  			       4096, 0, 4096,
   			       "Fiber", "TDC [ch]"));
       }
     }
@@ -2097,7 +2097,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 
   	sub_dir->Add(createTH2( ++target_id, title , // 1 origin
 				150, 0, 150,
-				1024, 0, 1024,
+				4096, 0, 4096,
 				"TOT [ch]", "TDC [ch]"));
       }
     }
@@ -2107,23 +2107,23 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name.Data(), 0);
     sub_dir->Add(createTH2( ++target_id, title ,
 				150, 0, 150,
-				1024, 0, 1024,
+				4096, 0, 4096,
 				"TOT [ch]", "TDC [ch]"));
     title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name.Data(), 31);
     sub_dir->Add(createTH2( ++target_id, title ,
 				150, 0, 150,
-				1024, 0, 1024,
+				4096, 0, 4096,
 				"TOT [ch]", "TDC [ch]"));
     const TString layer_name_y = NameOfPlaneAFT[2];
     title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name_y.Data(), 0);
     sub_dir->Add(createTH2( ++target_id, title ,
 				150, 0, 150,
-				1024, 0, 1024,
+				4096, 0, 4096,
 				"TOT [ch]", "TDC [ch]"));
     title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name_y.Data(), 8);
     sub_dir->Add(createTH2( ++target_id, title ,
 				150, 0, 150,
-				1024, 0, 1024,
+				4096, 0, 4096,
 				"TOT [ch]", "TDC [ch]"));
 
     // insert sub directory
@@ -2382,7 +2382,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
   	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-  				1024, 0, 1024,
+  				4096, 0, 4096,
   				"TDC [ch]", ""));
       }
     }
@@ -2400,7 +2400,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
   	Int_t aft_nseg = NumOfSegAFT[i%4];
   	sub_dir->Add(createTH2(++target_id, title, // 1 origin
   			       aft_nseg, 0, aft_nseg,
-  			       1024, 0, 1024,
+  			       4096, 0, 4096,
   			       "Fiber", "TDC [ch]"));
       }
     }

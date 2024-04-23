@@ -827,7 +827,7 @@ process_event( void )
       hptr_array[btof_id+1]->Fill(btof);
       hptr_array[btof_id+4]->Fill(0); //BAC1eff
       hptr_array[btof_id+4+19]->Fill(0); //BAC2eff
-      
+
       static const int k_device = gUnpacker.get_device_id("BAC");
       static const int k_tdcbac2 = gUnpacker.get_data_id("BAC","tdc");
       int nhit_t2 = gUnpacker.get_entries(k_device, 0, 1, 0, k_tdcbac2);
@@ -839,10 +839,10 @@ process_event( void )
           hptr_array[btof_id+4+19+8]->Fill(0); //PVACeff->BAC1/BAC2 eff
         }
       }
-      
+
       hptr_array[btof_id+4+19+16]->Fill(0); //PVAC2eff
     }
-    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.0<btof && btof<-1.0 ){  // 1.8GeV/c
+    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.0<btof && btof<-0.7 ){  // 1.8GeV/c
     //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.8<btof && btof<-1.8 ){  // 1.4GeV/c
       //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -3.5<btof && btof<-2.5 ){  // 1.2GeV/c
       //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -8<btof && btof<-4 ){  // 0.8GeV/c
@@ -857,15 +857,16 @@ process_event( void )
         int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac2, m);
         static const int tdc_min = 720;
         static const int tdc_max = 760;
-        if(tdc_min > tdcbac2 && tdcbac2 > tdc_max){
+        if(tdc_min > tdcbac2 || tdcbac2 > tdc_max){
           hptr_array[btof_id+5+19+8]->Fill(0); //PVACeff->BAC1/BAC2 eff
         }
       }
       hptr_array[btof_id+5+19+16]->Fill(0); //FACeff
     }
-    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7<btof && btof<-3.7 ){ // 1.8GeV/c
+    // if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7<btof && btof<-3.7 ){ // 1.8GeV/c
       //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7-2.8<btof && btof<-3.7-2.8 ){  // 1.4GeV/c
       //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7-5.0<btof && btof<-3.7-5.0 ){  // 1.2GeV/c
+      if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7-10.0<btof && btof<-3.7-1.3 ){  // 1.0GeV/c
       p_flag=1;
       hptr_array[btof_id+3]->Fill(btof);
       hptr_array[btof_id+6]->Fill(0); //BAC1eff
@@ -1535,7 +1536,7 @@ process_event( void )
             int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac2, m);
             static const int tdc2_min = 720;
             static const int tdc2_max = 760;
-            if(tdc_min > tdcbac2 && tdcbac2 > tdc_max){
+            if(tdc_min > tdcbac2 || tdcbac2 > tdc_max){
               hptr_array[btof_id+5+19+8]->Fill(1); //PVACeff->BAC1/BAC2 eff
             }
           }
@@ -1570,8 +1571,8 @@ process_event( void )
     // TDC gate range
     //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
     //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
-    static const int tdc_min = 600;
-    static const int tdc_max = 900;
+    static const int tdc_min = 720;
+    static const int tdc_max = 760;
 
     int multiplicity = 0;
     //for(int seg = 0; seg<NumOfSegBAC; ++seg){

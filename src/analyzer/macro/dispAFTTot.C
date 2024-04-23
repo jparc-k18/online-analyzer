@@ -32,8 +32,9 @@ dispAFTTot( void )
       h[i]->Draw();
       TF1 f("f", "gaus", 0., 100.);
       f.SetLineColor(kRed);
-      Double_t p = h[i]->GetBinCenter(h[i]->GetMaximumBin());
-      if(p < 30.) p = 70.;
+      Double_t p = TotRef;
+      // Double_t p = h[i]->GetBinCenter(h[i]->GetMaximumBin());
+      // if(p < 30.) p = TotRef;
       Double_t w = 10.;
       for(Int_t ifit=0; ifit<3; ++ifit){
 	Double_t fmin = p - w;

@@ -2101,31 +2101,74 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
 				"TOT [ch]", "TDC [ch]"));
       }
     }
-    //TOT * TDC segment by segment for AFT correction
-    const char* title = NULL;
-    const TString layer_name = NameOfPlaneAFT[0];
-    title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name.Data(), 0);
-    sub_dir->Add(createTH2( ++target_id, title ,
-				150, 0, 150,
-				4096, 0, 4096,
-				"TOT [ch]", "TDC [ch]"));
-    title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name.Data(), 31);
-    sub_dir->Add(createTH2( ++target_id, title ,
-				150, 0, 150,
-				4096, 0, 4096,
-				"TOT [ch]", "TDC [ch]"));
-    const TString layer_name_y = NameOfPlaneAFT[2];
-    title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name_y.Data(), 0);
-    sub_dir->Add(createTH2( ++target_id, title ,
-				150, 0, 150,
-				4096, 0, 4096,
-				"TOT [ch]", "TDC [ch]"));
-    title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name_y.Data(), 8);
-    sub_dir->Add(createTH2( ++target_id, title ,
-				150, 0, 150,
-				4096, 0, 4096,
-				"TOT [ch]", "TDC [ch]"));
 
+    { //TOT * TDC segment by segment for AFT correction
+      const char* title = NULL;
+      std::vector<Int_t> planeArray{0};
+      for( Int_t i = 0, n = planeArray.size(); i < n; i++ ){
+	const TString layer_name_x = NameOfPlaneAFT[0];
+	const TString layer_name_y = NameOfPlaneAFT[2];
+	title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name_x.Data(), 0);
+	sub_dir->Add(createTH2( ++target_id, title ,
+				150, 0, 150,
+				4096, 0, 4096,
+				"TOT [ch]", "TDC [ch]"));
+	title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name_x.Data(), 31);
+	sub_dir->Add(createTH2( ++target_id, title ,
+				150, 0, 150,
+				4096, 0, 4096,
+				"TOT [ch]", "TDC [ch]"));
+	title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name_y.Data(), 0);
+	sub_dir->Add(createTH2( ++target_id, title ,
+				150, 0, 150,
+				4096, 0, 4096,
+				"TOT [ch]", "TDC [ch]"));
+	title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, sub_name, 1, layer_name_y.Data(), 8);
+	sub_dir->Add(createTH2( ++target_id, title ,
+				150, 0, 150,
+				4096, 0, 4096,
+				"TOT [ch]", "TDC [ch]"));
+      }
+    }
+
+    { //ADC * TDC segment by segment for AFT correction
+      const char* title = NULL;
+      std::vector<Int_t> planeArray{0, 4, 8};
+      for( Int_t i = 0, n = planeArray.size(); i < n; i++ ){
+	const TString layer_name_x = NameOfPlaneAFT[0];
+	const TString layer_name_y = NameOfPlaneAFT[2];
+	title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, "ADCXTDC", planeArray[i]+1, layer_name_x.Data(), 0);
+	sub_dir->Add(createTH2( ++target_id, title ,
+				64, 0, 4096,
+				4096, 0, 4096,
+				"TDC [ch]", "ADC [ch]"));
+	title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, "ADCXTDC", planeArray[i]+1, layer_name_x.Data(), 15);
+	sub_dir->Add(createTH2( ++target_id, title ,
+				64, 0, 4096,
+				4096, 0, 4096,
+				"TDC [ch]", "ADC [ch]"));
+	title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, "ADCXTDC", planeArray[i]+1, layer_name_x.Data(), 31);
+	sub_dir->Add(createTH2( ++target_id, title ,
+				64, 0, 4096,
+				4096, 0, 4096,
+				"TDC [ch]", "ADC [ch]"));
+	title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, "ADCXTDC", planeArray[i]+1, layer_name_y.Data(), 0);
+	sub_dir->Add(createTH2( ++target_id, title ,
+				64, 0, 4096,
+				4096, 0, 4096,
+				"TDC [ch]", "ADC [ch]"));
+	title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, "ADCXTDC", planeArray[i]+1, layer_name_y.Data(), 8);
+	sub_dir->Add(createTH2( ++target_id, title ,
+				64, 0, 4096,
+				4096, 0, 4096,
+				"TDC [ch]", "ADC [ch]"));
+	title = Form("%s_%s_%dU_%s_seg%d_2D", nameDetector, "ADCXTDC", planeArray[i]+1, layer_name_y.Data(), 15);
+	sub_dir->Add(createTH2( ++target_id, title ,
+				64, 0, 4096,
+				4096, 0, 4096,
+				"TDC [ch]", "ADC [ch]"));
+      }
+    }
     // insert sub directory
     top_dir->Add(sub_dir);
   }

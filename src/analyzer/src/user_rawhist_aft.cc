@@ -287,6 +287,8 @@ process_event( void )
     static const int tdc_min = gUser.GetParameter("TdcAFT", 0);
     static const int tdc_max = gUser.GetParameter("TdcAFT", 1);
 
+    const Double_t TotRef = gUser.GetParameter( "TotRefAFT" );
+
     // SequentialID
     int aft_t_id    = gHist.getSequentialID(kAFT, 0, kTDC,        1);
     int aft_tot_id  = gHist.getSequentialID(kAFT, 0, kTOT,        1);
@@ -412,13 +414,16 @@ process_event( void )
 	  }
 
 	  { // TOT
+	    int nhit_hg = gUnpacker.get_entries(k_device, l, seg, ud, k_highgain);
 	    int nhit_l = gUnpacker.get_entries(k_device, l, seg, ud, k_leading );
 	    int nhit_t = gUnpacker.get_entries(k_device, l, seg, ud, k_trailing );
 	    int hit_l_max = 0;
 	    int hit_t_max = 0;
 	    if(nhit_l != 0) hit_l_max = gUnpacker.get(k_device, l, seg, ud, k_leading,  nhit_l - 1);
 	    if(nhit_t != 0) hit_t_max = gUnpacker.get(k_device, l, seg, ud, k_trailing, nhit_t - 1);
-	    if(nhit_l == nhit_t && hit_l_max > hit_t_max){
+	    Int_t adc_hg = TMath::QuietNaN();
+	    if( nhit_hg != 0 ) adc_hg = gUnpacker.get(k_device, l, seg, ud, k_highgain, 0);
+	      if(nhit_l == nhit_t && hit_l_max > hit_t_max){
 	      for(int m = 0; m<nhit_l; ++m){
 		int tdc   = gUnpacker.get(k_device, l, seg, ud, k_leading, m);
 		int tdc_t = gUnpacker.get(k_device, l, seg, ud, k_trailing, m);
@@ -435,6 +440,25 @@ process_event( void )
 		if( ud == 0 && l == 1 ){
 		  if(seg==0) hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+2]->Fill(tot, tdc);
 		  if(seg==8) hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+3]->Fill(tot, tdc);
+		}
+
+		//adc * tdc seg by seg for aft correction
+		std::vector<Int_t> planeArray{0, 4, 8};
+		if( nhit_l == 1 && tot > TotRef-10 && tot < TotRef+10){
+		  if( ud == 0 ){
+		    for( int i = 0, n = planeArray.size(); i < n; i++ ){
+		      if( l == planeArray[i]*4 ){
+			if(seg==0)  hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+4+i*6]->Fill(tdc, adc_hg);
+			if(seg==15) hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+5+i*6]->Fill(tdc, adc_hg);
+			if(seg==31) hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+6+i*6]->Fill(tdc, adc_hg);
+		      }
+		      if( l == planeArray[i]*4+2 ){
+			if(seg==0)  hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+7+i*6]->Fill(tdc, adc_hg);
+			if(seg==8)  hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+8+i*6]->Fill(tdc, adc_hg);
+			if(seg==15) hptr_array[aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+9+i*6]->Fill(tdc, adc_hg);
+		      }
+		    }
+		  }
 		}
 
 		if(l%4 == 0 || l%4 == 1)

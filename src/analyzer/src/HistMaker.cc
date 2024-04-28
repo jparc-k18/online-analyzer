@@ -581,6 +581,18 @@ TList* HistMaker::createBC3( Bool_t flag_ps )
 			     500, 0, 500,
 			     "TOT [ch]", ""));
     }
+    
+     // TOT 2D ---------------------------------------------------------
+     target_id = getUniqueID(kBC3, 0, kADC2D, 0);
+     for(Int_t i = 0; i<NumOfLayersBC3; ++i){
+       const char* title = NULL;
+       title = Form("%s_%s2D_%s", nameDetector, nameSubDir, name_layer[i]);
+       sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
+     			     NumOfWireBC3, 0, NumOfWireBC3,			       
+     			     500, 0, 500,
+     			     "Wire Number","TOT [ch]"));
+     }
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -842,6 +854,18 @@ TList* HistMaker::createBC4( Bool_t flag_ps )
 			     500, 0, 500,
 			     "TOT [ch]", ""));
     }
+
+     // TOT 2D ---------------------------------------------------------
+     target_id = getUniqueID(kBC4, 0, kADC2D, 0);
+     for(Int_t i = 0; i<NumOfLayersBC4; ++i){
+       const char* title = NULL;
+       title = Form("%s_%s2D_%s", nameDetector, nameSubDir, name_layer[i]);
+       sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
+     			     NumOfWireBC4, 0, NumOfWireBC4,			       
+     			     500, 0, 500,
+     			     "Wire Number","TOT [ch]"));
+     }
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -2344,6 +2368,26 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       }
     }
     //2D Hit pattern
+
+    //correlation between bh2 and AFT X0 seg (to check event slip)
+    sub_name = "Correlation_bh2_AFT_X0";
+    // Add to the top directory
+      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+	if(i!=0){continue;}
+	const char* title = NULL;
+	const TString layer_name = NameOfPlaneAFT[i%4];
+	// if( ud == 0 ) title = Form("%s_%s_%dU_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+	// if( ud == 1 ) title = Form("%s_%s_%dD_%s_2D", nameDetector, sub_name, i/4+1, layer_name.Data());
+	title = Form("BH2_AFT%s_%s_%d_%s_cor", nameDetector, sub_name, i/4+1, layer_name.Data());
+	Int_t aft_nseg = NumOfSegAFT[i%4];
+	if(i==0){
+	  sub_dir->Add(createTH2(++target_id, title, // 1 origin
+				 aft_nseg, 0, aft_nseg,
+				 // 4096/8, 0, 4096,
+				 NumOfSegBH2, 0, NumOfSegBH2,
+				 "Fiber", "BH2 [seg]"));
+	}
+     }
 
     // insert sub directory
     top_dir->Add(sub_dir);

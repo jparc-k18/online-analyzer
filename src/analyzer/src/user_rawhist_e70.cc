@@ -554,6 +554,7 @@ process_event()
     static const Int_t bc3t_wide_id    = gHist.getSequentialID(kBC3, 0, kTDC,    11);
     static const Int_t bc3t_ctot_id    = gHist.getSequentialID(kBC3, 0, kTDC,    1+kTOTcutOffset);
     static const Int_t bc3tot_ctot_id  = gHist.getSequentialID(kBC3, 0, kADC,    1+kTOTcutOffset);
+    static const Int_t bc3tot2D_id     = gHist.getSequentialID(kBC3, 0, kADC2D,  1);
     static const Int_t bc3t1st_ctot_id = gHist.getSequentialID(kBC3, 0, kTDC2D,  1+kTOTcutOffset);
     static const Int_t bc3t2D_id       = gHist.getSequentialID(kBC3, 0, kTDC2D,  21+kTOTcutOffset);
     static const Int_t bc3t2D_ctot_id  = gHist.getSequentialID(kBC3, 0, kTDC2D,  31+kTOTcutOffset);
@@ -624,6 +625,7 @@ process_event()
 	    tdc_t = gUnpacker.get(k_device, l, 0, w, k_trailing, m);
 	    tot = tdc - tdc_t;
 	    hptr_array[bc3tot_id+l]->Fill(tot);
+     	    hptr_array[bc3tot2D_id+l]->Fill(w,tot); //2D
 	    if (tot < tot_min) continue;
 	    hptr_array[bc3t_ctot_id + l]->Fill(tdc);
 	    hptr_array[bc3t2D_ctot_id + l]->Fill(w,tdc); //2D
@@ -697,6 +699,7 @@ process_event()
     static const Int_t bc4t_wide_id    = gHist.getSequentialID(kBC4, 0, kTDC, 11);
     static const Int_t bc4t_ctot_id    = gHist.getSequentialID(kBC4, 0, kTDC,    1+kTOTcutOffset);
     static const Int_t bc4tot_ctot_id  = gHist.getSequentialID(kBC4, 0, kADC,    1+kTOTcutOffset);
+    static const Int_t bc4tot2D_id     = gHist.getSequentialID(kBC4, 0, kADC2D,  1);
     static const Int_t bc4t1st_ctot_id = gHist.getSequentialID(kBC4, 0, kTDC2D,  1+kTOTcutOffset);
     static const Int_t bc4t2D_id       = gHist.getSequentialID(kBC4, 0, kTDC2D,  21+kTOTcutOffset);
     static const Int_t bc4t2D_ctot_id  = gHist.getSequentialID(kBC4, 0, kTDC2D,  31+kTOTcutOffset);
@@ -767,6 +770,7 @@ process_event()
 	    tdc_t = gUnpacker.get(k_device, l, 0, w, k_trailing, m);
 	    tot = tdc - tdc_t;
 	    hptr_array[bc4tot_id+l]->Fill(tot);
+	    hptr_array[bc4tot2D_id+l]->Fill(w,tot); //2D
 	    if (tot < tot_min) continue;
 	    hptr_array[bc4t_ctot_id + l]->Fill(tdc);
 	    hptr_array[bc4t2D_ctot_id + l]->Fill(w,tdc); //2D

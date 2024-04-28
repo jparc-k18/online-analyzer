@@ -180,6 +180,24 @@ void dispBC4( void )
     c->Update();
   }
 
+  // draw TOT2D
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c9");
+    c->Clear();
+    c->Divide(3,2);
+    int base_id = HistMaker::getUniqueID(kBC4, 0, kADC2D, 1);
+    //    int base_id_ctot = HistMaker::getUniqueID(kBC4, 0, kADC2D, 1+kTOTcutOffset);
+    for( int i=0; i<n_layer; ++i ){
+      c->cd(i+1);
+      TH2 *h = (TH2*)GHist::get(base_id + i);
+      if( !h ) continue;
+      h->SetStats(0);
+      //      h->GetYaxis()->SetRangeUser(0,1500);
+      h->Draw("colz");
+    }
+    c->Update();
+  }
+  
   // You must write these lines for the thread safe
   // ----------------------------------
   Updater::setUpdating(false);

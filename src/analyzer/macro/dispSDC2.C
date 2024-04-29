@@ -69,7 +69,7 @@ void dispSDC2( void )
       hh->Draw("same");
       TF1 f("f", "gaus", 0., 100.);
       f.SetLineColor(kBlue);
-      Double_t p = h->GetBinCenter(h->GetMaximumBin());
+      Double_t p = hh->GetBinCenter(hh->GetMaximumBin());
       // if(p < 30.) p = 70.;
       Double_t w = 10.;
       for(Int_t ifit=0; ifit<3; ++ifit){

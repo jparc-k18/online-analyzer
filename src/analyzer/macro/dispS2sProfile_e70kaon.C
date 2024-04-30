@@ -152,8 +152,8 @@ void dispS2sProfile_e70kaon()
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get(base_id +i)->Clone();
       // h->GetXaxis()->SetRangeUser(-100,100);
-      // double max = h->GetBinCenter(h->GetMaximumBin());
-      double max = 0.;
+      double max = h->GetBinCenter(h->GetMaximumBin());
+      // double max = 0.;
       h->Fit("f", "Q", "", max-fit_width[0], max+fit_width[0]);
       sigma[0][i] = f->GetParameter("Sigma");
       gaus_mean[0][i] = f->GetParameter("Mean");

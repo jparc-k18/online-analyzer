@@ -1405,7 +1405,7 @@ SDC1TDCTOT()
     {
       auto h1 = GHist::get(HistMaker::getUniqueID(kSDC1, 0, kTDC, i+1));
       if(!h1) continue;
-      h1->GetXaxis()->SetRangeUser(100, 700);
+      h1->GetXaxis()->SetRangeUser(700, 1200);
       h1->Draw();
       auto h2 = GHist::get(HistMaker::getUniqueID(kSDC1, 0, kTDC, i+1+kTOTcutOffset));
       if(!h2) continue;
@@ -1465,7 +1465,7 @@ SDC2TDCTOT()
     {
       auto h1 = GHist::get(HistMaker::getUniqueID(kSDC2, 0, kTDC, i+1));
       if(!h1) continue;
-      h1->GetXaxis()->SetRangeUser(100, 700);
+      h1->GetXaxis()->SetRangeUser(700, 1200);
       h1->Draw();
       auto h2 = GHist::get(HistMaker::getUniqueID(kSDC2, 0, kTDC, i+1+kTOTcutOffset));
       if(!h2) continue;

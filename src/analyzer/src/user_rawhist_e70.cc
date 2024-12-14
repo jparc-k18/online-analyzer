@@ -2491,9 +2491,9 @@ process_event()
 	hptr_array[bach_id]->Fill(seg);
 	++multiplicity;
       }// flag is OK
+      hptr_array[bacm_id+seg]->Fill(multiplicity);
     }
 
-    hptr_array[bacm_id]->Fill(multiplicity);
 
 #if 0
     // Debug, dump data relating this detector

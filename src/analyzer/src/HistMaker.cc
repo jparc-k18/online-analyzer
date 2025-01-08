@@ -581,14 +581,14 @@ TList* HistMaker::createBC3( Bool_t flag_ps )
 			     500, 0, 500,
 			     "TOT [ch]", ""));
     }
-    
+
      // TOT 2D ---------------------------------------------------------
      target_id = getUniqueID(kBC3, 0, kADC2D, 0);
      for(Int_t i = 0; i<NumOfLayersBC3; ++i){
        const char* title = NULL;
        title = Form("%s_%s2D_%s", nameDetector, nameSubDir, name_layer[i]);
        sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
-     			     NumOfWireBC3, 0, NumOfWireBC3,			       
+     			     NumOfWireBC3, 0, NumOfWireBC3,
      			     500, 0, 500,
      			     "Wire Number","TOT [ch]"));
      }
@@ -861,7 +861,7 @@ TList* HistMaker::createBC4( Bool_t flag_ps )
        const char* title = NULL;
        title = Form("%s_%s2D_%s", nameDetector, nameSubDir, name_layer[i]);
        sub_dir->Add(createTH2(target_id + i+1, title, // 1 origin
-     			     NumOfWireBC4, 0, NumOfWireBC4,			       
+     			     NumOfWireBC4, 0, NumOfWireBC4,
      			     500, 0, 500,
      			     "Wire Number","TOT [ch]"));
      }
@@ -7662,6 +7662,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
+
     Int_t target_id = getUniqueID(kDAQ, 0, kMultiHitTdc);
     const char* sub_name = "MultiHitTdc";
     { // BC3
@@ -7730,22 +7731,152 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 			     20, 0, 20,
 			     "ch", "MultiHitTdc"));
     }
-
     top_dir->Add(sub_dir);
   }
 
-  // { //___ CoBo
-  //   auto h = createTH2(getUniqueID( kDAQ, kCoBo, kHitPat2D),
-  // 		       "Data size CoBo nodes",
-  // 		       cobo_fe_id.size(), 0, cobo_fe_id.size(),
-  // 		       100, 0, 200000,
-  // 		       "CoBo node ID", "Data size [words]");
-  //   for(Int_t i=0, n=cobo_fe_id.size(); i<n; ++i){
-  //     h->GetXaxis()->SetBinLabel(i+1, "0x"+TString::Itoa(cobo_fe_id[i], 16));
-  //   }
-  //   top_dir->Add(h);
-  // }
+  {//___ ParaDAQ
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kParaDAQ);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
 
+    // TDC ---------------------------------------------------------
+    {
+      // Declaration of the sub-directory
+      TString strSubSubDir  = CONV_STRING(kTDC);
+      const char* nameSubSubDir = strSubSubDir.Data();
+      TList *subSub_dir = new TList;
+      subSub_dir->SetName(nameSubSubDir);
+
+      // Make histogram and add it
+      Int_t target_id = getUniqueID(kDAQ, 0, kTDC, 0);
+      // parasite tof comparator (2seg)
+      for(Int_t i = 0; i<NumOfSegParaTOFC*2; ++i){
+	TString strSubDet  = CONV_STRING(kParaTOFC);
+	const char* nameSubDetector = strSubDet.Data();
+	const char* title = NULL;
+	if(i < NumOfSegParaTOFC){
+	  Int_t seg = i+1; // 1 origin
+	  title = Form("%s_%s_%dU", nameSubDetector, nameSubSubDir, seg);
+	}else{
+	  Int_t seg = i+1-NumOfSegParaTOFC; // 1 origin
+	  title = Form("%s_%s_%dD", nameSubDetector, nameSubSubDir, seg);
+	}
+	subSub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			       50000, 0, 2000000,
+			       "TDC [ch]", ""));
+      }
+      // parasite tof qtc (2seg)
+      for(Int_t i = 0; i<NumOfSegParaTOFQ*2; ++i){
+	TString strSubDet  = CONV_STRING(kParaTOFQ);
+	const char* nameSubDetector = strSubDet.Data();
+	const char* title = NULL;
+	if(i < NumOfSegParaTOFQ){
+	  Int_t seg = i+1; // 1 origin
+	  title = Form("%s_%s_%dU", nameSubDetector, nameSubSubDir, seg);
+	}else{
+	  Int_t seg = i+1-NumOfSegParaTOFQ; // 1 origin
+	  title = Form("%s_%s_%dD", nameSubDetector, nameSubSubDir, seg);
+	}
+	subSub_dir->Add(createTH1(target_id + i+1+NumOfSegParaTOFC*2, title, // 1 origin
+			       50000, 0, 2000000,
+			       "TDC [ch]", ""));
+      }
+      // parasite tmc comparator (1seg)
+      for(Int_t i = 0; i<NumOfSegParaTMCC; ++i){
+	TString strSubDet  = CONV_STRING(kParaTMCC);
+	const char* nameSubDetector = strSubDet.Data();
+	const char* title = NULL;
+	Int_t seg = i+1; // 1 origin
+	title = Form("%s_%s_%d", nameSubDetector, nameSubSubDir, seg);
+	subSub_dir->Add(createTH1(target_id + i+1+NumOfSegParaTOFC*2+NumOfSegParaTOFQ*2, title, // 1 origin
+			       50000, 0, 2000000,
+			       "TDC [ch]", ""));
+      }
+      // parasite tmc qtc (1seg)
+      for(Int_t i = 0; i<NumOfSegParaTMCQ; ++i){
+	TString strSubDet  = CONV_STRING(kParaTMCQ);
+	const char* nameSubDetector = strSubDet.Data();
+	const char* title = NULL;
+	Int_t seg = i+1; // 1 origin
+	title = Form("%s_%s_%d", nameSubDetector, nameSubSubDir, seg);
+	subSub_dir->Add(createTH1(target_id + i+1+NumOfSegParaTOFC*2+NumOfSegParaTOFQ*2+NumOfSegParaTMCC, title, // 1 origin
+			       50000, 0, 2000000,
+			       "TDC [ch]", ""));
+      }
+      sub_dir->Add(subSub_dir);
+    }
+
+  // TOT ---------------------------------------------------------
+    {
+      // Declaration of the sub-directory
+      TString strSubSubDir  = CONV_STRING(kTOT);
+      const char* nameSubSubDir = strSubSubDir.Data();
+      TList *subSub_dir = new TList;
+      subSub_dir->SetName(nameSubSubDir);
+
+      // Make histogram and add it
+      Int_t target_id = getUniqueID(kDAQ, 0, kTOT, 0);
+      // parasite tof comparator (2seg)
+      for(Int_t i = 0; i<NumOfSegParaTOFC*2; ++i){
+	TString strSubDet  = CONV_STRING(kParaTOFC);
+	const char* nameSubDetector = strSubDet.Data();
+	const char* title = NULL;
+	if(i < NumOfSegParaTOFC){
+	  Int_t seg = i+1; // 1 origin
+	  title = Form("%s_%s_%dU", nameSubDetector, nameSubSubDir, seg);
+	}else{
+	  Int_t seg = i+1-NumOfSegParaTOFC; // 1 origin
+	  title = Form("%s_%s_%dD", nameSubDetector, nameSubSubDir, seg);
+	}
+	subSub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+			       50000, 0, 2000000,
+			       "TOT [ch]", ""));
+      }
+      // parasite tof qtc (2seg)
+      for(Int_t i = 0; i<NumOfSegParaTOFQ*2; ++i){
+	TString strSubDet  = CONV_STRING(kParaTOFQ);
+	const char* nameSubDetector = strSubDet.Data();
+	const char* title = NULL;
+	if(i < NumOfSegParaTOFQ){
+	  Int_t seg = i+1; // 1 origin
+	  title = Form("%s_%s_%dU", nameSubDetector, nameSubSubDir, seg);
+	}else{
+	  Int_t seg = i+1-NumOfSegParaTOFQ; // 1 origin
+	  title = Form("%s_%s_%dD", nameSubDetector, nameSubSubDir, seg);
+	}
+	subSub_dir->Add(createTH1(target_id + i+1+NumOfSegParaTOFC*2, title, // 1 origin
+			       50000, 0, 2000000,
+			       "TOT [ch]", ""));
+      }
+      // parasite tmc comparator (1seg)
+      for(Int_t i = 0; i<NumOfSegParaTMCC; ++i){
+	TString strSubDet  = CONV_STRING(kParaTMCC);
+	const char* nameSubDetector = strSubDet.Data();
+	const char* title = NULL;
+	Int_t seg = i+1; // 1 origin
+	title = Form("%s_%s_%d", nameSubDetector, nameSubSubDir, seg);
+	subSub_dir->Add(createTH1(target_id + i+1+NumOfSegParaTOFC*2+NumOfSegParaTOFQ*2, title, // 1 origin
+			       50000, 0, 2000000,
+			       "TOT [ch]", ""));
+      }
+      // parasite tmc qtc (1seg)
+      for(Int_t i = 0; i<NumOfSegParaTMCQ; ++i){
+	TString strSubDet  = CONV_STRING(kParaTMCQ);
+	const char* nameSubDetector = strSubDet.Data();
+	const char* title = NULL;
+	Int_t seg = i+1; // 1 origin
+	title = Form("%s_%s_%d", nameSubDetector, nameSubSubDir, seg);
+	subSub_dir->Add(createTH1(target_id + i+1+NumOfSegParaTOFC*2+NumOfSegParaTOFQ*2+NumOfSegParaTMCC, title, // 1 origin
+			       50000, 0, 2000000,
+			       "TOT [ch]", ""));
+      }
+      sub_dir->Add(subSub_dir);
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
   return top_dir;
 }
 

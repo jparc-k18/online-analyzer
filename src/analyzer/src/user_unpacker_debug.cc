@@ -25,22 +25,22 @@ namespace analyzer
     ConfMan& gConfMan = ConfMan::GetInstance();
     UnpackerManager& gUnpacker = GUnpacker::get_instance();
     //std::vector<std::string> target = { "hul01", "hul03" };
-    //std::vector<std::string> target = { "vme01" };
-    std::vector<std::string> target = {
-				       // "vme01",
-				       // "vme02",
-				       "hul01scr-1",
-				       "hul01scr-2",
-				       "hul01scr-3",
-				       // "hul01hr-4",
-				       // "hul01scr-4",
-				       // "hul01scr-2",
-				       // "hul_hbx_scr",
-				       // "hul02lac",
-				       // "hul01hr-1",
-				       // "hul01hr-2",
-				       // "hul01hr-3"
-    };
+    std::vector<std::string> target = { "vme02" };
+    // std::vector<std::string> target = {
+    // 				       // "vme01",
+    // 				       // "vme02",
+    // 				       "hul01scr-1",
+    // 				       "hul01scr-2",
+    // 				       "hul01scr-3",
+    // 				       // "hul01hr-4",
+    // 				       // "hul01scr-4",
+    // 				       // "hul01scr-2",
+    // 				       // "hul_hbx_scr",
+    // 				       // "hul02lac",
+    // 				       // "hul01hr-1",
+    // 				       // "hul01hr-2",
+    // 				       // "hul01hr-3"
+    // };
   }
 
 //______________________________________________________________________________

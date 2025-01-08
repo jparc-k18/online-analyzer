@@ -224,6 +224,17 @@ const Int_t NumOfSegTF_TF   = 1;
 const Int_t NumOfSegTF_GN1  = 1;
 const Int_t NumOfSegTF_GN2  = 1;
 
+// DAQ Parasite _______________________________________________________________
+const Int_t DetIdParaTOFC   = 60;
+const Int_t DetIdParaTOFQ   = 61;
+const Int_t DetIdParaTMCC   = 62;
+const Int_t DetIdParaTMCQ   = 63;
+const Int_t NumOfSegParaTOFC   =  2;
+const Int_t NumOfSegParaTOFQ   =  2;
+const Int_t NumOfSegParaTMCC   =  1;
+const Int_t NumOfSegParaTMCQ   =  1;
+
+
 // E42
 const Int_t DetIdTPC       = 70;
 const Int_t NumOfLayersTPC = 32;

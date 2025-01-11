@@ -1104,9 +1104,20 @@ TList* HistMaker::createBH2( Bool_t flag_ps )
     target_id = getUniqueID(kBH2, 0, kTDC, 20);
     for(Int_t i = 0; i<NumOfSegBH2; ++i){
       Int_t seg = i+1; // 1 origin
-      const char* title = Form("%s_MT_%s_%d", nameDetector, nameSubDir, seg);
+      const char* title = Form("%s_MTLR_%s_%d", nameDetector, nameSubDir, seg);
       sub_dir->Add(createTH1(target_id++, title, // 1 origin
 			     5000, 0, 5000,
+			     "TDC [ch]", ""));
+
+    }
+
+    // BH2MTHR(BH2 mean timer calc. from UD high reso.) ----------------------------------------
+    target_id = getUniqueID(kBH2, 0, kTDC, 40);
+    for(Int_t i = 0; i<NumOfSegBH2; ++i){
+      Int_t seg = i+1; // 1 origin
+      const char* title = Form("%s_MTHR_%s_%d", nameDetector, nameSubDir, seg);
+      sub_dir->Add(createTH1(target_id++, title, // 1 origin
+			     100000, 0, 2000000,
 			     "TDC [ch]", ""));
 
     }

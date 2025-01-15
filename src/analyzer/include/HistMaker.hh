@@ -43,6 +43,8 @@ enum DetectorType {
   kBMW, kBAC_SAC, kSFV_SAC3, kGe, kPWO, kSP0,
   kBH2_E07, kBAC_E07, kSSD0, kSAC1, kKFAC,
   kKIC, kHDC, kTOFMT,
+  // parasite TOT study
+  kTOFC,kTOFQ,kTMCC,kTMCQ,
   // Others
   kTriggerFlag, kDAQ, kCorrelation,
   kCorrelation_catch, kMisc,
@@ -89,6 +91,8 @@ enum DataType {
   kHighGainXTOT,kLowGainXTOT, kHighGainvsTOT,
   // Extra data type for EMC
   kSerial, kXpos, kYpos, kXYpos, kTime,
+  // extra data type for parasite DAQ
+  kQDCvsTOT,
   // Extra data type for Ge detector
   kCRM,   kTFA,   kPUR,   kRST,
   kCRM2D, kTFA2D, kPUR2D, kRST2D,

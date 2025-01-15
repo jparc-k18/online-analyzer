@@ -91,6 +91,7 @@ TCanvas* BcOutEfficiency();
 TCanvas* SdcInOutEfficiency();
 TCanvas* BFTTOT();
 TCanvas* BFTAFTTOT();
+TCanvas* BH2MTHR();
 TCanvas* BFTSCHTOT();
 TCanvas* BFTSFTSCHTOT();
 TCanvas* DAQ();

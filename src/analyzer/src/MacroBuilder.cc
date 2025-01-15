@@ -3260,6 +3260,41 @@ BFTAFTTOT()
 
 //_____________________________________________________________________________
 TCanvas*
+BH2MTHR()
+{
+  auto c1 = new TCanvas(__func__, __func__);
+  c1->Divide(3,3);
+  int mthr_hid = HistMaker::getUniqueID( kBH2, 0, kTDC, 40 );
+  for( int i=0; i<NumOfSegBH2; ++i ){
+    c1->cd(i+1);
+    TH1 *h = (TH1*)GHist::get( mthr_hid + i );
+    if( !h ) continue;
+    Int_t max = h->GetBinCenter(h->GetMaximumBin());
+    h->GetXaxis()->SetRangeUser( max-1000, max+1000);
+    h->Draw();
+    if( h->GetEntries()==0 ) continue;
+    h->Fit("gaus", "", "", max-200, max+200);
+    auto f = (TF1*)h->FindObject("gaus");
+    f->SetNpx(10000);
+    f->SetLineColor(kRed);
+    f->SetLineWidth(2);
+    f->Draw("same");
+
+    auto sigma    = f->GetParameter(2);
+    auto sigma_ps = sigma*0.93;
+    TLatex *text = new TLatex();
+    text->SetNDC();
+    text->SetTextSize(0.07);
+    text->DrawLatex(0.200, 0.700, "#sigma:");
+    text->DrawLatex(0.200, 0.630, Form("%.1f[ch]", sigma));
+    text->DrawLatex(0.200, 0.560, Form("(%.1f[ps])", sigma_ps));
+  }
+
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
 BFTSCHTOT()
 {
   auto c1 = new TCanvas(__func__, __func__);

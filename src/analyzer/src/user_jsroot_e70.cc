@@ -205,6 +205,7 @@ process_begin(const std::vector<std::string>& argv)
   gHttp.Register(http::SdcInOutEfficiency());
   gHttp.Register(http::Correlation());
   gHttp.Register(http::BFTAFTTOT());
+  gHttp.Register(http::BH2MTHR());
   gHttp.Register(http::DAQ());
   gHttp.Register(http::BcOutSdcInMultiHit());
 
@@ -1055,6 +1056,16 @@ process_event(void)
       }
     }
     hptr_array[mul_hid]->Fill(multiplicity);
+
+    { // BH2MTHR(BH2 mean timer calc. from UD high reso.)
+      if( multiplicity==1 ){
+	Int_t hitseg = hitseg_bh2.at(0);
+	auto tdc_u = gUnpacker.get(device_id, 0, hitseg, 0, tdc_id, 0);
+	auto tdc_d = gUnpacker.get(device_id, 0, hitseg, 1, tdc_id, 0);
+	Int_t mthr_hid = gHist.getSequentialID(kBH2, 0, kTDC, 40);
+	hptr_array[mthr_hid+hitseg]->Fill((tdc_u+tdc_d)/2.);
+      }
+    }
 
 #if 0
     // Debug, dump data relating this detector

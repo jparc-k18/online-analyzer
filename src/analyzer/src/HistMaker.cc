@@ -7937,7 +7937,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 	    title = Form("%s_%s_%dD", nameSubDetector, nameSubSubDir, seg);
 	  }
 	  subSub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-				    50000, 0, 50000,
+				    5000, 0, 50000,
 				    "TOT [ch]", ""));
 	}
       }
@@ -7956,7 +7956,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 	    title = Form("%s_%s_%dD", nameSubDetector, nameSubSubDir, seg);
 	  }
 	  subSub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-				    500, 0, 500,
+				    5000, 0, 50000,
 				    "TOT [ch]", ""));
 	}
       }
@@ -7970,7 +7970,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 	  Int_t seg = i+1; // 1 origin
 	  title = Form("%s_%s_%d", nameSubDetector, nameSubSubDir, seg);
 	  subSub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-				    500, 0, 500,
+				    5000, 0, 50000,
 				    "TOT [ch]", ""));
 	}
       }
@@ -7984,7 +7984,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 	  Int_t seg = i+1; // 1 origin
 	  title = Form("%s_%s_%d", nameSubDetector, nameSubSubDir, seg);
 	  subSub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-				    500, 0, 500,
+				    5000, 0, 50000,
 				    "TOT [ch]", ""));
 	}
       }

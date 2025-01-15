@@ -430,6 +430,196 @@ process_event(void)
 	  ++multihit_hid;
 	}
       }
+      { // BH2MTLR
+        static const auto device_id = gUnpacker.get_device_id("BH2MTLR");
+        static const auto tdc_id = gUnpacker.get_data_id("BH2MTLR", "tdc");
+        for(Int_t seg=0; seg<NumOfSegBH2; ++seg) {
+          Int_t nhit_l = gUnpacker.get_entries(device_id, 0, seg, 0, tdc_id);
+          hptr_array[multihit_hid]->Fill(seg, nhit_l);
+        }
+        ++multihit_hid;
+      }
+    }
+        { // DAQ parasite experiment 2025may
+      { ///// TOF comparator
+	static const auto device_id = gUnpacker.get_device_id("ParaDAQ_TOF_Comp");
+	static const auto device_id_adc = gUnpacker.get_device_id("TOF");
+	static const auto adc_id = gUnpacker.get_data_id("TOF", "adc");
+	static const auto leading_id = gUnpacker.get_data_id("ParaDAQ_TOF_Comp", "tdc");
+	static const auto trailing_id = gUnpacker.get_data_id("ParaDAQ_TOF_Comp", "trailing");
+	static const auto tdc_min = gUser.GetParameter("TdcTOFC", 0);
+	static const auto tdc_max = gUser.GetParameter("TdcTOFC", 1);
+	static const auto segOrgTOFC = gUser.GetParameter("SegOrgTOFC", 0);
+	// static const auto tdc_hid = gHist.getSequentialID(kDAQ, 0, kTDC);
+	// static const auto tot_hid = gHist.getSequentialID(kDAQ, 0, kTOT);
+	// static const auto adc_hid = gHist.getSequentialID(kDAQ, 0, kADC);
+	static const auto tdc_hid = gHist.getSequentialID(kTOFC, 0, kTDC);
+	static const auto tot_hid = gHist.getSequentialID(kTOFC, 0, kTOT);
+	static const auto adc_hid = gHist.getSequentialID(kTOFC, 0, kADC);
+	static const auto qdcvstot_hid = gHist.getSequentialID(kTOFC, 0, kQDCvsTOT);
+	//	static const auto tdc_t_hid = gHist.getSequentialID(kDAQ, 0, kTDCt);
+	//	std::vector<std::vector<Int_t>> hit_flag(NumOfSegParaTOFC);
+	for(Int_t ud=0; ud<kUorD; ++ud){
+	  for(Int_t i=0; i<NumOfSegParaTOFC; ++i){
+	    ///// ADC
+	    UInt_t adc = 0;
+	    UInt_t seg = i+segOrgTOFC;
+	    auto nhit = gUnpacker.get_entries(device_id_adc, 0, seg, ud, adc_id);
+	    if (nhit != 0) {
+	      adc = gUnpacker.get(device_id_adc, 0, seg, ud, adc_id);
+	      hptr_array[adc_hid + i + ud*NumOfSegParaTOFC]->Fill(adc);
+	    }
+	    UInt_t tdc_prev = 0;
+	    Bool_t is_in_range = false;
+	    // TDC
+	    for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, i, ud, leading_id);
+		m<n; ++m) {
+	      auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
+	      auto tdc_t = gUnpacker.get(device_id, 0, i, ud, trailing_id, m);
+	      auto tot = tdc - tdc_t;
+	      if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
+		continue;
+	      tdc_prev = tdc;
+	      hptr_array[tdc_hid + ud*NumOfSegParaTOFC + i ]->Fill(tdc);
+	      hptr_array[tot_hid + ud*NumOfSegParaTOFC + i ]->Fill(tot);
+	      hptr_array[qdcvstot_hid + ud*NumOfSegParaTOFC + i ]->Fill(adc,tot);
+	      if (tdc_min < tdc && tdc < tdc_max) {
+		is_in_range = true;
+	      }
+	    }
+	  }
+	}
+      }
+      { ///// TOF qtc
+	static const auto device_id = gUnpacker.get_device_id("ParaDAQ_TOF_QTC");
+	static const auto device_id_adc = gUnpacker.get_device_id("TOF");
+	static const auto adc_id = gUnpacker.get_data_id("TOF", "adc");
+	static const auto tdc_id = gUnpacker.get_data_id("ParaDAQ_TOF_QTC", "tdc");
+	static const auto leading_id = gUnpacker.get_data_id("ParaDAQ_TOF_QTC", "tdc");
+	static const auto trailing_id = gUnpacker.get_data_id("ParaDAQ_TOF_QTC", "trailing");
+	static const auto segOrgTOFQ = gUser.GetParameter("SegOrgTOFQ", 0);
+	// static const auto tdc_min = gUser.GetParameter("TdcBH1", 0);
+	static const auto tdc_min = 0;
+	// static const auto tdc_max = gUser.GetParameter("TdcBH1", 1);
+	static const auto tdc_max = 1000000;
+	static const auto adc_hid = gHist.getSequentialID(kTOFQ, 0, kADC);
+	static const auto tdc_hid = gHist.getSequentialID(kTOFQ, 0, kTDC);
+	static const auto tot_hid = gHist.getSequentialID(kTOFQ, 0, kTOT);
+	//	static const auto tdc_t_hid = gHist.getSequentialID(kDAQ, 0, kTDCt);
+	//	std::vector<std::vector<Int_t>> hit_flag(NumOfSegParaTOFC);
+	for(Int_t ud=0; ud<kUorD; ++ud){
+	  for(Int_t i=0; i<NumOfSegParaTOFC; ++i){
+	    ///// ADC
+	    UInt_t adc = 0;
+	    UInt_t seg = i+segOrgTOFQ;
+	    auto nhit = gUnpacker.get_entries(device_id_adc, 0, seg, ud, adc_id);
+	    if (nhit != 0) {
+	      adc = gUnpacker.get(device_id_adc, 0, seg, ud, adc_id);
+	      hptr_array[adc_hid + i + ud*NumOfSegParaTOFQ]->Fill(adc);
+	    }
+	    UInt_t tdc_prev = 0;
+	    Bool_t is_in_range = false;
+	    // TDC
+	    for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, i, ud, leading_id);
+		m<n; ++m) {
+	      auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
+	      auto tdc_t = gUnpacker.get(device_id, 0, i, ud, trailing_id, m);
+	      auto tot = tdc - tdc_t;
+	      if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
+		continue;
+	      tdc_prev = tdc;
+	      hptr_array[tdc_hid + ud*NumOfSegParaTOFQ + i ]->Fill(tdc);
+	      hptr_array[tot_hid + ud*NumOfSegParaTOFQ + i ]->Fill(tot);
+	      if (tdc_min < tdc && tdc < tdc_max) {
+		is_in_range = true;
+	      }
+	    }
+	  }
+	}
+      }
+      { ///// TMC comparator
+	static const auto device_id = gUnpacker.get_device_id("ParaBGO_TMC_Comp");
+	static const auto adc_id = gUnpacker.get_data_id("ParaBGO_TMC_Comp", "adc");
+	static const auto tdc_id = gUnpacker.get_data_id("ParaBGO_TMC_Comp", "tdc");
+	static const auto leading_id = gUnpacker.get_data_id("ParaBGO_TMC_Comp", "tdc");
+	static const auto trailing_id = gUnpacker.get_data_id("ParaBGO_TMC_Comp", "trailing");
+	// static const auto tdc_min = gUser.GetParameter("TdcBH1", 0);
+	static const auto tdc_min = 0;
+	// static const auto tdc_max = gUser.GetParameter("TdcBH1", 1);
+	static const auto tdc_max = 1000000;
+	static const auto adc_hid = gHist.getSequentialID(kTMCC, 0, kADC);
+	static const auto tdc_hid = gHist.getSequentialID(kTMCC, 0, kTDC);
+	static const auto tot_hid = gHist.getSequentialID(kTMCC, 0, kTOT);
+	// static const auto tdc_t_hid = gHist.getSequentialID(kDAQ, 0, kTDCt);
+	//	std::vector<std::vector<Int_t>> hit_flag(NumOfSegParaTOFC);
+	for(Int_t i=0; i<NumOfSegParaTMCC; ++i) {
+	  ///// ADC
+	  UInt_t adc = 0;
+	  auto nhit = gUnpacker.get_entries(device_id, 0, i, 0, adc_id);
+	  if (nhit != 0) {
+	    adc = gUnpacker.get(device_id, 0, i, 0, adc_id);
+	    hptr_array[adc_hid + i]->Fill(adc);
+	  }
+	  UInt_t tdc_prev = 0;
+	  Bool_t is_in_range = false;
+	  for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, i, 0, leading_id);
+	      m<n; ++m) {
+	    auto tdc = gUnpacker.get(device_id, 0, i, 0, leading_id, m);
+	    auto tdc_t = gUnpacker.get(device_id, 0, i, 0, trailing_id, m);
+	    auto tot = tdc - tdc_t;
+	    if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
+	      continue;
+	    tdc_prev = tdc;
+	    hptr_array[tdc_hid + i ]->Fill(tdc);
+	    hptr_array[tot_hid + i ]->Fill(tot);
+	    if (tdc_min < tdc && tdc < tdc_max) {
+	      is_in_range = true;
+	    }
+	  }
+	}
+      }
+      { ///// TMC qtc
+	static const auto device_id = gUnpacker.get_device_id("ParaBGO_TMC_QTC");
+	static const auto device_id_adc = gUnpacker.get_device_id("ParaBGO_TMC_Comp");
+	static const auto adc_id = gUnpacker.get_data_id("ParaBGO_TMC_QTC", "adc");
+	static const auto tdc_id = gUnpacker.get_data_id("ParaBGO_TMC_QTC", "tdc");
+	static const auto leading_id = gUnpacker.get_data_id("ParaBGO_TMC_QTC", "tdc");
+	static const auto trailing_id = gUnpacker.get_data_id("ParaBGO_TMC_QTC", "trailing");
+	// static const auto tdc_min = gUser.GetParameter("TdcBH1", 0);
+	static const auto tdc_min = 0;
+	// static const auto tdc_max = gUser.GetParameter("TdcBH1", 1);
+	static const auto tdc_max = 1000000;
+	static const auto adc_hid = gHist.getSequentialID(kTMCQ, 0, kADC);
+	static const auto tdc_hid = gHist.getSequentialID(kTMCQ, 0, kTDC);
+	//	static const auto tdc_t_hid = gHist.getSequentialID(kDAQ, 0, kTDCt);
+	static const auto tot_hid = gHist.getSequentialID(kTMCQ, 0, kTOT);
+	//	std::vector<std::vector<Int_t>> hit_flag(NumOfSegParaTOFC);
+	for(Int_t i=0; i<NumOfSegParaTMCQ; ++i) {
+	  ///// ADC
+	  UInt_t adc = 0;
+	  auto nhit = gUnpacker.get_entries(device_id_adc, 0, i, 0, adc_id);
+	  if (nhit != 0) {
+	    adc = gUnpacker.get(device_id_adc, 0, i, 0, adc_id);
+	    hptr_array[adc_hid + i]->Fill(adc);
+	  }
+	  UInt_t tdc_prev = 0;
+	  Bool_t is_in_range = false;
+	  for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, i, 0, leading_id);
+	      m<n; ++m) {
+	    auto tdc = gUnpacker.get(device_id, 0, i, 0, leading_id, m);
+	    auto tdc_t = gUnpacker.get(device_id, 0, i, 0, trailing_id, m);
+	    auto tot = tdc - tdc_t;
+	    if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
+	      continue;
+	    tdc_prev = tdc;
+	    hptr_array[tdc_hid + i ]->Fill(tdc);
+	    hptr_array[tot_hid + i ]->Fill(tot);
+	    if (tdc_min < tdc && tdc < tdc_max) {
+	      is_in_range = true;
+	    }
+	  }
+	}
+      }
     }
   }
 

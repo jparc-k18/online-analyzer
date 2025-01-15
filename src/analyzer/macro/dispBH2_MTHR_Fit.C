@@ -26,6 +26,7 @@ void dispBH2_MTHR_Fit()
       Int_t max = h->GetBinCenter(h->GetMaximumBin());
       h->GetXaxis()->SetRangeUser( max-1000, max+1000);
       h->Draw();
+      if( h->GetEntries()==0 ) continue;
       h->Fit("gaus", "", "", max-200, max+200);
       auto f = (TF1*)h->FindObject("gaus");
       f->SetNpx(10000);

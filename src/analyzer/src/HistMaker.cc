@@ -8021,9 +8021,6 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 				      "ADC [ch]", "TOT [ch]"));
 	  }
 	}
-	// insert sub directory
-	sub_dir->Add(subSub_dir);
-
 	// Make histogram and add it
 	{ // TOF qtc
 	  TString strSubDet  = CONV_STRING(kParaTOFQ);
@@ -8046,8 +8043,6 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 				      "ADC [ch]", "TOT [ch]"));
 	  }
 	} // TOF qtc
-	sub_dir->Add(subSub_dir);
-
 	{ // TMC comparator
 	  TString strSubDet  = CONV_STRING(kParaTMCC);
 	  const char* nameSubDetector = strSubDet.Data();
@@ -8061,7 +8056,6 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 				      "ADC [ch]", "TOT [ch]"));
 	  }
 	} // TMC comparator
-
 	{ // TMC qtc
 	  TString strSubDet  = CONV_STRING(kParaTMCQ);
 	  const char* nameSubDetector = strSubDet.Data();
@@ -8075,8 +8069,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 				      "ADC [ch]", "TOT [ch]"));
 	  }
 	} // TMC comparator
-
-	// insert sub directory
+	// insert subsub dir
 	sub_dir->Add(subSub_dir);
       }
     }

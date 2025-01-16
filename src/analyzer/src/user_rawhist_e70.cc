@@ -477,7 +477,7 @@ process_event()
 	    for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, i, ud, leading_id);
 		m<n; ++m) {
 	      //	      std::cout << " i " << i << std::endl;
-	      auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
+	      // auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
 	      // std::cout << __LINE__ << " did, seg, ud, leadingid, m: "
 	      // 	<< device_id << " " << i << " " << ud << " " << leading_id << " " << m <<std::endl;
 	      //	      std::cout << "tdc_leading " << tdc << std::endl;
@@ -492,7 +492,7 @@ process_event()
 	      //   if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
 	      // 	continue;
 	      //   tdc_prev = tdc;
-	      hptr_array[tdc_hid + ud*NumOfSegParaTOFQ + i ]->Fill(tdc);
+	      // hptr_array[tdc_hid + ud*NumOfSegParaTOFQ + i ]->Fill(tdc);
 	      //	      hptr_array[tot_hid + ud*NumOfSegParaTOFQ + i ]->Fill(tot);
 	      //	      hptr_array[qdcvstot_hid + ud*NumOfSegParaTOFC + i ]->Fill(adc,tot);
 	      // if (tdc_min < tdc && tdc < tdc_max) {

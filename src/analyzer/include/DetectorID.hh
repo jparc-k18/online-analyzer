@@ -255,6 +255,14 @@ const std::vector<Int_t> PlaneIdOfVMEEASIROC = {16, 17, 31, 32, 33, 34, 49, 50, 
 const Int_t NumOfPlaneVMEEASIROC = PlaneIdOfVMEEASIROC.size();
 const Int_t NumOfSegVMEEASIROC    = 64;
 
+// E70 parasite BGO test bench
+const Int_t DetIDParaBGO = 701;
+const Int_t DetIDParaTMC = 702;
+const Int_t DetIDParaTC  = 703;
+const Int_t DetIDParaVC  = 704;
+const Int_t NumOfPlaneParaTC = 2;
+const Int_t NumOfSegParaBGO  = 2;
+
 // Trigger Flag
 namespace trigger
 {

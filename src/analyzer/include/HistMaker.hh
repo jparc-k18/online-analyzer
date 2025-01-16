@@ -45,6 +45,8 @@ enum DetectorType {
   kKIC, kHDC, kTOFMT,
   // parasite TOT study
   kTOFC,kTOFQ,kTMCC,kTMCQ,
+  // parasite BGO test
+  kParaTMC,kParaBGO,kVC,kTC,
   // Others
   kTriggerFlag, kDAQ, kCorrelation,
   kCorrelation_catch, kMisc,
@@ -257,6 +259,12 @@ public:
   TList* createTOFMT( Bool_t flag_ps=true );
   TList* createTriggerFlag_E07( Bool_t flag_ps=true );
   TList* createPWO_E05( Bool_t flag_ps=true );
+
+  // parasite BGO test
+  TList* createParaBGO( Bool_t flag_ps=true );
+  TList* createParaTMC( Bool_t flag_ps=true );
+  TList* createParaTC( Bool_t flag_ps = true);
+  TList* createParaVC( Bool_t flag_ps = true);
 
 private:
   HistMaker( void );

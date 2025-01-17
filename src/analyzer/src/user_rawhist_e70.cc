@@ -460,9 +460,20 @@ process_event()
 	static const auto tdc_hid = gHist.getSequentialID(kTOFQ, 0, kTDC);
 	static const auto tot_hid = gHist.getSequentialID(kTOFQ, 0, kTOT);
 	static const auto qdcvstot_hid = gHist.getSequentialID(kTOFQ, 0, kQDCvsTOT);
+	//hit_pattern
+	static const auto tdc_id = gUnpacker.get_data_id("TOF", "tdc");
+	static const auto tdc_min_h = gUser.GetParameter("TdcTOF", 0);
+	static const auto tdc_max_h = gUser.GetParameter("TdcTOF", 1);
+	static const auto awt_hid = gHist.getSequentialID(kTOF, 0, kADCwTDC);
+	static const auto hit_hid = gHist.getSequentialID(kTMCC, 0, kHitPat);
+	static const auto mul_hid = gHist.getSequentialID(kTOF, 0, kMulti);
 	//	std::cout << "debug " << __LINE__ << std::endl;
-	for(Int_t ud=0; ud<kUorD; ++ud){
-	  for(Int_t i=0; i<NumOfSegParaTOFQ; ++i){
+	std::vector<std::vector<Int_t>> hit_flag_TOFQ(NumOfSegParaTOFQ);
+
+	for(Int_t i=0; i<NumOfSegParaTOFQ; ++i){
+	  hit_flag_TOFQ[i].resize(kUorD);
+	  for(Int_t ud=0; ud<kUorD; ++ud){
+	    hit_flag_TOFQ[i][ud]=0;
 	    ///// ADC
 	    UInt_t adc = 0;
 	    UInt_t seg = i+segOrgTOFQ;
@@ -475,7 +486,15 @@ process_event()
 	    Bool_t is_in_range = false;
 	    // TDC
 	    for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, i, ud, leading_id);
-		m<n; ++m) {
+	    	m<n; ++m) {
+	      auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
+	      if (tdc != 0) {
+		if (tdc_min<tdc && tdc<tdc_max && adc > 0) {
+		  hit_flag_TOFQ[i][ud] = 1;
+		}
+	      }
+
+	      //
 	      //	      std::cout << " i " << i << std::endl;
 	      // auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
 	      // std::cout << __LINE__ << " did, seg, ud, leadingid, m: "
@@ -501,7 +520,40 @@ process_event()
 	    }
 	  }
 	}
+      //hit_pattern
+	std::vector<std::vector<Int_t>> hit_flag(NumOfSegTOF);
+	for(Int_t seg=0; seg<NumOfSegTOF; ++seg) {
+	  hit_flag[seg].resize(kUorD);
+	  for(Int_t ud=0; ud<kUorD; ++ud) {
+	    hit_flag[seg][ud] = 0;
+	    // ADC
+	    UInt_t adc = 0;
+	    auto nhit = gUnpacker.get_entries(device_id_adc, 0, seg, ud, adc_id);
+	    if (nhit != 0) {
+	      adc = gUnpacker.get(device_id_adc, 0, seg, ud, adc_id);
+	    }
+	    // TDC
+	    for(Int_t m=0, n=gUnpacker.get_entries(device_id_adc, 0, seg, ud, tdc_id);
+		m<n; ++m) {
+	      auto tdc = gUnpacker.get(device_id_adc, 0, seg, ud, tdc_id, m);
+	      if (tdc != 0) {
+		if (tdc_min_h<tdc && tdc<tdc_max_h && adc > 0) {
+		  hit_flag[seg][ud] = 1;
+		}
+	      }
+	    }
+	    if (seg==10 || seg==11){
+	    hit_flag[seg][ud] = hit_flag_TOFQ[seg-10][ud];
+	    }
+	  }
+	  if (hit_flag[seg][kU] == 1 && hit_flag[seg][kD] == 1) {
+	    hptr_array[hit_hid]->Fill(seg);
+	    //hitseg_tof.push_back(seg);
+	  }
+	}
+
       }
+
       // { ///// TMC comparator
       // 	static const auto device_id = gUnpacker.get_device_id("ParaBGO_TMC_Comp");
       // 	static const auto adc_id = gUnpacker.get_data_id("ParaBGO_TMC_Comp", "adc");
@@ -588,8 +640,8 @@ process_event()
       //  }
       //   }
     }
-  }
 
+  }
 #endif
 
   if (trigger_flag[trigger::kSpillOnEnd] || trigger_flag[trigger::kSpillOffEnd])

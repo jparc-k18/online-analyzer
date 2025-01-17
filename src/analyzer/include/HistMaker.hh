@@ -46,7 +46,7 @@ enum DetectorType {
   // parasite TOT study
   kTOFC,kTOFQ,kTMCC,kTMCQ,
   // parasite BGO test
-  kParaTMC,kParaBGO,kVC,kTC,
+  kParaTMC,kParaBGO,kParaVC,kParaTC,
   // Others
   kTriggerFlag, kDAQ, kCorrelation,
   kCorrelation_catch, kMisc,

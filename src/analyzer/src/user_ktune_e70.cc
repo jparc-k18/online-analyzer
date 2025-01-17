@@ -569,6 +569,15 @@ process_begin( const std::vector<std::string>& argv )
 
 
 
+  tab_hist->Add(gHist.createTH1(btof_id+23+16, "BAC2eff wBAC1 [pi]",
+                               6, 0, 6,
+                               "Pattern", ""
+                               ));
+  tab_hist->Add(gHist.createTH1(btof_id+24+16, "BAC2eff wBAC1 [k]",
+                               6, 0, 6,
+                               "Pattern", ""
+                               ));
+/*
   tab_hist->Add(gHist.createTH1(btof_id+23+16, "FACeff [pi]",
                                6, 0, 6,
                                "Pattern", ""
@@ -577,6 +586,7 @@ process_begin( const std::vector<std::string>& argv )
                                6, 0, 6,
                                "Pattern", ""
                                ));
+*/
   tab_hist->Add(gHist.createTH1(btof_id+25+16, "FACeff [p]",
                                6, 0, 6,
                                "Pattern", ""
@@ -829,10 +839,10 @@ process_event( void )
       hptr_array[btof_id+4+19]->Fill(0); //BAC2eff
 
       static const int k_device = gUnpacker.get_device_id("BAC");
-      static const int k_tdcbac2 = gUnpacker.get_data_id("BAC","tdc");
-      int nhit_t2 = gUnpacker.get_entries(k_device, 0, 1, 0, k_tdcbac2);
+      static const int k_tdcbac = gUnpacker.get_data_id("BAC","tdc");
+      int nhit_t2 = gUnpacker.get_entries(k_device, 0, 1, 0, k_tdcbac);
       for(int m = 0; m<nhit_t2; ++m){
-        int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac2, m);
+        int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac, m);
         static const int tdc_min = 720;
         static const int tdc_max = 760;
         if(tdc_min < tdcbac2 && tdcbac2 < tdc_max){
@@ -840,7 +850,15 @@ process_event( void )
         }
       }
 
-      hptr_array[btof_id+4+19+16]->Fill(0); //PVAC2eff
+      int nhit_t1 = gUnpacker.get_entries(k_device, 0, 0, 0, k_tdcbac);
+      for(int m = 0; m<nhit_t1; ++m){
+        int tdcbac1 = gUnpacker.get(k_device, 0, 0, 0, k_tdcbac, m);
+        static const int tdc_min = 720;
+        static const int tdc_max = 760;
+        if(tdc_min < tdcbac1 && tdcbac1 < tdc_max){
+          hptr_array[btof_id+4+19+16]->Fill(0); //PVAC2eff
+        }
+      }
     }
     if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.0<btof && btof<-0.7 ){  // 1.8GeV/c
     //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.8<btof && btof<-1.8 ){  // 1.4GeV/c
@@ -851,17 +869,25 @@ process_event( void )
       hptr_array[btof_id+5]->Fill(0); //BAC1eff
       hptr_array[btof_id+5+19]->Fill(0); //BAC2eff
       static const int k_device = gUnpacker.get_device_id("BAC");
-      static const int k_tdcbac2 = gUnpacker.get_data_id("BAC","tdc");
-      int nhit_t2 = gUnpacker.get_entries(k_device, 0, 1, 0, k_tdcbac2);
+      static const int k_tdcbac = gUnpacker.get_data_id("BAC","tdc");
+      int nhit_t2 = gUnpacker.get_entries(k_device, 0, 1, 0, k_tdcbac);
       for(int m = 0; m<nhit_t2; ++m){
-        int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac2, m);
+        int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac, m);
         static const int tdc_min = 720;
         static const int tdc_max = 760;
         if(tdc_min > tdcbac2 || tdcbac2 > tdc_max){
           hptr_array[btof_id+5+19+8]->Fill(0); //PVACeff->BAC1/BAC2 eff
         }
       }
-      hptr_array[btof_id+5+19+16]->Fill(0); //FACeff
+      int nhit_t1 = gUnpacker.get_entries(k_device, 0, 0, 0, k_tdcbac);
+      for(int m = 0; m<nhit_t1; ++m){
+        int tdcbac1 = gUnpacker.get(k_device, 0, 0, 0, k_tdcbac, m);
+        static const int tdc_min = 720;
+        static const int tdc_max = 760;
+        if(tdc_min > tdcbac1 || tdcbac1 > tdc_max){
+          hptr_array[btof_id+5+19+16]->Fill(0); //PVACeff->BAC1/BAC2 eff
+        }
+      }
     }
     // if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7<btof && btof<-3.7 ){ // 1.8GeV/c
       //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7-2.8<btof && btof<-3.7-2.8 ){  // 1.4GeV/c
@@ -1622,9 +1648,33 @@ process_event( void )
 
       	if( pi_flag==1 ){
       	  hptr_array[btof_id+4+19]->Fill(1); //BACeff
+
+          static const int k_device1 = gUnpacker.get_device_id("BAC");
+          static const int k_tdcbac1 = gUnpacker.get_data_id("BAC","tdc");
+          int nhit_t1 = gUnpacker.get_entries(k_device, 0, 0, 0, k_tdcbac1);
+          for(int m = 0; m<nhit_t1; ++m){
+            int tdcbac1 = gUnpacker.get(k_device, 0, 0, 0, k_tdcbac1, m);
+            static const int tdc1_min = 720;
+            static const int tdc1_max = 760;
+            if(tdc_min < tdcbac1 && tdcbac1 < tdc_max){
+              hptr_array[btof_id+4+19+16]->Fill(1); //PVACeff->BAC2/BAC1 eff
+            }
+          }
       	}
       	if( k_flag==1 ){
       	  hptr_array[btof_id+5+19]->Fill(1); //BACeff
+
+          static const int k_device1 = gUnpacker.get_device_id("BAC");
+          static const int k_tdcbac1 = gUnpacker.get_data_id("BAC","tdc");
+          int nhit_t1 = gUnpacker.get_entries(k_device, 0, 0, 0, k_tdcbac1);
+          for(int m = 0; m<nhit_t1; ++m){
+            int tdcbac1 = gUnpacker.get(k_device, 0, 0, 0, k_tdcbac1, m);
+            static const int tdc1_min = 720;
+            static const int tdc1_max = 760;
+            if(tdc_min > tdcbac1 || tdcbac1 > tdc_max){
+              hptr_array[btof_id+5+19+16]->Fill(1); //FACeff->BAC1/BAC2 eff
+            }
+          }
       	}
       	if( p_flag==1 ){
       	  hptr_array[btof_id+6+19]->Fill(1); //BACeff

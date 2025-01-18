@@ -3266,7 +3266,7 @@ namespace analyzer
 #if DEBUG
     std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
-  
+
     // parasite BGO test  -----------------------------------------------------------
     { ///// ParaBGO
       static const auto device_id = gUnpacker.get_device_id("ParaBGO");
@@ -3361,7 +3361,9 @@ namespace analyzer
 
       // SequentialID
       int tc_t_2d_id    = gHist.getSequentialID(kParaTC, 0, kTDC2D,   1);
+      int tc_t_1d_id    = gHist.getSequentialID(kParaTC, 0, kTDC, 1);
       int tc_tot_2d_id  = gHist.getSequentialID(kParaTC, 0, kTOT2D,   1);
+      int tc_tot_1d_id  = gHist.getSequentialID(kParaTC, 0, kTOT, 1);
       int tc_hg_2d_id   = gHist.getSequentialID(kParaTC, 0, kHighGain, 11);
       int tc_chg_2d_id  = gHist.getSequentialID(kParaTC, 0, kHighGain, 101);
       int tc_lg_2d_id   = gHist.getSequentialID(kParaTC, 0, kLowGain, 11);
@@ -3381,17 +3383,18 @@ namespace analyzer
       Int_t multiplicity_tc1y = 0;
       Int_t multiplicity_tc2x = 0;
       Int_t multiplicity_tc2y = 0;
-    
+
       for(int plane=0; plane<NumOfPlaneParaTC; ++plane){
-      
+
 	for(int seg = 0; seg<NumOfSegVMEEASIROC; ++seg){
-	
+
 	  { // tdc
 	    int nhit_l = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading );
 	    bool flag_hit_wt = false;
 	    for(int m = 0; m<nhit_l; ++m){
 	      int tdc = gUnpacker.get(k_device, plane, seg, 0, k_leading, m);
 	      hptr_array[tc_t_2d_id+plane]->Fill(seg, tdc);
+	      hptr_array[tc_t_1d_id+plane]->Fill(tdc);
 	      if(tdc_min < tdc && tdc < tdc_max){ // w/ TDC cut
 		flag_hit_wt = true;
 		if(plane==0 && seg<32){
@@ -3450,6 +3453,7 @@ namespace analyzer
 		int tdc_t = gUnpacker.get(k_device, plane, seg, 0, k_trailing, m);
 		int tot = tdc - tdc_t;
 		hptr_array[tc_tot_2d_id+plane]->Fill(seg, tot);
+		hptr_array[tc_tot_1d_id+plane]->Fill(tot);
 		// if(tot < tot_min) continue;
 		// hptr_array[sdc3t_ctot_id + l]->Fill(tdc);
 		// hptr_array[sdc3tot_ctot_id+l]->Fill(tot);
@@ -3564,7 +3568,9 @@ namespace analyzer
 
       // SequentialID
       int vc_t_2d_id    = gHist.getSequentialID(kParaVC, 0, kTDC2D,   1);
+      int vc_t_1d_id    = gHist.getSequentialID(kParaVC, 0, kTDC,   1);
       int vc_tot_2d_id  = gHist.getSequentialID(kParaVC, 0, kTOT2D,   1);
+      int vc_tot_1d_id  = gHist.getSequentialID(kParaVC, 0, kTOT,   1);
       int vc_hg_2d_id   = gHist.getSequentialID(kParaVC, 0, kHighGain, 11);
       int vc_chg_2d_id  = gHist.getSequentialID(kParaVC, 0, kHighGain, 101);
       int vc_lg_2d_id   = gHist.getSequentialID(kParaVC, 0, kLowGain, 11);
@@ -3597,7 +3603,7 @@ namespace analyzer
       static const int SegOfVCD2 = 50;
       static const int SegOfVCB1 = 32;
       static const int SegOfVCB2 = 34;
-    
+
       Int_t multiplicity_l = 0;
       Int_t multiplicity_r = 0;
       Int_t multiplicity_u = 0;
@@ -3608,7 +3614,7 @@ namespace analyzer
       // Int_t multiplicity_wt      = 0;
       // Int_t multiplicity_ctot    = 0;
       // Int_t multiplicity_wt_ctot = 0;
-    
+
       for(int seg = 0; seg<NumOfSegVMEEASIROC; ++seg){
 
 	{ // tdc
@@ -3618,6 +3624,7 @@ namespace analyzer
 	  for(int m = 0; m<nhit_l; ++m){
 	    int tdc = gUnpacker.get(k_device, 0, seg, 0, k_leading, m);
 	    hptr_array[vc_t_2d_id]->Fill(seg, tdc);
+	    hptr_array[vc_t_1d_id]->Fill(tdc);
 	    if(tdc_min < tdc && tdc < tdc_max){ // w/ TDC cut
 	      flag_hit_wt = true;
 	    }
@@ -3654,6 +3661,7 @@ namespace analyzer
 		int tdc_t = gUnpacker.get(k_device, 0, seg, 0, k_trailing, m);
 		int tot = tdc - tdc_t;
 		hptr_array[vc_tot_2d_id]->Fill(seg, tot);
+		hptr_array[vc_tot_1d_id]->Fill(tot);
 		// if(tot < tot_min) continue;
 		// hptr_array[sdc3t_ctot_id + l]->Fill(tdc);
 		// hptr_array[sdc3tot_ctot_id+l]->Fill(tot);

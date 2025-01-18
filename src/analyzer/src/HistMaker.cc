@@ -10946,7 +10946,7 @@ HistMaker::createParaBGO(Bool_t flag_ps)
   const char* nameDetector = strDet.Data();
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
-  
+
   { ///// ADC
     Int_t target_id = getUniqueID(kParaBGO, 0, kADC);
     for(Int_t i = 0; i<NumOfSegParaBGO; ++i){
@@ -11061,6 +11061,28 @@ TList* HistMaker::createParaTC( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
+  // TDC-1D(sum)---------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kParaTC, 0, kTDC, 0);
+    const char* sub_name = "TDC_sum";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfPlaneParaTC; ++i){
+      const char* title = NULL;
+      title = Form("%s%d_%s", nameDetector, i+1, sub_name);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     4096, 0, 4096,
+			     "TDC [ch]", ""));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
   // TOT-2D -------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -11069,7 +11091,7 @@ TList* HistMaker::createParaTC( Bool_t flag_ps )
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    Int_t target_id = getUniqueID(kParaTC, 0, kTOT2D  , 0);
+    Int_t target_id = getUniqueID(kParaTC, 0, kTOT2D ,0);
     const char* sub_name = "TOT";
     // Add to the top directory
     for(Int_t i=0; i<NumOfPlaneParaTC; ++i){
@@ -11079,6 +11101,28 @@ TList* HistMaker::createParaTC( Bool_t flag_ps )
 			     NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
 			     150, 0, 150,
 			     "ch", "TOT [ch]"));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // TOT-1D(sum)---------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTOT);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kParaTC, 0, kTOT, 0);
+    const char* sub_name = "TOT_sum";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfPlaneParaTC; ++i){
+      const char* title = NULL;
+      title = Form("%s%d_%s", nameDetector, i+1, sub_name);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     150, 0, 150,
+			     "TOT [ch]", ""));
     }
     // insert sub directory
     top_dir->Add(sub_dir);
@@ -11274,7 +11318,7 @@ TList* HistMaker::createParaTC( Bool_t flag_ps )
     }
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
@@ -11320,6 +11364,26 @@ TList* HistMaker::createParaVC( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
+  // TDC-1D(sum)---------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kParaVC, 0, kTDC, 0);
+    const char* sub_name = "TDC_sum";
+    // Add to the top directory
+    const char* title = NULL;
+    title = Form("%s_%s", nameDetector, sub_name);
+    sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			   4096, 0, 4096,
+			   "TDC [ch]", ""));
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
   // TOT-2D -------------------------------------------------------
   {
     // Declaration of the sub-directory
@@ -11337,6 +11401,26 @@ TList* HistMaker::createParaVC( Bool_t flag_ps )
 			   NumOfSegVMEEASIROC, 0, NumOfSegVMEEASIROC,
 			   150, 0, 150,
 			   "ch", "TOT [ch]"));
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // TOT-1D(sum)---------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTOT);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kParaVC, 0, kTOT, 0);
+    const char* sub_name = "TOT_sum";
+    // Add to the top directory
+    const char* title = NULL;
+    title = Form("%s_%s", nameDetector, sub_name);
+    sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			   150, 0, 150,
+			   "TOT [ch]", ""));
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -11516,7 +11600,7 @@ TList* HistMaker::createParaVC( Bool_t flag_ps )
     // insert sub directory
     top_dir->Add(sub_dir);
   }
-  
+
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }

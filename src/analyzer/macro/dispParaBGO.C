@@ -13,6 +13,8 @@ void dispParaBGO()
   const int NumOfPlaneParaTC = 2;
   const int NumOfSegVMEEASIROC = 64;
 
+  Int_t SegOfVC[10] = {36, 42, 58, 62, 46, 48, 60, 50, 32, 34};
+
   // BGO&TMC ADC w/ TDC, TDC
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
@@ -112,7 +114,18 @@ void dispParaBGO()
 
   // VC ADC vs TDC
   {
+    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", 5));
+    c->Clear();
+    c->Divide(4,3);
 
+    int axt_id = HistMaker::getUniqueID(kParaVC, 0, kHighGainXTDC, 30);
+    for (int i=0; i<10; ++i){
+      c->cd(i+1);
+      TH2* h_axt = (TH2*)GHist::get(axt_id+1 + SegOfVC[i]);
+      if ( !h_axt ) continue;
+      h_axt->Draw("colz");
+    }
+    c->Update();
   }
 
   // VC TDC/TOT

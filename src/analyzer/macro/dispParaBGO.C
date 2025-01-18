@@ -13,14 +13,17 @@ void dispParaBGO()
   const int NumOfPlaneParaTC = 2;
   const int NumOfSegVMEEASIROC = 64;
 
-  ////////// BGO ADC w/ TDC, TDC
+  // BGO&TMC ADC w/ TDC, TDC
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(2,2);
-    int adc_id = HistMaker::getUniqueID(kParaBGO, 0, kADC);
-    int tdc_id = HistMaker::getUniqueID(kParaBGO, 0, kTDC);
-    int awt_id = HistMaker::getUniqueID(kParaBGO, 0, kADCwTDC);
+    c->Divide(3,2);
+    int adc_id  = HistMaker::getUniqueID(kParaBGO, 0, kADC);
+    int tdc_id  = HistMaker::getUniqueID(kParaBGO, 0, kTDC);
+    int awt_id  = HistMaker::getUniqueID(kParaBGO, 0, kADCwTDC);
+    int tadc_id = HistMaker::getUniqueID(kParaTMC, 0, kADC);
+    int ttdc_id  = HistMaker::getUniqueID(kParaTMC, 0, kTDC);
+    int tawt_id  = HistMaker::getUniqueID(kParaTMC, 0, kADCwTDC);
 
     for (int i=0; i<2; ++i){
       c->cd(i+1);
@@ -35,37 +38,35 @@ void dispParaBGO()
       hh->SetLineColor( kRed );
       hh->Draw("same");
     }
+
+    c->cd(3);
+    gPad->SetLogy();
+    TH1 *th = (TH1*)GHist::get(tadc_id);
+    th->GetXaxis()->SetRangeUser( 0 , 4096 );
+    th->Draw();
+    TH1 *thh = (TH1*)GHist::get(tawt_id);
+    thh->GetXaxis()->SetRangeUser( 0 , 4096 );
+    thh->SetLineColor( kRed );
+    thh->Draw("same");
+
     for (int i=0; i<2; ++i){
-      c->cd(i+3);
+      c->cd(i+4);
       TH1 *hhh = (TH1*)GHist::get(tdc_id+i);
       if( !hhh ) continue;
       hhh->GetXaxis()->SetRangeUser( 0 , 4096 );
       hhh->Draw();
     }
+
+    c->cd(6);
+    TH1 *thhh = (TH1*)GHist::get(ttdc_id);
+    thhh->Draw();
+
     c->Update();
   }
 
-  // TC TOT vs TDC
+  // TC1,2 TDC/TOT 1D
   {
-    // for (int plane=0; plane<NumOfPlaneParaTC; ++plane){
-    //   TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", plane+2));
-    //   c->Clear();
-    //   c->Divide(8,8);
-
-    //   int base_id = HistMaker::getUniqueID(kParaTC, 0, kTOTXTDC, 30);
-    //   for (int seg = 0; seg<NumOfSegVMEEASIROC; ++seg){
-    // 	c->cd(seg+1);
-    // 	TH2* h2 = (TH2*)GHist::get(++base_id);
-    // 	if ( !h2 ) continue;
-    // 	h2->Draw("colz");
-    //   }
-    //   c->Update();
-    // }
-  }
-
-  // TC1,2 TDC/TOT
-  {
-    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", 4));
+    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", 2));
     c->Clear();
     c->Divide(2,2);
 
@@ -90,7 +91,7 @@ void dispParaBGO()
     int hitpat_id = HistMaker::getUniqueID(kParaTC, 0, kHitPat, 0);
     int Multiplicity_id = HistMaker::getUniqueID(kParaTC, 0, kMulti, 0);
     for (int plane = 0; plane<NumOfPlaneParaTC; ++plane){
-      TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", plane+5));
+      TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", plane+3));
       c->Clear();
       c->Divide(2,2);
 
@@ -112,6 +113,25 @@ void dispParaBGO()
   // VC ADC vs TDC
   {
 
+  }
+
+  // VC TDC/TOT
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", 6));
+    c->Clear();
+    c->Divide(1,2);
+
+    int tdc_id = HistMaker::getUniqueID(kParaVC, 0, kTDC, 0);
+    int tot_id = HistMaker::getUniqueID(kParaVC, 0, kTOT, 0);
+
+    c->cd(1);
+    TH1* h_tdc = (TH1*)GHist::get(++tdc_id);
+    h_tdc->Draw();
+
+    c->cd(2);
+    TH1* h_tot = (TH1*)GHist::get(++tot_id);
+    h_tot->Draw();
+    c->Update();
   }
 
   // VC Hitpat/Multiplicity

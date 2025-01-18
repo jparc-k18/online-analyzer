@@ -11557,6 +11557,28 @@ TList* HistMaker::createParaVC( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
+    // ADC HighGain vs TDC ----------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kHighGainXTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kParaVC, 0, kHighGainXTDC, 30);
+    const char* sub_name = "HighGainvsTDC";
+    // Add to the top directory
+      for (Int_t j=0; j<NumOfSegVMEEASIROC; ++j){
+	const char* title = NULL;
+	title = Form("%s_%s_%d", nameDetector, sub_name, j);
+	sub_dir->Add(createTH2(++target_id, title, // 1 origin
+				   4096, 0, 4096,
+				   4096, 0, 4096,
+				   "TDC [ch]", "ADC [ch]"));
+    }
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
     // Hit parttern -----------------------------------------------
   {
     TString strSubDir  = CONV_STRING(kHitPattern);

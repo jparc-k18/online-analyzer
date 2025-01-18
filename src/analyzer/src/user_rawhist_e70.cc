@@ -3580,7 +3580,8 @@ namespace analyzer
       int vc_multiplicity_id = gHist.getSequentialID(kParaVC, 0, kMulti, 1);
 
       int vc_hgvstot_2d_id  = gHist.getSequentialID(kParaVC, 0, kHighGainvsTOT, 31);
-      int vc_tdcvstot_2d_id  = gHist.getSequentialID(kParaVC, 0, kTOTXTDC, 31);
+      int vc_tdcvstot_2d_id = gHist.getSequentialID(kParaVC, 0, kTOTXTDC, 31);
+      int vc_hgvstdc_2d_id  = gHist.getSequentialID(kParaVC, 0, kHighGainXTDC, 31);
 
       // TDC gate range
       static const int tdc_min = gUser.GetParameter("TdcParaVC", 0);
@@ -3736,7 +3737,29 @@ namespace analyzer
 		int tdc    = gUnpacker.get(k_device, 0, seg, 0, k_leading, m);
 		int tdc_t  = gUnpacker.get(k_device, 0, seg, 0, k_trailing, m);
 		int tot = tdc - tdc_t;
-		hptr_array[vc_tdcvstot_2d_id+0*NumOfSegVMEEASIROC+seg]->Fill(tdc, tot);
+		hptr_array[vc_tdcvstot_2d_id+seg]->Fill(tdc, tot);
+		// if(tot < tot_min) continue;
+		// hptr_array[sdc3t_ctot_id + l]->Fill(tdc);
+		// hptr_array[sdc3tot_ctot_id+l]->Fill(tot);
+		// if( tdc1st<tdc ) tdc1st = tdc;
+		// if( tdc_min < tdc && tdc < tdc_max ){
+		//   flag_hit_wt_ctot = true;
+		// }
+	      }
+	    }
+	  }
+
+	  { // highgain vs tdc
+	    int nhit_l  = gUnpacker.get_entries(k_device, 0, seg, 0, k_leading );
+	    int nhit_hg = gUnpacker.get_entries(k_device, 0, seg, 0, k_highgain);
+	    Int_t hit_l_max = 0;
+	    if(nhit_l != 0) hit_l_max = gUnpacker.get(k_device, 0, seg, 0, k_leading,  nhit_l - 1);
+	    // tdc1st = 0;
+	    if (nhit_hg == nhit_l){
+	      for(Int_t m = 0; m<nhit_l; ++m){
+		int tdc    = gUnpacker.get(k_device, 0, seg, 0, k_leading, m);
+		int adc_hg = gUnpacker.get(k_device, 0, seg, 0, k_highgain, m);
+		hptr_array[vc_hgvstdc_2d_id+seg]->Fill(tdc, adc_hg);
 		// if(tot < tot_min) continue;
 		// hptr_array[sdc3t_ctot_id + l]->Fill(tdc);
 		// hptr_array[sdc3tot_ctot_id+l]->Fill(tot);

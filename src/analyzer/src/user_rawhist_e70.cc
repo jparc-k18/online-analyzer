@@ -407,11 +407,11 @@ namespace analyzer
       }
       { // DAQ parasite experiment 2025may
 	{ ///// TOF comparator
-	  static const auto device_id = gUnpacker.get_device_id("ParaDAQ_TOF_Comp");
+	  static const auto device_id = gUnpacker.get_device_id("ParaTOFComp");
 	  static const auto device_id_adc = gUnpacker.get_device_id("TOF");
 	  static const auto adc_id = gUnpacker.get_data_id("TOF", "adc");
-	  static const auto leading_id = gUnpacker.get_data_id("ParaDAQ_TOF_Comp", "tdc");
-	  static const auto trailing_id = gUnpacker.get_data_id("ParaDAQ_TOF_Comp", "trailing");
+	  static const auto leading_id = gUnpacker.get_data_id("ParaTOFComp", "tdc");
+	  static const auto trailing_id = gUnpacker.get_data_id("ParaTOFComp", "trailing");
 	  static const auto tdc_min = gUser.GetParameter("TdcTOFC", 0);
 	  static const auto tdc_max = gUser.GetParameter("TdcTOFC", 1);
 	  static const auto segOrgTOFC = gUser.GetParameter("SegOrgTOFC", 0);
@@ -452,12 +452,12 @@ namespace analyzer
 	  }
 	}
 	{ ///// TOF qtc
-	  static const auto device_id = gUnpacker.get_device_id("ParaDAQ_TOF_QTC");
+	  static const auto device_id = gUnpacker.get_device_id("ParaTOFQTC");
 	  static const auto device_id_adc = gUnpacker.get_device_id("TOF");
 	  static const auto adc_id = gUnpacker.get_data_id("TOF", "adc");
 	  //	static const auto tdc_id = gUnpacker.get_data_id("ParaDAQ_TOF_QTC", "tdc");
-	  static const auto leading_id = gUnpacker.get_data_id("ParaDAQ_TOF_QTC", "tdc");
-	  static const auto trailing_id = gUnpacker.get_data_id("ParaDAQ_TOF_QTC", "trailing");
+	  static const auto leading_id = gUnpacker.get_data_id("ParaTOFQTC", "tdc");
+	  static const auto trailing_id = gUnpacker.get_data_id("ParaTOFQTC", "trailing");
 	  static const auto segOrgTOFQ = gUser.GetParameter("SegOrgTOFQ", 0);
 	  static const auto tdc_min = gUser.GetParameter("TdcTOFQ", 0);
 	  static const auto tdc_max = gUser.GetParameter("TdcTOFQ", 1);
@@ -2124,7 +2124,7 @@ namespace analyzer
 	    is_in_gate = true;
               if(seg==21){
                   AC1Hit = true;
-              }// AC1 Hit    
+              }// AC1 Hit
 	  }// tdc range is ok
 	}// for tdc
 
@@ -2150,7 +2150,7 @@ namespace analyzer
 	}
       }
       hptr_array[ac1mul_id]->Fill(multiplicity);
-      
+
       {
       //from SAC3 for effciency study
       static const Int_t k_SAC3device = gUnpacker.get_device_id("SAC3");
@@ -2159,7 +2159,7 @@ namespace analyzer
       //SAC3 TDC GARE RANGE
       static const Int_t SAC3_tdc_min = gUser.GetParameter("TdcSAC3",0);
       static const Int_t SAC3_tdc_max = gUser.GetParameter("TdcSAC3",1);
-      
+
           Int_t nhit_t = gUnpacker.get_entries(k_SAC3device, 0, 1, 0, k_SAC3tdc);
           Bool_t is_in_SAC3gate = false;
 
@@ -2169,9 +2169,9 @@ namespace analyzer
                  is_in_SAC3gate = true;
               }
           }
-      
+
       if (is_in_SAC3gate){
-          
+
           hptr_array[ac1effwSAC3_id]->Fill( static_cast<Int_t>(AC1Hit));
       }
       //from SAC3 for efficiency study
@@ -3342,9 +3342,9 @@ namespace analyzer
     std::cout << __FILE__ << " " << __LINE__ << std::endl;
 #endif
     { ///// TMC
-      static const auto adc_device_id = gUnpacker.get_device_id("ParaBGO_TMC_Comp");
+      static const auto adc_device_id = gUnpacker.get_device_id("ParaTMCComp");
       static const auto tdc_device_id = gUnpacker.get_device_id("ParaTMC");
-      static const auto adc_id = gUnpacker.get_data_id("ParaBGO_TMC_Comp", "adc");
+      static const auto adc_id = gUnpacker.get_data_id("ParaTMCComp", "adc");
       static const auto tdc_id = gUnpacker.get_data_id("ParaTMC", "tdc");
       static const auto adc_hid = gHist.getSequentialID(kParaTMC, 0, kADC);
       static const auto tdc_hid = gHist.getSequentialID(kParaTMC, 0, kTDC);

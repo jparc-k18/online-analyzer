@@ -112,25 +112,9 @@ void dispParaBGO()
     }
   }
 
-  // VC ADC vs TDC
-  {
-    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", 5));
-    c->Clear();
-    c->Divide(4,3);
-
-    int axt_id = HistMaker::getUniqueID(kParaVC, 0, kHighGainXTDC, 30);
-    for (int i=0; i<10; ++i){
-      c->cd(i+1);
-      TH2* h_axt = (TH2*)GHist::get(axt_id+1 + SegOfVC[i]);
-      if ( !h_axt ) continue;
-      h_axt->Draw("colz");
-    }
-    c->Update();
-  }
-
   // VC TDC/TOT
   {
-    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", 6));
+    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", 5));
     c->Clear();
     c->Divide(1,2);
 
@@ -149,7 +133,7 @@ void dispParaBGO()
 
   // VC Hitpat/Multiplicity
   {
-    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", 7));
+    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", 6));
     c->Clear();
     c->Divide(2,3);
 

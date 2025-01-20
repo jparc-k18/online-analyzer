@@ -2741,8 +2741,8 @@ namespace analyzer
       static const Int_t tdc_min = gUser.GetParameter("TdcBAC", 0);
       static const Int_t tdc_max = gUser.GetParameter("TdcBAC", 1);
 
-      Int_t multiplicity = 0;
       for(Int_t seg = 0; seg<NumOfSegBAC; ++seg) {
+        Int_t multiplicity = 0;
 	// ADC
 	Int_t nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
 	if (nhit_a!=0) {

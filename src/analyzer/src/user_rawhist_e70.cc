@@ -2093,6 +2093,8 @@ namespace analyzer
 
       Int_t multiplicity = 0;
 
+      Bool_t AC1Hit = false;
+
       for(Int_t seg = 0; seg<NumOfSegAC1; ++seg) {
 	// ADC
 	if(seg>NumOfSegAC1-5 && seg<NumOfSegAC1-1){
@@ -2120,6 +2122,9 @@ namespace analyzer
 
 	  if (tdc_min < tdc && tdc < tdc_max) {
 	    is_in_gate = true;
+              if(seg==21){
+                  AC1Hit = true;
+              }// AC1 Hit    
 	  }// tdc range is ok
 	}// for tdc
 
@@ -2145,6 +2150,32 @@ namespace analyzer
 	}
       }
       hptr_array[ac1mul_id]->Fill(multiplicity);
+      
+      {
+      //from SAC3 for effciency study
+      static const Int_t k_SAC3device = gUnpacker.get_device_id("SAC3");
+      static const Int_t k_SAC3tdc = gUnpacker.get_data_id("SAC3","tdc");
+      static const Int_t ac1effwSAC3_id = gHist.getSequentialID(kAC1, 0, kMulti,10);
+      //SAC3 TDC GARE RANGE
+      static const Int_t SAC3_tdc_min = gUser.GetParameter("TdcSAC3",0);
+      static const Int_t SAC3_tdc_max = gUser.GetParameter("TdcSAC3",1);
+      
+          Int_t nhit_t = gUnpacker.get_entries(k_SAC3device, 0, 1, 0, k_SAC3tdc);
+          Bool_t is_in_SAC3gate = false;
+
+          for(Int_t m = 0; m<nhit_t; ++m){
+              Int_t tdc = gUnpacker.get(k_SAC3device, 0, 1, 0, k_SAC3tdc, m);
+              if (SAC3_tdc_min < tdc && tdc < SAC3_tdc_max){
+                 is_in_SAC3gate = true;
+              }
+          }
+      
+      if (is_in_SAC3gate){
+          
+          hptr_array[ac1effwSAC3_id]->Fill( static_cast<Int_t>(AC1Hit));
+      }
+      //from SAC3 for efficiency study
+      }
 
 #if 0
       // Debug, dump data relating this detector

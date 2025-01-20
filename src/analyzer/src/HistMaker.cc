@@ -6081,19 +6081,25 @@ TList* HistMaker::createAC1( Bool_t flag_ps )
 			     "TDC [ch]", ""));
     }
     top_dir->Add(sub_dir);
-  { ///// Hit parttern
-    Int_t target_id = getUniqueID(kAC1, 0, kHitPat, 0);
-    top_dir->Add(createTH1(++target_id, "AC1_hit_pattern", // 1 origin
-			   NumOfSegAC1-4, 0, NumOfSegAC1-4,
-			   "PMT No", ""));
-  }
-  { ///// Multiplicity
-    Int_t target_id = getUniqueID(kAC1, 0, kMulti, 0);
-    top_dir->Add(createTH1(++target_id, "AC1_multiplicity", // 1 origin
-			   NumOfSegAC1-4, 0, NumOfSegAC1-4,
-			   "Multiplicity", ""));
-  }
-  return top_dir;
+    { ///// Hit parttern
+      Int_t target_id = getUniqueID(kAC1, 0, kHitPat, 0);
+      top_dir->Add(createTH1(++target_id, "AC1_hit_pattern", // 1 origin
+			     NumOfSegAC1-4, 0, NumOfSegAC1-4,
+			     "PMT No", ""));
+    }
+    { ///// Multiplicity
+      Int_t target_id = getUniqueID(kAC1, 0, kMulti, 0);
+      top_dir->Add(createTH1(++target_id, "AC1_multiplicity", // 1 origin
+			     NumOfSegAC1-4, 0, NumOfSegAC1-4,
+			     "Multiplicity", ""));
+    }
+    { ///// Efficiency w SAC3
+      Int_t target_id = getUniqueID(kAC1, 0, kMulti, 10);
+      top_dir->Add(createTH1(target_id, "AC1_efficiency_w_SAC3", // 1 origin
+			     5, 0, 5,
+			     "Multiplicity", ""));
+    }
+    return top_dir;
 
   }
 

@@ -832,7 +832,7 @@ process_event( void )
     if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 ){
       hptr_array[btof_id]->Fill(btof);
     }
-    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -0.2<btof && btof<0.8 ){
+    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && 0.4<btof && btof<1.5 ){
       pi_flag=1;
       hptr_array[btof_id+1]->Fill(btof);
       hptr_array[btof_id+4]->Fill(0); //BAC1eff
@@ -844,7 +844,7 @@ process_event( void )
       for(int m = 0; m<nhit_t2; ++m){
         int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac, m);
         static const int tdc_min = 720;
-        static const int tdc_max = 760;
+        static const int tdc_max = 780;
         if(tdc_min < tdcbac2 && tdcbac2 < tdc_max){
           hptr_array[btof_id+4+19+8]->Fill(0); //PVACeff->BAC1/BAC2 eff
         }
@@ -854,13 +854,13 @@ process_event( void )
       for(int m = 0; m<nhit_t1; ++m){
         int tdcbac1 = gUnpacker.get(k_device, 0, 0, 0, k_tdcbac, m);
         static const int tdc_min = 720;
-        static const int tdc_max = 760;
+        static const int tdc_max = 780;
         if(tdc_min < tdcbac1 && tdcbac1 < tdc_max){
           hptr_array[btof_id+4+19+16]->Fill(0); //PVAC2eff
         }
       }
     }
-    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.0<btof && btof<-0.7 ){  // 1.8GeV/c
+    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -1.5<btof && btof<-0.2 ){  // 1.8GeV/c
     //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.8<btof && btof<-1.8 ){  // 1.4GeV/c
       //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -3.5<btof && btof<-2.5 ){  // 1.2GeV/c
       //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -8<btof && btof<-4 ){  // 0.8GeV/c
@@ -874,7 +874,7 @@ process_event( void )
       for(int m = 0; m<nhit_t2; ++m){
         int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac, m);
         static const int tdc_min = 720;
-        static const int tdc_max = 760;
+        static const int tdc_max = 780;
         if(tdc_min > tdcbac2 || tdcbac2 > tdc_max){
           hptr_array[btof_id+5+19+8]->Fill(0); //PVACeff->BAC1/BAC2 eff
         }
@@ -883,7 +883,7 @@ process_event( void )
       for(int m = 0; m<nhit_t1; ++m){
         int tdcbac1 = gUnpacker.get(k_device, 0, 0, 0, k_tdcbac, m);
         static const int tdc_min = 720;
-        static const int tdc_max = 760;
+        static const int tdc_max = 780;
         if(tdc_min > tdcbac1 || tdcbac1 > tdc_max){
           hptr_array[btof_id+5+19+16]->Fill(0); //PVACeff->BAC1/BAC2 eff
         }
@@ -1489,7 +1489,7 @@ process_event( void )
     //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
     //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
     static const int tdc_min = 720;
-    static const int tdc_max = 760;
+    static const int tdc_max = 780;
 
     int multiplicity = 0;
     //for(int seg = 0; seg<NumOfSegBAC; ++seg){
@@ -1546,7 +1546,7 @@ process_event( void )
           for(int m = 0; m<nhit_t2; ++m){
             int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac2, m);
             static const int tdc2_min = 720;
-            static const int tdc2_max = 760;
+            static const int tdc2_max = 780;
             if(tdc_min < tdcbac2 && tdcbac2 < tdc_max){
               hptr_array[btof_id+4+19+8]->Fill(1); //PVACeff->BAC1/BAC2 eff
             }
@@ -1561,7 +1561,7 @@ process_event( void )
           for(int m = 0; m<nhit_t2; ++m){
             int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac2, m);
             static const int tdc2_min = 720;
-            static const int tdc2_max = 760;
+            static const int tdc2_max = 780;
             if(tdc_min > tdcbac2 || tdcbac2 > tdc_max){
               hptr_array[btof_id+5+19+8]->Fill(1); //PVACeff->BAC1/BAC2 eff
             }
@@ -1598,7 +1598,7 @@ process_event( void )
     //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
     //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
     static const int tdc_min = 720;
-    static const int tdc_max = 760;
+    static const int tdc_max = 780;
 
     int multiplicity = 0;
     //for(int seg = 0; seg<NumOfSegBAC; ++seg){
@@ -1655,7 +1655,7 @@ process_event( void )
           for(int m = 0; m<nhit_t1; ++m){
             int tdcbac1 = gUnpacker.get(k_device, 0, 0, 0, k_tdcbac1, m);
             static const int tdc1_min = 720;
-            static const int tdc1_max = 760;
+            static const int tdc1_max = 780;
             if(tdc_min < tdcbac1 && tdcbac1 < tdc_max){
               hptr_array[btof_id+4+19+16]->Fill(1); //PVACeff->BAC2/BAC1 eff
             }
@@ -1670,7 +1670,7 @@ process_event( void )
           for(int m = 0; m<nhit_t1; ++m){
             int tdcbac1 = gUnpacker.get(k_device, 0, 0, 0, k_tdcbac1, m);
             static const int tdc1_min = 720;
-            static const int tdc1_max = 760;
+            static const int tdc1_max = 780;
             if(tdc_min > tdcbac1 || tdcbac1 > tdc_max){
               hptr_array[btof_id+5+19+16]->Fill(1); //FACeff->BAC1/BAC2 eff
             }

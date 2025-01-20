@@ -34,11 +34,13 @@ void dispBH2_MTHR_Fit()
       f->SetLineWidth(2);
       f->Draw("same");
 
+      auto mean    = f->GetParameter(1);
       auto sigma    = f->GetParameter(2);
       auto sigma_ps = sigma*0.93;
       TLatex *text = new TLatex();
       text->SetNDC();
       text->SetTextSize(0.07);
+      text->DrawLatex(0.200, 0.770, Form("mean:%.1f[ch]", mean));
       text->DrawLatex(0.200, 0.700, "#sigma:");
       text->DrawLatex(0.200, 0.630, Form("%.1f[ch]", sigma));
       text->DrawLatex(0.200, 0.560, Form("(%.1f[ps])", sigma_ps));

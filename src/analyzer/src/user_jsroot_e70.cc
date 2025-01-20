@@ -443,11 +443,11 @@ process_event(void)
     }
         { // DAQ parasite experiment 2025may
       { ///// TOF comparator
-	static const auto device_id = gUnpacker.get_device_id("ParaDAQ_TOF_Comp");
+	static const auto device_id = gUnpacker.get_device_id("ParaTOFComp");
 	static const auto device_id_adc = gUnpacker.get_device_id("TOF");
 	static const auto adc_id = gUnpacker.get_data_id("TOF", "adc");
-	static const auto leading_id = gUnpacker.get_data_id("ParaDAQ_TOF_Comp", "tdc");
-	static const auto trailing_id = gUnpacker.get_data_id("ParaDAQ_TOF_Comp", "trailing");
+	static const auto leading_id = gUnpacker.get_data_id("ParaTOFComp", "tdc");
+	static const auto trailing_id = gUnpacker.get_data_id("ParaTOFComp", "trailing");
 	static const auto tdc_min = gUser.GetParameter("TdcTOFC", 0);
 	static const auto tdc_max = gUser.GetParameter("TdcTOFC", 1);
 	static const auto segOrgTOFC = gUser.GetParameter("SegOrgTOFC", 0);
@@ -492,12 +492,12 @@ process_event(void)
 	}
       }
       { ///// TOF qtc
-	static const auto device_id = gUnpacker.get_device_id("ParaDAQ_TOF_QTC");
+	static const auto device_id = gUnpacker.get_device_id("ParaTOFQTC");
 	static const auto device_id_adc = gUnpacker.get_device_id("TOF");
 	static const auto adc_id = gUnpacker.get_data_id("TOF", "adc");
-	static const auto tdc_id = gUnpacker.get_data_id("ParaDAQ_TOF_QTC", "tdc");
-	static const auto leading_id = gUnpacker.get_data_id("ParaDAQ_TOF_QTC", "tdc");
-	static const auto trailing_id = gUnpacker.get_data_id("ParaDAQ_TOF_QTC", "trailing");
+	static const auto tdc_id = gUnpacker.get_data_id("ParaTOFQTC", "tdc");
+	static const auto leading_id = gUnpacker.get_data_id("ParaTOFQTC", "tdc");
+	static const auto trailing_id = gUnpacker.get_data_id("ParaTOFQTC", "trailing");
 	static const auto segOrgTOFQ = gUser.GetParameter("SegOrgTOFQ", 0);
 	// static const auto tdc_min = gUser.GetParameter("TdcBH1", 0);
 	static const auto tdc_min = 0;
@@ -539,11 +539,11 @@ process_event(void)
 	}
       }
       { ///// TMC comparator
-	static const auto device_id = gUnpacker.get_device_id("ParaBGO_TMC_Comp");
-	static const auto adc_id = gUnpacker.get_data_id("ParaBGO_TMC_Comp", "adc");
-	static const auto tdc_id = gUnpacker.get_data_id("ParaBGO_TMC_Comp", "tdc");
-	static const auto leading_id = gUnpacker.get_data_id("ParaBGO_TMC_Comp", "tdc");
-	static const auto trailing_id = gUnpacker.get_data_id("ParaBGO_TMC_Comp", "trailing");
+	static const auto device_id = gUnpacker.get_device_id("ParaTMCComp");
+	static const auto adc_id = gUnpacker.get_data_id("ParaTMCComp", "adc");
+	static const auto tdc_id = gUnpacker.get_data_id("ParaTMCComp", "tdc");
+	static const auto leading_id = gUnpacker.get_data_id("ParaTMCComp", "tdc");
+	static const auto trailing_id = gUnpacker.get_data_id("ParaTMCComp", "trailing");
 	// static const auto tdc_min = gUser.GetParameter("TdcBH1", 0);
 	static const auto tdc_min = 0;
 	// static const auto tdc_max = gUser.GetParameter("TdcBH1", 1);
@@ -580,12 +580,12 @@ process_event(void)
 	}
       }
       { ///// TMC qtc
-	static const auto device_id = gUnpacker.get_device_id("ParaBGO_TMC_QTC");
-	static const auto device_id_adc = gUnpacker.get_device_id("ParaBGO_TMC_Comp");
-	static const auto adc_id = gUnpacker.get_data_id("ParaBGO_TMC_QTC", "adc");
-	static const auto tdc_id = gUnpacker.get_data_id("ParaBGO_TMC_QTC", "tdc");
-	static const auto leading_id = gUnpacker.get_data_id("ParaBGO_TMC_QTC", "tdc");
-	static const auto trailing_id = gUnpacker.get_data_id("ParaBGO_TMC_QTC", "trailing");
+	static const auto device_id = gUnpacker.get_device_id("ParaTMCQTC");
+	static const auto device_id_adc = gUnpacker.get_device_id("ParaTMCComp");
+	static const auto adc_id = gUnpacker.get_data_id("ParaTMCQTC", "adc");
+	static const auto tdc_id = gUnpacker.get_data_id("ParaTMCQTC", "tdc");
+	static const auto leading_id = gUnpacker.get_data_id("ParaTMCQTC", "tdc");
+	static const auto trailing_id = gUnpacker.get_data_id("ParaTMCQTC", "trailing");
 	// static const auto tdc_min = gUser.GetParameter("TdcBH1", 0);
 	static const auto tdc_min = 0;
 	// static const auto tdc_max = gUser.GetParameter("TdcBH1", 1);

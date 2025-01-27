@@ -17,32 +17,32 @@ dispMatrix()
     if(!c) continue;
     c->Clear();
     c->cd(0);
-    Int_t mtx2d_id  = HistMaker::getUniqueID(kMisc, kHul2D, kHitPat2D);
-    Int_t tofsch_id = HistMaker::getUniqueID(kCorrelation, 1, 0);
+    Int_t mtx2d_id = HistMaker::getUniqueID(kMisc, kHul2D, kHitPat2D);
+    Int_t wctof_id = HistMaker::getUniqueID(kCorrelation, 1, 0);
     auto hmtx2d  = dynamic_cast<TH2*>(GHist::get(mtx2d_id + i));
-    auto htofsch = dynamic_cast<TH2*>(GHist::get(tofsch_id));
+    auto hwctof = dynamic_cast<TH2*>(GHist::get(wctof_id));
     if(!hmtx2d) continue;
-    if(!htofsch) continue;
+    if(!hwctof) continue;
     hmtx2d->Reset();
     hmtx2d->SetLineWidth(1);
     hmtx2d->SetLineColor(kRed);
     for(Int_t i_tof=0; i_tof<NumOfSegTOF; ++i_tof){
-      for(Int_t i_sch=0; i_sch<NumOfSegSCH; ++i_sch){
-        if(i == 0 && !gMatrix.IsAccept2D1(i_tof, i_sch))
-          hmtx2d->Fill(i_sch, i_tof);
-        else if(i == 1 && !gMatrix.IsAccept2D2(i_tof, i_sch))
-          hmtx2d->Fill(i_sch, i_tof);
+      for(Int_t i_wc=0; i_wc<NumOfSegWC; ++i_wc){
+        if(i == 0 && !gMatrix.IsAccept2D1(i_tof, i_wc))
+          hmtx2d->Fill(i_wc, i_tof);
+        else if(i == 1 && !gMatrix.IsAccept2D2(i_tof, i_wc))
+          hmtx2d->Fill(i_wc, i_tof);
       } // for(i_sch)
     } // for(i_tof)
 
-    hmtx2d->GetXaxis()->SetRangeUser(0, NumOfSegSCH);
+    hmtx2d->GetXaxis()->SetRangeUser(0, NumOfSegWC);
     hmtx2d->GetYaxis()->SetRangeUser(0, NumOfSegTOF);
     hmtx2d->SetStats(0);
     hmtx2d->Draw("box");
 
-    htofsch->GetXaxis()->SetRangeUser(0, NumOfSegSCH);
-    htofsch->GetYaxis()->SetRangeUser(0, NumOfSegTOF);
-    htofsch->Draw("same");
+    hwctof->GetXaxis()->SetRangeUser(0, NumOfSegWC);
+    hwctof->GetYaxis()->SetRangeUser(0, NumOfSegTOF);
+    hwctof->Draw("same");
 
     gPad->SetGridx();
     gPad->SetGridy();

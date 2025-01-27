@@ -15,17 +15,19 @@ void dispParaBGO()
 
   Int_t SegOfVC[10] = {36, 42, 58, 62, 46, 48, 60, 50, 32, 34};
 
-  // BGO&TMC ADC w/ TDC, TDC
+  // BGO&TMC ADC w/ TDC(TOT w/ HRTDC),  TDC
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(3,2);
+    c->Divide(4,2);
     int adc_id  = HistMaker::getUniqueID(kParaBGO, 0, kADC);
     int tdc_id  = HistMaker::getUniqueID(kParaBGO, 0, kTDC);
     int awt_id  = HistMaker::getUniqueID(kParaBGO, 0, kADCwTDC);
-    int tadc_id = HistMaker::getUniqueID(kParaTMC, 0, kADC);
+    int tot_comp_id = HistMaker::getUniqueID(kParaTMC, 0, kTOT, 0);
+    int tot_qtc_id  = HistMaker::getUniqueID(kParaTMC, 0, kTOT, 10);
+    int twt_comp_id = HistMaker::getUniqueID(kParaTMC, 0, kADCwTDC, 0);
+    int twt_qtc_id  = HistMaker::getUniqueID(kParaTMC, 0, kADCwTDC, 10);
     int ttdc_id  = HistMaker::getUniqueID(kParaTMC, 0, kTDC);
-    int tawt_id  = HistMaker::getUniqueID(kParaTMC, 0, kADCwTDC);
 
     for (int i=0; i<2; ++i){
       c->cd(i+1);
@@ -43,23 +45,33 @@ void dispParaBGO()
 
     c->cd(3);
     gPad->SetLogy();
-    TH1 *th = (TH1*)GHist::get(tadc_id);
-    th->GetXaxis()->SetRangeUser( 0 , 4096 );
-    th->Draw();
-    TH1 *thh = (TH1*)GHist::get(tawt_id);
-    thh->GetXaxis()->SetRangeUser( 0 , 4096 );
-    thh->SetLineColor( kRed );
-    thh->Draw("same");
+    TH1 *ch = (TH1*)GHist::get(tot_comp_id);
+    ch->GetXaxis()->SetRangeUser( 0 , 400000 );
+    ch->Draw();
+    TH1 *cth = (TH1*)GHist::get(twt_comp_id);
+    cth->GetXaxis()->SetRangeUser( 0 , 400000 );
+    cth->SetLineColor(kRed);
+    cth->Draw("same");
+
+    c->cd(4);
+    gPad->SetLogy();
+    TH1 *qh = (TH1*)GHist::get(tot_qtc_id);
+    qh->GetXaxis()->SetRangeUser( 0 , 400000 );
+    qh->Draw();
+    TH1 *qth = (TH1*)GHist::get(twt_qtc_id);
+    qth->GetXaxis()->SetRangeUser( 0 , 400000 );
+    qth->SetLineColor(kRed);
+    qth->Draw("same");
 
     for (int i=0; i<2; ++i){
-      c->cd(i+4);
+      c->cd(i+5);
       TH1 *hhh = (TH1*)GHist::get(tdc_id+i);
       if( !hhh ) continue;
       hhh->GetXaxis()->SetRangeUser( 0 , 4096 );
       hhh->Draw();
     }
 
-    c->cd(6);
+    c->cd(7);
     TH1 *thhh = (TH1*)GHist::get(ttdc_id);
     thhh->Draw();
 
@@ -91,6 +103,7 @@ void dispParaBGO()
   // TC1,2 Hitpat/Multiplicity
   {
     int hitpat_id = HistMaker::getUniqueID(kParaTC, 0, kHitPat, 0);
+    int chitpat_id= HistMaker::getUniqueID(kParaTC, 0, kHitPat, 10);
     int Multiplicity_id = HistMaker::getUniqueID(kParaTC, 0, kMulti, 0);
     for (int plane = 0; plane<NumOfPlaneParaTC; ++plane){
       TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", plane+3));
@@ -102,6 +115,10 @@ void dispParaBGO()
 	TH1* h_hit = (TH1*)GHist::get(++hitpat_id);
 	if ( !h_hit ) continue;
 	h_hit->Draw();
+	TH1* h_chit= (TH1*)GHist::get(++chitpat_id);
+	if ( !h_chit ) continue;
+	h_chit->SetLineColor(kBlue);
+	h_chit->Draw("same");
 
 	c->cd(xy+3);
 	TH1* h_multi = (TH1*)GHist::get(++Multiplicity_id);
@@ -148,6 +165,19 @@ void dispParaBGO()
       TH1* h_multi = (TH1*)GHist::get(++Multiplicity_id);
       h_multi->Draw();
     }
+
+    c->Update();
+  }
+
+  // BTToF
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", 7));
+    c->Clear();
+
+    int bttof_id = HistMaker::getUniqueID(kParaTMC, 0, kTime);
+    c->cd();
+    TH1* h_bttof = (TH1*)GHist::get(bttof_id);
+    h_bttof->Draw();
 
     c->Update();
   }

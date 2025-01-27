@@ -29,8 +29,8 @@ MatrixParamMan::MatrixParamMan( void )
   m_enable_2d1.resize( NumOfSegTOF_Mtx );
   m_enable_2d2.resize( NumOfSegTOF_Mtx );
   for( int i=0; i<NumOfSegTOF_Mtx; ++i ){
-    m_enable_2d1[i].resize( NumOfSegSCH );
-    m_enable_2d2[i].resize( NumOfSegSCH );
+    m_enable_2d1[i].resize( NumOfSegWC );
+    m_enable_2d2[i].resize( NumOfSegWC );
   }
   // 3D
   m_enable_3d.resize( NumOfSegTOF_Mtx );
@@ -77,10 +77,10 @@ MatrixParamMan::Initialize( const TString& filename_2d1,
       TString param[2];
       std::istringstream iss( line.Data() );
       iss >> param[0] >> param[1];
-      Int_t schseg = param[0].ReplaceAll( "SCH", "" ).Atoi();
+      Int_t wcseg = param[0].ReplaceAll( "WC", "" ).Atoi();
       Int_t enable = param[1].Atoi();
-      m_enable_2d1[tofseg][schseg] = enable;
-      if( schseg == NumOfSegSCH-1 ) ++tofseg;
+      m_enable_2d1[tofseg][wcseg] = enable;
+      if( wcseg == NumOfSegWC-1 ) ++tofseg;
     }
   }
   { // 2D2
@@ -100,10 +100,10 @@ MatrixParamMan::Initialize( const TString& filename_2d1,
       TString param[2];
       std::istringstream iss( line.Data() );
       iss >> param[0] >> param[1];
-      Int_t schseg = param[0].ReplaceAll( "SCH", "" ).Atoi();
+      Int_t wcseg = param[0].ReplaceAll( "WC", "" ).Atoi();
       Int_t enable = param[1].Atoi();
-      m_enable_2d2[tofseg][schseg] = enable;
-      if( schseg == NumOfSegSCH-1 ) ++tofseg;
+      m_enable_2d2[tofseg][wcseg] = enable;
+      if( wcseg == NumOfSegWC-1 ) ++tofseg;
     }
   }
   { // 3D
@@ -203,7 +203,7 @@ MatrixParamMan::Print2D1( const TString& arg ) const
   for( Int_t i=NumOfSegTOF_Mtx-1; i>=0; --i ){
     hddaq::cout << " detA = " << std::setw(2)
 		<< std::right << i << " : ";
-    for( Int_t j=0; j<NumOfSegSCH; ++j ){
+    for( Int_t j=0; j<NumOfSegWC; ++j ){
       hddaq::cout << m_enable_2d1[i][j];
     }
     hddaq::cout << std::endl;
@@ -218,7 +218,7 @@ MatrixParamMan::Print2D2( const TString& arg ) const
   for( Int_t i=NumOfSegTOF_Mtx-1; i>=0; --i ){
     hddaq::cout << " detA = " << std::setw(2)
 		<< std::right << i << " : ";
-    for( Int_t j=0; j<NumOfSegSCH; ++j ){
+    for( Int_t j=0; j<NumOfSegWC; ++j ){
       hddaq::cout << m_enable_2d2[i][j];
     }
     hddaq::cout << std::endl;

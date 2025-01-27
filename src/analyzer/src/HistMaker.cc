@@ -6873,9 +6873,9 @@ HistMaker::createMatrix(Bool_t flag_ps)
   Int_t mtx2d_id = getUniqueID(kMisc, kHul2D, kHitPat2D);
   for(Int_t i=0; i<2; ++i){
     top_dir->Add(createTH2(mtx2d_id + i, Form("Mtx2D pattern #%d", i+1),
-			   NumOfSegSCH, 0, NumOfSegSCH,
+			   NumOfSegWC, 0, NumOfSegWC,
 			   NumOfSegTOF, 0, NumOfSegTOF,
-			   "SCH seg", "TOF seg"));
+			   "WC seg", "TOF seg"));
   }
   ///// Mtx3D
   Int_t mtx3d_id = getUniqueID(kMisc, kHul3D, kHitPat2D);
@@ -7371,13 +7371,13 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
     //     		   "FHT2 DX1", "FHT2 DX2"));
   }
 
-  { // SCH x TOF for Mtx2D
+  { // WC x TOF for Mtx2D
     Int_t target_id = getUniqueID( kCorrelation, 1, 0, 0 );
     for( Int_t i=0; i<2; ++i ){
-      top_dir->Add(createTH2( ++target_id, Form( "SCH_TOF_Mtx2D%d", i+1 ),
-                              NumOfSegSCH, 0, NumOfSegSCH,
+      top_dir->Add(createTH2( ++target_id, Form( "WC_TOF_Mtx2D%d", i+1 ),
+                              NumOfSegWC, 0, NumOfSegWC,
                               NumOfSegTOF, 0, NumOfSegTOF,
-                              "SCH seg", "TOF seg" ) );
+                              "WC seg", "TOF seg" ) );
     }
   }
 
@@ -10999,19 +10999,33 @@ HistMaker::createParaTMC(Bool_t flag_ps)
   TList *top_dir = new TList;
   top_dir->SetName(nameDetector);
 
-  { ///// ADC
-    Int_t target_id = getUniqueID(kParaTMC, 0, kADC);
-    auto title = Form("%s_ADC", nameDetector);
+  { ///// TOT(Comp)
+    Int_t target_id = getUniqueID(kParaTMC, 0, kTOT, 0);
+    auto title = Form("%s_TOT(Comp)", nameDetector);
     top_dir->Add(createTH1(target_id, title,
-    			   0x1000, 0, 0x1000,
-    			   "ADC [ch]", ""));
+    			   400000, 0, 400000,
+    			   "TOT [ch]", ""));
   }
-  { ///// ADCwTDC
-    Int_t target_id = getUniqueID(kParaTMC, 0, kADCwTDC);
-    auto title = Form("%s_ADCwTDC", nameDetector);
+  { ///// TOT(QTC)
+    Int_t target_id = getUniqueID(kParaTMC, 0, kTOT, 10);
+    auto title = Form("%s_TOT(QTC)", nameDetector);
     top_dir->Add(createTH1(target_id, title,
-  			   0x1000, 0, 0x1000,
-  			   "ADC [ch]", ""));
+    			   400000, 0, 400000,
+    			   "TOT [ch]", ""));
+  }
+  { ///// TOTwTDC(Comp)
+    Int_t target_id = getUniqueID(kParaTMC, 0, kADCwTDC, 0);
+    auto title = Form("%s_TOTwTDC(Comp)", nameDetector);
+    top_dir->Add(createTH1(target_id, title,
+  			   400000, 0, 400000,
+  			   "TOT [ch]", ""));
+  }
+  { ///// TOTwTDC(QTC)
+    Int_t target_id = getUniqueID(kParaTMC, 0, kADCwTDC, 10);
+    auto title = Form("%s_TOTwTDC(QTC)", nameDetector);
+    top_dir->Add(createTH1(target_id, title,
+  			   400000, 0, 400000,
+  			   "TOT [ch]", ""));
   }
   { ///// TDC
     Int_t target_id = getUniqueID(kParaTMC, 0, kTDC);
@@ -11019,6 +11033,13 @@ HistMaker::createParaTMC(Bool_t flag_ps)
     top_dir->Add(createTH1(target_id, title,
   			   100000, 0, 400000,
   			   "TDC [ch]", ""));
+  }
+  { ///// ToF between BH1 & TMC
+    Int_t target_id = getUniqueID(kParaTMC, 0, kTime);
+    auto title = "BTToF";
+    top_dir->Add(createTH1(target_id, title,
+			   10000, 0, 100,
+			   "ToF [ns]", ""));
   }
 
   return top_dir;
@@ -11284,6 +11305,31 @@ TList* HistMaker::createParaTC( Bool_t flag_ps )
 
     Int_t target_id = getUniqueID(kParaTC, 0, kHitPat, 0);
     const char* sub_name = "HitPat";
+    // Add to the top directory
+    for(Int_t i=0; i<NumOfPlaneParaTC; ++i){
+      char*direction;
+      for (Int_t j=0; j<NumOfPlaneParaTC; ++j){ // X,Y
+	const char* title = NULL;
+	if (j==0) direction="X";
+	else direction="Y";
+	title = Form("%s%d_%s_%s", nameDetector, i+1, sub_name, direction);
+	sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			       NumOfSegVMEEASIROC/2, 0, NumOfSegVMEEASIROC/2,
+			       "seg", ""));
+      }
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // Hit parttern (after cut)-----------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kCHitPattern);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kParaTC, 0, kHitPat, 10);
+    const char* sub_name = "CHitPat";
     // Add to the top directory
     for(Int_t i=0; i<NumOfPlaneParaTC; ++i){
       char*direction;

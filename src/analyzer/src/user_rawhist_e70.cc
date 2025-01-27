@@ -475,46 +475,46 @@ namespace analyzer
 	  //	std::cout << "debug " << __LINE__ << std::endl;
 	  std::vector<std::vector<Int_t>> hit_flag_TOFQ(NumOfSegParaTOFQ);
 
-	  for(Int_t i=0; i<NumOfSegParaTOFQ; ++i){
-	    hit_flag_TOFQ[i].resize(kUorD);
-	    for(Int_t ud=0; ud<kUorD; ++ud){
-	      hit_flag_TOFQ[i][ud]=0;
-	      ///// ADC
-	      UInt_t adc = 0;
-	      UInt_t seg = i+segOrgTOFQ;
-	      auto nhit = gUnpacker.get_entries(device_id_adc, 0, seg, ud, adc_id);
-	      if (nhit != 0) {
-		adc = gUnpacker.get(device_id_adc, 0, seg, ud, adc_id);
-		hptr_array[adc_hid + i + ud*NumOfSegParaTOFQ]->Fill(adc);
-	      }
-	      UInt_t tdc_prev = 0;
-	      Bool_t is_in_range = false;
-	      // TDC
-	      for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, i, ud, leading_id);
-		  m<n; ++m) {
-		// auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
-		// if (tdc != 0) {
-		//   if (tdc_min<tdc && tdc<tdc_max && adc > 0) {
-		//     hit_flag_TOFQ[i][ud] = 1;
-		//   }
-		// }
+	  // for(Int_t i=0; i<NumOfSegParaTOFQ; ++i){
+	  //   hit_flag_TOFQ[i].resize(kUorD);
+	  //   for(Int_t ud=0; ud<kUorD; ++ud){
+	  //     hit_flag_TOFQ[i][ud]=0;
+	  //     ///// ADC
+	  //     UInt_t adc = 0;
+	  //     UInt_t seg = i+segOrgTOFQ;
+	  //     auto nhit = gUnpacker.get_entries(device_id_adc, 0, seg, ud, adc_id);
+	  //     if (nhit != 0) {
+	  // 	adc = gUnpacker.get(device_id_adc, 0, seg, ud, adc_id);
+	  // 	hptr_array[adc_hid + i + ud*NumOfSegParaTOFQ]->Fill(adc);
+	  //     }
+	  //     UInt_t tdc_prev = 0;
+	  //     Bool_t is_in_range = false;
+	  //     // TDC
+	  //     for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, i, ud, leading_id);
+	  // 	  m<n; ++m) {
+	  // 	// auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
+	  // 	// if (tdc != 0) {
+	  // 	//   if (tdc_min<tdc && tdc<tdc_max && adc > 0) {
+	  // 	//     hit_flag_TOFQ[i][ud] = 1;
+	  // 	//   }
+	  // 	// }
 
-		auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
-		if(gUnpacker.get_entries(device_id, 0, i, ud, trailing_id)-1 < m) continue;
-		//		auto tdc_t = gUnpacker.get(device_id, 0, i, ud, trailing_id, m);
-		//		auto tot = tdc - tdc_t;
-		//		if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
-		//		  continue;
-		tdc_prev = tdc;
-		hptr_array[tdc_hid + ud*NumOfSegParaTOFQ + i ]->Fill(tdc);
-		//		hptr_array[tot_hid + ud*NumOfSegParaTOFQ + i ]->Fill(tot);
-		//		hptr_array[qdcvstot_hid + ud*NumOfSegParaTOFC + i ]->Fill(adc,tot);
-		if (tdc_min < tdc && tdc < tdc_max) {
-		  is_in_range = true;
-		}
-	      }
-	    }
-	  }
+	  // 	auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
+	  // 	if(gUnpacker.get_entries(device_id, 0, i, ud, trailing_id)-1 < m) continue;
+	  // 	//		auto tdc_t = gUnpacker.get(device_id, 0, i, ud, trailing_id, m);
+	  // 	//		auto tot = tdc - tdc_t;
+	  // 	//		if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
+	  // 	//		  continue;
+	  // 	tdc_prev = tdc;
+	  // 	hptr_array[tdc_hid + ud*NumOfSegParaTOFQ + i ]->Fill(tdc);
+	  // 	//		hptr_array[tot_hid + ud*NumOfSegParaTOFQ + i ]->Fill(tot);
+	  // 	//		hptr_array[qdcvstot_hid + ud*NumOfSegParaTOFC + i ]->Fill(adc,tot);
+	  // 	if (tdc_min < tdc && tdc < tdc_max) {
+	  // 	  is_in_range = true;
+	  // 	}
+	  //     }
+	  //   }
+	  // }
 	  //hit_pattern
 	  // std::vector<std::vector<Int_t>> hit_flag(NumOfSegTOF);
 	  // for(Int_t seg=0; seg<NumOfSegTOF; ++seg) {

@@ -436,14 +436,14 @@ namespace analyzer
 	      for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, i, ud, leading_id);
 		  m<n; ++m) {
 		auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
-		auto tdc_t = gUnpacker.get(device_id, 0, i, ud, trailing_id, m);
-		auto tot = tdc - tdc_t;
-		if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
-		  continue;
+		// auto tdc_t = gUnpacker.get(device_id, 0, i, ud, trailing_id, m);
+		// auto tot = tdc - tdc_t;
+		// if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
+		//   continue;
 		tdc_prev = tdc;
 		hptr_array[tdc_hid + ud*NumOfSegParaTOFC + i ]->Fill(tdc);
-		hptr_array[tot_hid + ud*NumOfSegParaTOFC + i ]->Fill(tot);
-		hptr_array[qdcvstot_hid + ud*NumOfSegParaTOFC + i ]->Fill(adc,tot);
+		// hptr_array[tot_hid + ud*NumOfSegParaTOFC + i ]->Fill(tot);
+		// hptr_array[qdcvstot_hid + ud*NumOfSegParaTOFC + i ]->Fill(adc,tot);
 		if (tdc_min < tdc && tdc < tdc_max) {
 		  is_in_range = true;
 		}

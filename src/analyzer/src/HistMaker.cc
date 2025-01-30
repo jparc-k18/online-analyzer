@@ -11038,7 +11038,7 @@ HistMaker::createParaTMC(Bool_t flag_ps)
     Int_t target_id = getUniqueID(kParaTMC, 0, kTime);
     auto title = "BTToF";
     top_dir->Add(createTH1(target_id, title,
-			   10000, 0, 100,
+			   4000, -20, 20,
 			   "ToF [ns]", ""));
   }
 

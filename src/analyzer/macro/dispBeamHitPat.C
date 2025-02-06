@@ -70,7 +70,7 @@ void dispBeamHitPat()
   hh->Draw("same");
 
   c->cd(6);
-  base_id = HistMaker::getUniqueID(kBAC, 0, kMulti);
+  base_id = HistMaker::getUniqueID(kBAC, 0, kMulti, 2);
   {
     TH1 *h_wt = GHist::get(base_id);
     h_wt->Draw();

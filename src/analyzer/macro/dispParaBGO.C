@@ -23,11 +23,13 @@ void dispParaBGO()
     int adc_id  = HistMaker::getUniqueID(kParaBGO, 0, kADC);
     int tdc_id  = HistMaker::getUniqueID(kParaBGO, 0, kTDC);
     int awt_id  = HistMaker::getUniqueID(kParaBGO, 0, kADCwTDC);
-    int tot_comp_id = HistMaker::getUniqueID(kParaTMC, 0, kTOT, 0);
-    int tot_qtc_id  = HistMaker::getUniqueID(kParaTMC, 0, kTOT, 10);
-    int twt_comp_id = HistMaker::getUniqueID(kParaTMC, 0, kADCwTDC, 0);
-    int twt_qtc_id  = HistMaker::getUniqueID(kParaTMC, 0, kADCwTDC, 10);
+    // int tot_comp_id = HistMaker::getUniqueID(kParaTMC, 0, kTOT, 0);
+    // int tot_qtc_id  = HistMaker::getUniqueID(kParaTMC, 0, kTOT, 10);
+    // int twt_comp_id = HistMaker::getUniqueID(kParaTMC, 0, kADCwTDC, 0);
+    // int twt_qtc_id  = HistMaker::getUniqueID(kParaTMC, 0, kADCwTDC, 10);
     int ttdc_id  = HistMaker::getUniqueID(kParaTMC, 0, kTDC);
+    int cadc_id  = HistMaker::getUniqueID(kParaBGOwC, 0, kADC);
+    int cawt_id  = HistMaker::getUniqueID(kParaBGOwC, 0, kADCwTDC);
 
     for (int i=0; i<2; ++i){
       c->cd(i+1);
@@ -43,25 +45,18 @@ void dispParaBGO()
       hh->Draw("same");
     }
 
-    c->cd(3);
-    gPad->SetLogy();
-    TH1 *ch = (TH1*)GHist::get(tot_comp_id);
-    ch->GetXaxis()->SetRangeUser( 0 , 400000 );
-    ch->Draw();
-    TH1 *cth = (TH1*)GHist::get(twt_comp_id);
-    cth->GetXaxis()->SetRangeUser( 0 , 400000 );
-    cth->SetLineColor(kRed);
-    cth->Draw("same");
-
-    c->cd(4);
-    gPad->SetLogy();
-    TH1 *qh = (TH1*)GHist::get(tot_qtc_id);
-    qh->GetXaxis()->SetRangeUser( 0 , 400000 );
-    qh->Draw();
-    TH1 *qth = (TH1*)GHist::get(twt_qtc_id);
-    qth->GetXaxis()->SetRangeUser( 0 , 400000 );
-    qth->SetLineColor(kRed);
-    qth->Draw("same");
+    for (int i=0; i<2; ++i){
+      c->cd(i+3);
+      TH1 *ch = (TH1*)GHist::get(cadc_id+i);
+      if( !ch ) continue;
+      ch->GetXaxis()->SetRangeUser( 500 , 3800 );
+      ch->Draw();
+      TH1 *chh =(TH1*)GHist::get(cawt_id + i);
+      if( !chh ) continue;
+      chh->GetXaxis()->SetRangeUser( 500 , 3800 );
+      chh->SetLineColor( kRed );
+      chh->Draw("same");
+    }
 
     for (int i=0; i<2; ++i){
       c->cd(i+5);

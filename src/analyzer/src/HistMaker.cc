@@ -10980,7 +10980,24 @@ HistMaker::createParaBGO(Bool_t flag_ps)
 			     "TDC [ch]", ""));
     }
   }
-
+  { ///// ADC w/ cut
+    Int_t target_id = getUniqueID(kParaBGOwC, 0, kADC);
+    for(Int_t i = 0; i<NumOfSegParaBGO; ++i){
+      auto title = Form("%s_CADC_%d", nameDetector, i);
+      top_dir->Add(createTH1(target_id + i, title,
+			     2048, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+  }
+  { ///// ADCwTDC w/ cut
+    Int_t target_id = getUniqueID(kParaBGOwC, 0, kADCwTDC);
+    for(Int_t i = 0; i<NumOfSegParaBGO; ++i){
+      auto title = Form("%s_CADCwTDC_%d", nameDetector, i);
+      top_dir->Add(createTH1(target_id + i, title,
+			     2048, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+  }
   return top_dir;
 }
 

@@ -3319,6 +3319,11 @@ namespace analyzer
 #endif
 
     // parasite BGO test  -----------------------------------------------------------
+
+    Bool_t is_hit_vc = false;
+    Bool_t is_hit_vcback = false;
+    Bool_t tof_is_inrange_pi = false;
+
     { ///// ParaBGO
       static const auto device_id = gUnpacker.get_device_id("ParaBGO");
       static const auto adc_id = gUnpacker.get_data_id("ParaBGO", "adc");
@@ -3394,6 +3399,7 @@ namespace analyzer
 
       static const auto tdc_min = gUser.GetParameter("TdcParaTMC", 0);
       static const auto tdc_max = gUser.GetParameter("TdcParaTMC", 1);
+      static const auto bttof_cut = gUser.GetParameter("TimeBttofCut", 0);
 
       UInt_t tot_comp = 0; UInt_t tot_qtc = 0;
       UInt_t tdc_comp_prev = 0; UInt_t tdc_qtc_prev = 0;
@@ -3461,6 +3467,9 @@ namespace analyzer
 	    Double_t mt = (bh1tu+bh1td)/2.;
 	    Double_t bttof = tmc_t - mt;
 	    hptr_array[bttof_hid]->Fill(bttof);
+	    if (bttof>bttof_cut){
+	      tof_is_inrange_pi = true;
+	    }
 	  }// if (tdc)
 	}// if (nhit)
       }// for(seg)
@@ -3738,10 +3747,10 @@ namespace analyzer
 	vc_hit_count[i] = 0;
       }
 
-      static const int SegOfVCL1 = 36;
+      static const int SegOfVCL1 = 62;
       static const int SegOfVCL2 = 42;
       static const int SegOfVCR1 = 58;
-      static const int SegOfVCR2 = 62;
+      static const int SegOfVCR2 = 36; // due to install mistake
       static const int SegOfVCU1 = 46;
       static const int SegOfVCU2 = 48;
       static const int SegOfVCD1 = 60;
@@ -3749,11 +3758,11 @@ namespace analyzer
       static const int SegOfVCB1 = 32;
       static const int SegOfVCB2 = 34;
 
-      Int_t multiplicity_l = 0;
-      Int_t multiplicity_r = 0;
-      Int_t multiplicity_u = 0;
-      Int_t multiplicity_d = 0;
-      Int_t multiplicity_b = 0;
+      Int_t multiplicity[5];
+
+      for (int i=0; i<5; ++i){
+	multiplicity[i] = 0;
+      }
 
       // Int_t tdc1st               = 0;
       // Int_t multiplicity_wt      = 0;
@@ -3789,6 +3798,22 @@ namespace analyzer
 	    if( nhit_lg != 0 ){
 	      int adc_lg = gUnpacker.get(k_device, 0, seg, 0, k_lowgain);
 	      hptr_array[vc_clg_2d_id]->Fill(seg, adc_lg);
+	    }
+	    // multiplicity
+	    if (seg == SegOfVCL1 || seg == SegOfVCL2){
+	      ++multiplicity[0];
+	    }
+	    if (seg == SegOfVCR1 || seg == SegOfVCR2){
+	      ++multiplicity[1];
+	    }
+	    if (seg == SegOfVCU1 || seg == SegOfVCU2){
+	      ++multiplicity[2];
+	    }
+	    if (seg == SegOfVCD1 || seg == SegOfVCD2){
+	      ++multiplicity[3];
+	    }
+	    if (seg == SegOfVCB1 || seg == SegOfVCB2){
+	      ++multiplicity[4];
 	    }
 	  }
 
@@ -3917,22 +3942,15 @@ namespace analyzer
 	}
       }
 
-      { // multiplicity
-	// VC Left
-	if (vc_hit_count[SegOfVCL1]>0 && vc_hit_count[SegOfVCL2]>0) ++multiplicity_l;
-	hptr_array[vc_multiplicity_id]->Fill(multiplicity_l);
-	// VC Right
-	if (vc_hit_count[SegOfVCR1]>0 && vc_hit_count[SegOfVCR2]>0) ++multiplicity_r;
-	hptr_array[vc_multiplicity_id+1]->Fill(multiplicity_r);
-	// VC Up
-	if (vc_hit_count[SegOfVCU1]>0 && vc_hit_count[SegOfVCU2]>0) ++multiplicity_u;
-	hptr_array[vc_multiplicity_id+2]->Fill(multiplicity_u);
-	// VC Down
-	if (vc_hit_count[SegOfVCD1]>0 && vc_hit_count[SegOfVCD2]>0) ++multiplicity_d;
-	hptr_array[vc_multiplicity_id+3]->Fill(multiplicity_d);
-	// VC Back
-	if (vc_hit_count[SegOfVCB1]>0 && vc_hit_count[SegOfVCB2]>0) ++multiplicity_b;
-	hptr_array[vc_multiplicity_id+4]->Fill(multiplicity_b);
+      // Fill multiplicity
+      for (Int_t n=0; n<5; ++n){
+	hptr_array[vc_multiplicity_id + n]->Fill(multiplicity[n]);
+	if (multiplicity[n] == 2){
+	  is_hit_vc = true;
+	}
+      }
+      if (multiplicity[4] == 2 ){
+	is_hit_vcback = true;
       }
 
 #if 0
@@ -3940,6 +3958,81 @@ namespace analyzer
       gUnpacker.dump_data_device(k_device);
 #endif
     } // ParaVC
+
+    { // ParaBGO w/ cut
+      if (!is_hit_vc && tof_is_inrange_pi){ // for -0.4 GeV/c
+	static const auto device_id = gUnpacker.get_device_id("ParaBGO");
+	static const auto adc_id = gUnpacker.get_data_id("ParaBGO", "adc");
+	static const auto tdc_id = gUnpacker.get_data_id("ParaBGO", "tdc");
+
+	static const Int_t adc_hid = gHist.getSequentialID(kParaBGOwC, 0, kADC);
+	static const auto tdc_hid = gHist.getSequentialID(kParaBGOwC, 0, kTDC);
+	static const auto awt_hid = gHist.getSequentialID(kParaBGOwC, 0, kADCwTDC);
+	static const auto tdc_min = gUser.GetParameter("TdcParaBGO", 0);
+	static const auto tdc_max = gUser.GetParameter("TdcParaBGO", 1);
+	static const Int_t n_seg = NumOfSegParaBGO;
+
+	for(Int_t seg=0; seg<n_seg; ++seg){
+	  auto nhit = gUnpacker.get_entries(device_id, 0, seg, 0, adc_id);
+	  UInt_t adc = 0;
+	  if (nhit != 0) {
+	    adc = gUnpacker.get(device_id, 0, seg, 0, adc_id);
+	    hptr_array[adc_hid + seg]->Fill(adc);
+	  }
+	  Bool_t hit_flag = false;
+	  for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, seg, 0, tdc_id);
+	      m<n; ++m) {
+	    auto tdc = gUnpacker.get(device_id, 0, seg, 0, tdc_id, m);
+	    if (tdc != 0) {
+	      hptr_array[tdc_hid + seg]->Fill(tdc);
+	      if (tdc_min<tdc&&tdc<tdc_max) {
+		// ADC wTDC
+		hit_flag = true;
+	      }
+	    }
+	  }
+	  if (hit_flag) {
+	    hptr_array[awt_hid + seg]->Fill(adc);
+	  }
+	}
+      }
+      // if (is_hit_vcback){ // for -0.9 GeV/c
+      // 	static const auto device_id = gUnpacker.get_device_id("ParaBGO");
+      // 	static const auto adc_id = gUnpacker.get_data_id("ParaBGO", "adc");
+      // 	static const auto tdc_id = gUnpacker.get_data_id("ParaBGO", "tdc");
+
+      // 	static const Int_t adc_hid = gHist.getSequentialID(kParaBGOwC, 0, kADC);
+      // 	static const auto tdc_hid = gHist.getSequentialID(kParaBGOwC, 0, kTDC);
+      // 	static const auto awt_hid = gHist.getSequentialID(kParaBGOwC, 0, kADCwTDC);
+      // 	static const auto tdc_min = gUser.GetParameter("TdcParaBGO", 0);
+      // 	static const auto tdc_max = gUser.GetParameter("TdcParaBGO", 1);
+      // 	static const Int_t n_seg = NumOfSegParaBGO;
+
+      // 	for(Int_t seg=0; seg<n_seg; ++seg){
+      // 	  auto nhit = gUnpacker.get_entries(device_id, 0, seg, 0, adc_id);
+      // 	  UInt_t adc = 0;
+      // 	  if (nhit != 0) {
+      // 	    adc = gUnpacker.get(device_id, 0, seg, 0, adc_id);
+      // 	    hptr_array[adc_hid + seg]->Fill(adc);
+      // 	  }
+      // 	  Bool_t hit_flag = false;
+      // 	  for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, seg, 0, tdc_id);
+      // 	      m<n; ++m) {
+      // 	    auto tdc = gUnpacker.get(device_id, 0, seg, 0, tdc_id, m);
+      // 	    if (tdc != 0) {
+      // 	      hptr_array[tdc_hid + seg]->Fill(tdc);
+      // 	      if (tdc_min<tdc&&tdc<tdc_max) {
+      // 		// ADC wTDC
+      // 		hit_flag = true;
+      // 	      }
+      // 	    }
+      // 	  }
+      // 	  if (hit_flag) {
+      // 	    hptr_array[awt_hid + seg]->Fill(adc);
+      // 	  }
+      // 	}
+      // }
+    }
     return 0;
   } //process_event()
 

@@ -8125,7 +8125,7 @@ HistMaker::createBTOF( Bool_t flag_ps )
   top_dir->Add(createTH1(hid+1, "BH1-6_BH2-4",
 			 600, 50000, 350000, "[ch]", ""));
   top_dir->Add(createTH1(hid+2, det_name + "_wide",
-			 1100, -50, 5, "[ns]", ""));
+			 1800, -90, 5, "[ns]", ""));
   return top_dir;
 }
 

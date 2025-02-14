@@ -52,6 +52,24 @@ dispAFT_TOTxTDC( void )
       c->Update();
   }
 
+  // draw ADC-2D UorD
+  {
+    int aft_tot_t_id     = HistMaker::getUniqueID( kAFT, 0, kTOTXTDC, 0 );
+    //for( int ud=0; ud<2; ud++ ){
+      TCanvas *c = (TCanvas*)gROOT->FindObject(Form("c%d", 3));
+      c->Clear();
+      c->Divide(6, 3);
+      for( int i=0; i<18; ++i ){
+	c->cd(i+1);
+	TH2 *h = (TH2*)GHist::get( aft_tot_t_id+NumOfPlaneAFT+NumOfPlaneAFT+4+i+1 );
+	if( !h ) continue;
+	TProfile *p = h->ProfileX();
+	p->GetYaxis()->SetRangeUser(0, 4096);
+	p->Draw();
+      }
+      c->Update();
+  }
+
 
   // You must write these lines for the thread safe
   // ----------------------------------

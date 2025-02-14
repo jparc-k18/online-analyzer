@@ -217,33 +217,30 @@ TCanvas*
 BAC()
 {
   auto c1 = new TCanvas(__func__, __func__);
-  c1->Divide(2, 1);
-
-  std::vector<Int_t> adc_id = {
-    HistMaker::getUniqueID(kBAC,  0, kADC, 1)
-  };
-
-  std::vector<Int_t> awt_id = {
-    HistMaker::getUniqueID(kBAC,  0, kADCwTDC, 1)
-  };
-
-  std::vector<Int_t> tdc_id = {
-    HistMaker::getUniqueID(kBAC,  0, kTDC, 1)
-  };
-
-  for(Int_t i=0, n=adc_id.size(); i<n; ++i){
-    c1->cd(i+1)->SetLogy();
-    TH1 *h = GHist::get(adc_id[i]);
-    if(!h) continue;
-    h->Draw();
-    TH1 *hh = GHist::get(awt_id[i]);
-    if(!hh) continue;
-    hh->SetLineColor(kRed+1);
-    hh->Draw("same");
-    c1->cd(i+1+n);//->SetLogy();
-    TH1 *hhh = GHist::get(tdc_id[i]);
-    if(!hhh) continue;
-    hhh->Draw();
+  c1->Divide(3, 2);
+  auto adc_hid = HistMaker::getUniqueID(kBAC, 0, kADC);
+  auto awt_hid = HistMaker::getUniqueID(kBAC, 0, kADCwTDC);
+  auto tdc_hid = HistMaker::getUniqueID(kBAC, 0, kTDC);
+  auto multi_hid = HistMaker::getUniqueID(kBAC, 0, kMulti);
+  for (int i =0; i<2;++i){
+    // ADC
+    c1->cd(3*i+1)->SetLogy();
+    auto h1 = dynamic_cast<TH1*>(GHist::get(adc_hid+i));
+    // auto h1->GetXaxis()->SetRangeUser(0, 0x1000);
+    h1->Draw();
+    // ADCwTDC
+    auto h2 = dynamic_cast<TH1*>(GHist::get(awt_hid+i));
+    h2->SetLineColor(kRed+1);
+    h2->Draw("same");
+    // TDC
+    c1->cd(3*i+2);//->SetLogy();
+    auto h3 = dynamic_cast<TH1*>(GHist::get(tdc_hid+i));
+    // h3->GetXaxis()->SetRangeUser(0, 2000000);
+    h3->Draw();
+    // Multiplicity
+    c1->cd(3*i+3);
+    auto h4 = dynamic_cast<TH1*>(GHist::get(multi_hid+i));
+    h4->Draw();
   }
   return c1;
 }
@@ -4260,9 +4257,9 @@ UpdateTOTPeakFittingE70()
     "BFT_TOT_D", "AFT_TOT_Y-U", "AFT_TOT_Y-D",
  };
   static std::vector<Double_t> optval = {
-    gUser.GetParameter("TotRefBFT"), gUser.GetParameter("TotRefAFT"),
-    gUser.GetParameter("TotRefAFT"), gUser.GetParameter("TotRefBFT"),
-    gUser.GetParameter("TotRefAFT"), gUser.GetParameter("TotRefAFT"),
+    gUser.GetParameter("TotRefBFT"), gUser.GetParameter("TotRefAFT", 0),
+    gUser.GetParameter("TotRefAFT", 1), gUser.GetParameter("TotRefBFT"),
+    gUser.GetParameter("TotRefAFT", 0), gUser.GetParameter("TotRefAFT", 0),
   };
   static std::vector<TLine*> line(name.size());
   static std::vector<TText*> tex(name.size());

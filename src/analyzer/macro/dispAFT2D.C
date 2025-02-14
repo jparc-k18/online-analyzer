@@ -25,6 +25,7 @@ dispAFT2D( void )
       c->Divide(8, 5);
       for( int i=0; i<NumOfPlaneAFT; ++i ){
 	c->cd(i+1);
+	c->GetPad(i+1)->SetLogz();
 	TH2 *h = (TH2*)GHist::get( ++aft_t_2d_id );
 	if( !h ) continue;
 	h->Draw("colz");
@@ -90,6 +91,7 @@ dispAFT2D( void )
       c->Divide(8, 5);
       for( int i=0; i<NumOfPlaneAFT; ++i ){
 	c->cd(i+1);
+	c->GetPad(i+1)->SetLogz();
 	TH2 *h = (TH2*)GHist::get( ++aft_hg_2d_id );
 	if( !h ) continue;
 	h->Draw("colz");
@@ -125,6 +127,7 @@ dispAFT2D( void )
       c->Divide(8, 5);
       for( int i=0; i<NumOfPlaneAFT; ++i ){
 	c->cd(i+1);
+	c->GetPad(i+1)->SetLogz();
 	TH2 *h = (TH2*)GHist::get( ++aft_lg_2d_id );
 	if( !h ) continue;
 	h->Draw("colz");

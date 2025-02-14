@@ -2680,6 +2680,7 @@ namespace analyzer
 	    Double_t mt = (bh1tu+bh1td)/2.;
 	    Double_t btof = mt-(t0+ofs);
 	    hptr_array[btof_id]->Fill(btof);
+	    hptr_array[btof_id+2]->Fill(btof);
 	  }// if (tdc)
 	}// if (nhit)
       }// for(seg)

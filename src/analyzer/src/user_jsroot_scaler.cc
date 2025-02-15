@@ -54,6 +54,7 @@ HttpServer& gHttp = HttpServer::GetInstance();
 ScalerAnalyzer scaler_on;
 ScalerAnalyzer scaler_off;
 const std::chrono::milliseconds flush_interval(100);
+std::ofstream ofs;
 }
 
 //____________________________________________________________________________
@@ -287,6 +288,14 @@ process_event()
       // if(!scaler_on.IsSpillEnd())
       return 0;
 
+    if(scaler_on.IsSpillEnd()){
+      ofs.close();
+      ofs.open("/misc/subdata/scaler_2025jan/spill.txt");
+      TTimeStamp ts;
+      ts.Add(-TTimeStamp::GetZoneOffset());
+      ofs << ts.AsString("s") << std::endl;
+    }
+
     ss.str("");
     ss << "<div style='color: white; background-color: black;"
        << "width: 100%; height: 100%;'>";
@@ -299,6 +308,11 @@ process_event()
        << "<td width=\"100\">" << " : " << "</td>"
        << "<td align=\"right\" width=\"100\">" << end_mark << "</td>"
        << "<tr><td></td><td></td><td></td></tr>";
+    if(scaler_on.IsSpillEnd()){
+      ofs << Form("%-20s", "Run") << run_number << std::endl
+	  << Form("%-20s", "Spill") << scaler_on.Get("Spill") << std::endl
+	  << Form("%-20s", "Event") << event_number << std::endl << std::endl;
+    }
     for(Int_t j=0; j<MaxDispRow; ++j){
       ss << "<tr>";
       for(Int_t i=0; i<ScalerAnalyzer::MaxColumn; ++i){
@@ -312,6 +326,8 @@ process_event()
 	ss << n << "</td>"
 	   << "<td align=\"right\">"
            << scaler_on.SeparateComma(scaler_on.Get(i, j)) << "</td>";
+        if(!n.Contains("n/a") && !n.Contains("Spill") && scaler_on.IsSpillEnd())
+	  ofs << Form("%-20s", n.Data()) << scaler_on.Get(i, j) << std::endl;
       }
       ss << "</tr>";
     }
@@ -345,6 +361,15 @@ process_event()
     ss << "</table>";
     ss << "</div>";
     gHttp.SetItemField("/ScalerOn", "value", ss.str().c_str());
+    if(scaler_on.IsSpillEnd()){
+      ofs << std::endl
+	  << Form("%-20s", "K-Beam/TM") << Form("%.6f", scaler_on.Fraction("K-Beam", "TM")) << std::endl
+	  << Form("%-20s", "Live/Real") << Form("%.6f", scaler_on.Fraction("Live-Time", "Real-Time")) << std::endl
+	  << Form("%-20s", "DAQ-Eff") << Form("%.6f", scaler_on.Fraction("L1-Acc", "L1-Req")) << std::endl
+	  << Form("%-20s", "L1-Req/K-Beam") << Form("%.6f", scaler_on.Fraction("L1-Req", "K-Beam")) << std::endl
+	  << Form("%-20s", "L2-Eff") << Form("%.6f", scaler_on.Fraction("L2-Acc", "L1-Acc")) << std::endl
+	  << Form("%-20s", "Duty") << Form("%.6f", scaler_on.Duty()) << std::endl;
+    }
   }
 
   // Scaler Spill Off

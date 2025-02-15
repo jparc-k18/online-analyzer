@@ -1779,7 +1779,7 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
       "AFT_TOT_Y-U", "AFT_TOT_Y-D"
     };
     for(Int_t i=0, n=name.size(); i<n; ++i){
-      sub_dir->Add(createTH1(++target_id, name[i], 150, 0, 150));
+      sub_dir->Add(createTH1(++target_id, name[i], 200, 0, 200));
     }
 
   // CTOT---------------------------------------------------------

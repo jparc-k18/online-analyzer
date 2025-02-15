@@ -289,7 +289,6 @@ process_event()
       return 0;
 
     if(scaler_on.IsSpillEnd()){
-      ofs.close();
       ofs.open("/misc/subdata/scaler_2025jan/spill.txt");
       TTimeStamp ts;
       ts.Add(-TTimeStamp::GetZoneOffset());
@@ -369,6 +368,7 @@ process_event()
 	  << Form("%-20s", "L1-Req/K-Beam") << Form("%.6f", scaler_on.Fraction("L1-Req", "K-Beam")) << std::endl
 	  << Form("%-20s", "L2-Eff") << Form("%.6f", scaler_on.Fraction("L2-Acc", "L1-Acc")) << std::endl
 	  << Form("%-20s", "Duty") << Form("%.6f", scaler_on.Duty()) << std::endl;
+      ofs.close();
     }
   }
 

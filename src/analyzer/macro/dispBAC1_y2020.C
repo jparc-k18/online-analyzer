@@ -216,27 +216,29 @@ void dispBAC1_y2020()
     h->Draw();
     TH1 *hpi = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+1);
     hpi->SetLineColor( kBlue );
+    Double_t Rate_pi = hpi->Integral(0,800 )/h->Integral(0,800)*2;
     hpi->Draw("same");
     TH1 *hk = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+2);
     hk->SetLineColor( kGreen );
+    Double_t Rate_k = hk->Integral(0,800 )/h->Integral(0,800)*2;
     hk->Draw("same");
     TH1 *hp = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+3);
     hp->SetLineColor( kRed );
     hp->Draw("same");
-    TLatex *t1 = new TLatex(0.72,0.86,"#pi");
+    TLatex *t1 = new TLatex(0.72,0.86,Form("#pi:%.3f",Rate_pi));
     t1->SetNDC(1);
     t1->SetTextColor(kBlue);
-    t1->SetTextSize(0.04);
+    t1->SetTextSize(0.06);
     t1->Draw("same");
-    TText *t2 = new TText(0.55,0.86,"K");
+    TText *t2 = new TText(0.45,0.86,Form("K:%.3f",Rate_k));
     t2->SetNDC(1);
     t2->SetTextColor(kGreen);
-    t2->SetTextSize(0.04);
+    t2->SetTextSize(0.06);
     t2->Draw("same");
     TText *t3 = new TText(0.20,0.86,"p-bar");
     t3->SetNDC(1);
     t3->SetTextColor(kRed);
-    t3->SetTextSize(0.04);
+    t3->SetTextSize(0.06);
     t3->Draw("same");
   }
  

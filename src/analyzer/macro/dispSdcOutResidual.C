@@ -16,7 +16,7 @@ void dispSdcOutResidual( void )
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
     c->Divide(4,3);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 200);
+    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 350);
     for( int i=0; i<n_layer; ++i ){
       c->cd(i+1);
       TH1 *h = GHist::get(base_id + i);

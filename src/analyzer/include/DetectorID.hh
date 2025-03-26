@@ -73,6 +73,7 @@ const Int_t DetIdBFT    = 110;
 const Int_t DetIdBcOut  = 20;
 const Int_t DetIdSdcIn  = 30;
 const Int_t DetIdSdcOut = 40;
+const Int_t DetIdBcOutSdcIn  = 80;
 
 const Int_t PlMinBcIn        =   1;
 const Int_t PlMaxBcIn        =  12;

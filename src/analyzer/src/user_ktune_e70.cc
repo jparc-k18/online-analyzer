@@ -51,8 +51,9 @@ namespace analyzer
     //       BH2Filter&       gBH2Filter = BH2Filter::GetInstance();
     const UserParamMan& gUser = UserParamMan::GetInstance();
 
-    const Double_t dist_FF = 1200.;
-    const Double_t dist_D1 = 2100.62;
+    const Double_t dist_FF  = 1200.;
+    const Double_t dist_S2S = 1200.+5326.5;
+    const Double_t dist_D1  = 2100.62;
 
     std::vector<TH1*> hptr_array;
 
@@ -92,22 +93,26 @@ namespace analyzer
 
 
     enum HistName_FF
-    {
-      FF_m400, FF_m200, FF_0, FF_200, FF_400, FF_600, FF_800,
-      NHist_FF
-    };
+      {
+        FF_m400, FF_m200, FF_0, FF_200, FF_400, FF_600, FF_800,
+        NHist_FF
+      };
     static const double FF_plus[NHist_FF] =
       {
-	-400., -200., 0, 200., 400., 600., 800.
+        -400., -200., 0, 200., 400., 600., 800.
+      };
+    static const std::vector<TString> VPs =
+      {
+        "VP1", "VP2", "VP3", "VP4"
       };
     enum HistName_D1
-    {
-      D1_400, D1_700, D1_1000, D1_1300, D1_1600, D1_1900,
-      NHist_D1
-    };
+      {
+        D1_400, D1_700, D1_1000, D1_1300, D1_1600, D1_1900,
+        NHist_D1
+      };
     static const double D1_plus[NHist_D1] =
       {
-	400., 700., 1000., 1300., 1600., 1900.
+        400., 700., 1000., 1300., 1600., 1900.
       };
     //static Double_t FF_plus = 0;
   }
@@ -169,6 +174,8 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispS2sProfile_e70"));
   tab_macro->Add(macro::Get("dispS2sProfile_e70kaon"));
   tab_macro->Add(macro::Get("dispSdcOutResidual"));
+  tab_macro->Add(macro::Get("dispSdcInTracking"));
+  tab_macro->Add(macro::Get("dispBcOutSdcInTracking"));
 
   // Add histograms to the Hist tab
   HistMaker& gHist = HistMaker::getInstance();
@@ -194,7 +201,6 @@ process_begin( const std::vector<std::string>& argv )
     				    200,-100,100,
     				    "y position [mm]", ""));
     }
-    tab_hist->Add(sub_dir);
     // Profile XY
     for(int i = 0; i<NHist_FF; ++i){
       char* title = Form("%s FF %d_XY", nameSubDir, (int)FF_plus[i]);
@@ -202,8 +208,6 @@ process_begin( const std::vector<std::string>& argv )
     				   400,-200,200, 200,-100,100,
     				   "x position [mm]", "y position [mm]"));
     }
-    tab_hist->Add(sub_dir);
-
 
      // Profile X kaon
     for(int i = 0; i<NHist_FF; ++i){
@@ -291,6 +295,127 @@ process_begin( const std::vector<std::string>& argv )
     tab_hist->Add(sub_dir);
   }
 
+  //SdcIn
+  {
+    TList *sub_dir = new TList;
+    const char* nameSubDir = "SdcIn";
+    sub_dir->SetName(nameSubDir);
+    Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat, 100);
+
+    // Profile X
+    for(int i = 0; i<VPs.size(); ++i){
+      char* title = Form("%s %s_X", nameSubDir, VPs.at(i).Data());
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+    				    600,-300,300,
+    				    "x position [mm]", ""));
+    }
+    // Profile Y
+    for(int i = 0; i<VPs.size(); ++i){
+      char* title = Form("%s %s_Y", nameSubDir, VPs.at(i).Data());
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+    				    300,-150,150,
+    				    "y position [mm]", ""));
+    }
+    // Profile XY
+    for(int i = 0; i<VPs.size(); ++i){
+      char* title = Form("%s %s_XY", nameSubDir, VPs.at(i).Data());
+      sub_dir->Add(gHist.createTH2(unique_id++, title,
+    				   600,-300,300, 300,-150,150,
+    				   "x position [mm]", "y position [mm]"));
+    }
+
+     // Profile X kaon
+    for(int i = 0; i<VPs.size(); ++i){
+      char* title = Form("%s %s_X kaon", nameSubDir, VPs.at(i).Data());
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+    				    600,-300,300,
+    				    "x position [mm]", ""));
+    }
+    // Profile Y kaon
+    for(int i = 0; i<VPs.size(); ++i){
+      char* title = Form("%s %s_Y kaon", nameSubDir, VPs.at(i).Data());
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+    				    300,-150,150,
+    				    "y position [mm]", ""));
+    }
+
+    TList *subsub_dir = new TList;
+    const char* nameSubSubDir = "Residual";
+    subsub_dir->SetName(nameSubSubDir);
+    {
+      Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat, 150);
+      for(int i = 0; i < NumOfLayersBcOut+NumOfLayersSdcIn; i++){
+	char* title = Form("%s layer%d %s", nameSubDir, i, nameSubSubDir);
+	subsub_dir->Add(gHist.createTH1(unique_id++, title,
+					// 200, -1, 1,
+					600, -3, 3,
+					"Residual [mm]", ""));
+      }
+    }
+    sub_dir->Add(subsub_dir);
+    tab_hist->Add(sub_dir);
+  }
+
+  //BcOutSdcIn
+  {
+    TList *sub_dir = new TList;
+    const char* nameSubDir = "BcOutSdcIn";
+    sub_dir->SetName(nameSubDir);
+    Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat, 200);
+
+    // Profile X
+    for(int i = 0; i<VPs.size(); ++i){
+      char* title = Form("%s %s_X", nameSubDir, VPs.at(i).Data());
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+    				    600,-300,300,
+    				    "x position [mm]", ""));
+    }
+    // Profile Y
+    for(int i = 0; i<VPs.size(); ++i){
+      char* title = Form("%s %s_Y", nameSubDir, VPs.at(i).Data());
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+    				    300,-150,150,
+    				    "y position [mm]", ""));
+    }
+    // Profile XY
+    for(int i = 0; i<VPs.size(); ++i){
+      char* title = Form("%s %s_XY", nameSubDir, VPs.at(i).Data());
+      sub_dir->Add(gHist.createTH2(unique_id++, title,
+    				   600,-300,300, 300,-150,150,
+    				   "x position [mm]", "y position [mm]"));
+    }
+
+     // Profile X kaon
+    for(int i = 0; i<VPs.size(); ++i){
+      char* title = Form("%s %s_X kaon", nameSubDir, VPs.at(i).Data());
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+    				    600,-300,300,
+    				    "x position [mm]", ""));
+    }
+    // Profile Y kaon
+    for(int i = 0; i<VPs.size(); ++i){
+      char* title = Form("%s %s_Y kaon", nameSubDir, VPs.at(i).Data());
+      sub_dir->Add(gHist.createTH1(unique_id++, title,
+    				    300,-150,150,
+    				    "y position [mm]", ""));
+    }
+
+    TList *subsub_dir = new TList;
+    const char* nameSubSubDir = "Residual";
+    subsub_dir->SetName(nameSubSubDir);
+    {
+      Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat, 250);
+      for(int i = 0; i < NumOfLayersBcOut+NumOfLayersSdcIn; i++){
+	char* title = Form("%s layer%d %s", nameSubDir, i, nameSubSubDir);
+	subsub_dir->Add(gHist.createTH1(unique_id++, title,
+					// 200, -1, 1,
+					600, -3, 3,
+					"Residual [mm]", ""));
+      }
+    }
+    sub_dir->Add(subsub_dir);
+    tab_hist->Add(sub_dir);
+  }
 
   //SdcOut
   {
@@ -299,7 +424,7 @@ process_begin( const std::vector<std::string>& argv )
     top_dir->SetName(nameDetector);
 
     {
-      Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat, 100);
+      Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat, 300);
       // Profile X
       for(int i = 0; i<NHist_D1; ++i){
 	char* title = Form("%s D1 %d_X", nameDetector, (int)D1_plus[i]);
@@ -345,7 +470,7 @@ process_begin( const std::vector<std::string>& argv )
     const char* nameSubDir = "Residual";
     sub_dir->SetName(nameSubDir);
     {
-      Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat, 200);
+      Int_t unique_id = gHist.getUniqueID(kMisc, 0, kHitPat, 350);
       for(int i = 0; i < NumOfLayersSdcOut; i++){
 	char* title = Form("%s layer%d %s", nameDetector, i, nameSubDir);
 	sub_dir->Add(gHist.createTH1(unique_id++, title,
@@ -2070,21 +2195,82 @@ process_event( void )
     }
   }
 
+  /////////// SdcIn
+  {
+    DCRHC SdcInAna(DetIdSdcIn);
+    bool SdcInTrack = SdcInAna.TrackSearch(7);
+
+    if(SdcInTrack){
+      static const int residual_id = gHist.getSequentialID(kMisc, 0, kHitPat, 150);
+      for( int layer = 0; layer < NumOfLayersSdcIn; layer++ ){
+	Double_t res = SdcInAna.GetResidual(layer);
+	hptr_array[residual_id+layer]->Fill(res);
+      }
+      static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat, 100);
+      static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, VPs.size()+100);
+      static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, VPs.size()*2+100);
+      for(int i = 0; i<VPs.size(); ++i){
+	auto localz =gGeom.GetLocalZ(std::string(VPs.at(i)))+dist_S2S;
+    	double xpos = SdcInAna.GetPosX(localz);
+    	double ypos = SdcInAna.GetPosY(localz);
+    	hptr_array[xpos_id+i]->Fill(xpos);
+    	hptr_array[ypos_id+i]->Fill(ypos);
+    	hptr_array[xypos_id+i]->Fill(xpos, ypos);
+
+	if(k_flag==1){
+	  hptr_array[xpos_id+i+(NHist_FF*3)]->Fill(xpos);
+	  hptr_array[ypos_id+i+(NHist_FF*3)]->Fill(ypos);
+	}
+      } // for i
+    }
+  }
+
+
+  /////////// BcOutSdcIn
+  {
+    DCRHC BcOutSdcInAna(DetIdBcOutSdcIn);
+    bool BcOutSdcInTrack = BcOutSdcInAna.TrackSearch(19);
+
+    if(BcOutSdcInTrack){
+      static const int residual_id = gHist.getSequentialID(kMisc, 0, kHitPat, 250);
+      for( int layer = 0; layer < NumOfLayersBcOut+NumOfLayersSdcIn; layer++ ){
+	Double_t res = BcOutSdcInAna.GetResidual(layer);
+	hptr_array[residual_id+layer]->Fill(res);
+      }
+      static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat, 200);
+      static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, VPs.size()+200);
+      static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, VPs.size()*2+200);
+      for(int i = 0; i<VPs.size(); ++i){
+	auto localz =gGeom.GetLocalZ(std::string(VPs.at(i)))+dist_S2S;
+	double xpos = BcOutSdcInAna.GetPosX(localz);
+	double ypos = BcOutSdcInAna.GetPosY(localz);
+	hptr_array[xpos_id+i]->Fill(xpos);
+	hptr_array[ypos_id+i]->Fill(ypos);
+	hptr_array[xypos_id+i]->Fill(xpos, ypos);
+
+	if(k_flag==1){
+	  hptr_array[xpos_id+i+(NHist_FF*3)]->Fill(xpos);
+	  hptr_array[ypos_id+i+(NHist_FF*3)]->Fill(ypos);
+	}
+      } // for i
+    }
+  }
+
   /////////// SdcOut
   {
     DCRHC SdcOutAna(DetIdSdcOut);
     bool SdcOutTrack = SdcOutAna.TrackSearch(9);
 
     if(SdcOutTrack){
-      static const int residual_id = gHist.getSequentialID(kMisc, 0, kHitPat, 200);
+      static const int residual_id = gHist.getSequentialID(kMisc, 0, kHitPat, 350);
       for( int layer = 0; layer < NumOfLayersSdcOut; layer++ ){
 	Double_t res = SdcOutAna.GetResidualSdcOut(layer);
 	hptr_array[residual_id+layer]->Fill(res);
       }
 
-      static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat, 100);
-      static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist_D1+100);
-      static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist_D1*2+100);
+      static const int xpos_id = gHist.getSequentialID(kMisc, 0, kHitPat, 300);
+      static const int ypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist_D1+300);
+      static const int xypos_id = gHist.getSequentialID(kMisc, 0, kHitPat, NHist_D1*2+300);
 
       for(int i = 0; i<NHist_D1; ++i){
     	double xpos = SdcOutAna.GetPosX(dist_D1+D1_plus[i]);

@@ -47,6 +47,7 @@ DCRHC::DCRHC( int DetectorID )
   if(DetectorID==DetIdSdcIn)  init_SdcIn();
   if(DetectorID==DetIdSdcOut) init_SdcOut();
   if(DetectorID==DetIdSsd)    init_Ssd();
+  if(DetectorID==DetIdBcOutSdcIn) init_BcOutSdcIn();
   detid = DetectorID;
   chi2 = -1;
 }
@@ -108,6 +109,28 @@ void DCRHC::init_Ssd( void )
     cosvector.push_back(tilt[1]);
     z.push_back(geomman.GetLocalZ(id));
   }
+}
+//______________________________________________________________________________
+void DCRHC::init_BcOutSdcIn( void )
+{
+  m_hitwire.resize(NumOfLayersBcOut+NumOfLayersSdcIn);
+  m_hitpos.resize(NumOfLayersBcOut+NumOfLayersSdcIn);
+  m_tdc.resize(NumOfLayersBcOut+NumOfLayersSdcIn);
+
+  for(int id=113;id<125;++id)
+    {
+      std::vector<double> tilt = angle(geomman.GetTiltAngle(id));
+      sinvector.push_back(tilt[0]);
+      cosvector.push_back(tilt[1]);
+      z.push_back(geomman.GetLocalZ(id));
+    }
+  for(int id=1;id<11;++id)
+    {
+      std::vector<double> tilt = angle(geomman.GetTiltAngle(id));
+      sinvector.push_back(tilt[0]);
+      cosvector.push_back(tilt[1]);
+      z.push_back(geomman.GetLocalZ(id));
+    }
 }
 //______________________________________________________________________________
 DCRHC::~DCRHC( void )
@@ -178,6 +201,7 @@ void DCRHC::pushback( int DetectorID )
   if(DetectorID==DetIdSdcIn)  pushback_SdcIn();
   if(DetectorID==DetIdSdcOut) pushback_SdcOut();
   if(DetectorID==DetIdSsd)    pushback_Ssd();
+  if(DetectorID==DetIdBcOutSdcIn) pushback_BcOutSdcIn();
   return ;
 }
 //______________________________________________________________________________
@@ -257,11 +281,17 @@ void DCRHC::pushback_BcOut( void )
 //______________________________________________________________________________
 void DCRHC::pushback_SdcIn( void )
 {
-  static const double MinTdcSDC1 = gUser.GetParameter("SDC1_TDC", 0);
-  static const double MaxTdcSDC1 = gUser.GetParameter("SDC1_TDC", 1);
+  static const double MinTdcSDC1 = gUser.GetParameter("TdcSDC1", 0);
+  static const double MaxTdcSDC1 = gUser.GetParameter("TdcSDC1", 1);
+  static const double MinTdcSDC2 = gUser.GetParameter("TdcSDC2", 0);
+  static const double MaxTdcSDC2 = gUser.GetParameter("TdcSDC2", 1);
 
-  for( int layer=0; layer<NumOfLayersSdcIn; ++layer )
+  for( int layer=0; layer<NumOfLayersSdcIn; ++layer ){
     m_hitwire[layer].clear();
+    m_tdc[layer].clear();
+  }
+
+  // SDC1
   for( int layer=0; layer<NumOfLayersSDC1; ++layer ){
     for( int wire=0; wire<NumOfWireSDC1; ++wire ){
       int nhits = g_unpacker.get_entries( DetIdSDC1, layer, 0, wire, 0 );
@@ -270,7 +300,7 @@ void DCRHC::pushback_SdcIn( void )
       int tdc1st = 0;
 #endif
       for( int i=0; i<nhits; ++i ){
-	int tdc = g_unpacker.get( DetIdSDC1, layer, 0, wire, 2, i );
+	int tdc = g_unpacker.get( DetIdSDC1, layer, 0, wire, 0, i );
 	if( tdc<MinTdcSDC1 && MaxTdcSDC1<tdc ) continue;
 #if TDC1st
 	if( tdc1st < tdc ) tdc1st = tdc;
@@ -287,6 +317,34 @@ void DCRHC::pushback_SdcIn( void )
 #endif
     }
   }
+
+  // SDC2
+  for( int layer=0; layer<NumOfLayersSDC2; ++layer ){
+    for( int wire=0; wire<NumOfWireSDC2; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdSDC2, layer, 0, wire, 0 );
+      if( nhits==0 ) continue;
+#if TDC1st
+      int tdc1st = 0;
+#endif
+      for( int i=0; i<nhits; ++i ){
+	int tdc = g_unpacker.get( DetIdSDC2, layer, 0, wire, 0, i );
+	if( tdc<MinTdcSDC2 && MaxTdcSDC2<tdc ) continue;
+#if TDC1st
+	if( tdc1st < tdc ) tdc1st = tdc;
+#else
+	m_hitwire[layer + NumOfLayersSDC1].push_back(wire);
+	m_tdc[layer + NumOfLayersSDC1].push_back(tdc);
+#endif
+      }
+#if TDC1st
+      if( tdc1st>0 ){
+	m_hitwire[layer + NumOfLayersSDC1].push_back(wire);
+	m_tdc[layer + NumOfLayersSDC1].push_back(tdc1st);
+      }
+#endif
+    }
+  }
+
 }
 //______________________________________________________________________________
 void DCRHC::pushback_SdcOut( void )
@@ -298,7 +356,10 @@ void DCRHC::pushback_SdcOut( void )
   static const double MinTdcSDC5 = gUser.GetParameter("TdcSDC5", 0);
   static const double MaxTdcSDC5 = gUser.GetParameter("TdcSDC5", 1);
 
-  for(int layer=0;layer<NumOfLayersSdcOut;++layer) m_hitwire[layer].clear();
+  for(int layer=0;layer<NumOfLayersSdcOut;++layer){
+    m_hitwire[layer].clear();
+    m_tdc[layer].clear();
+  }
 
   for( int layer=0; layer<NumOfLayersSDC3; ++layer ){
     for( int wire=0; wire<NumOfWireSDC3; ++wire ){
@@ -427,6 +488,143 @@ void DCRHC::pushback_Ssd( void )
 #endif
 }
 //______________________________________________________________________________
+void DCRHC::pushback_BcOutSdcIn( void )
+{
+  static const double MinTdcBC3 = gUser.GetParameter("TdcBC3", 0);
+  static const double MaxTdcBC3 = gUser.GetParameter("TdcBC3", 1);
+  static const double MinTdcBC4 = gUser.GetParameter("TdcBC4", 0);
+  static const double MaxTdcBC4 = gUser.GetParameter("TdcBC4", 1);
+  static const double MinTdcSDC1 = gUser.GetParameter("TdcSDC1", 0);
+  static const double MaxTdcSDC1 = gUser.GetParameter("TdcSDC1", 1);
+  static const double MinTdcSDC2 = gUser.GetParameter("TdcSDC2", 0);
+  static const double MaxTdcSDC2 = gUser.GetParameter("TdcSDC2", 1);
+
+  for( int layer=0; layer<NumOfLayersBcOut+NumOfLayersSdcIn; ++layer ){
+      m_hitwire[layer].clear();
+      m_tdc[layer].clear();
+  }
+
+  // BC3
+  for( int layer=0; layer<NumOfLayersBC3; ++layer ){
+    for( int wire=0; wire<NumOfWireBC3; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdBC3, layer, 0, wire, 0 );
+      if( nhits==0 ) continue;
+#if TDC1st
+      int tdc1st = 0;
+#endif
+      for( int i=0; i<nhits; ++i ){
+	int tdc = g_unpacker.get(DetIdBC3,layer,0,wire,0,i);
+	if( tdc<MinTdcBC3 || MaxTdcBC3<tdc ) continue;
+#if TDC1st
+	if( tdc1st < tdc ) tdc1st = tdc;
+#else
+	m_hitwire[layer].push_back(wire);
+	m_tdc[layer].push_back(tdc);
+#endif
+      }
+#if TDC1st
+      if( tdc1st>0 ){
+	m_hitwire[layer].push_back(wire);
+	m_tdc[layer].push_back(tdc1st);
+      }
+#endif
+    }
+  }
+
+  // BC4
+  for( int layer=0; layer<NumOfLayersBC4; ++layer ){
+    for( int wire=0; wire<NumOfWireBC4; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdBC4, layer, 0, wire, 0 );
+      if( nhits==0 ) continue;
+#if TDC1st
+      int tdc1st = 0;
+#endif
+      for( int i=0; i<nhits; ++i ){
+	int tdc = g_unpacker.get( DetIdBC4, layer, 0, wire, 0, i );
+	if( tdc<MinTdcBC4 && MaxTdcBC4<tdc ) continue;
+#if TDC1st
+	if( tdc1st < tdc ) tdc1st = tdc;
+#else
+	m_hitwire[layer + NumOfLayersBC3].push_back(wire);
+	m_tdc[layer + NumOfLayersBC3].push_back(tdc);
+#endif
+      }
+#if TDC1st
+      if( tdc1st>0 ){
+	m_hitwire[layer + NumOfLayersBC3].push_back(wire);
+	m_tdc[layer + NumOfLayersBC3].push_back(tdc1st);
+      }
+#endif
+    }
+  }
+
+  // SDC1
+  for( int layer=0; layer<NumOfLayersSDC1; ++layer ){
+    for( int wire=0; wire<NumOfWireSDC1; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdSDC1, layer, 0, wire, 0 );
+      if( nhits==0 ) continue;
+#if TDC1st
+      int tdc1st = 0;
+#endif
+      for( int i=0; i<nhits; ++i ){
+	int tdc = g_unpacker.get( DetIdSDC1, layer, 0, wire, 0, i );
+	if( tdc<MinTdcSDC1 && MaxTdcSDC1<tdc ) continue;
+#if TDC1st
+	if( tdc1st < tdc ) tdc1st = tdc;
+#else
+	m_hitwire[layer + NumOfLayersBcOut].push_back(wire);
+	m_tdc[layer + NumOfLayersBcOut].push_back(tdc);
+#endif
+      }
+#if TDC1st
+      if( tdc1st>0 ){
+	m_hitwire[layer + NumOfLayersBcOut].push_back(wire);
+	m_tdc[layer + NumOfLayersBcOut].push_back(tdc1st);
+      }
+#endif
+    }
+  }
+
+  // SDC2
+  for( int layer=0; layer<NumOfLayersSDC2; ++layer ){
+    for( int wire=0; wire<NumOfWireSDC2; ++wire ){
+      int nhits = g_unpacker.get_entries( DetIdSDC2, layer, 0, wire, 0 );
+      if( nhits==0 ) continue;
+#if TDC1st
+      int tdc1st = 0;
+#endif
+      for( int i=0; i<nhits; ++i ){
+	int tdc = g_unpacker.get( DetIdSDC2, layer, 0, wire, 0, i );
+	if( tdc<MinTdcSDC2 && MaxTdcSDC2<tdc ) continue;
+#if TDC1st
+	if( tdc1st < tdc ) tdc1st = tdc;
+#else
+	m_hitwire[layer + NumOfLayersBcOut + NumOfLayersSDC1].push_back(wire);
+	m_tdc[layer + NumOfLayersBcOut + NumOfLayersSDC1].push_back(tdc);
+#endif
+      }
+#if TDC1st
+      if( tdc1st>0 ){
+	m_hitwire[layer + NumOfLayersBcOut + NumOfLayersSDC1].push_back(wire);
+	m_tdc[layer + NumOfLayersBcOut + NumOfLayersSDC1].push_back(tdc1st);
+      }
+#endif
+    }
+  }
+
+#if DEBUG
+  std::cout<<"///////Hit Wire (BcOutSdcIn)////"<<std::endl;
+  for(int i=0; i<NumOfLayersBcOut+NumOfLayersSdcIn; ++i){
+    std::cout<<"["<<i<<"]";
+    for(int j = 0;j<m_hitwire[i].size();++j)
+      {
+	std::cout<<"[ "<<m_hitwire[i][j]
+		 <<"]"<<std::endl;
+      }
+  }
+#endif
+}
+//______________________________________________________________________________
 void DCRHC::HitPosition( int DetectorID )
 {
   std::vector<double> wire_offset, pitch, wire_center;
@@ -436,17 +634,23 @@ void DCRHC::HitPosition( int DetectorID )
   if(DetectorID==DetIdSdcIn)  plid =   1;
   if(DetectorID==DetIdSdcOut) plid =  31;
   if(DetectorID==DetIdSsd)    plid = 141;
-  for(unsigned int plane=0;plane<m_hitwire.size();++plane, ++plid)
+  for(unsigned int plane=0;plane<m_hitwire.size();++plane)
     {
+      int layer = 0;
+      if(DetectorID!=DetIdBcOutSdcIn) layer = plid+plane;
+      else{
+	if(plane<NumOfLayersBcOut) layer = 113+plane;
+	else layer = 1+plane-NumOfLayersBcOut;
+      }
       ////////// require Multiplicity = 1 /////////////
       if(m_hitwire[plane].size()!=1) continue;
       int wireid = m_hitwire[plane][0];
-      double hitposition = geomman.CalcWirePosition(plid, wireid);
+      double hitposition = geomman.CalcWirePosition(layer, wireid);
       m_hitpos[plane].push_back(hitposition);
     }
 
 #if DEBUG
-  std::cout<<"///////////Hit Position/////////////"<<std::endl;
+  std::cout<<"///////////Hit Position (DetectorID="<<DetectorID<<")/////////////"<<std::endl;
   for(unsigned int i=0;i<m_hitpos.size();++i)
     {
       std::cout<<"[ ";
@@ -490,7 +694,7 @@ void DCRHC::makeHvector( int DetectorID )
 	}
     }
 #if 0
-  std::cout<<"///////// H vector /////////"<<std::endl;
+  std::cout<<"///////// H vector (DetectorID="<<DetectorID<<")/////////"<<std::endl;
   std::cout<<"[ ";
   for(unsigned int i=0;i<m_hitwire.size();++i)
     {
@@ -646,7 +850,7 @@ bool DCRHC::TrackSearch(int min_plane)
   makeDriftTime(detid);
   makeDriftLength(detid);
   ReHitPosition(detid);
-    //  hoge();
+  // hoge();
   //  getchar();
   int num_plane=0;
   for(unsigned int i=0;i<m_hitwire.size();++i)
@@ -708,15 +912,25 @@ void DCRHC::makeChisquare( int DetectorID )
   if(DetectorID==DetIdSsd)    plid = 141;
   chi2 = 0;
   int j = 0;
-  for(unsigned int plane=0;plane<m_hitwire.size();++plane ,++plid)
+  for(unsigned int plane=0;plane<m_hitwire.size();++plane)
     {
       if(H[plane]==0)continue;
-      double resolution = geomman.GetResolution(plid);
+      int layer = 0;
+      if(DetectorID!=DetIdBcOutSdcIn) layer = plid+plane;
+      else{
+	if(plane<NumOfLayersBcOut) layer = 113+plane;
+	else layer = 1+plane-NumOfLayersBcOut;
+      }
+      double resolution = geomman.GetResolution(layer);
       double residual   = GetResidual(plane);
       chi2 += residual*residual/resolution/resolution;
       ++j;
     }
   chi2 = chi2/(j-2);
+#if DEBUG
+  std::cout<<"///////////Chisquare (DetectorID="<<DetectorID<<")/////////////"<<std::endl;
+  std::cout<<" chi2 = " << chi2 << std::endl;
+#endif
 }
 //______________________________________________________________________________
 void DCRHC::makeDriftTime( int DetectorID )
@@ -727,25 +941,32 @@ void DCRHC::makeDriftTime( int DetectorID )
   if(DetectorID==DetIdSdcOut) plid =  31;
   m_dtime.clear();
   m_dtime.resize(m_hitwire.size());
-  for(unsigned int i=0;i<m_hitwire.size();++i,++plid)
+  for(unsigned int plane=0;plane<m_hitwire.size();++plane)
     {
-      for(unsigned int j=0;j<m_hitwire[i].size();++j)
+      int layer = 0;
+      if(DetectorID!=DetIdBcOutSdcIn) layer = plid+plane;
+      else{
+	if(plane<NumOfLayersBcOut) layer = 113+plane;
+	else layer = 1+plane-NumOfLayersBcOut;
+      }
+      for(unsigned int j=0;j<m_hitwire[plane].size();++j)
 	{
 	  if(DetectorID==DetIdSsd){
-	    m_dtime[i].push_back(0);
+	    m_dtime[plane].push_back(0);
 	    continue;
 	  }
-	  int wireid = m_hitwire[i][j];
+
+	  int wireid = m_hitwire[plane][j];
 	  //	  p0 = t0man.GetParam0(plid,wireid);
 	  //	  p1 = t0man.GetParam1(plid,wireid);
 	  //	  double drift_time = - (m_tdc[i][j] * p1) - p0;
 	  double drift_time;
-	  t0man.GetTime(plid, wireid, m_tdc[i][j], drift_time);
-	  m_dtime[i].push_back(drift_time);
+	  t0man.GetTime(layer, wireid, m_tdc[plane][j], drift_time);
+	  m_dtime[plane].push_back(drift_time);
 	}
     }
 #if DEBUG
-  std::cout<<"///// Drift Time /////"<<std::endl;
+  std::cout<<"///// Drift Time (DetectorID="<<DetectorID<<")/////"<<std::endl;
   for(unsigned int i=0;i<m_dtime.size();++i)
     {
       std::cout<<"[ ";
@@ -775,23 +996,31 @@ void DCRHC::makeDriftLength( int DetectorID )
   m_dlength.clear();
   m_dlength.resize(m_hitwire.size());
   double drift_length,t;
-  for(unsigned int i=0;i<m_dtime.size();++i,++plid)
+  for(unsigned int plane=0;plane<m_dtime.size();++plane)
     {
-      for(unsigned int j=0;j<m_dtime[i].size();++j)
+      int layer = 0;
+      if(DetectorID==DetIdBcOutSdcIn){
+	if(plane<NumOfLayersBcOut) layer = 113+plane;
+	else layer = 1+plane-NumOfLayersBcOut;
+      }
+      else{
+	layer = plid+plane;
+      }
+      for(unsigned int j=0;j<m_dtime[plane].size();++j)
 	{
 	  if(DetectorID==DetIdSsd){
-	    m_dlength[i].push_back(0);
+	    m_dlength[plane].push_back(0);
 	    continue;
 	  }
-	  int wireid = m_hitwire[i][j];
+	  int wireid = m_hitwire[plane][j];
 	  double dt;
-	  t = m_dtime[i][j];
-	  driftman.CalcDrift(plid, wireid, t, dt, drift_length);
-	  m_dlength[i].push_back(drift_length);
+	  t = m_dtime[plane][j];
+	  driftman.CalcDrift(layer, wireid, t, dt, drift_length);
+	  m_dlength[plane].push_back(drift_length);
 	}
     }
 #if DEBUG
-  std::cout<<"///// Drift Length /////"<<std::endl;
+  std::cout<<"///// Drift Length (DetectorID="<<DetectorID<<")/////"<<std::endl;
   for(unsigned int i=0;i<m_dlength.size();++i)
     {
       std::cout<<"[ ";
@@ -838,7 +1067,7 @@ std::vector<double> DCRHC::resolveLR( double left1,double right1,
 void DCRHC::ReHitPosition( int DetectorID )
 {
   if(DetectorID==DetIdSsd) return;
-  if(DetectorID==DetIdBcOut || DetectorID==DetIdSdcIn)
+  if(DetectorID==DetIdBcOut || DetectorID==DetIdSdcIn || DetectorID==DetIdBcOutSdcIn)
     {
       for(unsigned int i=0;i<m_hitpos.size()/2;++i)
 	{
@@ -870,7 +1099,7 @@ void DCRHC::ReHitPosition( int DetectorID )
 	}
     }
 #if DEBUG
-  std::cout<<"/////// ReCalc Hit Position /////////"<<std::endl;
+  std::cout<<"/////// ReCalc Hit Position (DetectorID="<<DetectorID<<")/////////"<<std::endl;
   for(unsigned int i=0;i<m_hitpos.size();++i)
     {
       std::cout<<"[ ";

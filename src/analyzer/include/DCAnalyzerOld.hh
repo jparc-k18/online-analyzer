@@ -61,11 +61,13 @@ public:
   void init_SdcIn( void );
   void init_SdcOut( void );
   void init_Ssd( void );
+  void init_BcOutSdcIn( void );
   void pushback( int DetectorID );
   void pushback_BcOut( void );
   void pushback_SdcIn( void );
   void pushback_SdcOut( void );
   void pushback_Ssd( void );
+  void pushback_BcOutSdcIn( void );
   void ReHitPosition( int DetectorID );
   void SetGeomBcOut( std::vector<double> & wo,
 		     std::vector<double> & pit,

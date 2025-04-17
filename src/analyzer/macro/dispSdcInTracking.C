@@ -16,7 +16,7 @@ void dispSdcInTracking( void )
       "VP1", "VP2", "VP3", "VP4"
     };
 
-  Double_t SS_size[2] = {500./2, 240./2}; // Sieve-Slit size {X, Y}
+  Double_t SS_size[2] = {800./2, 240./2}; // Sieve-Slit size {X, Y}
 
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
@@ -60,7 +60,7 @@ void dispSdcInTracking( void )
       h->SetStats(0);
       h->Draw();
 
-      if( VPs[i]=="VP2" || VPs[i]=="VP4" ){
+      if( VPs[i]=="VP4" ){
 	TBox *box = new TBox(-SS_size[0], -SS_size[1], SS_size[0], SS_size[1]);
 	box->SetLineColor(kRed);
 	box->SetLineStyle(1);

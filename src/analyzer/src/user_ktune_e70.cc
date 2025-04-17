@@ -306,7 +306,7 @@ process_begin( const std::vector<std::string>& argv )
     for(int i = 0; i<VPs.size(); ++i){
       char* title = Form("%s %s_X", nameSubDir, VPs.at(i).Data());
       sub_dir->Add(gHist.createTH1(unique_id++, title,
-    				    600,-300,300,
+    				    1000,-500,500,
     				    "x position [mm]", ""));
     }
     // Profile Y
@@ -320,7 +320,7 @@ process_begin( const std::vector<std::string>& argv )
     for(int i = 0; i<VPs.size(); ++i){
       char* title = Form("%s %s_XY", nameSubDir, VPs.at(i).Data());
       sub_dir->Add(gHist.createTH2(unique_id++, title,
-    				   600,-300,300, 300,-150,150,
+    				   1000,-500,500, 300,-150,150,
     				   "x position [mm]", "y position [mm]"));
     }
 
@@ -328,7 +328,7 @@ process_begin( const std::vector<std::string>& argv )
     for(int i = 0; i<VPs.size(); ++i){
       char* title = Form("%s %s_X kaon", nameSubDir, VPs.at(i).Data());
       sub_dir->Add(gHist.createTH1(unique_id++, title,
-    				    600,-300,300,
+    				    1000,-500,500,
     				    "x position [mm]", ""));
     }
     // Profile Y kaon
@@ -367,7 +367,7 @@ process_begin( const std::vector<std::string>& argv )
     for(int i = 0; i<VPs.size(); ++i){
       char* title = Form("%s %s_X", nameSubDir, VPs.at(i).Data());
       sub_dir->Add(gHist.createTH1(unique_id++, title,
-    				    600,-300,300,
+    				    1000,-500,500,
     				    "x position [mm]", ""));
     }
     // Profile Y
@@ -381,7 +381,7 @@ process_begin( const std::vector<std::string>& argv )
     for(int i = 0; i<VPs.size(); ++i){
       char* title = Form("%s %s_XY", nameSubDir, VPs.at(i).Data());
       sub_dir->Add(gHist.createTH2(unique_id++, title,
-    				   600,-300,300, 300,-150,150,
+    				   1000,-500,500, 300,-150,150,
     				   "x position [mm]", "y position [mm]"));
     }
 
@@ -389,7 +389,7 @@ process_begin( const std::vector<std::string>& argv )
     for(int i = 0; i<VPs.size(); ++i){
       char* title = Form("%s %s_X kaon", nameSubDir, VPs.at(i).Data());
       sub_dir->Add(gHist.createTH1(unique_id++, title,
-    				    600,-300,300,
+    				    1000,-500,500,
     				    "x position [mm]", ""));
     }
     // Profile Y kaon

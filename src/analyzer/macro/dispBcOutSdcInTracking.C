@@ -73,7 +73,7 @@ void dispBcOutSdcInTracking( void )
       h->SetStats(0);
       h->Draw();
 
-      if( VPs[i]=="VP2" || VPs[i]=="VP4" ){
+      if( VPs[i]=="VP4" ){
 	TBox *box = new TBox(-SS_size[0], -SS_size[1], SS_size[0], SS_size[1]);
 	box->SetLineColor(kRed);
 	box->SetLineStyle(1);

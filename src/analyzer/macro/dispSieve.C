@@ -14,6 +14,8 @@ void dispSieve()
   Updater::setUpdating(true);
   // ----------------------------------
   //
+  static const unsigned int tdc_min = gUser.GetParameter("TdcSieve", 0);
+  static const unsigned int tdc_max = gUser.GetParameter("TdcSieve", 1);
 
   {
     TCanvas *c1 = (TCanvas*)gROOT->FindObject("c1");
@@ -28,7 +30,7 @@ void dispSieve()
       c1->cd( ++icanvas );
       h = (TH1*)GHist::get( HistMaker::getUniqueID(kTOFC, 0, kTDC, LR+1) );
       if( h ){
-	h->GetXaxis()->SetRangeUser(0,200000);
+	h->GetXaxis()->SetRangeUser(tdc_min,tdc_max);
 	h->Draw();
       }
     }

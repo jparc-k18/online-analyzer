@@ -7943,7 +7943,7 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 	    title = Form("%s_%s_%dD", nameSubDetector, nameSubSubDir, seg);
 	  }
 	  subSub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
-				    5000, 0, 50000,
+				    5000, 0, 200000,
 				    "TOT [ch]", ""));
 	}
       }

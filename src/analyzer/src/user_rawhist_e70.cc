@@ -129,6 +129,8 @@ namespace analyzer
     tab_macro->Add(macro::Get("dispBH2_MTHR_Fit"));
     tab_macro->Add(macro::Get("dispDAQ"));
     tab_macro->Add(macro::Get("dispParaBGO"));
+    tab_macro->Add(macro::Get("dispSieve"));
+
     //  tab_macro->Add(macro::Get("dispAcEfficiency"));
 
 
@@ -430,24 +432,28 @@ namespace analyzer
 		adc = gUnpacker.get(device_id_adc, 0, seg, ud, adc_id);
 		hptr_array[adc_hid + i + ud*NumOfSegParaTOFC]->Fill(adc);
 	      }
-	      // UInt_t tdc_prev = 0;
-	      // Bool_t is_in_range = false;
-	      // // TDC
-	      // for(Int_t m=0, n=gUnpacker.get_entries(device_id, 0, i, ud, leading_id);
-	      // 	  m<n; ++m) {
-	      // 	auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
-	      // 	// auto tdc_t = gUnpacker.get(device_id, 0, i, ud, trailing_id, m);
-	      // 	// auto tot = tdc - tdc_t;
-	      // 	// if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
-	      // 	//   continue;
-	      // 	tdc_prev = tdc;
-	      // 	hptr_array[tdc_hid + ud*NumOfSegParaTOFC + i ]->Fill(tdc);
-	      // 	// hptr_array[tot_hid + ud*NumOfSegParaTOFC + i ]->Fill(tot);
-	      // 	// hptr_array[qdcvstot_hid + ud*NumOfSegParaTOFC + i ]->Fill(adc,tot);
-	      // 	if (tdc_min < tdc && tdc < tdc_max) {
-	      // 	  is_in_range = true;
-	      // 	}
-	      // }
+	      UInt_t tdc_prev = 0;
+	      Bool_t is_in_range = false;
+
+	      // TDC
+	      Int_t nhit_l=gUnpacker.get_entries(device_id, 0, i, ud, leading_id);
+	      Int_t nhit_t=gUnpacker.get_entries(device_id, 0, i, ud, trailing_id);
+	      if(nhit_l == nhit_t ){
+		for(Int_t m=0; m<nhit_l; ++m) {
+		  auto tdc = gUnpacker.get(device_id, 0, i, ud, leading_id, m);
+		  auto tdc_t = gUnpacker.get(device_id, 0, i, ud, trailing_id, m);
+		  auto tot = tdc - tdc_t;
+		  // if (tdc_prev == tdc || tdc <= 0 || tot <= 0)
+		  //   continue;
+		  tdc_prev = tdc;
+		  hptr_array[tdc_hid + ud*NumOfSegParaTOFC + i ]->Fill(tdc);
+		  hptr_array[tot_hid + ud*NumOfSegParaTOFC + i ]->Fill(tot);
+		  // hptr_array[qdcvstot_hid + ud*NumOfSegParaTOFC + i ]->Fill(adc,tot);
+		  if (tdc_min < tdc && tdc < tdc_max) {
+		    is_in_range = true;
+		  }
+		}
+	      }
 	    }
 	  }
 	}

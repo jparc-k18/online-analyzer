@@ -16,7 +16,7 @@ void dispBcOutSdcInTracking( void )
       "VP1", "VP2", "VP3", "VP4"
     };
 
-  Double_t SS_size[2] = {500./2, 240./2}; // Sieve-Slit size {X, Y}
+  Double_t SS_size[2] = {800./2, 240./2}; // Sieve-Slit size {X, Y}
 
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");

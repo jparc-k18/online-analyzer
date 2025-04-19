@@ -414,11 +414,14 @@ namespace analyzer
 	  static const auto adc_id = gUnpacker.get_data_id("TOF", "adc");
 	  static const auto leading_id = gUnpacker.get_data_id("ParaTOFComp", "tdc");
 	  static const auto trailing_id = gUnpacker.get_data_id("ParaTOFComp", "trailing");
-	  static const auto tdc_min = gUser.GetParameter("TdcTOFC", 0);
-	  static const auto tdc_max = gUser.GetParameter("TdcTOFC", 1);
+	  //	  static const auto tdc_min = gUser.GetParameter("TdcTOFC", 0);
+	  //	  static const auto tdc_max = gUser.GetParameter("TdcTOFC", 1);
+	  static const auto tdc_min = gUser.GetParameter("TdcSieve", 0);
+	  static const auto tdc_max = gUser.GetParameter("TdcSieve", 1);
 	  static const auto segOrgTOFC = gUser.GetParameter("SegOrgTOFC", 0);
 	  static const auto tdc_hid = gHist.getSequentialID(kTOFC, 0, kTDC);
 	  static const auto tot_hid = gHist.getSequentialID(kTOFC, 0, kTOT);
+	  static const auto awt_hid = gHist.getSequentialID(kTOFC, 0, kADCwTDC);
 	  static const auto adc_hid = gHist.getSequentialID(kTOFC, 0, kADC);
 	  static const auto qdcvstot_hid = gHist.getSequentialID(kTOFC, 0, kQDCvsTOT);
 	  //	std::cout << "debug " << __LINE__ << std::endl;
@@ -451,6 +454,7 @@ namespace analyzer
 		  // hptr_array[qdcvstot_hid + ud*NumOfSegParaTOFC + i ]->Fill(adc,tot);
 		  if (tdc_min < tdc && tdc < tdc_max) {
 		    is_in_range = true;
+		    hptr_array[awt_hid + ud*NumOfSegParaTOFC + i ]->Fill(tot);
 		  }
 		}
 	      }

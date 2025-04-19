@@ -44,6 +44,12 @@ void dispSieve()
 	h->GetXaxis()->SetRangeUser(0,100000);
 	h->Draw();
       }
+      h = (TH1*)GHist::get( HistMaker::getUniqueID(kTOFC, 0, kADCwTDC, LR+1) );
+      if( h ){
+	h->GetXaxis()->SetRangeUser(0,100000);
+	h->SetLineColor(kRed);
+	h->Draw("same");
+      }
     }
     c1->Update();
   }

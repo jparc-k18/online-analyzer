@@ -7996,6 +7996,32 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
       }
       sub_dir->Add(subSub_dir);
     }
+    { // TOTwTDC ---------------------------------------------------------
+      TString strSubSubDir  = CONV_STRING(kTOTwTDC);
+      const char* nameSubSubDir = strSubSubDir.Data();
+      TList *subSub_dir = new TList;
+      subSub_dir->SetName(nameSubSubDir);
+      {
+	Int_t target_id = getUniqueID(kTOFC, 0, kADCwTDC, 0);
+	// parasite tof comparator (2seg)
+	for(Int_t i = 0; i<NumOfSegParaTOFC*2; ++i){
+	  TString strSubDet  = CONV_STRING(kParaTOFC);
+	  const char* nameSubDetector = strSubDet.Data();
+	  const char* title = NULL;
+	  if(i < NumOfSegParaTOFC){
+	    Int_t seg = i+1; // 1 origin
+	    title = Form("%s_%s_%dU", nameSubDetector, nameSubSubDir, seg);
+	  } else {
+	    Int_t seg = i+1-NumOfSegParaTOFC; // 1 origin
+	    title = Form("%s_%s_%dD", nameSubDetector, nameSubSubDir, seg);
+	  }
+	  subSub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+				    5000, 0, 200000,
+				    "TOT [ch]", ""));
+	}
+      }
+      sub_dir->Add(subSub_dir);
+    }
     // QDCvsTOT ---------------------------------------------------------
     {
       // Declaration of the sub-directory

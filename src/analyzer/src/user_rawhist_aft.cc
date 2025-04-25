@@ -461,10 +461,16 @@ process_event( void )
 		  }
 		}
 
-		if(l%4 == 0 || l%4 == 1)
+		if(l%4 == 0 || l%4 == 1){
 		  hptr_array[aft_tot_id+kUorD*NumOfPlaneAFT + ud + 0]->Fill(tot);
-		if(l%4 == 2 || l%4 == 3)
+		  if(flag_hit_wt[seg][ud] && flag_hit_wa[seg][ud])
+		    hptr_array[aft_ctot_id+kUorD*NumOfPlaneAFT + ud + 0]->Fill(tot);
+		}
+		if(l%4 == 2 || l%4 == 3){
 		  hptr_array[aft_tot_id+kUorD*NumOfPlaneAFT + ud + 2]->Fill(tot);
+		  if(flag_hit_wt[seg][ud] && flag_hit_wa[seg][ud])
+		    hptr_array[aft_ctot_id+kUorD*NumOfPlaneAFT + ud + 2]->Fill(tot);
+		}
 
 		if(tdc_min < tdc && tdc < tdc_max){
 		  // tot w/ TDC cut

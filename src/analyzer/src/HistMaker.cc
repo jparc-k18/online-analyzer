@@ -1750,54 +1750,66 @@ TList* HistMaker::createAFT( Bool_t flag_ps )
     top_dir->Add(sub_dir);
   }
 
-  // TOT---------------------------------------------------------
-  {
+  { // TOT---------------------------------------------------------
     TString strSubDir  = CONV_STRING(kTOT);
     const char* nameSubDir = strSubDir.Data();
     TList *sub_dir = new TList;
     sub_dir->SetName(nameSubDir);
 
-    Int_t target_id = getUniqueID(kAFT, 0, kTOT, 0);
-    const char* sub_name = "TOT";
-    // Add to the top directory
-    for(Int_t ud=0; ud<2; ud++){
-      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
-    	const char* title = NULL;
-	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+    { // TOT---------------------------------------------------------
+      Int_t target_id = getUniqueID(kAFT, 0, kTOT, 0);
+      const char* sub_name = "TOT";
+      // Add to the top directory
+      for(Int_t ud=0; ud<2; ud++){
+	for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+	  const char* title = NULL;
+	  const TString layer_name = NameOfPlaneAFT[i%4];
+	  if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+	  if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
-    	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-    				150, 0, 150,
-    				"TOT [ch]", ""));
+	  sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+				  150, 0, 150,
+				  "TOT [ch]", ""));
+	}
+      }
+
+      // draw TOT for each MPPC vias
+      std::vector<TString> name = {
+	"AFT_TOT_X-U", "AFT_TOT_X-D",
+	"AFT_TOT_Y-U", "AFT_TOT_Y-D"
+      };
+      for(Int_t i=0, n=name.size(); i<n; ++i){
+	sub_dir->Add(createTH1(++target_id, name[i], 200, 0, 200));
       }
     }
 
-    // draw TOT for each MPPC vias
-    std::vector<TString> name = {
-      "AFT_TOT_X-U", "AFT_TOT_X-D",
-      "AFT_TOT_Y-U", "AFT_TOT_Y-D"
-    };
-    for(Int_t i=0, n=name.size(); i<n; ++i){
-      sub_dir->Add(createTH1(++target_id, name[i], 200, 0, 200));
-    }
+    { // CTOT---------------------------------------------------------
+      Int_t target_id = getUniqueID(kAFT, 0, kTOT, 100);
+      const char* sub_name = "CTOT";
+      // Add to the top directory
+      for(Int_t ud=0; ud<2; ud++){
+	for(Int_t i=0; i<NumOfPlaneAFT; ++i){
+	  const char* title = NULL;
+	  const TString layer_name = NameOfPlaneAFT[i%4];
+	  if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+	  if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
 
-  // CTOT---------------------------------------------------------
-    target_id = getUniqueID(kAFT, 0, kTOT, 100);
-    sub_name = "CTOT";
-    // Add to the top directory
-    for(Int_t ud=0; ud<2; ud++){
-      for(Int_t i=0; i<NumOfPlaneAFT; ++i){
-    	const char* title = NULL;
-	const TString layer_name = NameOfPlaneAFT[i%4];
-    	if( ud == 0 ) title = Form("%s_%s_%dU_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
-    	if( ud == 1 ) title = Form("%s_%s_%dD_%s", nameDetector, sub_name, i/4+1, layer_name.Data());
+	  sub_dir->Add(createTH1( ++target_id, title , // 1 origin
+				  150, 0, 150,
+				  "TOT [ch]", ""));
+	}
+      }
 
-    	sub_dir->Add(createTH1( ++target_id, title , // 1 origin
-    				150, 0, 150,
-    				"TOT [ch]", ""));
+      // draw TOT for each MPPC vias
+      std::vector<TString> name = {
+	"AFT_CTOT_X-U", "AFT_CTOT_X-D",
+	"AFT_CTOT_Y-U", "AFT_CTOT_Y-D"
+      };
+      for(Int_t i=0, n=name.size(); i<n; ++i){
+	sub_dir->Add(createTH1(++target_id, name[i], 200, 0, 200));
       }
     }
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }

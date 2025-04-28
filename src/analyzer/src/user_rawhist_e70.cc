@@ -397,6 +397,42 @@ namespace analyzer
 	    ++multihit_hid;
 	  }
 	}
+	{ // SDC3
+	  static const Int_t k_device   = gUnpacker.get_device_id("SDC3");
+	  static const Int_t k_leading  = gUnpacker.get_data_id("SDC3", "leading");
+	  for(Int_t l=0; l<NumOfLayersSDC3; ++l) {
+	    for(Int_t w=0; w<NumOfWireSDC3; ++w) {
+	      Int_t nhit_l = gUnpacker.get_entries(k_device, l, 0, w, k_leading);
+	      hptr_array[multihit_hid]->Fill(w, nhit_l);
+	    }
+	    ++multihit_hid;
+	  }
+	}
+	{ // SDC4
+	  static const Int_t k_device   = gUnpacker.get_device_id("SDC4");
+	  static const Int_t k_leading  = gUnpacker.get_data_id("SDC4", "leading");
+	  for(Int_t l=0; l<NumOfLayersSDC4; ++l) {
+	    for(Int_t w=0; w<NumOfWireSDC4; ++w) {
+	      Int_t nhit_l = gUnpacker.get_entries(k_device, l, 0, w, k_leading);
+	      hptr_array[multihit_hid]->Fill(w, nhit_l);
+	    }
+	    ++multihit_hid;
+	  }
+	}
+	{ // SDC5
+	  static const Int_t k_device   = gUnpacker.get_device_id("SDC5");
+	  static const Int_t k_leading  = gUnpacker.get_data_id("SDC5", "leading");
+	  for(Int_t l=0; l<NumOfLayersSDC5; ++l) {
+	    Int_t sdc5_nwire = 0;
+	    if (l==0 || l==1) sdc5_nwire = NumOfWireSDC5Y;
+	    if (l==2 || l==3) sdc5_nwire = NumOfWireSDC5X;
+	    for(Int_t w=0; w<sdc5_nwire; ++w) {
+	      Int_t nhit_l = gUnpacker.get_entries(k_device, l, 0, w, k_leading);
+	      hptr_array[multihit_hid]->Fill(w, nhit_l);
+	    }
+	    ++multihit_hid;
+	  }
+	}
 	{ // BH2MTLR
 	  static const auto device_id = gUnpacker.get_device_id("BH2MTLR");
 	  static const auto tdc_id = gUnpacker.get_data_id("BH2MTLR", "tdc");

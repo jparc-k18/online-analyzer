@@ -7753,6 +7753,49 @@ TList* HistMaker::createDAQ( Bool_t flag_ps )
 			       "ch", "MultiHitTdc"));
       }
     }
+    { // SDC3
+      const char* name_layer[NumOfLayersSDC3] = { "x0", "x1", "y0", "y1" };
+      TString strDet = CONV_STRING(kSDC3);
+      const char* nameDetector = strDet.Data();
+      // Add to the top directory
+      for(Int_t i=0; i<NumOfLayersSDC3; ++i){
+	const char* title = NULL;
+	title = Form("%s_%s_%s", nameDetector, sub_name, name_layer[i]);
+	sub_dir->Add(createTH2(target_id++, title, // 1 origin
+			       NumOfWireSDC3, 0, NumOfWireSDC3,
+			       20, 0, 20,
+			       "ch", "MultiHitTdc"));
+      }
+    }
+    { // SDC4
+      const char* name_layer[NumOfLayersSDC4] = { "y0", "y1", "x0", "x1" };
+      TString strDet = CONV_STRING(kSDC4);
+      const char* nameDetector = strDet.Data();
+      // Add to the top directory
+      for(Int_t i=0; i<NumOfLayersSDC4; ++i){
+	const char* title = NULL;
+	title = Form("%s_%s_%s", nameDetector, sub_name, name_layer[i]);
+	sub_dir->Add(createTH2(target_id++, title, // 1 origin
+			       NumOfWireSDC4, 0, NumOfWireSDC4,
+			       20, 0, 20,
+			       "ch", "MultiHitTdc"));
+      }
+    }
+    { // SDC5
+      const TString name_layer[NumOfLayersSDC5] = { "y0", "y1", "x0", "x1" };
+      TString strDet = CONV_STRING(kSDC5);
+      const char* nameDetector = strDet.Data();
+      // Add to the top directory
+      for(Int_t i=0; i<NumOfLayersSDC5; ++i){
+	const char* title = NULL;
+	title = Form("%s_%s_%s", nameDetector, sub_name, name_layer[i].Data());
+	Int_t nwire = name_layer[i].Contains('x') ? NumOfWireSDC5X : NumOfWireSDC5Y;
+	sub_dir->Add(createTH2(target_id++, title, // 1 origin
+			       nwire, 0, nwire,
+			       20, 0, 20,
+			       "ch", "MultiHitTdc"));
+      }
+    }
     { // BH2MTLR
       TString strDet = CONV_STRING(kBH2);
       const char* nameDetector = strDet.Data();

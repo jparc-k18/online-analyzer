@@ -7339,11 +7339,41 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
                              NumOfWireSDC3, 0, NumOfWireSDC3,
                              "SDC4 wire", "SDC3 wire" ) );
 
-    // TOF vs SDC4 --------------------------------------------
+    // TOF vs SDC3x0 --------------------------------------------
+    top_dir->Add( createTH2( ++target_id, "TOF_SDC3x0", // 1 origin
+                             NumOfWireSDC3, 0, NumOfWireSDC3,
+                             NumOfSegTOF, 0, NumOfSegTOF,
+                             "SDC3x0 wire", "TOF seg" ) );
+
+    // TOF vs SDC3x1 --------------------------------------------
+    top_dir->Add( createTH2( ++target_id, "TOF_SDC3x1", // 1 origin
+                             NumOfWireSDC3, 0, NumOfWireSDC3,
+                             NumOfSegTOF, 0, NumOfSegTOF,
+                             "SDC3x1 wire", "TOF seg" ) );
+
+    // TOF vs SDC4x0 --------------------------------------------
     top_dir->Add( createTH2( ++target_id, "TOF_SDC4x0", // 1 origin
                              NumOfWireSDC4, 0, NumOfWireSDC4,
                              NumOfSegTOF, 0, NumOfSegTOF,
-                             "SDC4 wire", "TOF seg" ) );
+                             "SDC4x0 wire", "TOF seg" ) );
+
+    // TOF vs SDC4x1 --------------------------------------------
+    top_dir->Add( createTH2( ++target_id, "TOF_SDC4x1", // 1 origin
+                             NumOfWireSDC4, 0, NumOfWireSDC4,
+                             NumOfSegTOF, 0, NumOfSegTOF,
+                             "SDC4x1 wire", "TOF seg" ) );
+
+    // TOF vs SDC5x0 --------------------------------------------
+    top_dir->Add( createTH2( ++target_id, "TOF_SDC5x0", // 1 origin
+                             NumOfWireSDC5X, 0, NumOfWireSDC5X,
+                             NumOfSegTOF, 0, NumOfSegTOF,
+                             "SDC5x0 wire", "TOF seg" ) );
+
+    // TOF vs SDC5x1 --------------------------------------------
+    top_dir->Add( createTH2( ++target_id, "TOF_SDC5x1", // 1 origin
+                             NumOfWireSDC5X, 0, NumOfWireSDC5X,
+                             NumOfSegTOF, 0, NumOfSegTOF,
+                             "SDC5x1 wire", "TOF seg" ) );
 
     // AC1 vs TOF -----------------------------------------------
     top_dir->Add( createTH2( ++target_id, "AC1_TOF", // 1 origin

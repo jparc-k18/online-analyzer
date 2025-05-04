@@ -2536,6 +2536,7 @@ namespace analyzer
       // static const Int_t k_device_sdc2 = gUnpacker.get_device_id("SDC2");
       static const Int_t k_device_sdc3 = gUnpacker.get_device_id("SDC3");
       static const Int_t k_device_sdc4 = gUnpacker.get_device_id("SDC4");
+      static const Int_t k_device_sdc5 = gUnpacker.get_device_id("SDC5");
       static const Int_t k_device_tof = gUnpacker.get_device_id("TOF");
       static const Int_t k_device_ac1 = gUnpacker.get_device_id("AC1");
       static const Int_t k_device_wc = gUnpacker.get_device_id("WC");
@@ -2607,13 +2608,39 @@ namespace analyzer
 	}
       }
 
+      // TOF vs SDC3
+      for( Int_t l=0; l<2; l++ ){
+	TH2* hcor_tofsdc3 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+	for(const auto& seg_tof: hitseg_tof) {
+	  for(Int_t wire=0; wire<NumOfWireSDC3; ++wire) {
+	    Int_t hitSDC3 = gUnpacker.get_entries(k_device_sdc3, l, 0, wire, 0);
+	    if (hitSDC3 == 0) continue;
+	    hcor_tofsdc3->Fill(wire, seg_tof);
+	  }
+	}
+      }
+
       // TOF vs SDC4
-      TH2* hcor_tofsdc4 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
-      for(const auto& seg_tof: hitseg_tof) {
-	for(Int_t wire=0; wire<NumOfWireSDC4X; ++wire) {
-	  Int_t hitSDC4 = gUnpacker.get_entries(k_device_sdc4, 2, 0, wire, 0);
-	  if (hitSDC4 == 0) continue;
-	  hcor_tofsdc4->Fill(wire, seg_tof);
+      for( Int_t l=0; l<2; l++ ){
+	TH2* hcor_tofsdc4 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+	for(const auto& seg_tof: hitseg_tof) {
+	  for(Int_t wire=0; wire<NumOfWireSDC4; ++wire) {
+	    Int_t hitSDC4 = gUnpacker.get_entries(k_device_sdc4, l+2, 0, wire, 0);
+	    if (hitSDC4 == 0) continue;
+	    hcor_tofsdc4->Fill(wire, seg_tof);
+	  }
+	}
+      }
+
+      // TOF vs SDC5
+      for( Int_t l=0; l<2; l++ ){
+	TH2* hcor_tofsdc5 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+	for(const auto& seg_tof: hitseg_tof) {
+	  for(Int_t wire=0; wire<NumOfWireSDC5X; ++wire) {
+	    Int_t hitSDC5 = gUnpacker.get_entries(k_device_sdc5, l+2, 0, wire, 0);
+	    if (hitSDC5 == 0) continue;
+	    hcor_tofsdc5->Fill(wire, seg_tof);
+	  }
 	}
       }
 

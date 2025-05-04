@@ -7433,6 +7433,111 @@ TList* HistMaker::createCorrelation( Bool_t flag_ps )
     }
   }
 
+  { // DC Correlation
+    Int_t target_id = getUniqueID( kCorrelation, 3, 0, 0 );
+
+    { //BC3 vs BC3x0
+      std::string layer_name[NumOfLayersBC3] = {"x0", "x1", "v0", "v1", "u0", "u1"};
+      for(Int_t l = 0; l<NumOfLayersBC3-1; ++l){
+	top_dir->Add( createTH2( ++target_id,
+				 Form("DCCor_BC3%s_BC3x0", layer_name[l+1].c_str()),
+				 NumOfWireBC3, 0, NumOfWireBC3,
+				 NumOfWireBC3, 0, NumOfWireBC3,
+				 "BC3x0 wire", Form("BC3%s wire", layer_name[l+1].c_str()) ) );
+      }
+    }
+    { //BC4 vs BC3x0
+      std::string layer_name[NumOfLayersBC4] = {"u0", "u1", "v0", "v1", "x0", "x1"};
+      for(Int_t l = 0; l<NumOfLayersBC4; ++l){
+	top_dir->Add( createTH2( ++target_id,
+				 Form("DCCor_BC4%s_BC3x0", layer_name[l].c_str()),
+				 NumOfWireBC3, 0, NumOfWireBC3,
+				 NumOfWireBC4, 0, NumOfWireBC4,
+				 "BC3x0 wire", Form("BC4%s wire", layer_name[l].c_str()) ) );
+      }
+    }
+    { //SDC1 vs SDC1u0
+      std::string layer_name[NumOfLayersSDC1] = {"u0", "u1", "x0", "x1", "v0", "v1"};
+      for(Int_t l = 0; l<NumOfLayersSDC1-1; ++l){
+	top_dir->Add( createTH2( ++target_id,
+				 Form("DCCor_SDC1%s_SDC1u0", layer_name[l+1].c_str()),
+				 NumOfWireSDC1, 0, NumOfWireSDC1,
+				 NumOfWireSDC1, 0, NumOfWireSDC1,
+				 "SDC1u0 wire", Form("SDC1%s wire", layer_name[l+1].c_str()) ) );
+      }
+    }
+    { //SDC2 vs SDC1u0
+      std::string layer_name[NumOfLayersSDC2] = {"v0", "v1", "u0", "u1"};
+      for(Int_t l = 0; l<NumOfLayersSDC2; ++l){
+	top_dir->Add( createTH2( ++target_id,
+				 Form("DCCor_SDC2%s_SDC1u0", layer_name[l].c_str()),
+				 NumOfWireSDC1, 0, NumOfWireSDC1,
+				 NumOfWireSDC2, 0, NumOfWireSDC2,
+				 "SDC1u0 wire", Form("SDC2%s wire", layer_name[l].c_str()) ) );
+      }
+    }
+    { //SDC3x1 vs SDC3x0
+      std::string layer_name[NumOfLayersSDC3/2] = {"SDC3x0", "SDC3x1"};
+      for(Int_t l = 0; l<NumOfLayersSDC3/2-1; ++l){
+	top_dir->Add( createTH2( ++target_id,
+				 Form("DCCor_%s_SDC3x0", layer_name[l+1].c_str()),
+				 NumOfWireSDC3, 0, NumOfWireSDC3,
+				 NumOfWireSDC3, 0, NumOfWireSDC3,
+				 "SDC3x0 wire", Form("%s wire", layer_name[l+1].c_str()) ) );
+      }
+    }
+    { //SDC4x vs SDC3x0
+      std::string layer_name[NumOfLayersSDC4/2] = {"SDC4x0", "SDC4x1"};
+      for(Int_t l = 0; l<NumOfLayersSDC4/2; ++l){
+	top_dir->Add( createTH2( ++target_id,
+				 Form("DCCor_%s_SDC3x0", layer_name[l].c_str()),
+				 NumOfWireSDC3, 0, NumOfWireSDC3,
+				 NumOfWireSDC4, 0, NumOfWireSDC4,
+				 "SDC3x0 wire", Form("%s wire", layer_name[l].c_str()) ) );
+      }
+    }
+    { //SDC5x vs SDC3x0
+      std::string layer_name[NumOfLayersSDC5/2] = {"SDC5x0", "SDC5x1"};
+      for(Int_t l = 0; l<NumOfLayersSDC5/2; ++l){
+	top_dir->Add( createTH2( ++target_id,
+				 Form("DCCor_%s_SDC3x0", layer_name[l].c_str()),
+				 NumOfWireSDC3, 0, NumOfWireSDC3,
+				 NumOfWireSDC5X, 0, NumOfWireSDC5X,
+				 "SDC3x0 wire", Form("%s wire", layer_name[l].c_str()) ) );
+      }
+    }
+    { //SDC3y1 vs SDC3y0
+      std::string layer_name[NumOfLayersSDC3/2] = {"SDC3y0", "SDC3y1"};
+      for(Int_t l = 0; l<NumOfLayersSDC3/2-1; ++l){
+	top_dir->Add( createTH2( ++target_id,
+				 Form("DCCor_%s_SDC3y0", layer_name[l+1].c_str()),
+				 NumOfWireSDC3, 0, NumOfWireSDC3,
+				 NumOfWireSDC3, 0, NumOfWireSDC3,
+				 "SDC3y0 wire", Form("%s wire", layer_name[l+1].c_str()) ) );
+      }
+    }
+    { //SDC4y vs SDC3y0
+      std::string layer_name[NumOfLayersSDC4/2] = {"SDC4y0", "SDC4y1"};
+      for(Int_t l = 0; l<NumOfLayersSDC4/2; ++l){
+	top_dir->Add( createTH2( ++target_id,
+				 Form("DCCor_%s_SDC3y0", layer_name[l].c_str()),
+				 NumOfWireSDC3, 0, NumOfWireSDC3,
+				 NumOfWireSDC4, 0, NumOfWireSDC4,
+				 "SDC3y0 wire", Form("%s wire", layer_name[l].c_str()) ) );
+      }
+    }
+    { //SDC5y vs SDC3y0
+      std::string layer_name[NumOfLayersSDC5/2] = {"SDC5y0", "SDC5y1"};
+      for(Int_t l = 0; l<NumOfLayersSDC5/2; ++l){
+	top_dir->Add( createTH2( ++target_id,
+				 Form("DCCor_%s_SDC3y0", layer_name[l].c_str()),
+				 NumOfWireSDC3, 0, NumOfWireSDC3,
+				 NumOfWireSDC5Y, 0, NumOfWireSDC5Y,
+				 "SDC3y0 wire", Form("%s wire", layer_name[l].c_str()) ) );
+      }
+    }
+  }
+
   return top_dir;
 }
 /*

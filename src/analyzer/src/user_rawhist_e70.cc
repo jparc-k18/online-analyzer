@@ -2533,7 +2533,7 @@ namespace analyzer
       static const Int_t k_device_bc3  = gUnpacker.get_device_id("BC3");
       static const Int_t k_device_bc4  = gUnpacker.get_device_id("BC4");
       static const Int_t k_device_sdc1 = gUnpacker.get_device_id("SDC1");
-      // static const Int_t k_device_sdc2 = gUnpacker.get_device_id("SDC2");
+      static const Int_t k_device_sdc2 = gUnpacker.get_device_id("SDC2");
       static const Int_t k_device_sdc3 = gUnpacker.get_device_id("SDC3");
       static const Int_t k_device_sdc4 = gUnpacker.get_device_id("SDC4");
       static const Int_t k_device_sdc5 = gUnpacker.get_device_id("SDC5");
@@ -2545,6 +2545,7 @@ namespace analyzer
       Int_t cor_id = gHist.getSequentialID(kCorrelation, 0, 0, 1);
       Int_t mtx2d_id = gHist.getSequentialID(kCorrelation, 1, 0, 1);
       Int_t mtx3d_id = gHist.getSequentialID(kCorrelation, 2, 0, 1);
+      Int_t dccor_id = gHist.getSequentialID(kCorrelation, 3, 0, 1);
 
       // BH1 vs BFT
       TH2* hcor_bh1bft = dynamic_cast<TH2*>(hptr_array[cor_id++]);
@@ -2688,6 +2689,129 @@ namespace analyzer
 	  }
 	}
       }
+
+      // DC Correlation
+      // BC3 vs BC3x0
+      for(Int_t l = 0; l<NumOfLayersBC3-1; ++l){
+	TH2* hcor_bc3bc3x0 = dynamic_cast<TH2*>(hptr_array[dccor_id++]);
+	for(Int_t wire1 = 0; wire1<NumOfWireBC3; ++wire1) {
+	  for(Int_t wire2 = 0; wire2<NumOfWireBC3; ++wire2) {
+	    Int_t hitBC3x0 = gUnpacker.get_entries(k_device_bc3, 0, 0, wire1, 0);
+	    Int_t hitBC3 = gUnpacker.get_entries(k_device_bc3, l+1, 0, wire2, 0);
+	    if (hitBC3x0 == 0 || hitBC3 == 0)continue;
+	    hcor_bc3bc3x0->Fill(wire1, wire2);
+	  }
+	}
+      }//for
+      // BC4 vs BC3x0
+      for(Int_t l = 0; l<NumOfLayersBC4; ++l){
+	TH2* hcor_bc4bc3x0 = dynamic_cast<TH2*>(hptr_array[dccor_id++]);
+	for(Int_t wire1 = 0; wire1<NumOfWireBC3; ++wire1) {
+	  for(Int_t wire2 = 0; wire2<NumOfWireBC4; ++wire2) {
+	    Int_t hitBC3x0 = gUnpacker.get_entries(k_device_bc3, 0, 0, wire1, 0);
+	    Int_t hitBC4 = gUnpacker.get_entries(k_device_bc4, l, 0, wire2, 0);
+	    if (hitBC3x0 == 0 || hitBC4 == 0)continue;
+	    hcor_bc4bc3x0->Fill(wire1, wire2);
+	  }
+	}
+      }//for
+      // SDC1 vs SDC1u0
+      for(Int_t l = 0; l<NumOfLayersSDC1-1; ++l){
+	TH2* hcor_sdc1sdc1u0 = dynamic_cast<TH2*>(hptr_array[dccor_id++]);
+	for(Int_t wire1 = 0; wire1<NumOfWireSDC1; ++wire1) {
+	  for(Int_t wire2 = 0; wire2<NumOfWireSDC1; ++wire2) {
+	    Int_t hitSDC1u0 = gUnpacker.get_entries(k_device_sdc1, 0, 0, wire1, 0);
+	    Int_t hitSDC1 = gUnpacker.get_entries(k_device_sdc1, l+1, 0, wire2, 0);
+	    if (hitSDC1u0 == 0 || hitSDC1 == 0)continue;
+	    hcor_sdc1sdc1u0->Fill(wire1, wire2);
+	  }
+	}
+      }//for
+      // SDC2 vs SDC1u0
+      for(Int_t l = 0; l<NumOfLayersSDC2; ++l){
+	TH2* hcor_sdc2sdc1u0 = dynamic_cast<TH2*>(hptr_array[dccor_id++]);
+	for(Int_t wire1 = 0; wire1<NumOfWireSDC1; ++wire1) {
+	  for(Int_t wire2 = 0; wire2<NumOfWireSDC2; ++wire2) {
+	    Int_t hitSDC1u0 = gUnpacker.get_entries(k_device_sdc1, 0, 0, wire1, 0);
+	    Int_t hitSDC2 = gUnpacker.get_entries(k_device_sdc2, l, 0, wire2, 0);
+	    if (hitSDC1u0 == 0 || hitSDC2 == 0)continue;
+	    hcor_sdc2sdc1u0->Fill(wire1, wire2);
+	  }
+	}
+      }//for
+      // SDC3x1 vs SDC3x0
+      for(Int_t l = 0; l<NumOfLayersSDC3/2-1; ++l){
+	TH2* hcor_sdc3x1sdc3x0 = dynamic_cast<TH2*>(hptr_array[dccor_id++]);
+	for(Int_t wire1 = 0; wire1<NumOfWireSDC3; ++wire1) {
+	  for(Int_t wire2 = 0; wire2<NumOfWireSDC3; ++wire2) {
+	    Int_t hitSDC3x0 = gUnpacker.get_entries(k_device_sdc3, 0, 0, wire1, 0);
+	    Int_t hitSDC3x1 = gUnpacker.get_entries(k_device_sdc3, l+1, 0, wire2, 0);
+	    if (hitSDC3x0 == 0 || hitSDC3x1 == 0)continue;
+	    hcor_sdc3x1sdc3x0->Fill(wire1, wire2);
+	  }
+	}
+      }//for
+      // SDC4x vs SDC3x0
+      for(Int_t l = 0; l<NumOfLayersSDC4/2; ++l){
+	TH2* hcor_sdc4xsdc3x0 = dynamic_cast<TH2*>(hptr_array[dccor_id++]);
+	for(Int_t wire1 = 0; wire1<NumOfWireSDC3; ++wire1) {
+	  for(Int_t wire2 = 0; wire2<NumOfWireSDC4; ++wire2) {
+	    Int_t hitSDC3x0 = gUnpacker.get_entries(k_device_sdc3, 0, 0, wire1, 0);
+	    Int_t hitSDC4x = gUnpacker.get_entries(k_device_sdc4, l+2, 0, wire2, 0);
+	    if (hitSDC3x0 == 0 || hitSDC4x == 0)continue;
+	    hcor_sdc4xsdc3x0->Fill(wire1, wire2);
+	  }
+	}
+      }//for
+      // SDC5x vs SDC3x0
+      for(Int_t l = 0; l<NumOfLayersSDC5/2; ++l){
+	TH2* hcor_sdc5xsdc3x0 = dynamic_cast<TH2*>(hptr_array[dccor_id++]);
+	for(Int_t wire1 = 0; wire1<NumOfWireSDC3; ++wire1) {
+	  for(Int_t wire2 = 0; wire2<NumOfWireSDC5X; ++wire2) {
+	    Int_t hitSDC3x0 = gUnpacker.get_entries(k_device_sdc3, 0, 0, wire1, 0);
+	    Int_t hitSDC5x = gUnpacker.get_entries(k_device_sdc5, l+2, 0, wire2, 0);
+	    if (hitSDC3x0 == 0 || hitSDC5x == 0)continue;
+	    hcor_sdc5xsdc3x0->Fill(wire1, wire2);
+	  }
+	}
+      }//for
+      // SDC3y1 vs SDC3y0
+      for(Int_t l = 0; l<NumOfLayersSDC3/2-1; ++l){
+	TH2* hcor_sdc3y1sdc3y0 = dynamic_cast<TH2*>(hptr_array[dccor_id++]);
+	for(Int_t wire1 = 0; wire1<NumOfWireSDC3; ++wire1) {
+	  for(Int_t wire2 = 0; wire2<NumOfWireSDC3; ++wire2) {
+	    Int_t hitSDC3y0 = gUnpacker.get_entries(k_device_sdc3, 2, 0, wire1, 0);
+	    Int_t hitSDC3y1 = gUnpacker.get_entries(k_device_sdc3, 3, 0, wire2, 0);
+	    if (hitSDC3y0 == 0 || hitSDC3y1 == 0)continue;
+	    hcor_sdc3y1sdc3y0->Fill(wire1, wire2);
+	  }
+	}
+      }//for
+      // SDC4y vs SDC3y0
+      for(Int_t l = 0; l<NumOfLayersSDC4/2; ++l){
+	TH2* hcor_sdc4ysdc3y0 = dynamic_cast<TH2*>(hptr_array[dccor_id++]);
+	for(Int_t wire1 = 0; wire1<NumOfWireSDC3; ++wire1) {
+	  for(Int_t wire2 = 0; wire2<NumOfWireSDC4; ++wire2) {
+	    Int_t hitSDC3y0 = gUnpacker.get_entries(k_device_sdc3, 2, 0, wire1, 0);
+	    Int_t hitSDC4y = gUnpacker.get_entries(k_device_sdc4, l, 0, wire2, 0);
+	    if (hitSDC3y0 == 0 || hitSDC4y == 0)continue;
+	    hcor_sdc4ysdc3y0->Fill(wire1, wire2);
+	  }
+	}
+      }//for
+      // SDC5y vs SDC3y0
+      for(Int_t l = 0; l<NumOfLayersSDC5/2; ++l){
+	TH2* hcor_sdc5ysdc3y0 = dynamic_cast<TH2*>(hptr_array[dccor_id++]);
+	for(Int_t wire1 = 0; wire1<NumOfWireSDC3; ++wire1) {
+	  for(Int_t wire2 = 0; wire2<NumOfWireSDC5Y; ++wire2) {
+	    Int_t hitSDC3y0 = gUnpacker.get_entries(k_device_sdc3, 2, 0, wire1, 0);
+	    Int_t hitSDC5y = gUnpacker.get_entries(k_device_sdc5, l, 0, wire2, 0);
+	    if (hitSDC3y0 == 0 || hitSDC5y == 0)continue;
+	    hcor_sdc5ysdc3y0->Fill(wire1, wire2);
+	  }
+	}
+      }//for
+
     }
 
 #if DEBUG

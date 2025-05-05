@@ -2603,7 +2603,7 @@ namespace analyzer
       for(Int_t wire3 = 0; wire3<NumOfWireSDC3; ++wire3) {
 	for(Int_t wire4 = 0; wire4<NumOfWireSDC4; ++wire4) {
 	  Int_t hitSDC3 = gUnpacker.get_entries(k_device_sdc3, 0, 0, wire3, 0);
-	  Int_t hitSDC4 = gUnpacker.get_entries(k_device_sdc4, 0, 0, wire4, 0);
+	  Int_t hitSDC4 = gUnpacker.get_entries(k_device_sdc4, 2, 0, wire4, 0);
 	  if (hitSDC3 == 0 || hitSDC4 == 0) continue;
 	  hcor_sdc3sdc4->Fill(wire3, wire4);
 	}

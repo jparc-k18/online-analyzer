@@ -67,11 +67,11 @@ void effSdcInOut( void )
       double eff_wt_ctot      = 1. - (double)Nof0_wt_ctot/NofTotal_wt_ctot;
 
       double xpos  = h_wt->GetXaxis()->GetBinCenter(h_wt->GetNbinsX())*0.3;
-      double ypos  = h_wt->GetMaximum()*0.8;
+      double ypos  = h_wt->GetMaximum()*0.2;
       TLatex *text = new TLatex(xpos, ypos, Form("plane eff.\n %.4f(%.4f)", eff, eff_wt));
       text->SetTextSize(0.08);
       text->Draw();
-      double ypos_ctot  = 500;
+      double ypos_ctot  = h_wt_ctot->GetMaximum()*0.3;
       TLatex *text_ctot = new TLatex(xpos, ypos_ctot, Form("                 [%.4f]", eff_wt_ctot));
       text_ctot->SetTextSize(0.08);
       text_ctot->Draw();

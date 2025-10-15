@@ -264,6 +264,15 @@ const Int_t DetIDParaVC  = 704;
 const Int_t NumOfPlaneParaTC = 2;
 const Int_t NumOfSegParaBGO  = 2;
 
+// E63 parasite LC test bench
+const Int_t DetIDParaLC = 801;
+const Int_t DetIDParaLCAC = 801;
+const Int_t DetIDParaLCRef = 801;
+const Int_t NumOfSegParaLC = 3;
+// const Int_t NumOfSegParaLC = 1;
+// const Int_t NumOfSegParaLC = 1;
+
+
 // Trigger Flag
 namespace trigger
 {

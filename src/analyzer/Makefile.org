@@ -90,6 +90,9 @@ my_tgt_rawhist_hbx	:= $(bin_dir)/raw_hist_hbx
 my_obj_rawhist_vmeeasiroc	:= $(core_obj) user_rawhist_vmeeasiroc.o $(gui_obj)
 my_tgt_rawhist_vmeeasiroc	:= $(bin_dir)/raw_hist_vmeeasiroc
 
+my_obj_rawhist_e63	:= $(core_obj) user_rawhist_e63.o $(gui_obj)
+my_tgt_rawhist_e63	:= $(bin_dir)/raw_hist_e63
+
 my_obj_mstmonitor_e40	:= $(core_obj) user_mstmonitor_e40.o
 my_tgt_mstmonitor_e40	:= $(bin_dir)/mstmonitor_e40
 
@@ -206,8 +209,7 @@ my_tgt_ktune_e70      := $(bin_dir)/ktune_e70
 #______________________________________________________________________________
 all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_event_display) \
-	$(my_tgt_rawhist_e70) \
-	$(my_tgt_rawhist_aft) \
+	$(my_tgt_rawhist_e63) \
 	$(my_tgt_rawhist_hbx) \
 	$(my_tgt_rawhist_vmeeasiroc) \
 	$(my_tgt_beammonitor) \
@@ -251,7 +253,9 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 	$(my_tgt_rawhist_e03) \
 	$(my_tgt_beamprofile_e03) \
 	$(my_tgt_scaler_e03) \
-	$(my_tgt_jsroot_e03)
+	$(my_tgt_jsroot_e03) \
+	$(my_tgt_rawhist_e70) \
+	$(my_tgt_rawhist_aft)
 
 #______________________________________________________________________________
 $(my_dir)/dict/%_Dict.cc: $(my_dir)/include/%.hh $(my_dir)/linkdef/%_LinkDef.hh
@@ -392,6 +396,14 @@ my_obj_rawhist_vmeeasiroc	:= $(my_obj_rawhist_vmeeasiroc) \
 my_lib_rawhist_vmeeasiroc	:= libmyrawhist_vmeeasiroc.so
 $(eval $(call make-lib,$(my_lib_rawhist_vmeeasiroc),$(my_obj_rawhist_vmeeasiroc)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_vmeeasiroc),$(my_lib_rawhist_vmeeasiroc)))
+
+#______________________________________________________________________________
+my_obj_rawhist_e63	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_e63))
+my_obj_rawhist_e63	:= $(my_obj_rawhist_e63) \
+		$(my_dir)/dict/GuiPs_Dict.o
+my_lib_rawhist_e63	:= libmyrawhist_e63.so
+$(eval $(call make-lib,$(my_lib_rawhist_e63),$(my_obj_rawhist_e63)))
+$(eval $(call make-gui-target,$(my_tgt_rawhist_e63),$(my_lib_rawhist_e63)))
 #
 #______________________________________________________________________________
 my_obj_vme01debug	:= $(addprefix $(my_dir)/src/,$(my_obj_vme01debug))

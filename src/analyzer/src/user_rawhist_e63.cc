@@ -128,7 +128,6 @@ namespace analyzer
     tab_macro->Add(macro::Get("dispBH2Fit"));
     tab_macro->Add(macro::Get("dispBH2_MTHR_Fit"));
     tab_macro->Add(macro::Get("dispDAQ"));
-    tab_macro->Add(macro::Get("dispParaBGO"));
     tab_macro->Add(macro::Get("dispSieve"));
     tab_macro->Add(macro::Get("dispParaLC"));
 
@@ -177,10 +176,10 @@ namespace analyzer
     tab_misc->Add(gHist.createTF_TF());
     tab_misc->Add(gHist.createTF_GN1());
     tab_misc->Add(gHist.createTF_GN2());
-    tab_hist->Add(gHist.createParaBGO());
-    tab_hist->Add(gHist.createParaTMC());
-    tab_hist->Add(gHist.createParaTC());
-    tab_hist->Add(gHist.createParaVC());
+    tab_misc->Add(gHist.createParaBGO());
+    tab_misc->Add(gHist.createParaTMC());
+    tab_misc->Add(gHist.createParaTC());
+    tab_misc->Add(gHist.createParaVC());
     tab_misc->Add(macro::Get("dispE72E90"));
     tab_misc->Add(macro::Get("dispE72E90Eff"));
     tab_misc->Add(macro::Get("dispSAC3"));
@@ -188,6 +187,7 @@ namespace analyzer
     // tab_misc->Add(macro::Get("dispTF_TF"));
     // tab_misc->Add(macro::Get("dispTF_GN1"));
     // tab_misc->Add(macro::Get("dispTF_GN2"));
+    tab_misc->Add(macro::Get("dispParaBGO"));
 
     // Set histogram pointers to the vector sequentially.
     // This vector contains both TH1 and TH2.

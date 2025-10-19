@@ -157,13 +157,10 @@ process_begin( const std::vector<std::string>& argv )
   tab_macro->Add(macro::Get("dispBH2Filter"));
   {
     TList *sub_dir = new TList;
-    const char* nameSubDir = "y2020";
+    const char* nameSubDir = "ktune_e63";
     sub_dir->SetName(nameSubDir);
-    sub_dir->Add(macro::Get("dispBAC1_y2020"));
-    //sub_dir->Add(macro::Get("dispBAC2_y2020"));
-    //sub_dir->Add(macro::Get("dispPVAC_y2020"));
-    //sub_dir->Add(macro::Get("dispFAC_y2020"));
-    sub_dir->Add(macro::Get("dispE70targeting"));
+    sub_dir->Add(macro::Get("dispBAC_ktune_e63"));
+    sub_dir->Add(macro::Get("dispE63targeting"));
     tab_macro->Add(sub_dir);
   }
   tab_macro->Add(macro::Get("dispKtune202006"));
@@ -564,48 +561,48 @@ process_begin( const std::vector<std::string>& argv )
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+12, "X at E70TGT (FF+400)",
+  tab_hist->Add(gHist.createTH1(btof_id+12, "X at E63TGT (FF+342)",
                                300, -150, 150,
                                "x [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+13, "Y at E70TGT (FF+400)",
+  tab_hist->Add(gHist.createTH1(btof_id+13, "Y at E63TGT (FF+342)",
                                200, -50, 50,
                                "y [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+14, "X at E70TGT [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+14, "X at E63TGT [pi]",
                                300, -150, 150,
                                "x [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+15, "Y at E70TGT [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+15, "Y at E63TGT [pi]",
                                200, -50, 50,
                                "y [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+16, "X at E70TGT [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+16, "X at E63TGT [k]",
                                300, -150, 150,
                                "x [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+17, "Y at E70TGT [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+17, "Y at E63TGT [k]",
                                200, -50, 50,
                                "y [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+18, "X at E70TGT [p]",
+  tab_hist->Add(gHist.createTH1(btof_id+18, "X at E63TGT [p]",
                                300, -150, 150,
                                "x [mm]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+19, "Y at E70TGT [p]",
+  tab_hist->Add(gHist.createTH1(btof_id+19, "Y at E63TGT [p]",
                                 200, -50, 50,
 				"y [mm]", ""
 				));
 
-  tab_hist->Add(gHist.createTH2(btof_id+20, "XY at E70TGT [pi]",
+  tab_hist->Add(gHist.createTH2(btof_id+20, "XY at E63TGT [pi]",
                                 150, -150, 150, 100, -50, 50,
 				"x [mm]", "y [mm]"
 				));
-  tab_hist->Add(gHist.createTH2(btof_id+21, "XY at E70TGT [k]",
+  tab_hist->Add(gHist.createTH2(btof_id+21, "XY at E63TGT [k]",
                                 150, -150, 150, 100, -50, 50,
 				"x [mm]", "y [mm]"
 				));
-  tab_hist->Add(gHist.createTH2(btof_id+22, "XY at E70TGT [p]",
+  tab_hist->Add(gHist.createTH2(btof_id+22, "XY at E63TGT [p]",
                                 150, -150, 150, 100, -50, 50,
 				"x [mm]", "y [mm]"
 				));
@@ -2164,7 +2161,7 @@ process_event( void )
 	}
       } // for i
 
-      //E70 target pos
+      //E63 target pos
       {
   	if( nhbh1_flag==1 && nhbh2_flag==1 ){
   	  static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
@@ -2287,7 +2284,7 @@ process_event( void )
 	}
       } // for i
 
-      // //E70 target pos
+      // //E63 target pos
       // {
       // 	if( nhbh1_flag==1 && nhbh2_flag==1 ){
       // 	  static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);

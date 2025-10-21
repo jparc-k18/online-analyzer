@@ -176,6 +176,8 @@ ConfMan::Initialize( const std::vector<std::string>& argv )
       continue;
     if( param[0].empty() )
       continue;
+    if( param[0]=='#' )
+      continue;
     if( param.size()==2 ){
       TString key   = param[0];
       TString value = param[1];

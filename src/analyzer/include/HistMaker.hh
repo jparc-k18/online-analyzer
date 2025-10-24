@@ -48,7 +48,7 @@ enum DetectorType {
   // parasite BGO test
   kParaTMC,kParaBGO,kParaVC,kParaTC,kParaBGOwC,
   // Others
-  kTriggerFlag, kDAQ, kCorrelation,
+  kTriggerFlag, kDAQ, kCorrelation,kHBXTriggerFlag,
   kCorrelation_catch, kMisc,
   kTimeStamp, kDCEff,
   sizeDetectorType,
@@ -204,6 +204,7 @@ public:
   TList* createTPC( Bool_t flag_ps=true );
   TList* createBVH( Bool_t flag_ps=true );
   TList* createTriggerFlag( Bool_t flag_ps=true );
+  TList* createHBXTriggerFlag( Bool_t flag_ps=true );
   TList* createCorrelation( Bool_t flag_ps=true );
   TList* createCorrelation_catch( Bool_t flag_ps=true );
   TList* createDAQ( Bool_t flag_ps=true );

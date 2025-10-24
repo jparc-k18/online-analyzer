@@ -39,6 +39,7 @@ const Int_t NumOfSegSFV     =  7;
 // Misc _______________________________________________________________
 const Int_t DetIdTrig       = 21;
 const Int_t DetIdScaler     = 22;
+const Int_t DetIdHBXTrig    = 23;
 const Int_t DetIdMsT        = 25;
 const Int_t DetIdMtx        = 26;
 const Int_t DetIdFpgaBH2Mt  = 29;
@@ -348,6 +349,44 @@ namespace trigger
      "Level1OR",
      "EssDischarge",
     };
+
+  const std::vector<TString> SHBXTriggerFlag =
+    {
+     "10Mclock",
+     "L1",
+     "LSOxGe",
+     "SpillOnEnd",
+     "SpillOffEnd",
+     "SpillOn",
+     "SpillOff",
+     "GeSelfOR",
+     "--",
+     "--",
+     "--",
+     "--",
+     "--",
+     "Trigreq",
+     "Trigacc",
+     "DeadTime",
+     "LSO1",
+     "LSO2",
+     "LSO3",
+     "LSO4",
+     "LSO1xGe1",
+     "LSO2xGe2",
+     "LSO3xGe3",
+     "LSO4xGe4",
+     "NaI",
+     "CeBr",
+     "BH2",
+     "LSO1woHT",
+     "LSO2woHT",
+     "LSO3woHT",
+     "LSO4woHT",
+     "10Mclock",
+    };
+
+
 }
 const Int_t NumOfSegTFlag = trigger::NTriggerFlag;
 

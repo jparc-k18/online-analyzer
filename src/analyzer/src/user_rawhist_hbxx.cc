@@ -100,6 +100,9 @@ process_begin(const std::vector<std::string>& argv)
   tab_hist->Add(gHist.createGe());
   tab_hist->Add(gHist.createBGO());
   tab_hist->Add(gHist.createTriggerFlag());
+  tab_hist->Add(gHist.createHBXTriggerFlag());
+
+  std::cout<<"I'm here!"<<std::endl;
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
@@ -147,20 +150,62 @@ process_event()
       }
       if( trigger_flag[seg] ) hptr_array[hit_id]->Fill( seg );
     }
-    if( !( trigger_flag[trigger::kSpillOnEnd] |
-	   trigger_flag[trigger::kSpillOffEnd] |
-	   trigger_flag[trigger::kLevel1OR] ) |
-        !( trigger_flag[trigger::kL1SpillOn] |
-	   trigger_flag[trigger::kL1SpillOff] |
-           trigger_flag[trigger::kSpillOnEnd] |
-	   trigger_flag[trigger::kSpillOffEnd] ) ){
-      hddaq::cerr << "#W Trigger flag is missing!!! "
-		  << trigger_flag << std::endl;
-    }
+    // if( !( trigger_flag[trigger::kSpillOnEnd] |
+    // 	   trigger_flag[trigger::kSpillOffEnd] |
+    // 	   trigger_flag[trigger::kLevel1OR] ) |
+    //     !( trigger_flag[trigger::kL1SpillOn] |
+    // 	   trigger_flag[trigger::kL1SpillOff] |
+    //        trigger_flag[trigger::kSpillOnEnd] |
+    // 	   trigger_flag[trigger::kSpillOffEnd] ) ){
+    //   hddaq::cerr << "#W Trigger flag is missing!!! "
+    // 		  << trigger_flag << std::endl;
+    // }
+
+
+
+
 #if 0
     gUnpacker.dump_data_device(k_device);
 #endif
   }
+
+  // HBXTriggerFlag ---------------------------------------------------
+  std::bitset<NumOfSegTFlag> hbxtrigger_flag;
+  {
+    static const Int_t k_device = gUnpacker.get_device_id("HBXTFlag");
+    static const Int_t k_tdc    = gUnpacker.get_data_id("HBXTFlag", "tdc");
+    static const Int_t tdc_id   = gHist.getSequentialID( kHBXTriggerFlag, 0, kTDC );
+    static const Int_t hit_id   = gHist.getSequentialID( kHBXTriggerFlag, 0, kHitPat );
+    for( Int_t seg=0; seg<NumOfSegTFlag; ++seg ){
+      for( Int_t m=0, n=gUnpacker.get_entries( k_device, 0, seg, 0, k_tdc );
+           m<n; ++m ){
+	auto tdc = gUnpacker.get( k_device, 0, seg, 0, k_tdc, m );
+	if( tdc>0 ){
+	  hbxtrigger_flag.set( seg );
+	  hptr_array[tdc_id+seg]->Fill( tdc );
+	}
+      }
+      if( hbxtrigger_flag[seg] ) hptr_array[hit_id]->Fill( seg );
+    }
+    // if( !( trigger_flag[trigger::kSpillOnEnd] |
+    // 	   trigger_flag[trigger::kSpillOffEnd] |
+    // 	   trigger_flag[trigger::kLevel1OR] ) |
+    //     !( trigger_flag[trigger::kL1SpillOn] |
+    // 	   trigger_flag[trigger::kL1SpillOff] |
+    //        trigger_flag[trigger::kSpillOnEnd] |
+    // 	   trigger_flag[trigger::kSpillOffEnd] ) ){
+    //   hddaq::cerr << "#W Trigger flag is missing!!! "
+    // 		  << trigger_flag << std::endl;
+    // }
+
+
+
+
+#if 0
+    gUnpacker.dump_data_device(k_device);
+#endif
+  }
+
 
 #if DEBUG
   std::cout << __FILE__ << " " << __LINE__ << std::endl;

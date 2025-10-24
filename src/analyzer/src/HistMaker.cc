@@ -7235,6 +7235,58 @@ TList* HistMaker::createTriggerFlag( Bool_t flag_ps )
 }
 
 // -------------------------------------------------------------------------
+// createHBXTriggerFlag E63
+// -------------------------------------------------------------------------
+TList* HistMaker::createHBXTriggerFlag( Bool_t flag_ps )
+{
+  // Determine the detector name
+  TString strDet = CONV_STRING(kHBXTriggerFlag);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
+
+  // Declaration of the directory
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // TDC---------------------------------------------------------
+  {
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kHBXTriggerFlag, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegTFlag; ++i){
+      // title = Form("%s_%d", nameDetector, i+1);
+      TString title = Form( "%s #%d", trigger::SHBXTriggerFlag[i].Data(), i );
+      top_dir->Add(createTH1(++target_id, title, // 1 origin
+			     400, 0, 4000,
+			     "TDC [ch]", ""));
+    }
+  }
+
+  // Hit parttern -----------------------------------------------
+  {
+    const char* title = "HBXTriggerFlag_HitPat";
+    Int_t target_id = getUniqueID(kHBXTriggerFlag, 0, kHitPat, 0);
+    // Add to the top directory
+    auto h = createTH1(++target_id, title, // 1 origin
+		       NumOfSegTFlag, 0., NumOfSegTFlag,
+		       "", "");
+    for( Int_t i=0, n=trigger::STriggerFlag.size(); i<n; ++i ){
+      h->GetXaxis()->SetBinLabel( i+1, trigger::SHBXTriggerFlag.at(i) );
+    }
+    h->SetStats(0);
+    top_dir->Add(h);
+  }
+
+  // Return the TList pointer which is added into TGFileBrowser
+  return top_dir;
+}
+
+// -------------------------------------------------------------------------
 // createTriggerFlag_E07
 // -------------------------------------------------------------------------
 TList* HistMaker::createTriggerFlag_E07( Bool_t flag_ps )

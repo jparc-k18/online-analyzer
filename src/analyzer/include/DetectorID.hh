@@ -266,11 +266,11 @@ const Int_t NumOfSegParaBGO  = 2;
 
 // E63 parasite LC test bench
 const Int_t DetIDParaLC = 801;
-const Int_t DetIDParaLCAC = 801;
-const Int_t DetIDParaLCRef = 801;
+const Int_t DetIDParaLCAC = 802;
+const Int_t DetIDParaLCRef = 803;
 const Int_t NumOfSegParaLC = 3;
-// const Int_t NumOfSegParaLC = 1;
-// const Int_t NumOfSegParaLC = 1;
+const Int_t NumOfSegParaLCAC = 1;
+const Int_t NumOfSegParaLCRef = 1;
 
 
 // Trigger Flag
@@ -559,11 +559,18 @@ const Int_t NumOfLayersSP0 = 8;
 const Int_t NumOfSegSP0    = 5;
 
 //E03 HBX detctors
+// const Int_t DetIdGe         = 27;
+// const Int_t DetIdBGO        = 114;
+// const Int_t DetIdHbxTrig    = 23;
+// const Int_t NumOfSegGe      = 16;
+// const Int_t NumOfSegBGO     = 48;
+// const Int_t NumOfSegHbxTrig = 4;
+//E63 HBX detctors
 const Int_t DetIdGe         = 27;
 const Int_t DetIdBGO        = 114;
 const Int_t DetIdHbxTrig    = 23;
-const Int_t NumOfSegGe      = 16;
-const Int_t NumOfSegBGO     = 48;
+const Int_t NumOfSegGe      = 23;
+const Int_t NumOfSegBGO     = 78;
 const Int_t NumOfSegHbxTrig = 4;
 
 const Int_t DetIdBC1   = 101;

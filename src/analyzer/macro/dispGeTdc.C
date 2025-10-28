@@ -10,7 +10,10 @@ void dispGeTdc()
 
   std::vector<Int_t> base_id = {
     HistMaker::getUniqueID(kGe, 0, kCRM),
+    HistMaker::getUniqueID(kGe, 0, kCRM),
     HistMaker::getUniqueID(kGe, 0, kTFA),
+    HistMaker::getUniqueID(kGe, 0, kTFA),
+    HistMaker::getUniqueID(kGe, 0, kRST),
     HistMaker::getUniqueID(kGe, 0, kRST),
   };
 
@@ -20,7 +23,14 @@ void dispGeTdc()
     c->Clear();
     c->Divide( 4, 4 );
     for( Int_t i=0; i<NumOfSegGe; ++i ){
-      c->cd( i+1 );
+      if(t%2==0) {
+	if( i >= 16 ) break;
+	c->cd( i+1 );
+      }
+      else {
+	if( i < 16 ) continue;
+	c->cd( (i-16)+1 );
+      }
       gPad->SetLogy();
       auto h = GHist::get( base_id[t]+i );
       h->Draw();

@@ -116,7 +116,8 @@ HttpServer::Open( void )
   m_server = new THttpServer(Form("http:%d?loopback?thrds=5", m_port));
   m_server->Restrict("/", "allow=all");
   m_server->SetReadOnly(kTRUE);
-  m_server->SetJSROOT("https://root.cern.ch/js/latest/");
+  // m_server->SetJSROOT("https://root.cern.ch/js/latest/");
+  m_server->SetJSROOT("https://root.cern.ch/js/7.8.2/");
   m_server->RegisterCommand("/Reset", "HttpServer::GetInstance().ResetAll()");
   m_server->RegisterCommand("/Restart", "gSystem->Exit(0)");
   // m_server->RegisterCommand("/MakePs", "HttpServer::GetInstance().MakePs()");

@@ -4,6 +4,7 @@
 ##
 
 . $(dirname $(readlink -f $0))/setebhost
+#ebhost=192.168.10.75
 
 dis_port=8901
 rec_port=8902

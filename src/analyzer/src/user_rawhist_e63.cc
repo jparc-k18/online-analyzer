@@ -105,6 +105,7 @@ namespace analyzer
     tab_macro->Add(macro::Get("dispBC3"));
     tab_macro->Add(macro::Get("dispBC4"));
     tab_macro->Add(macro::Get("dispBAC"));
+	tab_macro->Add(macro::Get("dispSAC"));
     tab_macro->Add(macro::Get("dispBH2"));
     tab_macro->Add(macro::Get("dispSDC1"));
     tab_macro->Add(macro::Get("dispSDC2"));
@@ -140,6 +141,7 @@ namespace analyzer
     tab_hist->Add(gHist.createBC3());
     tab_hist->Add(gHist.createBC4());
     tab_hist->Add(gHist.createBAC());
+	tab_hist->Add(gHist.createSAC());
     tab_hist->Add(gHist.createBH2());
     tab_hist->Add(gHist.createSDC1());
     tab_hist->Add(gHist.createSDC2());
@@ -2999,6 +3001,65 @@ namespace analyzer
       gUnpacker.dump_data_device(k_device);
 #endif
     }//BAC
+
+
+	// SAC -----------------------------------------------------------
+	{
+	  Int_t multiplicity = 0;
+    {
+      // data type
+      static const Int_t k_device = gUnpacker.get_device_id("SAC");
+      static const Int_t k_adc    = gUnpacker.get_data_id("SAC","adc");
+      static const Int_t k_tdc    = gUnpacker.get_data_id("SAC","tdc");
+
+      // sequential id 
+      static const Int_t saca_id   = gHist.getSequentialID(kSAC, 0, kADC);
+      static const Int_t sact_id   = gHist.getSequentialID(kSAC, 0, kTDC);
+      static const Int_t sacawt_id = gHist.getSequentialID(kSAC, 0, kADCwTDC);
+      static const Int_t sach_id   = gHist.getSequentialID(kSAC, 0, kHitPat);
+      static const Int_t sacm_id   = gHist.getSequentialID(kSAC, 0, kMulti);
+
+      // TDC gate range
+      static const Int_t tdc_min = gUser.GetParameter("TdcSAC", 0);
+      static const Int_t tdc_max = gUser.GetParameter("TdcSAC", 1);
+
+	  // ADC
+	  Int_t nhit_a = gUnpacker.get_entries(k_device, 0, 0, 0, k_adc);
+	  if (nhit_a!=0) {
+	    Int_t adc = gUnpacker.get(k_device, 0, 0, 0, k_adc);
+	    hptr_array[saca_id + 0]->Fill(adc);
+	  }
+	  // TDC
+	  Int_t nhit_t = gUnpacker.get_entries(k_device, 0, 0, 0, k_tdc);
+	  Bool_t is_in_gate = false;
+
+	  for(Int_t m = 0; m<nhit_t; ++m) {
+	    Int_t tdc = gUnpacker.get(k_device, 0, 0, 0, k_tdc, m);
+	    hptr_array[sact_id + 0]->Fill(tdc);
+
+	    if (tdc_min < tdc && tdc < tdc_max) {
+	      is_in_gate = true;
+	    }// tdc range is ok
+	  }// for(m)
+
+	  if (is_in_gate) {
+	    // ADC w/TDC
+	    if (gUnpacker.get_entries(k_device, 0, 0, 0, k_adc)>0) {
+	      Int_t adc = gUnpacker.get(k_device, 0, 0, 0, k_adc);
+	      hptr_array[sacawt_id + 0]->Fill(adc);
+	    }
+	    hptr_array[sach_id]->Fill(0);
+	    ++multiplicity;
+	  }// flag is OK
+	  hptr_array[sacm_id+0]->Fill(multiplicity);
+	}
+
+
+#if 0
+      // Debug, dump data relating this detector
+      gUnpacker.dump_data_device(k_device);
+#endif
+    }//SAC
 
 
     // TF_TF  -----------------------------------------------------------

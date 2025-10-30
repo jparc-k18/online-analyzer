@@ -87,6 +87,9 @@ my_tgt_rawhist_aft	:= $(bin_dir)/raw_hist_aft
 my_obj_rawhist_hbx	:= $(core_obj) user_rawhist_hbx.o $(gui_obj)
 my_tgt_rawhist_hbx	:= $(bin_dir)/raw_hist_hbx
 
+my_obj_rawhist_hbxx	:= $(core_obj) user_rawhist_hbxx.o $(gui_obj)
+my_tgt_rawhist_hbxx	:= $(bin_dir)/raw_hist_hbxx
+
 my_obj_rawhist_vmeeasiroc	:= $(core_obj) user_rawhist_vmeeasiroc.o $(gui_obj)
 my_tgt_rawhist_vmeeasiroc	:= $(bin_dir)/raw_hist_vmeeasiroc
 
@@ -183,6 +186,9 @@ my_tgt_scaler_e72	:= $(bin_dir)/scaler_e72
 my_obj_scaler_e70	:= $(core_obj) user_scaler_e70.o
 my_tgt_scaler_e70	:= $(bin_dir)/scaler_e70
 
+my_obj_scaler_e63	:= $(core_obj) user_scaler_e63.o
+my_tgt_scaler_e63	:= $(bin_dir)/scaler_e63
+
 my_obj_scaler_sch	:= $(core_obj) user_scaler_sch.o
 my_tgt_scaler_sch	:= $(bin_dir)/scaler_sch
 
@@ -214,10 +220,12 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_event_display) \
 	$(my_tgt_rawhist_e63) \
 	$(my_tgt_rawhist_hbx) \
+	$(my_tgt_rawhist_hbxx) \
 	$(my_tgt_rawhist_vmeeasiroc) \
 	$(my_tgt_beammonitor) \
 	$(my_tgt_scaler_e70) \
 	$(my_tgt_scaler_e72) \
+	$(my_tgt_scaler_e63) \
 	$(my_tgt_scaler_sch) \
 	$(my_tgt_scaler_daq) \
 	$(my_tgt_jsroot_e70) \
@@ -238,7 +246,8 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 	$(my_tgt_rawhist_e42_woTPC) \
 	$(my_tgt_jsroot_e42) \
 	$(my_tgt_rawhist_e40) \	$(my_tgt_jsroot_e40) \
-	$(my_tgt_scaler_e42) \
+	$(my_tgt_scaler_e42)\
+	$(my_tgt_scaler_e03)\
 	$(my_tgt_scaler_e13) $(my_tgt_hbjscaler) \
 	$(my_tgt_hbj_ana) $(my_tgt_pwo) \
 	$(my_tgt_rawhist_e0705) $(my_tgt_scaler_e0705) \
@@ -256,7 +265,6 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
         $(my_tgt_mstmonitorjs_e40) \
 	$(my_tgt_rawhist_e03) \
 	$(my_tgt_beamprofile_e03) \
-	$(my_tgt_scaler_e03) \
 	$(my_tgt_jsroot_e03) \
 	$(my_tgt_rawhist_e70) \
 	$(my_tgt_rawhist_aft)
@@ -392,6 +400,14 @@ my_obj_rawhist_hbx	:= $(my_obj_rawhist_hbx) \
 my_lib_rawhist_hbx	:= libmyrawhist_hbx.so
 $(eval $(call make-lib,$(my_lib_rawhist_hbx),$(my_obj_rawhist_hbx)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_hbx),$(my_lib_rawhist_hbx)))
+
+#______________________________________________________________________________
+my_obj_rawhist_hbxx	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_hbxx))
+my_obj_rawhist_hbxx	:= $(my_obj_rawhist_hbxx) \
+		$(my_dir)/dict/GuiPs_Dict.o
+my_lib_rawhist_hbxx	:= libmyrawhist_hbx.so
+$(eval $(call make-lib,$(my_lib_rawhist_hbxx),$(my_obj_rawhist_hbxx)))
+$(eval $(call make-gui-target,$(my_tgt_rawhist_hbxx),$(my_lib_rawhist_hbxx)))
 
 #______________________________________________________________________________
 my_obj_rawhist_vmeeasiroc	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_vmeeasiroc))
@@ -564,6 +580,12 @@ my_obj_scaler_e13 := $(addprefix $(my_dir)/src/,$(my_obj_scaler_e13))
 my_lib_scaler_e13 := libmyscaler_e13.so
 $(eval $(call make-lib,$(my_lib_scaler_e13),$(my_obj_scaler_e13)))
 $(eval $(call make-nogui-target,$(my_tgt_scaler_e13),$(my_lib_scaler_e13)))
+
+#______________________________________________________________________________
+my_obj_scaler_e63 := $(addprefix $(my_dir)/src/,$(my_obj_scaler_e63))
+my_lib_scaler_e63 := libmyscaler_e63.so
+$(eval $(call make-lib,$(my_lib_scaler_e63),$(my_obj_scaler_e63)))
+$(eval $(call make-nogui-target,$(my_tgt_scaler_e63),$(my_lib_scaler_e63)))
 
 #______________________________________________________________________________
 my_obj_scaler_e0705	:= $(addprefix $(my_dir)/src/,$(my_obj_scaler_e0705))

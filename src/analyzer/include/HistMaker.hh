@@ -18,7 +18,7 @@ enum eAorT { kA, kT, kAorT };
 enum DetectorType {
   kDetectorZero,
   // Detector unique ID in the beam line
-  kBH1, kBFT, kBC3, kBC4, kBH2, kBAC, kBH2MT,
+  kBH1, kBFT, kBC3, kBC4, kBH2, kBAC, kSAC, kBH2MT,
   kMsT, kMsT_T0, kMtx3D,
   // Detector unique ID in the S-2S system
   kAC1, kSDC1, kSDC2, kSDC3, kSDC4, kSDC5, kTOF, kSAC3, kSFV,
@@ -27,7 +27,7 @@ enum DetectorType {
   //E70
   kAFT,
   // E72E90
-  kE72BAC, kE90SAC, kE72KVC, kE42BH2, kE72Parasite,
+  kE72BAC,  kE72KVC, kE42BH2, kE72Parasite, kE90SAC,
   // TF
   kTF_TF, kTF_GN1, kTF_GN2,
   // E42
@@ -38,7 +38,7 @@ enum DetectorType {
   // Old detectors E07
   kFBH, kSSDT, kSSD1, kSSD2, kEMC,
   // Old detectors E40
-  kCFT,kBGO,kPiID,kSFT,kFHT1,kFHT2,kLC,kSAC,kTOF_HT,
+  kCFT,kBGO,kPiID,kSFT,kFHT1,kFHT2,kLC,kTOF_HT, //kSAC
   // Old detectors
   kBMW, kBAC_SAC, kSFV_SAC3, kGe, kPWO, kSP0,
   kBH2_E07, kBAC_E07, kSSD0, kSAC1, kKFAC,
@@ -183,6 +183,7 @@ public:
   TList* createBH2( Bool_t flag_ps=true );
   TList* createAFT( Bool_t flag_ps=true );
   TList* createBAC( Bool_t flag_ps=true );
+  TList* createSAC( Bool_t flag_ps=true );
   TList* createFAC( Bool_t flag_ps=true );
   TList* createPVAC( Bool_t flag_ps=true );
   TList* createVMEEASIROC( Bool_t flag_ps=true );
@@ -224,7 +225,7 @@ public:
   TList* createCFT( Bool_t flag_ps=true );
   TList* createBGO( Bool_t flag_ps=true );
   TList* createPiID( Bool_t flag_ps=true );
-  TList* createSAC( Bool_t flag_ps=true );
+  TList* createE90SAC( Bool_t flag_ps=true );
   TList* createFHT1( Bool_t flag_ps=true );
   TList* createFHT2( Bool_t flag_ps=true );
   TList* createTOF_HT( Bool_t flag_ps=true );

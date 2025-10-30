@@ -229,6 +229,117 @@ ScalerAnalyzer::Decode()
   }
   return true;
 }
+Bool_t
+ScalerAnalyzer::DecodeHBXX()
+{
+  m_spill_increment = false;
+  m_is_spill_end    = false;
+  m_is_spill_on_end = false;
+
+  //////////////////// Run Number
+  if (m_run_number != gUnpacker.get_root()->get_run_number()){
+    m_run_number = gUnpacker.get_root()->get_run_number();
+    Clear("all");
+  }
+
+  //////////////////// Trigger Flag
+  std::bitset<NumOfSegTFlag> trigger_flag;
+  {
+    static const auto k_device = gUnpacker.get_device_id("HBXTFlag");
+    static const auto k_tdc    = gUnpacker.get_data_id("HBXTFlag", "tdc");
+    for (Int_t seg=0; seg<NumOfSegTFlag; ++seg){
+      for (Int_t i=0, n=gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+	  i<n; ++i){
+	auto tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, i);
+	if (tdc>0){
+	  trigger_flag.set(seg);
+	}
+      }
+    }
+  }
+  if (trigger_flag[trigger::kSpillOnEndHBXX]){// spill on end
+    m_is_spill_on_end = true;
+    m_is_spill_end = true;
+  }
+  if (trigger_flag[trigger::kSpillOffEndHBXX]){
+    m_is_spill_end = true;
+  }
+
+  if (m_flag[kSpillOn]){
+    if (!trigger_flag[trigger::kSpillOnEndHBXX] &&
+	!trigger_flag[trigger::kSpillOnHBXX]){
+      return false;
+    }
+  }
+  if (m_flag[kSpillOff]){
+    if (!trigger_flag[trigger::kSpillOffEndHBXX] &&
+	!trigger_flag[trigger::kSpillOffHBXX]){
+      return false;
+    }
+  }
+
+  if (m_flag[kScalerSheet] && !m_is_spill_end){
+    for (Int_t i=0; i<MaxColumn; ++i){
+      for (Int_t j=0; j<MaxRow; ++j){
+	m_info[i][j].prev = 0;
+      }
+    }
+    return true;
+  }
+
+  //////////////////// Scaler Data
+  {
+    static const Int_t device_id  = gUnpacker.get_device_id("Scaler");
+
+    for (Int_t i=0; i<MaxColumn; ++i){
+      for (Int_t j=0; j<MaxRow; ++j){
+	if (!m_info[i][j].flag_disp)
+	  continue;
+	if (m_info[i][j].name.EqualTo("Spill"))
+	  continue;
+
+	Int_t module_id = m_info[i][j].module_id;
+	Int_t channel   = m_info[i][j].channel;
+
+	if (module_id < 0 || channel < 0)
+	  continue;
+
+	Int_t nhit = gUnpacker.get_entries(device_id, module_id, 0, channel, 0);
+	if (nhit<=0) continue;
+	Scaler val = gUnpacker.get(device_id, module_id, 0, channel, 0);
+
+	if (m_info[i][j].prev > val){
+	  m_spill_increment = true;
+	  m_info[i][j].prev = 0;
+	}
+
+	m_info[i][j].curr  = val;
+    	if (m_flag[kSpillBySpill] && m_spill_increment)
+    	  m_info[i][j].data = val;
+	else
+	  m_info[i][j].data += val - m_info[i][j].prev;
+	m_info[i][j].prev  = m_info[i][j].curr;
+      }
+    }
+  }
+
+  //////////////////// Spill
+  {
+    if (Has("Spill")){
+      static Bool_t first = true;
+      static Channel p = Find("Spill");
+      if (first && !m_flag[kScalerSheet]){
+	m_info[p.first][p.second].data++;
+	first = false;
+      }
+      if (m_spill_increment ||
+	 (m_flag[kScalerSheet] && m_is_spill_end)){
+	m_info[p.first][p.second].data++;
+      }
+    }
+  }
+  return true;
+}
 
 //______________________________________________________________________________
 Double_t
@@ -488,7 +599,7 @@ ScalerAnalyzer::Print(Option_t*) const
 	    << std::right << std::setw(16) << SeparateComma(m_info[kRight][i].data)
 	    <<std::endl;
     }
-    if (!GetFlag(kScalerSch) && !GetFlag(kScalerE42) && !GetFlag(kScalerHBX)){
+    if (!GetFlag(kScalerSch) && !GetFlag(kScalerE42) && !GetFlag(kScalerIndependent)){
       m_ost << std::endl  << std::setprecision(6) << std::fixed
 	    << std::left  << std::setw(16) << "BH2/TM"
 	    << std::right << std::setw(16) << Fraction("BH2", "TM") << " : "
@@ -502,6 +613,21 @@ ScalerAnalyzer::Print(Option_t*) const
 	    << std::right << std::setw(16) << Fraction("L2-Acc","L1-Acc") << " : "
 	    << std::left  << std::setw(16) << "Duty-Factor"
 	    << std::right << std::setw(16) << Duty() << std::endl
+	    << std::endl;
+    }else if (GetFlag(kScalerIndependent)){
+      m_ost << std::endl  << std::setprecision(6) << std::fixed
+	    << std::left  << std::setw(16) << "BH2/TM"
+	    << std::right << std::setw(16) <<  00<< " : "
+	    << std::left  << std::setw(16) << "Live/Real"
+	    << std::right << std::setw(16) << 1 - Fraction("deadtime(ind)","10M-Clock") << " : "
+	    << std::left  << std::setw(16) << "DAQ-Eff"
+	    << std::right << std::setw(16) << Fraction("trigacc(ind)","trigreq(ind)") << std::endl
+	    << std::left  << std::setw(16) << "L1Req/BH2"
+	    << std::right << std::setw(16) <<  00<< " : "
+	    << std::left  << std::setw(16) << "L2-Eff"
+	    << std::right << std::setw(16) <<  00 << " : "
+	    << std::left  << std::setw(16) << "Duty-Factor"
+	    << std::right << std::setw(16) << 0 << std::endl
 	    << std::endl;
     }
   }

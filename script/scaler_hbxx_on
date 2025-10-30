@@ -3,7 +3,8 @@
 #  shell script for online/semi online analyzer
 ##
 
-. $(dirname $(readlink -f $0))/setebhost
+#. $(dirname $(readlink -f $0))/setebhost
+ebhost=192.168.10.75
 
 dis_port=8901
 rec_port=8902
@@ -34,7 +35,7 @@ if [ ! -f $conf_file ]; then
 fi
 
 if [ $# = 0 ]; then
-    $exe_file $conf_file ${ebhost}:$port --spill-by-spill --spillon
+    $exe_file $conf_file ${ebhost}:$port --spill-by-spill --spillon --hbx --independent
     exit
 fi
 
@@ -45,10 +46,10 @@ do
 	continue
     fi
     if [ $# = 1 ]; then
-	$exe_file $conf_file $data_file --spillon
+	$exe_file $conf_file $data_file --spillon --hbx
 	exit
     elif [ $# = 2 ]; then
-	$exe_file $conf_file $data_file $2 --spillon
+	$exe_file $conf_file $data_file $2 --spillon --hbx
 	exit
     else
 	echo "#D Usage: $(basename $0) [run number]"

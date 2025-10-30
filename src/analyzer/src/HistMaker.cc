@@ -1703,6 +1703,72 @@ TList* HistMaker::createBAC( Bool_t flag_ps )
 }
 
 // -------------------------------------------------------------------------
+// createSAC
+// -------------------------------------------------------------------------
+TList* HistMaker::createSAC( Bool_t flag_ps )
+{
+  TString strDet = CONV_STRING(kSAC);       // Determine the detector name
+  name_created_detectors_.push_back(strDet);    // name list of crearted detector
+  if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
+
+  const char* nameDetector = strDet.Data(); // Declaration of the directory
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // ADC ---------------------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName( nameSubDir );
+
+    Int_t target_id = getUniqueID(kSAC, 0, kADC, 0);
+      const char* title = NULL;
+      title = Form("%s_%s", nameDetector, nameSubDir);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC w/TDC ---------------------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kADCwTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName( nameSubDir );
+
+    Int_t target_id = getUniqueID(kSAC, 0, kADCwTDC, 0);
+      const char* title = NULL;
+      title = Form("%s_%s", nameDetector, nameSubDir);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    top_dir->Add(sub_dir);
+  }
+
+  // TDC---------------------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kSAC, 0, kTDC, 0);
+      const char* title = NULL;
+      title = Form("%s_%s", nameDetector, nameSubDir);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     //			     0x1000, 0, 0x1000,
+			     "TDC [ch]", ""));
+        top_dir->Add(sub_dir);
+  }
+
+  return top_dir;
+}
+
+
+// -------------------------------------------------------------------------
 // createAFT
 // -------------------------------------------------------------------------
 TList* HistMaker::createAFT( Bool_t flag_ps )
@@ -10353,7 +10419,7 @@ TList* HistMaker::createSFT( Bool_t flag_ps )
 // -------------------------------------------------------------------------
 // createSAC_for_E40
 // -------------------------------------------------------------------------
-TList* HistMaker::createSAC( Bool_t flag_ps )
+TList* HistMaker::createE90SAC( Bool_t flag_ps )
 {
   TString strDet = CONV_STRING(kSAC);       // Determine the detector name
   name_created_detectors_.push_back(strDet);    // name list of crearted detector

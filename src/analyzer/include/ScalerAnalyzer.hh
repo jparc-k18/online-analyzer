@@ -81,6 +81,7 @@ public:
     kSpillOn,
     kSpillOff,
     kScalerHBX,
+    kScalerIndependent,
     nFlag
   };
   const std::vector<TString> sFlag = {
@@ -112,6 +113,7 @@ private:
 public:
   void       Clear( Option_t* option="" );
   Bool_t     Decode( void );
+  Bool_t     DecodeHBXX( void );
   Double_t   Duty( void ) const;
   Channel    Find( const TString& name ) const;
   Bool_t     FlagDisp( Int_t i, Int_t j ) const

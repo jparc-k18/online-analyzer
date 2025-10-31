@@ -78,31 +78,31 @@ process_begin( const std::vector<std::string>& argv )
   if( scaler_main.GetFlag( ScalerAnalyzer::kScalerHBX ) ){
     Int_t c = ScalerAnalyzer::kLeft;
     Int_t r = 0;
-    scaler_main.Set( c, r++, ScalerInfo( "Level1-PS",     5, 1 ) );
+    scaler_main.Set( c, r++, ScalerInfo( "Level1-PS",     8, 1 ) );
 
-    scaler_main.Set( c, r++, ScalerInfo( "LSOxGe",        5, 2  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "SpillOnEnd",    5, 3  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "SpillOffEnd",   5, 4  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "SpillOn",       5, 5  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "SpillOff",      5, 6  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "Geself",        5, 7  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "trigreq(ind)",  5, 13  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "trigacc(ind)",  5, 14  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "deadtime(ind)", 5, 15  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO1",          4, 32  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO2",          4, 33  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO3",          4, 34  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO4",          4, 35  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO1x(Ge1,Ge3)",4, 36  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO2x(Ge2,Ge4)",4, 37  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO3x(Ge5,Ge7)",4, 38  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO4x(Ge6,Ge8)",4, 39  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO1woHT",      4, 43  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO2woHT",      4, 44  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO3woHT",      4, 45  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "LSO4woHT",      4, 46  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "NaI",           4, 40  ) );
-    scaler_main.Set( c, r++, ScalerInfo( "CeBr",          4, 41  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSOxGe",        8, 2  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "SpillOnEnd",    8, 3  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "SpillOffEnd",   8, 4  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "SpillOn",       8, 5  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "SpillOff",      8, 6  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "Geself",        8, 7  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "trigreq(ind)",  8, 13  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "trigacc(ind)",  8, 14  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "deadtime(ind)", 8, 15  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO1",          7, 0  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO2",          7, 1  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO3",          7, 2  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO4",          7, 3  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO1x(Ge1,Ge3)",7, 4  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO2x(Ge2,Ge4)",7, 5  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO3x(Ge5,Ge7)",7, 6  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO4x(Ge6,Ge8)",7, 7  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO1woHT",      7, 11  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO2woHT",      7, 12  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO3woHT",      7, 13  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "LSO4woHT",      7, 14  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "hbxscr1-10M",   7, 15  ) );
+    scaler_main.Set( c, r++, ScalerInfo( "hbxscr2-10M",   8, 0  ) );
     if(!scaler_main.GetFlag(ScalerAnalyzer::kScalerIndependent)){
       scaler_main.Set( c, r++, ScalerInfo( "SY",            0, 10 ) );
       scaler_main.Set( c, r++, ScalerInfo( "TM",          0,  9 ) );
@@ -146,12 +146,12 @@ process_begin( const std::vector<std::string>& argv )
   if( scaler_main.GetFlag( ScalerAnalyzer::kScalerHBX ) ){
     Int_t c = ScalerAnalyzer::kCenter;
     Int_t r = 0;
-    scaler_main.Set( c, r++, ScalerInfo( "10M-Clock",    5,  0 ) );
+    scaler_main.Set( c, r++, ScalerInfo( "10M-Clock",    8,  0 ) );
     for( Int_t i=0; i<16; ++i ){
-      scaler_main.Set( c, r++, ScalerInfo( Form( "973UCRM-%02d", i+1 ), 5, i+16 ) );
+      scaler_main.Set( c, r++, ScalerInfo( Form( "973UCRM-%02d", i+1 ), 8, i+16 ) );
     }
     for( Int_t i=16; i<23; ++i ){
-      scaler_main.Set( c, r++, ScalerInfo( Form( "973UCRM-%02d", i+1 ), 4, i+47 ) );
+      scaler_main.Set( c, r++, ScalerInfo( Form( "973UCRM-%02d", i+1 ), 7, i ) );
     }
     if(!scaler_main.GetFlag(ScalerAnalyzer::kScalerIndependent)){
       scaler_main.Set( c, r++, ScalerInfo( "Real-Time",     0,  1 ) );
@@ -203,10 +203,10 @@ process_begin( const std::vector<std::string>& argv )
     Int_t r = 0;
     scaler_main.Set( c, r++, ScalerInfo( "Spill",        -1, -1 ) );
     for( Int_t i=0; i<16; ++i ){
-      scaler_main.Set( c, r++, ScalerInfo( Form( "Reset-%02d", i+1 ), 5, i+48 ) );
+      scaler_main.Set( c, r++, ScalerInfo( Form( "Reset-%02d", i+1 ), 8, i+48 ) );
     }
     for( Int_t i=16; i<23; ++i ){
-      scaler_main.Set( c, r++, ScalerInfo( Form( "Reset-%02d", i+1 ), 4, i+39 ) );
+      scaler_main.Set( c, r++, ScalerInfo( Form( "Reset-%02d", i+1 ), 7, i+8 ) );
     }
     if(!scaler_main.GetFlag(ScalerAnalyzer::kScalerIndependent)){
       scaler_main.Set( c, r++, ScalerInfo( "L1-Req",        0,  3 ) );

@@ -39,6 +39,8 @@ enum DetectorType {
   kFBH, kSSDT, kSSD1, kSSD2, kEMC,
   // Old detectors E40
   kCFT,kBGO,kPiID,kSFT,kFHT1,kFHT2,kLC,kTOF_HT, //kSAC
+  //E63
+  kRC,
   // Old detectors
   kBMW, kBAC_SAC, kSFV_SAC3, kGe, kPWO, kSP0,
   kBH2_E07, kBAC_E07, kSSD0, kSAC1, kKFAC,
@@ -47,6 +49,8 @@ enum DetectorType {
   kTOFC,kTOFQ,kTMCC,kTMCQ,
   // parasite BGO test
   kParaTMC,kParaBGO,kParaVC,kParaTC,kParaBGOwC,
+  // Parasite LC test
+  kParaLC,kParaLCRef,
   // Others
   kTriggerFlag, kDAQ, kCorrelation,kHBXTriggerFlag,
   kCorrelation_catch, kMisc,
@@ -268,6 +272,9 @@ public:
   TList* createParaTC( Bool_t flag_ps = true);
   TList* createParaVC( Bool_t flag_ps = true);
 
+  // parasite LC test
+  TList* createParaLC( Bool_t flag_ps=true );
+  TList* createParaLCRef( Bool_t flag_ps=true );
 private:
   HistMaker( void );
   HistMaker( const HistMaker& object );

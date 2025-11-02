@@ -1,6 +1,11 @@
 // // Updater belongs to the namespace hddaq::gui
 // using namespace hddaq::gui;
 
+#include "UserParamMan.hh"
+#include "DetectorID.hh"
+
+using hddaq::gui::Updater;
+
 void
 dispSAC( void )
 {
@@ -20,7 +25,7 @@ dispSAC( void )
       // ADC
       c1->cd(3*i+1)->SetLogy();
       auto h1 = dynamic_cast<TH1*>(GHist::get(adc_hid+i));
-      std::cout << Form("accessing hist: %d", adc_hid+i) << std::endl;
+      // std::cout << Form("accessing hist: %d", adc_hid+i) << std::endl;
       // auto h1->GetXaxis()->SetRangeUser(0, 0x1000);
       h1->Draw();
       // ADCwTDC
@@ -42,4 +47,3 @@ dispSAC( void )
 
   Updater::setUpdating(false);
 }
-

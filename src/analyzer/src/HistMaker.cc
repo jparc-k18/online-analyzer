@@ -1702,6 +1702,100 @@ TList* HistMaker::createBAC( Bool_t flag_ps )
   return top_dir;
 }
 
+#if 1
+// -------------------------------------------------------------------------
+// createE75BAC
+// -------------------------------------------------------------------------
+TList* HistMaker::createE75BAC( Bool_t flag_ps )
+{
+  TString strDet = CONV_STRING(kE75BAC);       // Determine the detector name
+  name_created_detectors_.push_back(strDet);    // name list of crearted detector
+  if(flag_ps) name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
+
+  const char* nameDetector = strDet.Data(); // Declaration of the directory
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  const char* name_acs[] = { "E75FMBAC1", "E75FMBAC2", "E75LFBAC" };
+
+  // ADC ---------------------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kADC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName( nameSubDir );
+
+    Int_t target_id = getUniqueID(kE75BAC, 0, kADC, 0);
+    for(Int_t i = 0; i<NumOfSegE75BAC; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s", name_acs[i], nameSubDir);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // ADC w/TDC ---------------------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kADCwTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName( nameSubDir );
+
+    Int_t target_id = getUniqueID(kE75BAC, 0, kADCwTDC, 0);
+    for( Int_t i=0; i<NumOfSegE75BAC; ++i ){
+      const char* title = NULL;
+      title = Form("%s_%s", name_acs[i], nameSubDir);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     "ADC [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  // TDC---------------------------------------------------------
+  {
+    TString strSubDir  = CONV_STRING(kTDC); // Declaration of the sub-directory
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    Int_t target_id = getUniqueID(kE75BAC, 0, kTDC, 0);
+    for(Int_t i = 0; i<NumOfSegE75BAC; ++i){
+      const char* title = NULL;
+      title = Form("%s_%s", name_acs[i], nameSubDir);
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+			     0x1000, 0, 0x1000,
+			     //			     0x1000, 0, 0x1000,
+			     "TDC [ch]", ""));
+    }
+    top_dir->Add(sub_dir);
+  }
+
+  { // Hit parttern -----------------------------------------------
+    Int_t target_id = getUniqueID(kE75BAC, 0, kHitPat, 0);
+    top_dir->Add(createTH1(++target_id, "E75BAC_hit_pattern",
+			   NumOfSegE75BAC, 0, NumOfSegE75BAC,
+			   "Segment", ""));
+  }
+
+  { // Multiplicity -----------------------------------------------
+    Int_t target_id = getUniqueID(kE75BAC, 0, kMulti, 0);
+    for(Int_t i = 0; i<NumOfSegE75BAC; ++i){
+    const char* title = NULL;
+    title = Form("%s_%s", name_acs[i], "multiplicity");
+    top_dir->Add(createTH1(++target_id, title,
+			   NumOfSegE75BAC+1, 0, NumOfSegE75BAC+1,
+			   "Multiplicity", ""));
+    }
+  }
+
+  return top_dir;
+}
+
+#endif
+
 // -------------------------------------------------------------------------
 // createSAC
 // -------------------------------------------------------------------------

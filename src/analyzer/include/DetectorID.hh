@@ -22,9 +22,11 @@ const Int_t DetIdAC1       = 14;
 const Int_t DetIdSAC3       = 15;
 const Int_t DetIdSFV       = 16;
 const Int_t DetIdSAC      = 52; // E90SAC during 2025Nov E63beamtime
+const Int_t DetIdE75BAC      = 75; // E75BAC during 2025Nov E63beamtime
 const Int_t NumOfSegBH1     = 11;
 const Int_t NumOfSegBH2     =  8;
 const Int_t NumOfSegBAC     =  2;
+const Int_t NumOfSegE75BAC     =  3; // E75 BAC test during E63 beatime
 const Int_t NumOfSegPVAC    =  1;
 const Int_t NumOfSegFAC     =  1;
 const Int_t NumOfSegSCH     = 64;
@@ -251,6 +253,19 @@ const Int_t NumOfSegAFTX      = 32;
 const Int_t NumOfSegAFTY      = 16;
 const Int_t NumOfSegAFT[4]    = {NumOfSegAFTX, NumOfSegAFTX, NumOfSegAFTY, NumOfSegAFTY};
 
+//RC for E63
+const Int_t DetIdRC   = 21;
+const Int_t NumOfPlaneRC     = 10;
+const std::vector<TString> NameOfPlaneRC = {"-X_PDY", "-X_PDZ", "-X_RC1", "-X_RC2","-X_RC3",
+                                            "+X_PDY", "+X_PDZ", "+X_RC1", "+X_RC2","+X_RC3"};
+const Int_t NumOfSegRCPDY      = 6;
+const Int_t NumOfSegRCPDZ      = 16;
+const Int_t NumOfSegRCRC      = 8;
+
+const Int_t NumOfSegRC[10]    = {NumOfSegRCPDY, NumOfSegRCPDZ, NumOfSegRCRC, NumOfSegRCRC, NumOfSegRCRC,
+                                 NumOfSegRCPDY, NumOfSegRCPDZ, NumOfSegRCRC, NumOfSegRCRC, NumOfSegRCRC,};
+const Int_t NumOfUorDRC[10] = {1,1,2,2,2,1,1,2,2,2};
+
 // VMEEASIROC Board
 const Int_t DetIdVEASIROC         = 116;
 const std::vector<Int_t> PlaneIdOfVMEEASIROC = {16, 17, 31, 32, 33, 34, 49, 50, 51, 52, 53, 69,
@@ -268,10 +283,8 @@ const Int_t NumOfSegParaBGO  = 2;
 
 // E63 parasite LC test bench
 const Int_t DetIDParaLC = 801;
-const Int_t DetIDParaLCAC = 802;
-const Int_t DetIDParaLCRef = 803;
+const Int_t DetIDParaLCRef = 802;
 const Int_t NumOfSegParaLC = 3;
-const Int_t NumOfSegParaLCAC = 1;
 const Int_t NumOfSegParaLCRef = 1;
 
 
@@ -587,7 +600,6 @@ const Int_t NumOfSegSSD2 = 1536;
 const Double_t SamplingIntervalSSD = 25.; //[ns]
 const Int_t DetIdGC   =  8;
 const Int_t DetIdYOON =  9;
-const Int_t DetIdRC   = 21;
 // const Int_t DetIdAC1  = 22;
 // const Int_t DetIdBVH  = 23;
 const Int_t DetIdNRC  = 24;

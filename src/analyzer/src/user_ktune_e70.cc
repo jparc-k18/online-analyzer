@@ -513,6 +513,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createBC4());
   tab_hist->Add(gHist.createBH2());
   tab_hist->Add(gHist.createBAC());
+  tab_hist->Add(gHist.createE75BAC());
   //tab_hist->Add(gHist.createPVAC());
   //tab_hist->Add(gHist.createFAC());
   int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
@@ -647,46 +648,37 @@ process_begin( const std::vector<std::string>& argv )
                                ));
 
 
+// FM BAC1 (Sakurako Ohmuro )
 
-
-  tab_hist->Add(gHist.createTH1(btof_id+23+8, "BAC1eff wBAC2 [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+23+8, "E75BAC1eff [pi]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+24+8, "BAC1eff wBAC2 [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+24+8, "E75BAC1eff [k]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-/*  tab_hist->Add(gHist.createTH1(btof_id+23+8, "PVACeff [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+25+8, "E75BAC1eff [p]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+24+8, "PVACeff [k]",
-                               6, 0, 6,
-                               "Pattern", ""
-                               ));
-*/
-  tab_hist->Add(gHist.createTH1(btof_id+25+8, "PVACeff [p]",
-                               6, 0, 6,
-                               "Pattern", ""
-                               ));
-  tab_hist->Add(gHist.createTH1(btof_id+26+8, "PVAC ADC",
+  tab_hist->Add(gHist.createTH1(btof_id+26+8, "E75BAC1 ADC",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+27+8, "PVAC ADC wTDC",
+  tab_hist->Add(gHist.createTH1(btof_id+27+8, "E75BAC1 ADC wTDC",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+28+8, "PVAC ADC [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+28+8, "E75BAC1 ADC [pi]",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+29+8, "PVAC ADC [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+29+8, "E75BAC1 ADC [k]",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+30+8, "PVAC ADC [p]",
+  tab_hist->Add(gHist.createTH1(btof_id+30+8, "E75BAC1 ADC [p]",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
@@ -694,49 +686,43 @@ process_begin( const std::vector<std::string>& argv )
 
 
 
-  tab_hist->Add(gHist.createTH1(btof_id+23+16, "BAC2eff wBAC1 [pi]",
+// FM BAC2 (Hanako Ohmuro )
+
+  tab_hist->Add(gHist.createTH1(btof_id+23+16, "E75BAC2eff [pi]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+24+16, "BAC2eff wBAC1 [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+24+16, "E75BAC2eff [k]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-/*
-  tab_hist->Add(gHist.createTH1(btof_id+23+16, "FACeff [pi]",
+
+  tab_hist->Add(gHist.createTH1(btof_id+25+16, "E75BAC2eff [p]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+24+16, "FACeff [k]",
-                               6, 0, 6,
-                               "Pattern", ""
-                               ));
-*/
-  tab_hist->Add(gHist.createTH1(btof_id+25+16, "FACeff [p]",
-                               6, 0, 6,
-                               "Pattern", ""
-                               ));
-  tab_hist->Add(gHist.createTH1(btof_id+26+16, "FAC ADC",
+  tab_hist->Add(gHist.createTH1(btof_id+26+16, "E75BAC2 ADC",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+27+16, "FAC ADC wTDC",
+  tab_hist->Add(gHist.createTH1(btof_id+27+16, "E75BAC2 ADC wTDC",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+28+16, "FAC ADC [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+28+16, "E75BAC2 ADC [pi]",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+29+16, "FAC ADC [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+29+16, "E75BAC2 ADC [k]",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+30+16, "FAC ADC [p]",
+  tab_hist->Add(gHist.createTH1(btof_id+30+16, "E75BAC2 ADC [p]",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
 
+// misc
 
   tab_hist->Add(gHist.createTH1(btof_id+30+16+1, "BH1 chitpat kaon",
                                11, 0, 11,
@@ -763,6 +749,42 @@ process_begin( const std::vector<std::string>& argv )
                                "segment", ""
                                ));
 
+
+// LF BAC (Nadeshiko Ohmuro )
+
+  tab_hist->Add(gHist.createTH1(btof_id+23+32, "E75LFBACeff [pi]",
+                               6, 0, 6,
+                               "Pattern", ""
+                               ));
+  tab_hist->Add(gHist.createTH1(btof_id+24+32, "E75LFBACeff [k]",
+                               6, 0, 6,
+                               "Pattern", ""
+                               ));
+
+  tab_hist->Add(gHist.createTH1(btof_id+25+32, "E75LFBACeff [p]",
+                               6, 0, 6,
+                               "Pattern", ""
+                               ));
+  tab_hist->Add(gHist.createTH1(btof_id+26+32, "E75LFBAC ADC",
+                               200, 0, 2000,
+                               "ADC [ch]", ""
+                               ));
+  tab_hist->Add(gHist.createTH1(btof_id+27+32, "E75LFBAC ADC wTDC",
+                               200, 0, 2000,
+                               "ADC [ch]", ""
+                               ));
+  tab_hist->Add(gHist.createTH1(btof_id+28+32, "E75LFBAC ADC [pi]",
+                               200, 0, 2000,
+                               "ADC [ch]", ""
+                               ));
+  tab_hist->Add(gHist.createTH1(btof_id+29+32, "E75LFBAC ADC [k]",
+                               200, 0, 2000,
+                               "ADC [ch]", ""
+                               ));
+  tab_hist->Add(gHist.createTH1(btof_id+30+32, "E75LFBAC ADC [p]",
+                               200, 0, 2000,
+                               "ADC [ch]", ""
+                               ));
 
 
   // Set histogram pointers to the vector sequentially.
@@ -961,63 +983,26 @@ process_event( void )
       pi_flag=1;
       hptr_array[btof_id+1]->Fill(btof);
       hptr_array[btof_id+4]->Fill(0); //BAC1eff
-      hptr_array[btof_id+4+19]->Fill(0); //BAC2eff
-
-      static const int k_device = gUnpacker.get_device_id("BAC");
-      static const int k_tdcbac = gUnpacker.get_data_id("BAC","tdc");
-      int nhit_t2 = gUnpacker.get_entries(k_device, 0, 1, 0, k_tdcbac);
-      for(int m = 0; m<nhit_t2; ++m){
-        int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac, m);
-        static const int tdc_min = 720;
-        static const int tdc_max = 780;
-        if(tdc_min < tdcbac2 && tdcbac2 < tdc_max){
-          hptr_array[btof_id+4+19+8]->Fill(0); //PVACeff->BAC1/BAC2 eff
-        }
-      }
-
-      int nhit_t1 = gUnpacker.get_entries(k_device, 0, 0, 0, k_tdcbac);
-      for(int m = 0; m<nhit_t1; ++m){
-        int tdcbac1 = gUnpacker.get(k_device, 0, 0, 0, k_tdcbac, m);
-        static const int tdc_min = 720;
-        static const int tdc_max = 780;
-        if(tdc_min < tdcbac1 && tdcbac1 < tdc_max){
-          hptr_array[btof_id+4+19+16]->Fill(0); //PVAC2eff
-        }
-      }
+      hptr_array[btof_id+23]->Fill(0); //BAC2eff
+      hptr_array[btof_id+8+23]->Fill(0); //E75FMBAC1eff
+      hptr_array[btof_id+16+23]->Fill(0); //E75FMBAC2eff
+      hptr_array[btof_id+32+23]->Fill(0); //E75LFBACeff
     }
-    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.3<btof && btof<-1.4 ){  // 1.8GeV/c
-    //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.8<btof && btof<-1.8 ){  // 1.4GeV/c
-      //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -3.5<btof && btof<-2.5 ){  // 1.2GeV/c
-      //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -8<btof && btof<-4 ){  // 0.8GeV/c
+
+    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.3<btof && btof<-1.0 ){  // 1.8GeV/c
       k_flag=1;
       hptr_array[btof_id+2]->Fill(btof);
       hptr_array[btof_id+5]->Fill(0); //BAC1eff
-      hptr_array[btof_id+5+19]->Fill(0); //BAC2eff
-      static const int k_device = gUnpacker.get_device_id("BAC");
-      static const int k_tdcbac = gUnpacker.get_data_id("BAC","tdc");
-      int nhit_t2 = gUnpacker.get_entries(k_device, 0, 1, 0, k_tdcbac);
-      for(int m = 0; m<nhit_t2; ++m){
-        int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac, m);
-        static const int tdc_min = 720;
-        static const int tdc_max = 780;
-        if(tdc_min > tdcbac2 || tdcbac2 > tdc_max){
-          hptr_array[btof_id+5+19+8]->Fill(0); //PVACeff->BAC1/BAC2 eff
-        }
-      }
-      int nhit_t1 = gUnpacker.get_entries(k_device, 0, 0, 0, k_tdcbac);
-      for(int m = 0; m<nhit_t1; ++m){
-        int tdcbac1 = gUnpacker.get(k_device, 0, 0, 0, k_tdcbac, m);
-        static const int tdc_min = 720;
-        static const int tdc_max = 780;
-        if(tdc_min > tdcbac1 || tdcbac1 > tdc_max){
-          hptr_array[btof_id+5+19+16]->Fill(0); //PVACeff->BAC1/BAC2 eff
-        }
-      }
+      hptr_array[btof_id+24]->Fill(0); //BAC2eff
+      hptr_array[btof_id+8+24]->Fill(0); //E75FMBAC1eff
+      hptr_array[btof_id+16+24]->Fill(0); //E75FMBAC2eff
+      hptr_array[btof_id+32+24]->Fill(0); //E75LFBACeff
     }
-    // if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7<btof && btof<-3.7 ){ // 1.8GeV/c
+
+    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7<btof && btof<-3.7 ){ // 1.8GeV/c
       //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7-2.8<btof && btof<-3.7-2.8 ){  // 1.4GeV/c
       //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7-5.0<btof && btof<-3.7-5.0 ){  // 1.2GeV/c
-      if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7-10.0<btof && btof<-3.7-1.3 ){  // 1.0GeV/c
+      //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7-10.0<btof && btof<-3.7-1.3 ){  // 1.0GeV/c
       p_flag=1;
       hptr_array[btof_id+3]->Fill(btof);
       hptr_array[btof_id+6]->Fill(0); //BAC1eff
@@ -1596,6 +1581,7 @@ process_event( void )
     // }
   }
 
+
   // BAC1 -----------------------------------------------------------
   {
     // data type
@@ -1815,175 +1801,265 @@ process_event( void )
 
 
 
-  // PVAC -----------------------------------------------------------
-  // {
-  //   // data type
-  //   static const int k_device = gUnpacker.get_device_id("PVAC");
-  //   static const int k_adc    = gUnpacker.get_data_id("PVAC","adc");
-  //   static const int k_tdc    = gUnpacker.get_data_id("PVAC","tdc");
+  // E75FMBAC1 -----------------------------------------------------------
+  // ------- Sakurako Ohmuro ----------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("E75BAC");
+    static const int k_adc    = gUnpacker.get_data_id("E75BAC","adc");
+    static const int k_tdc    = gUnpacker.get_data_id("E75BAC","tdc");
 
-  //   // sequential id
-  //   static const int baca_id   = gHist.getSequentialID(kPVAC, 0, kADC,     1);
-  //   static const int bact_id   = gHist.getSequentialID(kPVAC, 0, kTDC,     1);
-  //   static const int bacawt_id = gHist.getSequentialID(kPVAC, 0, kADCwTDC, 1);
-  //   static const int bach_id   = gHist.getSequentialID(kPVAC, 0, kHitPat,  1);
-  //   static const int bacm_id   = gHist.getSequentialID(kPVAC, 0, kMulti,   1);
-  //   static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
-  //   // TDC gate range
-  //   //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
-  //   //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
-  //   static const int tdc_min = 1130;
-  //   static const int tdc_max = 1170;
+    // sequential id
+    static const int baca_id   = gHist.getSequentialID(kE75BAC, 0, kADC,     1);
+    static const int bact_id   = gHist.getSequentialID(kE75BAC, 0, kTDC,     1);
+    static const int bacawt_id = gHist.getSequentialID(kE75BAC, 0, kADCwTDC, 1);
+    static const int bach_id   = gHist.getSequentialID(kE75BAC, 0, kHitPat,  1);
+    static const int bacm_id   = gHist.getSequentialID(kE75BAC, 0, kMulti,   1);
+    static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
+    // TDC gate range
+    //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
+    //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
+    static const int tdc_min = 200;
+    static const int tdc_max = 1200;
 
-  //   int multiplicity = 0;
-  //   //for(int seg = 0; seg<NumOfSegBAC; ++seg){
-  //   for(int seg = 0; seg<1; ++seg){
-  //     // ADC
-  //     int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
-  //     if( nhit_a!=0 ){
-  // 	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-  // 	hptr_array[baca_id + seg]->Fill( adc );
-  // 	if(nhbh1_flag==1&&nhbh2_flag==1){
-  // 	  hptr_array[btof_id+7+19+8]->Fill(adc);
-  // 	  if(pi_flag){
-  // 	    hptr_array[btof_id+9+19+8]->Fill(adc);
-  // 	  }
-  // 	  if(k_flag){
-  // 	    hptr_array[btof_id+10+19+8]->Fill(adc);
-  // 	  }
-  // 	  if(p_flag){
-  // 	    hptr_array[btof_id+11+19+8]->Fill(adc);
-  // 	  }
-  // 	}
-  //     }
-  //     // TDC
-  //     int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-  //     bool flag_t = false;
+    int multiplicity = 0;
+    //for(int seg = 0; seg<NumOfSegBAC; ++seg){
+    for(int seg = 0; seg<1; ++seg){
+      // ADC
+      int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      if( nhit_a!=0 ){
+  	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+  	hptr_array[baca_id + seg]->Fill( adc );
+  	if(nhbh1_flag==1&&nhbh2_flag==1){
+  	  hptr_array[btof_id+7+19+8]->Fill(adc);
+  	  if(pi_flag){
+  	    hptr_array[btof_id+9+19+8]->Fill(adc);
+  	  }
+  	  if(k_flag){
+  	    hptr_array[btof_id+10+19+8]->Fill(adc);
+  	  }
+  	  if(p_flag){
+  	    hptr_array[btof_id+11+19+8]->Fill(adc);
+  	  }
+  	}
+      }
+      // TDC
+      int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      bool flag_t = false;
 
-  //     for(int m = 0; m<nhit_t; ++m){
-  //     	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
-  //     	hptr_array[bact_id + seg]->Fill( tdc );
+      for(int m = 0; m<nhit_t; ++m){
+      	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+      	hptr_array[bact_id + seg]->Fill( tdc );
 
-  //     	if(tdc_min < tdc && tdc < tdc_max){
-  //     	  flag_t = true;
-  //     	}// tdc range is ok
-  //     }// for(m)
+      	if(tdc_min < tdc && tdc < tdc_max){
+      	  flag_t = true;
+      	}// tdc range is ok
+      }// for(m)
 
-  //     if( flag_t ){
-  //     	// ADC w/TDC
-  //     	if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
-  //     	  int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-  //     	  hptr_array[bacawt_id + seg]->Fill( adc );
-  //     	  if(nhbh1_flag==1&&nhbh2_flag==1){
-  //     	    hptr_array[btof_id+8+19+8]->Fill(adc);
-  //     	  }
-  //     	}
-  //     	hptr_array[bach_id]->Fill(seg);
-  //     	++multiplicity;
+      if( flag_t ){
+      	// ADC w/TDC
+      	if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
+      	  int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+      	  hptr_array[bacawt_id + seg]->Fill( adc );
+      	  if(nhbh1_flag==1&&nhbh2_flag==1){
+      	    hptr_array[btof_id+8+19+8]->Fill(adc);
+      	  }
+      	}
+      	hptr_array[bach_id]->Fill(seg);
+      	++multiplicity;
 
-  //     	if( pi_flag==1 ){
-  //     	  hptr_array[btof_id+4+19+8]->Fill(1); //BACeff
-  //     	}
-  //     	if( k_flag==1 ){
-  //     	  hptr_array[btof_id+5+19+8]->Fill(1); //BACeff
-  //     	}
-  //     	if( p_flag==1 ){
-  //     	  hptr_array[btof_id+6+19+8]->Fill(1); //BACeff
-  //     	}
+      	if( pi_flag==1 ){
+      	  hptr_array[btof_id+4+19+8]->Fill(1); //BAC pi eff
+      	}
+      	if( k_flag==1 ){
+      	  hptr_array[btof_id+5+19+8]->Fill(1); //BAC K eff
+      	}
+      	if( p_flag==1 ){
+      	  hptr_array[btof_id+6+19+8]->Fill(1); //BAC p eff
+      	}
 
-  //     }// flag is OK
-  //   }
+      }// flag is OK
+    }
 
-  //   hptr_array[bacm_id]->Fill( multiplicity );
+    hptr_array[bacm_id]->Fill( multiplicity );
 
-  // }//PVAC
+  }//E75FMBAC1
+  //--------------------------------------------------------------
+
+
+
+  // E75FMBAC2 -----------------------------------------------------------
+  // ------- Hanako Ohmuro ----------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("E75BAC");
+    static const int k_adc    = gUnpacker.get_data_id("E75BAC","adc");
+    static const int k_tdc    = gUnpacker.get_data_id("E75BAC","tdc");
+
+    // sequential id
+    static const int baca_id   = gHist.getSequentialID(kE75BAC, 0, kADC,     1);
+    static const int bact_id   = gHist.getSequentialID(kE75BAC, 0, kTDC,     1);
+    static const int bacawt_id = gHist.getSequentialID(kE75BAC, 0, kADCwTDC, 1);
+    static const int bach_id   = gHist.getSequentialID(kE75BAC, 0, kHitPat,  1);
+    static const int bacm_id   = gHist.getSequentialID(kE75BAC, 0, kMulti,   1);
+    static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
+    // TDC gate range
+    //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
+    //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
+    static const int tdc_min = 1130;
+    static const int tdc_max = 1170;
+
+    int multiplicity = 0;
+    //for(int seg = 0; seg<NumOfSegBAC; ++seg){
+    for(int seg = 1; seg<2; ++seg){
+      // ADC
+      int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      if( nhit_a!=0 ){
+  	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+  	hptr_array[baca_id + seg]->Fill( adc );
+  	if(nhbh1_flag==1&&nhbh2_flag==1){
+  	  hptr_array[btof_id+7+19+16]->Fill(adc);
+  	  if(pi_flag){
+  	    hptr_array[btof_id+9+19+16]->Fill(adc);
+  	  }
+  	  if(k_flag){
+  	    hptr_array[btof_id+10+19+16]->Fill(adc);
+  	  }
+  	  if(p_flag){
+  	    hptr_array[btof_id+11+19+16]->Fill(adc);
+  	  }
+  	}
+      }
+      // TDC
+      int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      bool flag_t = false;
+
+      for(int m = 0; m<nhit_t; ++m){
+      	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+      	hptr_array[bact_id + seg]->Fill( tdc );
+
+      	if(tdc_min < tdc && tdc < tdc_max){
+      	  flag_t = true;
+      	}// tdc range is ok
+      }// for(m)
+
+      if( flag_t ){
+      	// ADC w/TDC
+      	if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
+      	  int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+      	  hptr_array[bacawt_id + seg]->Fill( adc );
+      	  if(nhbh1_flag==1&&nhbh2_flag==1){
+      	    hptr_array[btof_id+8+19+16]->Fill(adc);
+      	  }
+      	}
+      	hptr_array[bach_id]->Fill(seg);
+      	++multiplicity;
+
+      	if( pi_flag==1 ){
+      	  hptr_array[btof_id+4+19+16]->Fill(1); //BACeff
+      	}
+      	if( k_flag==1 ){
+      	  hptr_array[btof_id+5+19+16]->Fill(1); //BACeff
+      	}
+      	if( p_flag==1 ){
+      	  hptr_array[btof_id+6+19+16]->Fill(1); //BACeff
+      	}
+
+      }// flag is OK
+    }
+
+    hptr_array[bacm_id]->Fill( multiplicity );
+
+  }// E75FMBAC2
   //---------------------------------------------------------------
 
 
 
-  // FAC -----------------------------------------------------------
-  // {
-  //   // data type
-  //   static const int k_device = gUnpacker.get_device_id("FAC");
-  //   static const int k_adc    = gUnpacker.get_data_id("FAC","adc");
-  //   static const int k_tdc    = gUnpacker.get_data_id("FAC","tdc");
+  // E75LFBAC -----------------------------------------------------------
+  // ------- Nadeshiko Ohmuro ----------------------------------------------------
+  {
+    // data type
+    static const int k_device = gUnpacker.get_device_id("E75BAC");
+    static const int k_adc    = gUnpacker.get_data_id("E75BAC","adc");
+    static const int k_tdc    = gUnpacker.get_data_id("E75BAC","tdc");
 
-  //   // sequential id
-  //   static const int baca_id   = gHist.getSequentialID(kFAC, 0, kADC,     1);
-  //   static const int bact_id   = gHist.getSequentialID(kFAC, 0, kTDC,     1);
-  //   static const int bacawt_id = gHist.getSequentialID(kFAC, 0, kADCwTDC, 1);
-  //   static const int bach_id   = gHist.getSequentialID(kFAC, 0, kHitPat,  1);
-  //   static const int bacm_id   = gHist.getSequentialID(kFAC, 0, kMulti,   1);
-  //   static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
-  //   // TDC gate range
-  //   //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
-  //   //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
-  //   static const int tdc_min = 1130;
-  //   static const int tdc_max = 1170;
+    // sequential id
+    static const int baca_id   = gHist.getSequentialID(kE75BAC, 0, kADC,     1);
+    static const int bact_id   = gHist.getSequentialID(kE75BAC, 0, kTDC,     1);
+    static const int bacawt_id = gHist.getSequentialID(kE75BAC, 0, kADCwTDC, 1);
+    static const int bach_id   = gHist.getSequentialID(kE75BAC, 0, kHitPat,  1);
+    static const int bacm_id   = gHist.getSequentialID(kE75BAC, 0, kMulti,   1);
+    static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
+    // TDC gate range
+    //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
+    //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
+    static const int tdc_min = 1130;
+    static const int tdc_max = 1170;
 
-  //   int multiplicity = 0;
-  //   //for(int seg = 0; seg<NumOfSegBAC; ++seg){
-  //   for(int seg = 0; seg<1; ++seg){
-  //     // ADC
-  //     int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
-  //     if( nhit_a!=0 ){
-  // 	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-  // 	hptr_array[baca_id + seg]->Fill( adc );
-  // 	if(nhbh1_flag==1&&nhbh2_flag==1){
-  // 	  hptr_array[btof_id+7+19+16]->Fill(adc);
-  // 	  if(pi_flag){
-  // 	    hptr_array[btof_id+9+19+16]->Fill(adc);
-  // 	  }
-  // 	  if(k_flag){
-  // 	    hptr_array[btof_id+10+19+16]->Fill(adc);
-  // 	  }
-  // 	  if(p_flag){
-  // 	    hptr_array[btof_id+11+19+16]->Fill(adc);
-  // 	  }
-  // 	}
-  //     }
-  //     // TDC
-  //     int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-  //     bool flag_t = false;
+    int multiplicity = 0;
+    //for(int seg = 0; seg<NumOfSegBAC; ++seg){
+    for(int seg = 2; seg<3; ++seg){
+      // ADC
+      int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      if( nhit_a!=0 ){
+  	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+  	hptr_array[baca_id + seg]->Fill( adc );
+  	if(nhbh1_flag==1&&nhbh2_flag==1){
+  	  hptr_array[btof_id+7+19+32]->Fill(adc);
+  	  if(pi_flag){
+  	    hptr_array[btof_id+9+19+32]->Fill(adc);
+  	  }
+  	  if(k_flag){
+  	    hptr_array[btof_id+10+19+32]->Fill(adc);
+  	  }
+  	  if(p_flag){
+  	    hptr_array[btof_id+11+19+32]->Fill(adc);
+  	  }
+  	}
+      }
+      // TDC
+      int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      bool flag_t = false;
 
-  //     for(int m = 0; m<nhit_t; ++m){
-  //     	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
-  //     	hptr_array[bact_id + seg]->Fill( tdc );
+      for(int m = 0; m<nhit_t; ++m){
+      	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+      	hptr_array[bact_id + seg]->Fill( tdc );
 
-  //     	if(tdc_min < tdc && tdc < tdc_max){
-  //     	  flag_t = true;
-  //     	}// tdc range is ok
-  //     }// for(m)
+      	if(tdc_min < tdc && tdc < tdc_max){
+      	  flag_t = true;
+      	}// tdc range is ok
+      }// for(m)
 
-  //     if( flag_t ){
-  //     	// ADC w/TDC
-  //     	if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
-  //     	  int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-  //     	  hptr_array[bacawt_id + seg]->Fill( adc );
-  //     	  if(nhbh1_flag==1&&nhbh2_flag==1){
-  //     	    hptr_array[btof_id+8+19+16]->Fill(adc);
-  //     	  }
-  //     	}
-  //     	hptr_array[bach_id]->Fill(seg);
-  //     	++multiplicity;
+      if( flag_t ){
+      	// ADC w/TDC
+      	if( gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0 ){
+      	  int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+      	  hptr_array[bacawt_id + seg]->Fill( adc );
+      	  if(nhbh1_flag==1&&nhbh2_flag==1){
+      	    hptr_array[btof_id+8+19+32]->Fill(adc);
+      	  }
+      	}
+      	hptr_array[bach_id]->Fill(seg);
+      	++multiplicity;
 
-  //     	if( pi_flag==1 ){
-  //     	  hptr_array[btof_id+4+19+16]->Fill(1); //BACeff
-  //     	}
-  //     	if( k_flag==1 ){
-  //     	  hptr_array[btof_id+5+19+16]->Fill(1); //BACeff
-  //     	}
-  //     	if( p_flag==1 ){
-  //     	  hptr_array[btof_id+6+19+16]->Fill(1); //BACeff
-  //     	}
+      	if( pi_flag==1 ){
+      	  hptr_array[btof_id+4+19+32]->Fill(1); //BACeff
+      	}
+      	if( k_flag==1 ){
+      	  hptr_array[btof_id+5+19+32]->Fill(1); //BACeff
+      	}
+      	if( p_flag==1 ){
+      	  hptr_array[btof_id+6+19+32]->Fill(1); //BACeff
+      	}
 
-  //     }// flag is OK
-  //   }
+      }// flag is OK
+    }
 
-  //   hptr_array[bacm_id]->Fill( multiplicity );
+    hptr_array[bacm_id]->Fill( multiplicity );
 
-  // }//PVAC
+  }// E75LFBAC
   //---------------------------------------------------------------
+
 
 
 

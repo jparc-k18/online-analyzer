@@ -1764,6 +1764,17 @@ TList* HistMaker::createSAC( Bool_t flag_ps )
         top_dir->Add(sub_dir);
   }
 
+  { // Multiplicity -----------------------------------------------
+    Int_t target_id = getUniqueID(kSAC, 0, kMulti, 0);
+    for(Int_t i = 0; i<1; ++i){
+    const char* title = NULL;
+    title = Form("%s_%s", nameDetector, "multiplicity");
+    top_dir->Add(createTH1(++target_id, title,
+			   2, 0, 2,
+			   "Multiplicity", ""));
+    }
+  }
+
   return top_dir;
 }
 

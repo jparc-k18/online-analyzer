@@ -12,18 +12,17 @@ void dispGeAdc()
   // ----------------------------------
 
   ////////// Ge ADC
-  // draw ADC
-  // SL1-4
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(4,4);
+    c->Divide(4,3);
     int base_id = HistMaker::getUniqueID(kGe, 0, kADC, 1);
     for(int i=0; i<NumOfSegGe; i++){
-      if( i >= 16 ) break;
+      if( i >= 12 ) break;
       c->cd(i+1);
-      gPad->SetLogy();
+      // gPad->SetLogy();
       TH1 *h = (TH1*)GHist::get(base_id +i);
+      // h->GetXaxis()->SetRangeUser(0.,3000.); //tmp
       h->Draw();
     }
     c->Update();
@@ -32,13 +31,14 @@ void dispGeAdc()
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
     c->Clear();
-    c->Divide(4,4);
+    c->Divide(4,3);
     int base_id = HistMaker::getUniqueID(kGe, 0, kADC, 1);
     for(int i=0; i<NumOfSegGe; i++){
-      if( i < 16 ) continue;
-      c->cd((i-16)+1);
-      gPad->SetLogy();
+      if( i < 12 ) continue;
+      c->cd((i-12)+1);
+      // gPad->SetLogy();
       TH1 *h = (TH1*)GHist::get(base_id +i);
+      // h->GetXaxis()->SetRangeUser(0.,3000.); //tmp
       h->Draw();
     }
     c->Update();
@@ -66,11 +66,11 @@ void dispGeAdc()
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
     c->Clear();
-    c->Divide( 4, 4 );
+    c->Divide( 4, 3 );
     int adc_id  = HistMaker::getUniqueID(kGe, 0, kADC, 1);
     int adcwtdc_id = HistMaker::getUniqueID(kGe, 0, kADCwTDC, 1);
     for( int i=0; i<NumOfSegGe; ++i ){
-      if( i >= 16 ) break;
+      if( i >= 12 ) break;
       c->cd(i+1);
       TH1 *h = (TH1*)GHist::get( adc_id + i );
       h->GetXaxis()->SetRangeUser( 0, 8192 );
@@ -92,12 +92,12 @@ void dispGeAdc()
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c5");
     c->Clear();
-    c->Divide( 4, 4 );
+    c->Divide( 4, 3 );
     int adc_id  = HistMaker::getUniqueID(kGe, 0, kADC, 1);
     int adcwtdc_id = HistMaker::getUniqueID(kGe, 0, kADCwTDC, 1);
     for( int i=0; i<NumOfSegGe; ++i ){
-      if( i < 16 ) continue;
-      c->cd((i-16)+1);
+      if( i < 12 ) continue;
+      c->cd((i-12)+1);
       TH1 *h = (TH1*)GHist::get( adc_id + i );
       h->GetXaxis()->SetRangeUser( 0, 8192 );
       h->Draw();

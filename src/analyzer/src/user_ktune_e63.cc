@@ -607,9 +607,6 @@ process_begin( const std::vector<std::string>& argv )
 				"x [mm]", "y [mm]"
 				));
 
-
-
-
  tab_hist->Add(gHist.createTH1(btof_id+23, "BAC2eff [pi]",
                                6, 0, 6,
                                "Pattern", ""
@@ -643,9 +640,6 @@ process_begin( const std::vector<std::string>& argv )
                                "ADC [ch]", ""
                                ));
 
-
-
-
   tab_hist->Add(gHist.createTH1(btof_id+23+8, "BAC1eff wBAC2 [pi]",
                                6, 0, 6,
                                "Pattern", ""
@@ -654,84 +648,62 @@ process_begin( const std::vector<std::string>& argv )
                                6, 0, 6,
                                "Pattern", ""
                                ));
-/*  tab_hist->Add(gHist.createTH1(btof_id+23+8, "PVACeff [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+25+8, "BAC1eff wBAC2,SAC1 [pi]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+24+8, "PVACeff [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+26+8, "BAC1eff wBAC2,SAC1 [k]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-*/
-  tab_hist->Add(gHist.createTH1(btof_id+25+8, "PVACeff [p]",
+  tab_hist->Add(gHist.createTH1(btof_id+27+8, "BAC2eff wBAC1 [pi]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+26+8, "PVAC ADC",
-                               200, 0, 2000,
-                               "ADC [ch]", ""
-                               ));
-  tab_hist->Add(gHist.createTH1(btof_id+27+8, "PVAC ADC wTDC",
-                               200, 0, 2000,
-                               "ADC [ch]", ""
-                               ));
-  tab_hist->Add(gHist.createTH1(btof_id+28+8, "PVAC ADC [pi]",
-                               200, 0, 2000,
-                               "ADC [ch]", ""
-                               ));
-  tab_hist->Add(gHist.createTH1(btof_id+29+8, "PVAC ADC [k]",
-                               200, 0, 2000,
-                               "ADC [ch]", ""
-                               ));
-  tab_hist->Add(gHist.createTH1(btof_id+30+8, "PVAC ADC [p]",
-                               200, 0, 2000,
-                               "ADC [ch]", ""
-                               ));
-
-
-
-
-  tab_hist->Add(gHist.createTH1(btof_id+23+16, "BAC2eff wBAC1 [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+28+8, "BAC2eff wBAC1 [k]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+24+16, "BAC2eff wBAC1 [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+29+8, "BAC2eff wBAC1,SAC1 [pi]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-/*
-  tab_hist->Add(gHist.createTH1(btof_id+23+16, "FACeff [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+30+8, "BAC2eff wBAC1,SAC1 [k]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+24+16, "FACeff [k]",
+  // SAC1
+  tab_hist->Add(gHist.createTH1(btof_id+23+16, "SAC1eff [pi]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-*/
-  tab_hist->Add(gHist.createTH1(btof_id+25+16, "FACeff [p]",
+  tab_hist->Add(gHist.createTH1(btof_id+24+16, "SAC1eff [k]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+26+16, "FAC ADC",
+  tab_hist->Add(gHist.createTH1(btof_id+25+16, "SAC1 ADC",
+				200, 0, 2000,
+				"ADC [ch]", ""
+				));
+  tab_hist->Add(gHist.createTH1(btof_id+26+16, "SAC1 ADC wTDC",
+				200, 0, 2000,
+				"ADC [ch]", ""
+				));
+  tab_hist->Add(gHist.createTH1(btof_id+27+16, "SAC1 ADC [pi]",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+27+16, "FAC ADC wTDC",
+  tab_hist->Add(gHist.createTH1(btof_id+28+16, "SAC1 ADC [k]",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+28+16, "FAC ADC [pi]",
-                               200, 0, 2000,
-                               "ADC [ch]", ""
+  tab_hist->Add(gHist.createTH1(btof_id+29+16, "SAC1eff wBAC1,BAC2 [pi]",
+                               6, 0, 6,
+                               "Pattern", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+29+16, "FAC ADC [k]",
-                               200, 0, 2000,
-                               "ADC [ch]", ""
-                               ));
-  tab_hist->Add(gHist.createTH1(btof_id+30+16, "FAC ADC [p]",
-                               200, 0, 2000,
-                               "ADC [ch]", ""
+  tab_hist->Add(gHist.createTH1(btof_id+30+16, "SAC1eff wBAC1,BAC2 [k]",
+                               6, 0, 6,
+                               "Pattern", ""
                                ));
 
 
@@ -959,18 +931,30 @@ process_event( void )
       hptr_array[btof_id+1]->Fill(btof);
       hptr_array[btof_id+4]->Fill(0); //BAC1eff
       hptr_array[btof_id+4+19]->Fill(0); //BAC2eff
+      hptr_array[btof_id+23+16]->Fill(0); //SAC1eff
 
       static const int k_device = gUnpacker.get_device_id("BAC");
       static const int k_tdcbac = gUnpacker.get_data_id("BAC","tdc");
+      static const int k_device_sac1 = gUnpacker.get_device_id("SAC");
+      static const int k_tdcsac1 = gUnpacker.get_data_id("SAC","tdc");
       int nhit_t2 = gUnpacker.get_entries(k_device, 0, 1, 0, k_tdcbac);
+      int nhit_sac1t = gUnpacker.get_entries(k_device_sac1, 0, 0, 0, k_tdcsac1);
       for(int m = 0; m<nhit_t2; ++m){
         int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac, m);
         static const int tdc_min = 720;
         static const int tdc_max = 780;
         if(tdc_min < tdcbac2 && tdcbac2 < tdc_max){
-          hptr_array[btof_id+4+19+8]->Fill(0); //PVACeff->BAC1/BAC2 eff
+          hptr_array[btof_id+4+19+8]->Fill(0); // BAC1/BAC2 eff
+	  for(int m = 0; m<nhit_sac1t; ++m){
+	    int tdcsac1 = gUnpacker.get(k_device_sac1, 0, 0, 0, k_tdcsac1, m);
+	    static const int tdcsac1_min = 720;
+	    static const int tdcsac1_max = 780;
+	    if(tdc_min < tdcsac1 && tdcsac1 < tdc_max){
+	      hptr_array[btof_id+25+8]->Fill(0); // BAC1/(BAC2*SAC1) eff
+	    }
+	  } // for(nhit_sac1t)
         }
-      }
+      } // for(nhit_t2)
 
       int nhit_t1 = gUnpacker.get_entries(k_device, 0, 0, 0, k_tdcbac);
       for(int m = 0; m<nhit_t1; ++m){
@@ -978,9 +962,25 @@ process_event( void )
         static const int tdc_min = 720;
         static const int tdc_max = 780;
         if(tdc_min < tdcbac1 && tdcbac1 < tdc_max){
-          hptr_array[btof_id+4+19+16]->Fill(0); //PVAC2eff
+          hptr_array[btof_id+4+19+12]->Fill(0); // BAC2/BAC1 eff
+	  for(int m = 0; m<nhit_t2; ++m){
+	    int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac, m);
+	    static const int tdc_min = 720;
+	    static const int tdc_max = 780;
+	    if(tdc_min < tdcbac2 && tdcbac2 < tdc_max){
+	      hptr_array[btof_id+29+16]->Fill(0); // SAC1/(BAC1*BAC2) eff
+	    }
+	  } // for(nhit_t2)
+	  for(int m = 0; m<nhit_sac1t; ++m){
+	    int tdcsac1 = gUnpacker.get(k_device_sac1, 0, 0, 0, k_tdcsac1, m);
+	    static const int tdcsac1_min = 720;
+	    static const int tdcsac1_max = 780;
+	    if(tdc_min < tdcsac1 && tdcsac1 < tdc_max){
+	      hptr_array[btof_id+29+8]->Fill(0); // BAC2/(BAC1*SAC1) eff
+	    }
+	  } // for(nhit_sac1t)
         }
-      }
+      } // for(nhit_t1)
     }
     //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.3<btof && btof<-1.4 ){  // 1.8GeV/c
     //if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.8<btof && btof<-1.8 ){  // 1.4GeV/c
@@ -991,24 +991,54 @@ process_event( void )
       hptr_array[btof_id+2]->Fill(btof);
       hptr_array[btof_id+5]->Fill(0); //BAC1eff
       hptr_array[btof_id+5+19]->Fill(0); //BAC2eff
+      hptr_array[btof_id+24+16]->Fill(0); //SAC1eff
+
       static const int k_device = gUnpacker.get_device_id("BAC");
       static const int k_tdcbac = gUnpacker.get_data_id("BAC","tdc");
+      static const int k_device_sac1 = gUnpacker.get_device_id("SAC");
+      static const int k_tdcsac1 = gUnpacker.get_data_id("SAC","tdc");
       int nhit_t2 = gUnpacker.get_entries(k_device, 0, 1, 0, k_tdcbac);
+      int nhit_sac1t = gUnpacker.get_entries(k_device_sac1, 0, 0, 0, k_tdcsac1);
       for(int m = 0; m<nhit_t2; ++m){
         int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac, m);
         static const int tdc_min = 720;
         static const int tdc_max = 780;
         if(tdc_min > tdcbac2 || tdcbac2 > tdc_max){
-          hptr_array[btof_id+5+19+8]->Fill(0); //PVACeff->BAC1/BAC2 eff
+          hptr_array[btof_id+5+19+8]->Fill(0); // BAC1/BAC2 eff
+	  for(int m = 0; m<nhit_sac1t; ++m){
+	    int tdcsac1 = gUnpacker.get(k_device_sac1, 0, 0, 0, k_tdcsac1, m);
+	    static const int tdcsac1_min = 720;
+	    static const int tdcsac1_max = 780;
+	    if(tdc_min < tdcsac1 && tdcsac1 < tdc_max){
+	      // hptr_array[btof_id+26+8]->Fill(0); // BAC1/(BAC2*SAC1) eff
+	    }
+	  } // for(nhit_sac1t)
         }
       }
+
       int nhit_t1 = gUnpacker.get_entries(k_device, 0, 0, 0, k_tdcbac);
       for(int m = 0; m<nhit_t1; ++m){
         int tdcbac1 = gUnpacker.get(k_device, 0, 0, 0, k_tdcbac, m);
         static const int tdc_min = 720;
         static const int tdc_max = 780;
         if(tdc_min > tdcbac1 || tdcbac1 > tdc_max){
-          hptr_array[btof_id+5+19+16]->Fill(0); //PVACeff->BAC1/BAC2 eff
+          hptr_array[btof_id+5+19+12]->Fill(0); // BAC1/BAC2 eff
+	  for(int m = 0; m<nhit_t2; ++m){
+	    int tdcbac2 = gUnpacker.get(k_device, 0, 1, 0, k_tdcbac, m);
+	    static const int tdc_min = 720;
+	    static const int tdc_max = 780;
+	    if(tdc_min < tdcbac2 && tdcbac2 < tdc_max){
+	      // hptr_array[btof_id+30+16]->Fill(0); // SAC1/(BAC1*BAC2) eff
+	    }
+	  } // for(nhit_t2)
+	  for(int m = 0; m<nhit_sac1t; ++m){
+	    int tdcsac1 = gUnpacker.get(k_device_sac1, 0, 0, 0, k_tdcsac1, m);
+	    static const int tdcsac1_min = 720;
+	    static const int tdcsac1_max = 780;
+	    if(tdc_min < tdcsac1 && tdcsac1 < tdc_max){
+	      // hptr_array[btof_id+30+8]->Fill(0); // BAC2/(BAC1*SAC1) eff
+	    }
+	  } // for(nhit_sac1t)
         }
       }
     }
@@ -1021,8 +1051,6 @@ process_event( void )
       hptr_array[btof_id+3]->Fill(btof);
       hptr_array[btof_id+6]->Fill(0); //BAC1eff
       hptr_array[btof_id+6+19]->Fill(0); //BAC2eff
-      hptr_array[btof_id+6+19+8]->Fill(0); //PVACeff
-      hptr_array[btof_id+6+19+8]->Fill(0); //FACeff
     }
 
   } // btof
@@ -1781,7 +1809,7 @@ process_event( void )
             static const int tdc1_min = 720;
             static const int tdc1_max = 780;
             if(tdc_min < tdcbac1 && tdcbac1 < tdc_max){
-              hptr_array[btof_id+4+19+16]->Fill(1); //PVACeff->BAC2/BAC1 eff
+              hptr_array[btof_id+4+19+12]->Fill(1); //PVACeff->BAC2/BAC1 eff
             }
           }
       	}
@@ -1796,7 +1824,7 @@ process_event( void )
             static const int tdc1_min = 720;
             static const int tdc1_max = 780;
             if(tdc_min > tdcbac1 || tdcbac1 > tdc_max){
-              hptr_array[btof_id+5+19+16]->Fill(1); //FACeff->BAC1/BAC2 eff
+              hptr_array[btof_id+5+19+12]->Fill(1); //FACeff->BAC1/BAC2 eff
             }
           }
       	}
@@ -1967,7 +1995,7 @@ process_event( void )
   //     	++multiplicity;
 
   //     	if( pi_flag==1 ){
-  //     	  hptr_array[btof_id+4+19+16]->Fill(1); //BACeff
+  //     	  hptr_array[btof_id+4+19+13]->Fill(1); //BACeff
   //     	}
   //     	if( k_flag==1 ){
   //     	  hptr_array[btof_id+5+19+16]->Fill(1); //BACeff

@@ -130,7 +130,6 @@ namespace analyzer
     tab_macro->Add(macro::Get("dispBH2_MTHR_Fit"));
     tab_macro->Add(macro::Get("dispDAQ"));
     tab_macro->Add(macro::Get("dispSieve"));
-    tab_macro->Add(macro::Get("dispParaLC"));
 
     //  tab_macro->Add(macro::Get("dispAcEfficiency"));
 
@@ -190,6 +189,7 @@ namespace analyzer
     // tab_misc->Add(macro::Get("dispTF_GN1"));
     // tab_misc->Add(macro::Get("dispTF_GN2"));
     tab_misc->Add(macro::Get("dispParaBGO"));
+    tab_misc->Add(macro::Get("dispParaLC"));
 
     // Set histogram pointers to the vector sequentially.
     // This vector contains both TH1 and TH2.
@@ -3002,56 +3002,55 @@ namespace analyzer
 #endif
     }//BAC
 
-
-	// SAC -----------------------------------------------------------
+    // SAC -----------------------------------------------------------
     {
       Int_t multiplicity = 0;
       {
-		// data type
-		static const Int_t k_device = gUnpacker.get_device_id("SAC");
-		static const Int_t k_adc    = gUnpacker.get_data_id("SAC","adc");
-		static const Int_t k_tdc    = gUnpacker.get_data_id("SAC","tdc");
+	// data type
+	static const Int_t k_device = gUnpacker.get_device_id("SAC");
+	static const Int_t k_adc    = gUnpacker.get_data_id("SAC","adc");
+	static const Int_t k_tdc    = gUnpacker.get_data_id("SAC","tdc");
 
-		// sequential id
-		static const Int_t saca_id   = gHist.getSequentialID(kSAC, 0, kADC);
-		static const Int_t sact_id   = gHist.getSequentialID(kSAC, 0, kTDC);
-		static const Int_t sacawt_id = gHist.getSequentialID(kSAC, 0, kADCwTDC);
-		static const Int_t sach_id   = gHist.getSequentialID(kSAC, 0, kHitPat);
-		static const Int_t sacm_id   = gHist.getSequentialID(kSAC, 0, kMulti);
+	// sequential id
+	static const Int_t saca_id   = gHist.getSequentialID(kSAC, 0, kADC);
+	static const Int_t sact_id   = gHist.getSequentialID(kSAC, 0, kTDC);
+	static const Int_t sacawt_id = gHist.getSequentialID(kSAC, 0, kADCwTDC);
+	static const Int_t sach_id   = gHist.getSequentialID(kSAC, 0, kHitPat);
+	static const Int_t sacm_id   = gHist.getSequentialID(kSAC, 0, kMulti);
 
-		// TDC gate range
-		static const Int_t tdc_min = gUser.GetParameter("TdcSAC", 0);
-		static const Int_t tdc_max = gUser.GetParameter("TdcSAC", 1);
+	// TDC gate range
+	static const Int_t tdc_min = gUser.GetParameter("TdcSAC", 0);
+	static const Int_t tdc_max = gUser.GetParameter("TdcSAC", 1);
 
-		// ADC
-		Int_t nhit_a = gUnpacker.get_entries(k_device, 0, 0, 0, k_adc);
-		if (nhit_a!=0) {
-		Int_t adc = gUnpacker.get(k_device, 0, 0, 0, k_adc);
-		hptr_array[saca_id + 0]->Fill(adc);
-		}
-		// TDC
-		Int_t nhit_t = gUnpacker.get_entries(k_device, 0, 0, 0, k_tdc);
-		Bool_t is_in_gate = false;
+	// ADC
+	Int_t nhit_a = gUnpacker.get_entries(k_device, 0, 0, 0, k_adc);
+	if (nhit_a!=0) {
+	  Int_t adc = gUnpacker.get(k_device, 0, 0, 0, k_adc);
+	  hptr_array[saca_id + 0]->Fill(adc);
+	}
+	// TDC
+	Int_t nhit_t = gUnpacker.get_entries(k_device, 0, 0, 0, k_tdc);
+	Bool_t is_in_gate = false;
 
-		for(Int_t m = 0; m<nhit_t; ++m) {
-		Int_t tdc = gUnpacker.get(k_device, 0, 0, 0, k_tdc, m);
-		hptr_array[sact_id + 0]->Fill(tdc);
+	for(Int_t m = 0; m<nhit_t; ++m) {
+	  Int_t tdc = gUnpacker.get(k_device, 0, 0, 0, k_tdc, m);
+	  hptr_array[sact_id + 0]->Fill(tdc);
 
-		if (tdc_min < tdc && tdc < tdc_max) {
-			is_in_gate = true;
-		}// tdc range is ok
-		}// for(m)
+	  if (tdc_min < tdc && tdc < tdc_max) {
+	    is_in_gate = true;
+	  }// tdc range is ok
+	}// for(m)
 
-		if (is_in_gate) {
-		// ADC w/TDC
-		if (gUnpacker.get_entries(k_device, 0, 0, 0, k_adc)>0) {
-			Int_t adc = gUnpacker.get(k_device, 0, 0, 0, k_adc);
-			hptr_array[sacawt_id + 0]->Fill(adc);
-		}
-		hptr_array[sach_id]->Fill(0);
-		++multiplicity;
-		}// flag is OK
-		hptr_array[sacm_id+0]->Fill(multiplicity);
+	if (is_in_gate) {
+	  // ADC w/TDC
+	  if (gUnpacker.get_entries(k_device, 0, 0, 0, k_adc)>0) {
+	    Int_t adc = gUnpacker.get(k_device, 0, 0, 0, k_adc);
+	    hptr_array[sacawt_id + 0]->Fill(adc);
+	  }
+	  hptr_array[sach_id]->Fill(0);
+	  ++multiplicity;
+	}// flag is OK
+	hptr_array[sacm_id+0]->Fill(multiplicity);
       }
 
 
@@ -4298,198 +4297,98 @@ namespace analyzer
       // }
     }
 
-//     // ParaLC -----------------------------------------------------------
-//     {
-//       // data type
-//       static const Int_t k_device = gUnpacker.get_device_id("ParaLC");
-//       static const Int_t k_deviceac = gUnpacker.get_device_id("ParaLCAC");
-//       static const Int_t k_deviceref = gUnpacker.get_device_id("ParaLCRef");
-//       static const Int_t k_u      = 0; // up
-//       static const Int_t k_d      = 1; // down
-//       static const Int_t k_adc    = gUnpacker.get_data_id("ParaLC", "adc");
-//       static const Int_t k_tdc    = gUnpacker.get_data_id("ParaLC", "tdc");
-//       static const Int_t k_adcac    = gUnpacker.get_data_id("ParaLCAC", "adc");
-//       static const Int_t k_tdcac    = gUnpacker.get_data_id("ParaLCAC", "tdc");
-//       static const Int_t k_adcref    = gUnpacker.get_data_id("ParaLCRef", "adc");
-//       static const Int_t k_tdcref    = gUnpacker.get_data_id("ParaLCRef", "tdc");
-//       // TDC gate range
-//       static const UInt_t tdc_min = gUser.GetParameter("TdcParaLC", 0);
-//       static const UInt_t tdc_max = gUser.GetParameter("TdcParaLC", 1);
-//       static const UInt_t tdcac_min = gUser.GetParameter("TdcParaLCAC", 0);
-//       static const UInt_t tdcac_max = gUser.GetParameter("TdcParaLCAC", 1);
-//       static const UInt_t tdcref_min = gUser.GetParameter("TdcParaLCRef", 0);
-//       static const UInt_t tdcref_max = gUser.GetParameter("TdcParaLCRef", 1);
+/*
+    // ParaLC -----------------------------------------------------------
+    {
+      // data type
+      static const Int_t k_device = gUnpacker.get_device_id("ParaLC");
+      static const Int_t k_adc    = gUnpacker.get_data_id("ParaLC", "adc");
+      static const Int_t k_tdc    = gUnpacker.get_data_id("ParaLC", "tdc");
 
-//       // LC
+      // TDC gate range
+      static const UInt_t tdc_min = gUser.GetParameter("TdcParaLC", 0);
+      static const UInt_t tdc_max = gUser.GetParameter("TdcParaLC", 1);
 
-//       // UP
-//       Int_t lca_id   = gHist.getSequentialID(kParaLC, 0, kADC);
-//       Int_t lct_id   = gHist.getSequentialID(kParaLC, 0, kTDC);
-//       Int_t lcawt_id = gHist.getSequentialID(kParaLC, 0, kADCwTDC);
-//       Int_t lcaka_id = gHist.getSequentialID(kParaLC, 0, kADCKaon);
-//       Int_t lcapr_id = gHist.getSequentialID(kParaLC, 0, kADCProton);
-//       Int_t lcapi_id = gHist.getSequentialID(kParaLC, 0, kADCPion);
+      static const Int_t a_id   = gHist.getSequentialID(kParaLC, 0, kADC);
+      static const Int_t t_id   = gHist.getSequentialID(kParaLC, 0, kTDC);
+      static const Int_t awt_id = gHist.getSequentialID(kParaLC, 0, kADCwTDC);
 
-//       for(Int_t seg=0; seg<NumOfSegParaLC; ++seg) {
-// 	// ADC
-// 	Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc);
-// 	if (nhit != 0) {
-// 	  UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-// 	  hptr_array[lca_id + seg]->Fill(adc);
-// 	}
-// 	// TDC
-// 	nhit = gUnpacker.get_entries(k_device, 0, seg, k_u, k_tdc);
-// 	for(Int_t m = 0; m < nhit; ++m) {
-// 	  UInt_t tdc = gUnpacker.get(k_device, 0, seg, k_u, k_tdc, m);
-// 	  UInt_t tdcac = gUnpacker.get(k_deviceac, 0, seg, k_tdcac, m);
-// 	  UInt_t tdcref = gUnpacker.get(k_deviceref, 0, seg, k_tdcref, m);
-// 	  if (tdc!=0) {
-// 	    hptr_array[lct_id + seg]->Fill(tdc);
-// 	    // ADC w/TDC
-// 	    if (tdc_min < tdc && tdc < tdc_max &&
-//               gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0) {
-// 	      UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-// 	      hptr_array[lcawt_id + seg]->Fill(adc);
-// 	    }
-// 	  // Each particle detected
-// 	  if (tdcref_min < tdcref && tdcref < tdcref_max)
-// 	    // ADC Kaon
-// 	    if (tdc_min < tdc && tdc < tdc_max && tdcac == 0 &&
-// 	      gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0) {
-// 	      UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-// 	      hptr_array[lcaka_id + seg]->Fill(adc);
-// 	    }
-// 	    // ADC Proton
-// 	    if (tdc == 0 && tdcac == 0 &&
-// 		gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0) {
-// 	      UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-// 	      hptr_array[lcapr_id + seg]->Fill(adc);
-// 	    }
-// 	    // ADC Pion
-// 	    if (tdc_min < tdc && tdc < tdc_max && tdcac_min < tdcac && tdcac < tdcac_max &&
-// 		gUnpacker.get_entries(k_device, 0, seg, k_u, k_adc)>0) {
-// 	      UInt_t adc = gUnpacker.get(k_device, 0, seg, k_u, k_adc);
-// 	      hptr_array[lcapi_id + seg]->Fill(adc);
-// 	    }
-// 	  }
-// 	}
-//       }
+      for(Int_t seg=0; seg < NumOfSegParaLC*2; ++seg) {
+        // ADC
+        Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+        if (nhit != 0) {
+	  Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+          hptr_array[a_id + seg]->Fill(adc);
+        }//ADC
+        // TDC
+ 	Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+	Bool_t is_in_gate = false;
+ 	for(Int_t m = 0; m < nhit_t; ++m) {
+ 	  Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+	  hptr_array[t_id + seg]->Fill(tdc);
+	  if (tdc_min < tdc && tdc < tdc_max) {
+            is_in_gate = true;
+	  }//tdc range is ok
+        }//TDC
+	if (is_in_gate) {
+          // ADC w/TDC
+	  if (gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0) {
+	    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+            hptr_array[awt_id + seg]->Fill(adc);
+	  }//ADC w/TDC
+	}//flag is OK
+      }//for seg
+    }//ParaLC
 
-//       // DOWN
-//       lca_id   = gHist.getSequentialID(kParaLC, 0, kADC,     NumOfSegParaLC+1);
-//       lct_id   = gHist.getSequentialID(kParaLC, 0, kTDC,     NumOfSegParaLC+1);
-//       lcawt_id = gHist.getSequentialID(kParaLC, 0, kADCwTDC, NumOfSegParaLC+1);
-//       Int_t lcaka_id = gHist.getSequentialID(kParaLC, 0, kADCKaon, NumOfSegParaLC+1);
-//       Int_t lcapr_id = gHist.getSequentialID(kParaLC, 0, kADCProton, NumOfSegParaLC+1);
-//       Int_t lcapi_id = gHist.getSequentialID(kParaLC, 0, kADCPion, NumOfSegParaLC+1);
+     // ParaLCRef
+     {
+        // data type
+        static const Int_t k_device = gUnpacker.get_device_id("ParaLCRef");
+        static const Int_t k_adc    = gUnpacker.get_data_id("ParaLCRef", "adc");
+        static const Int_t k_tdc    = gUnpacker.get_data_id("ParaLCRef", "tdc");
 
-//       for(Int_t seg=0; seg<NumOfSegParaLC; ++seg) {
-// 	// ADC
-// 	Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc);
-// 	if (nhit != 0) {
-// 	  UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-// 	  hptr_array[lca_id + seg]->Fill(adc);
-// 	}
-// 	// TDC
-// 	nhit = gUnpacker.get_entries(k_device, 0, seg, k_d, k_tdc);
-// 	for(Int_t m = 0; m<nhit; ++m) {
-// 	  UInt_t tdc = gUnpacker.get(k_device, 0, seg, k_d, k_tdc, m);
-// 	  if (tdc!=0) {
-// 	    hptr_array[lct_id + seg]->Fill(tdc);
-// 	    // ADC w/TDC
-// 	    if (tdc_min<tdc && tdc<tdc_max &&
-// 		gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0) {
-// 	      UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-// 	      hptr_array[lcawt_id + seg]->Fill(adc);
-// 	    }
-// 	  }
-// 	  // Each particle detected
-// 	  if (tdcref_min < tdcref && tdcref < tdcref_max)
-// 	    // ADC Kaon
-// 	    if (tdc_min < tdc && tdc < tdc_max && tdcac == 0 &&
-// 	      gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0) {
-// 	      UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-// 	      hptr_array[lcaka_id + seg]->Fill(adc);
-// 	    }
-// 	    // ADC Proton
-// 	    if (tdc == 0 && tdcac == 0 &&
-// 		gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0) {
-// 	      UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-// 	      hptr_array[lcapr_id + seg]->Fill(adc);
-// 	    }
-// 	    // ADC Pion
-// 	    if (tdc_min < tdc && tdc < tdc_max && tdcac_min < tdcac && tdcac < tdcac_max &&
-// 		gUnpacker.get_entries(k_device, 0, seg, k_d, k_adc)>0) {
-// 	      UInt_t adc = gUnpacker.get(k_device, 0, seg, k_d, k_adc);
-// 	      hptr_array[lcapi_id + seg]->Fill(adc);
-// 	    }
-// 	  }
-// 	}
-//       }
+        // TDC gate range
+        static const UInt_t tdc_min = gUser.GetParameter("TdcParaLCRef", 0);
+        static const UInt_t tdc_max = gUser.GetParameter("TdcParaLCRef", 1);
 
-//       //LCAC
-//       lcaca_id   = gHist.getSequentialID(kParaLCAC, 0, kADC);
-//       lcact_id   = gHist.getSequentialID(kParaLCAC, 0, kTDC);
-//       lcawt_id = gHist.getSequentialID(kParaLCAC, 0, kADCwTDC);
+        static const Int_t a_id   = gHist.getSequentialID(kParaLCRef, 0, kADC);
+        static const Int_t t_id   = gHist.getSequentialID(kParaLCRef, 0, kTDC);
+        static const Int_t awt_id = gHist.getSequentialID(kParaLCRef, 0, kADCwTDC);
 
-//       for(Int_t seg=0; seg<NumOfSegParaLCAC; ++seg) {
-// 	// ADC
-// 	Int_t nhit = gUnpacker.get_entries(k_deviceac, 0, seg, k_adcac);
-// 	if (nhit != 0) {
-// 	  UInt_t adc = gUnpacker.get(k_deviceac, 0, seg, k_adcac);
-// 	  hptr_array[lca_id + seg]->Fill(adc);
-// 	}
-// 	// TDC
-// 	nhit = gUnpacker.get_entries(k_deviceac, 0, seg, k_tdcac);
-// 	for(Int_t m = 0; m<nhit; ++m) {
-// 	  UInt_t tdc = gUnpacker.get(k_deviceac, 0, seg, k_tdcac, m);
-// 	  if (tdc!=0) {
-// 	    hptr_array[lct_id + seg]->Fill(tdc);
-// 	    // ADC w/TDC
-// 	    if (tdc_min<tdc && tdc<tdc_max &&
-// 		gUnpacker.get_entries(k_deviceac, 0, seg, k_adcac)>0) {
-// 	      UInt_t adc = gUnpacker.get(k_deviceac, 0, seg, k_adcac);
-// 	      hptr_array[lcawt_id + seg]->Fill(adc);
-// 	    }
-// 	  }
-// 	}
-//       }
-
-//       //Ref
-//       lca_id   = gHist.getSequentialID(kParaLC, 0, kADC,     NumOfSegParaLC+1);
-//       lct_id   = gHist.getSequentialID(kParaLC, 0, kTDC,     NumOfSegParaLC+1);
-//       lcawt_id = gHist.getSequentialID(kParaLC, 0, kADCwTDC, NumOfSegParaLC+1);
-
-//       for(Int_t seg=0; seg<NumOfSegParaLC; ++seg) {
-// 	// ADC
-// 	Int_t nhit = gUnpacker.get_entries(k_deviceref, 0, seg, k_adcref);
-// 	if (nhit != 0) {
-// 	  UInt_t adc = gUnpacker.get(k_deviceref, 0, seg, k_adcref);
-// 	  hptr_array[lca_id + seg]->Fill(adc);
-// 	}
-// 	// TDC
-// 	nhit = gUnpacker.get_entries(k_deviceref, 0, seg, k_tdcref);
-// 	for(Int_t m = 0; m<nhit; ++m) {
-// 	  UInt_t tdc = gUnpacker.get(k_deviceref, 0, seg, k_tdcref, m);
-// 	  if (tdc!=0) {
-// 	    hptr_array[lct_id + seg]->Fill(tdc);
-// 	    // ADC w/TDC
-// 	    if (tdc_min<tdc && tdc<tdc_max &&
-// 		gUnpacker.get_entries(k_deviceref, 0, seg, k_adcref)>0) {
-// 	      UInt_t adc = gUnpacker.get(k_deviceref, 0, seg, k_adcref);
-// 	      hptr_array[lcawt_id + seg]->Fill(adc);
-// 	    }
-// 	  }
-// 	}
-//       }
-
+        for(Int_t seg=0; seg < NumOfSegParaLCRef*2; ++seg) {
+  	  // ADC
+ 	  Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+ 	  if (nhit != 0) {
+ 	    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+ 	    hptr_array[a_id + seg]->Fill(adc);
+  	  }//ADC
+          // TDC
+ 	  Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+	  Bool_t is_in_gate = false;
+ 	  for(Int_t m = 0; m < nhit_t; ++m) {
+ 	    Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+	    hptr_array[t_id + seg]->Fill(tdc);
+	    if (tdc_min < tdc && tdc < tdc_max) {
+	      is_in_gate = true;
+	    }//tdc range is ok
+          }//TDC
+	  if (is_in_gate) {
+            // ADC w/TDC
+	    if (gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0) {
+	      Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+              hptr_array[awt_id + seg]->Fill(adc);
+	    }//ADC w/TDC
+	  }//flag is OK
+        }//for seg
+      }//ParaLCRef
+*/
 
 // #if 0
 //       // Debug, dump data relating this detector
 //       gUnpacker.dump_data_device(k_device);
 // #endif
-//     }
-    return 0;
+//   }
+   return 0;
   } //process_event()
 
 } //analyzer

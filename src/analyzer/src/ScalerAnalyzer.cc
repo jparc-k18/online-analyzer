@@ -362,12 +362,13 @@ ScalerAnalyzer::DrawOneBox(Double_t x, Double_t y,
   TLatex tex;
   tex.SetNDC();
   if (m_flag[kScalerHBX])
-    tex.SetTextSize(0.036);
+    tex.SetTextSize(0.028);
   else
     tex.SetTextSize(0.04);
   tex.SetTextAlign(12);
   tex.DrawLatex(x, y, title1);
   tex.SetTextAlign(32);
+
   if (x > 0.1 && x < 0.5)
     tex.DrawLatex(x+0.295, y, val1);
   else
@@ -382,7 +383,7 @@ ScalerAnalyzer::DrawOneLine(const TString& title1, const TString& val1,
 {
   static Int_t i = 0;
   if (m_flag[kScalerHBX]){
-    const Double_t ystep = 0.04;
+    const Double_t ystep = 0.03;
     const Double_t y0 = 0.98;
     Double_t y = y0 - (i+1)*ystep;
     Double_t x[] = { 0.05, 0.35, 0.67 };
@@ -392,12 +393,12 @@ ScalerAnalyzer::DrawOneLine(const TString& title1, const TString& val1,
     TLine line;
     line.SetNDC();
     line.SetLineColor(kGray);
-    line.DrawLine(0.05, y-0.5*ystep, 0.95, y-0.5*ystep);
+    line.DrawLine(0.05, y-0.3*ystep, 0.95, y-0.3*ystep);
     line.SetLineColor(kBlack);
-    line.DrawLine(0.34, y-0.5*ystep, 0.34, y+0.5*ystep);
-    line.DrawLine(0.66, y-0.5*ystep, 0.66, y+0.5*ystep);
-    if (i==1 || i==17)
-      line.DrawLine(0.05, y-0.5*ystep, 0.95, y-0.5*ystep);
+    line.DrawLine(0.34, y-0.3*ystep, 0.34, y+0.3*ystep);
+    line.DrawLine(0.66, y-0.3*ystep, 0.66, y+0.3*ystep);
+    if (i==1 || i==24)
+      line.DrawLine(0.05, y-0.3*ystep, 0.95, y-0.3*ystep);
   } else {
     const Double_t ystep = 0.05;
     const Double_t y0 = 0.95;
@@ -694,14 +695,41 @@ ScalerAnalyzer::PrintScalerSheet()
     DrawOneLine(mode, SeparateComma(Get("Spill")),
 		"Clock", SeparateComma(Get("10M-Clock")),
 		"Level1-PS", SeparateComma(Get("Level1-PS")));
-    for (Int_t i=0; i<NumOfSegGe; ++i)
-      DrawOneLine(Form("TFA-%02d", i+1),
-		  Form("CRM-%02d", i+1),
-		  Form("Reset-%02d", i+1));
-    DrawOneLine("LSO1", "LSO1High", "GeCoin1");
-    DrawOneLine("LSO2", "LSO2High", "GeCoin2");
-    DrawOneLine("LSO1xGe13", "GeHigh1", "Other3");
-    DrawOneLine("LSO2xGe24", "GeHigh2", "Other4");
+
+    DrawOneLine("LSOxGe",           "973UCRM-01","Reset-01");
+    DrawOneLine("SpillOnEnd",       "973UCRM-02","Reset-02");
+    DrawOneLine("SpillOffEnd",      "973UCRM-03","Reset-03");
+    DrawOneLine("SpillOn",          "973UCRM-04","Reset-04");
+    DrawOneLine("SpillOff",         "973UCRM-05","Reset-05");
+    DrawOneLine("Geself",           "973UCRM-06","Reset-06");
+    DrawOneLine("trigreq(ind)",     "973UCRM-07","Reset-07");
+    DrawOneLine("trigacc(ind)",     "973UCRM-08","Reset-08");
+    DrawOneLine("deadtime(ind)",    "973UCRM-09","Reset-09");
+    DrawOneLine("LSO1",             "973UCRM-10","Reset-10");
+    DrawOneLine("LSO2",             "973UCRM-11","Reset-11");
+    DrawOneLine("LSO3",             "973UCRM-12","Reset-12");
+    DrawOneLine("LSO4",             "973UCRM-13","Reset-13");
+    DrawOneLine("LSO1x(Ge1,Ge3)",   "973UCRM-14","Reset-14");
+    DrawOneLine("LSO2x(Ge2,Ge4)",   "973UCRM-15","Reset-15");
+    DrawOneLine("LSO3x(Ge5,Ge7)",   "973UCRM-16","Reset-16");
+    DrawOneLine("LSO4x(Ge6,Ge8)",   "973UCRM-17","Reset-17");
+    DrawOneLine("LSO1woHT",         "973UCRM-18","Reset-18");
+    DrawOneLine("LSO2woHT",         "973UCRM-19","Reset-19");
+    DrawOneLine("LSO3woHT",         "973UCRM-20","Reset-20");
+    DrawOneLine("LSO4woHT",         "973UCRM-21","Reset-21");
+    DrawOneLine("hbxscr1-10M",      "973UCRM-22","Reset-22");
+    DrawOneLine("hbxscr2-10M",      "973UCRM-23","Reset-23");
+    DrawOneLine("SY",               "Real-Time", "L1-Req");
+    DrawOneLine("TM",               "Live-Time", "L1-Acc");
+    DrawOneLine("BH2",              "L2-Req",    "L2-Acc");
+
+    DrawOneLine("BH2/TM",   Form("%.6lf", Fraction("BH2","TM")),
+		"Live/Real", Form("%.6lf", Fraction("Live-Time","Real-Time")),
+		"DAQ Eff",   Form("%.6lf", Fraction("L1-Acc","L1-Req")));
+    DrawOneLine("L1Req/BH2", Form("%.6lf", Fraction("L1-Req","BH2")),
+		"L2 Eff",       Form("%.6lf", Fraction("L2-Acc","L1-Acc")),
+		"Duty Factor",  Form("%.6lf", Duty()));
+
   } else {
     DrawOneLine(mode, SeparateComma(Get("Spill")),
 		"Clock", SeparateComma(Get("10M-Clock")),
@@ -721,9 +749,9 @@ ScalerAnalyzer::PrintScalerSheet()
     DrawOneLine("TRIG-B", "TRIG-B-PS", "TRIG-F");
     DrawOneLine("TRIG-C", "TRIG-C-PS", "TRIG-E-PS");
     DrawOneLine("TRIG-D", "TRIG-D-PS", "TRIG-F-PS");
-    DrawOneLine("AFT-01", "AFT-04", "AFT-07");
-    DrawOneLine("AFT-02", "AFT-05", "AFT-08");
-    DrawOneLine("AFT-03", "AFT-06", "AFT-09");
+    DrawOneLine("RC-PDY", "RC-RC2", "null");
+    DrawOneLine("RC-PDZ", "RC-RC3", "null");
+    DrawOneLine("RC-RC1", "null", "null");
 
     DrawOneLine("K-Beam/TM",   Form("%.6lf", Fraction("K-Beam","TM")),
 		"Live/Real", Form("%.6lf", Fraction("Live-Time","Real-Time")),

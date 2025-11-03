@@ -255,6 +255,8 @@ process_event()
     static const Int_t ge_rst_adc_id = gHist.getSequentialID(kGe, 0, kRST_ADC);
     static const Int_t ge_tfa_crm_id = gHist.getSequentialID(kGe, 0, kTFA_CRM);
 
+    static const Int_t ge_tfanhit_id = gHist.getSequentialID(kGe, 0, kMultiHitTdc);
+
     for(Int_t seg = 0; seg<NumOfSegGe; ++seg){
       // ADC
       Int_t nhit_adc = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
@@ -273,6 +275,7 @@ process_event()
       Int_t nhit_tfa = gUnpacker.get_entries(k_device, 0, seg, 0, k_tfa);
       Int_t tfa_first = -9999;
       Int_t tfaflag = 0;
+      hptr_array[ge_tfanhit_id]->Fill(seg, nhit_tfa);
       if(nhit_tfa != 0){
 	tfa_first = gUnpacker.get(k_device, 0, seg, 0, k_tfa, 0);
 	if(adc >= 0) hptr_array[ge_tfa_adc_id + seg]->Fill(tfa_first, adc);
@@ -350,6 +353,7 @@ process_event()
     static const Int_t bgo_tdc_id    = gHist.getSequentialID(kBGO, 0, kTDC);
     static const Int_t bgo_tdc2d_id  = gHist.getSequentialID(kBGO, 0, kTDC2D);
     static const Int_t bgo_hit_id    = gHist.getSequentialID(kBGO, 0, kHitPat);
+    static const Int_t bgo_nhit_id    = gHist.getSequentialID(kBGO, 0, kMultiHitTdc);
 
     for(Int_t seg = 0; seg<NumOfSegBGO; ++seg){
 
@@ -357,6 +361,7 @@ process_event()
 
       // TDC
       Int_t nhit_tdc = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
+      hptr_array[bgo_nhit_id]->Fill(seg, nhit_tdc);
       for(Int_t m = 0; m<nhit_tdc; ++m){
 	Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
 	hptr_array[bgo_tdc_id + seg]->Fill(tdc);

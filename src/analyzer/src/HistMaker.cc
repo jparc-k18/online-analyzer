@@ -9167,6 +9167,13 @@ HistMaker::createGe( Bool_t flag_ps )
 			   2000, 0, 10000,
 			   "Ge segment", "TFA [ch]"));
 
+    // 2D histogram
+    target_id = getUniqueID(kGe, 0, kMultiHitTdc, 0);
+    sub_dir->Add(createTH2(++target_id, "Ge_TFA_NHitTdc", // 1 origin
+			   NumOfSegGe, 0, NumOfSegGe,
+			   20, 0, 20,
+			   "Ge segment", "Nhit"));
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -10337,6 +10344,13 @@ TList* HistMaker::createBGO( Bool_t flag_ps )
 			   NumOfSegBGO, 0, NumOfSegBGO,
 			   100, 0, 1000,
 			   "BGO segment", "TDC [ch]"));
+    // 2D MultiHit
+    target_id = getUniqueID(kBGO, 0, kMultiHitTdc, 0);
+    sub_dir->Add(createTH2(++target_id, "BGO_NHitTdc", // 1 origin
+			   NumOfSegBGO, 0, NumOfSegBGO,
+			   20, 0, 20,
+			   "BGO segment", "Nhit"));
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }

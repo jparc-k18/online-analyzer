@@ -384,7 +384,7 @@ void dispBAC_ktune_e63()
 
   c4->cd(3);
   {
-    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+4+19+16);
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+4+19+12);
     h->GetXaxis()->SetRangeUser(0,5);
     h->Draw();
     int bin0 = h->GetBinContent(1);
@@ -400,7 +400,7 @@ void dispBAC_ktune_e63()
   }
   c4->cd(4);
   {
-    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+5+19+16);
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+5+19+12);
     h->GetXaxis()->SetRangeUser(0,5);
     h->Draw();
     int bin0 = h->GetBinContent(1);

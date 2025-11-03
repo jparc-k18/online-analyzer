@@ -36,10 +36,12 @@ fi
 
 if [ $# = 0 ]; then
     $exe_file $conf_file ${ebhost}:$port --print --hbx --spillon --spill=1
+    $exe_file $conf_file ${ebhost}:$port --print --hbx --spilloff --spill=1
 
 elif [ $# = 1 ]; then
     spill=$1
     $exe_file $conf_file ${ebhost}:$port --print --hbx --spillon --spill=$spill
+    $exe_file $conf_file ${ebhost}:$port --print --hbx --spilloff --spill=$spill
 
 else
     echo "#D Usage: $(basename $0) [run number]"

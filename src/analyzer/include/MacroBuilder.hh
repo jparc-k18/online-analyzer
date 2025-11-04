@@ -49,6 +49,7 @@ TCanvas* HTOFADCD();
 TCanvas* HTOFTDCU();
 TCanvas* HTOFTDCD();
 TCanvas* BAC();
+TCanvas* SAC();
 TCanvas* ACs();
 TCanvas* BeamHitMulti(void);
 TCanvas* SCHTDCU();
@@ -147,7 +148,7 @@ TCanvas* FBHHitMulti();
 
 // E40
 TCanvas* FHTTOT();
-TCanvas* SAC();
+// TCanvas* SAC();
 TCanvas* LC();
 TCanvas* TOF_HT();
 TCanvas* FHT1TDC();

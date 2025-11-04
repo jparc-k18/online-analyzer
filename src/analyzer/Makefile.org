@@ -120,6 +120,9 @@ my_tgt_jsroot_e42	:= $(bin_dir)/jsroot_e42
 my_obj_jsroot_e70	:= $(core_obj) user_jsroot_e70.o
 my_tgt_jsroot_e70	:= $(bin_dir)/jsroot_e70
 
+my_obj_jsroot_e63	:= $(core_obj) user_jsroot_e63.o
+my_tgt_jsroot_e63	:= $(bin_dir)/jsroot_e63
+
 my_obj_jsroot_scaler	:= $(core_obj) user_jsroot_scaler.o
 my_tgt_jsroot_scaler	:= $(bin_dir)/jsroot_scaler
 
@@ -229,6 +232,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_scaler_sch) \
 	$(my_tgt_scaler_daq) \
 	$(my_tgt_jsroot_e70) \
+	$(my_tgt_jsroot_e63) \
 	$(my_tgt_jsroot_beamprofile) \
 	$(my_tgt_jsroot_scaler) \
 	$(my_tgt_jsroot_scaler_hbx) \
@@ -238,6 +242,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_ktune_y2020) \
 	$(my_tgt_ktune_e70) \
 	$(my_tgt_ktune_e63) \
+	$(my_tgt_rawhist_aft)\
 	$(core_dict_lib)
 #	$(my_old_tgt)
 
@@ -267,7 +272,6 @@ my_old_tgt	:= $(my_tgt_rawhist_e13) $(my_tgt_beamprofile_e13) \
 	$(my_tgt_beamprofile_e03) \
 	$(my_tgt_jsroot_e03) \
 	$(my_tgt_rawhist_e70) \
-	$(my_tgt_rawhist_aft)
 
 #______________________________________________________________________________
 $(my_dir)/dict/%_Dict.cc: $(my_dir)/include/%.hh $(my_dir)/linkdef/%_LinkDef.hh
@@ -478,6 +482,13 @@ my_obj_jsroot_e70 := $(my_obj_jsroot_e70)
 my_lib_jsroot_e70 := libmyjsroot_e70.so
 $(eval $(call make-lib,$(my_lib_jsroot_e70),$(my_obj_jsroot_e70)))
 $(eval $(call make-nogui-target,$(my_tgt_jsroot_e70),$(my_lib_jsroot_e70)))
+#
+#______________________________________________________________________________
+my_obj_jsroot_e63 := $(addprefix $(my_dir)/src/,$(my_obj_jsroot_e63))
+my_obj_jsroot_e63 := $(my_obj_jsroot_e63)
+my_lib_jsroot_e63 := libmyjsroot_e63.so
+$(eval $(call make-lib,$(my_lib_jsroot_e63),$(my_obj_jsroot_e63)))
+$(eval $(call make-nogui-target,$(my_tgt_jsroot_e63),$(my_lib_jsroot_e63)))
 #
 #______________________________________________________________________________
 my_obj_jsroot_scaler	:= $(addprefix $(my_dir)/src/,$(my_obj_jsroot_scaler))

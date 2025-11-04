@@ -247,6 +247,40 @@ BAC()
 
 //_____________________________________________________________________________
 TCanvas*
+SAC()
+{
+  auto c1 = new TCanvas(__func__, __func__);
+  c1->Divide(3, 2);
+  auto adc_hid = HistMaker::getUniqueID(kSAC, 0, kADC);
+  auto awt_hid = HistMaker::getUniqueID(kSAC, 0, kADCwTDC);
+  auto tdc_hid = HistMaker::getUniqueID(kSAC, 0, kTDC);
+  auto multi_hid = HistMaker::getUniqueID(kSAC, 0, kMulti);
+  for (int i =0; i<1;++i){
+    // ADC
+    c1->cd(3*i+1)->SetLogy();
+    auto h1 = dynamic_cast<TH1*>(GHist::get(adc_hid+i));
+    // std::cout << Form("accessing hist: %d", adc_hid+i) << std::endl;
+    // auto h1->GetXaxis()->SetRangeUser(0, 0x1000);
+    h1->Draw();
+    // ADCwTDC
+    auto h2 = dynamic_cast<TH1*>(GHist::get(awt_hid+i));
+    h2->SetLineColor(kRed+1);
+    h2->Draw("same");
+    // TDC
+    c1->cd(3*i+2);//->SetLogy();
+    auto h3 = dynamic_cast<TH1*>(GHist::get(tdc_hid+i));
+    // h3->GetXaxis()->SetRangeUser(0, 2000000);
+    h3->Draw();
+    //   // Multiplicity
+    c1->cd(3*i+3);
+    auto h4 = dynamic_cast<TH1*>(GHist::get(multi_hid+i));
+    h4->Draw();
+  }
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
 BH2ADC()
 {
   auto c1 = new TCanvas(__func__, __func__);
@@ -1522,59 +1556,59 @@ SDC2HitMulti()
   return c1;
 }
 
-//_____________________________________________________________________________
-TCanvas*
-SAC()
-{
-  TCanvas *c1 = new TCanvas(__func__, __func__);
-  c1->Divide(1,2);
+// //_____________________________________________________________________________
+// TCanvas*
+// SAC()
+// {
+//   TCanvas *c1 = new TCanvas(__func__, __func__);
+//   c1->Divide(1,2);
 
-  {
-    c1->cd(1)->Divide(2,2);
-    std::vector<Int_t> id = {
-      HistMaker::getUniqueID(kSAC, 0, kADC, 1),
-      HistMaker::getUniqueID(kSAC, 0, kADC, 2),
-      HistMaker::getUniqueID(kSAC, 0, kADC, 3),
-      HistMaker::getUniqueID(kSAC, 0, kADC, 4)
-    };
-    std::vector<Int_t> id_wt = {
-      HistMaker::getUniqueID(kSAC, 0, kADCwTDC, 1),
-      HistMaker::getUniqueID(kSAC, 0, kADCwTDC, 2),
-      HistMaker::getUniqueID(kSAC, 0, kADCwTDC, 3),
-      HistMaker::getUniqueID(kSAC, 0, kADCwTDC, 4)
-    };
-    for(Int_t i=0, n=id.size(); i<n; ++i){
-      c1->cd(1)->cd(i+1)->SetLogy();
-      TH1 *h = GHist::get(id[i]);
-      TH1 *h_wt = GHist::get(id_wt[i]);
-      if(!h) continue;
-      if(!h_wt) continue;
-      h->Draw();
-      h_wt->SetLineColor(kRed+1);
-      h_wt->Draw("same");
-    }
-  }
+//   {
+//     c1->cd(1)->Divide(2,2);
+//     std::vector<Int_t> id = {
+//       HistMaker::getUniqueID(kSAC, 0, kADC, 1),
+//       HistMaker::getUniqueID(kSAC, 0, kADC, 2),
+//       HistMaker::getUniqueID(kSAC, 0, kADC, 3),
+//       HistMaker::getUniqueID(kSAC, 0, kADC, 4)
+//     };
+//     std::vector<Int_t> id_wt = {
+//       HistMaker::getUniqueID(kSAC, 0, kADCwTDC, 1),
+//       HistMaker::getUniqueID(kSAC, 0, kADCwTDC, 2),
+//       HistMaker::getUniqueID(kSAC, 0, kADCwTDC, 3),
+//       HistMaker::getUniqueID(kSAC, 0, kADCwTDC, 4)
+//     };
+//     for(Int_t i=0, n=id.size(); i<n; ++i){
+//       c1->cd(1)->cd(i+1)->SetLogy();
+//       TH1 *h = GHist::get(id[i]);
+//       TH1 *h_wt = GHist::get(id_wt[i]);
+//       if(!h) continue;
+//       if(!h_wt) continue;
+//       h->Draw();
+//       h_wt->SetLineColor(kRed+1);
+//       h_wt->Draw("same");
+//     }
+//   }
 
-  {
-    c1->cd(2)->Divide(2,2);
-    std::vector<Int_t> id = {
-      HistMaker::getUniqueID(kSAC, 0, kTDC, 1),
-      HistMaker::getUniqueID(kSAC, 0, kTDC, 2),
-      HistMaker::getUniqueID(kSAC, 0, kTDC, 3),
-      HistMaker::getUniqueID(kSAC, 0, kTDC, 4)
-    };
+//   {
+//     c1->cd(2)->Divide(2,2);
+//     std::vector<Int_t> id = {
+//       HistMaker::getUniqueID(kSAC, 0, kTDC, 1),
+//       HistMaker::getUniqueID(kSAC, 0, kTDC, 2),
+//       HistMaker::getUniqueID(kSAC, 0, kTDC, 3),
+//       HistMaker::getUniqueID(kSAC, 0, kTDC, 4)
+//     };
 
-    for(Int_t i=0, n=id.size(); i<n; ++i){
-      c1->cd(2)->cd(i+1);//->SetLogy();
-      TH1 *h = GHist::get(id[i]);
-      if(!h) continue;
-      h->GetXaxis()->SetRangeUser(0,1500);
-      h->Draw();
-    }
-  }
+//     for(Int_t i=0, n=id.size(); i<n; ++i){
+//       c1->cd(2)->cd(i+1);//->SetLogy();
+//       TH1 *h = GHist::get(id[i]);
+//       if(!h) continue;
+//       h->GetXaxis()->SetRangeUser(0,1500);
+//       h->Draw();
+//     }
+//   }
 
-  return c1;
-}
+//   return c1;
+// }
 
 //_____________________________________________________________________________
 TCanvas*

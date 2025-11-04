@@ -157,6 +157,7 @@ process_begin(const std::vector<std::string>& argv)
   gHttp.Register(http::BC4TDCTOT());
   gHttp.Register(http::BC4HitMulti());
   gHttp.Register(http::BAC());
+  gHttp.Register(http::SAC());
   gHttp.Register(http::BH2ADC());
   gHttp.Register(http::BH2TDC());
   // gHttp.Register(http::T0());

@@ -10,7 +10,7 @@ void dispBAC1_y2020()
   // ----------------------------------
 
   gStyle->SetOptStat(0);
-  
+
   // draw BAC ADC & TDC
   // E63 BAC
   TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
@@ -32,6 +32,10 @@ void dispBAC1_y2020()
   c5->Clear();
   c5->Divide(3,2);
 
+  // raw BAC ADC check 
+  TCanvas *c6 = (TCanvas*)gROOT->FindObject("c6");
+  c6->Clear();
+  c6->Divide(3,2);
 
   c->cd(1);
   gPad->SetLogy();
@@ -118,7 +122,7 @@ void dispBAC1_y2020()
     t3->SetTextSize(0.04);
     t3->Draw("same");
   }
- 
+
   c->cd(5);
   {
     TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+4);
@@ -250,7 +254,7 @@ void dispBAC1_y2020()
     t3->SetTextSize(0.06);
     t3->Draw("same");
   }
- 
+
   c2->cd(5);
   {
     TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+4+19);
@@ -334,7 +338,7 @@ void dispBAC1_y2020()
     t1->SetNDC(1);
     t1->SetTextColor(kBlue);
     t1->SetTextSize(0.04);
-    t1->Draw("same");
+   t1->Draw("same");
     TText *t2 = new TText(0.65,0.78,"Green: kaon");
     t2->SetNDC(1);
     t2->SetTextColor(kGreen);
@@ -387,7 +391,7 @@ void dispBAC1_y2020()
     t3->SetTextSize(0.06);
     t3->Draw("same");
   }
- 
+
   c3->cd(5);
   {
     TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+8+23);
@@ -523,7 +527,7 @@ void dispBAC1_y2020()
     t3->SetTextSize(0.06);
     t3->Draw("same");
   }
- 
+
   c4->cd(5);
   {
     TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+16+23);
@@ -660,7 +664,7 @@ void dispBAC1_y2020()
     t3->SetTextSize(0.06);
     t3->Draw("same");
   }
- 
+
   c5->cd(5);
   {
     TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+32+23);
@@ -704,6 +708,58 @@ void dispBAC1_y2020()
   Updater::setUpdating(false);
   // ----------------------------------
 
+
+  //
+  // raw BAC checker ------------------------------------
+  //
+  //
+  c6->cd(1);
+  gPad->SetLogy();
+  {
+    // raw ADC 
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kE75BAC,  0, kADC, 1)+0);
+    h->GetXaxis()->SetRangeUser(0,2000);
+    h->Draw();
+    // ADC w TDC
+    TH1 *hh = (TH1*)GHist::get(HistMaker::getUniqueID(kE75BAC,  0, kADCwTDC, 1)+0);
+    hh->SetLineColor( kRed );
+    hh->Draw("same");
+  }
+
+  c6->cd(2);
+  gPad->SetLogy();
+  {
+    // raw ADC 
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kE75BAC,  0, kADC, 1)+1);
+    h->GetXaxis()->SetRangeUser(0,2000);
+    h->Draw();
+    // ADC w TDC
+    TH1 *hh = (TH1*)GHist::get(HistMaker::getUniqueID(kE75BAC,  0, kADCwTDC, 1)+1);
+    hh->SetLineColor( kRed );
+    hh->Draw("same");
+  }
+
+  c6->cd(3);
+  gPad->SetLogy();
+  {
+    // raw ADC 
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kE75BAC,  0, kADC, 1)+2);
+    h->GetXaxis()->SetRangeUser(0,2000);
+    h->Draw();
+    // ADC w TDC
+    TH1 *hh = (TH1*)GHist::get(HistMaker::getUniqueID(kE75BAC,  0, kADCwTDC, 1)+2);
+    hh->SetLineColor( kRed );
+    hh->Draw("same");
+  }
+
+  c6->Update();
+
+  c6->cd(0);
+
+  // You must write these lines for the thread safe
+  // ----------------------------------
+  Updater::setUpdating(false);
+  // ----------------------------------
 
 
 

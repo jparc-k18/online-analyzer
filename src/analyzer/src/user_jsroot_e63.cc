@@ -145,6 +145,7 @@ process_begin(const std::vector<std::string>& argv)
   gHttp.Register(gHist.createDAQ());
   gHttp.Register(gHist.createDCEff());
   gHttp.Register(gHist.createBTOF());
+  gHttp.Register(gHist.createGe());
 
   if(0 != gHist.setHistPtr(hptr_array)){ return -1; }
 
@@ -195,6 +196,7 @@ process_begin(const std::vector<std::string>& argv)
   gHttp.Register(http::BH2MTHR());
   gHttp.Register(http::DAQ());
   gHttp.Register(http::BcOutSdcInMultiHit());
+  gHttp.Register(http::GeADC());
 
   for(Int_t i=0, n=hptr_array.size(); i<n; ++i){
     hptr_array[i]->SetDirectory(0);
@@ -3034,6 +3036,90 @@ process_event(void)
       gUnpacker.dump_data_device(k_device);
 #endif
     }//SAC
+
+    //------------------------------------------------------------------
+    // Hyperball-X'
+    //------------------------------------------------------------------
+
+    // Ge --------------------------------------------------------------
+    {
+      static const Int_t tfa_min = gUser.GetParameter("TFA_TDC", 0);
+      static const Int_t tfa_max = gUser.GetParameter("TFA_TDC", 1);
+      static const Int_t crm_min = gUser.GetParameter("CRM_TDC", 0);
+      static const Int_t crm_max = gUser.GetParameter("CRM_TDC", 1);
+
+      // data type
+      static const Int_t k_device = gUnpacker.get_device_id("Ge");
+      static const Int_t k_adc    = gUnpacker.get_data_id("Ge","adc");
+      static const Int_t k_tfa    = gUnpacker.get_data_id("Ge","tfa_leading");
+      static const Int_t k_crm    = gUnpacker.get_data_id("Ge","crm_leading");
+      static const Int_t k_rst    = gUnpacker.get_data_id("Ge","reset_time");
+
+      static const Int_t ge_adc_id    = gHist.getSequentialID(kGe, 0, kADC);
+      static const Int_t ge_adc_wt_id = gHist.getSequentialID(kGe, 0, kADCwTDC);
+      static const Int_t ge_adc_wc_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe+1);
+      static const Int_t ge_adc_lso_on_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe*2+1);
+      static const Int_t ge_adc_lso_off_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe*3+1);
+      static const Int_t ge_adc_gecoin_on_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe*4+1);
+      static const Int_t ge_adc_gecoin_off_id = gHist.getSequentialID(kGe, 0, kADCwTDC, NumOfSegGe*5+1);
+
+      static const Int_t ge_tfa_id    = gHist.getSequentialID(kGe, 0, kTFA);
+      static const Int_t ge_crm_id    = gHist.getSequentialID(kGe, 0, kCRM);
+      static const Int_t ge_rst_id    = gHist.getSequentialID(kGe, 0, kRST);
+
+      // hitpat hist id
+      static const Int_t ge_hitpat_id = gHist.getSequentialID(kGe, 0, kHitPat);
+
+      // 2d hist id
+      static const Int_t ge_adc2d_id = gHist.getSequentialID(kGe, 0, kADC2D);
+      static const Int_t ge_tfa2d_id = gHist.getSequentialID(kGe, 0, kTFA2D);
+      static const Int_t ge_crm2d_id = gHist.getSequentialID(kGe, 0, kCRM2D);
+      static const Int_t ge_rst2d_id = gHist.getSequentialID(kGe, 0, kRST2D);
+
+      static const Int_t ge_tfa_adc_id = gHist.getSequentialID(kGe, 0, kTFA_ADC);
+      static const Int_t ge_crm_adc_id = gHist.getSequentialID(kGe, 0, kCRM_ADC);
+      static const Int_t ge_rst_adc_id = gHist.getSequentialID(kGe, 0, kRST_ADC);
+      static const Int_t ge_tfa_crm_id = gHist.getSequentialID(kGe, 0, kTFA_CRM);
+
+      static const Int_t ge_tfanhit_id = gHist.getSequentialID(kGe, 0, kMultiHitTdc);
+
+      for(Int_t seg = 0; seg<NumOfSegGe; ++seg){
+	// ADC
+	Int_t nhit_adc = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+	Int_t adc = -9999;
+	if(nhit_adc != 0){
+	  adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+	  hptr_array[ge_adc_id + seg]->Fill(adc);
+	  hptr_array[ge_adc2d_id]->Fill(seg, adc);
+
+	  if(115 < adc && adc < 7500){
+	    hptr_array[ge_hitpat_id]->Fill(seg);
+	  }
+	}
+
+	// TFA
+	Int_t nhit_tfa = gUnpacker.get_entries(k_device, 0, seg, 0, k_tfa);
+	Int_t tfa_first = -9999;
+	Int_t tfaflag = 0;
+	hptr_array[ge_tfanhit_id]->Fill(seg, nhit_tfa);
+	if(nhit_tfa != 0){
+	  tfa_first = gUnpacker.get(k_device, 0, seg, 0, k_tfa, 0);
+	  if(adc >= 0) hptr_array[ge_tfa_adc_id + seg]->Fill(tfa_first, adc);
+	  for(Int_t m = 0; m<nhit_tfa; ++m){
+	    Int_t tfa = gUnpacker.get(k_device, 0, seg, 0, k_tfa, m);
+	    if( tfa_min < tfa && tfa < tfa_max ) tfaflag = 1;
+	  }
+	  //ADCwTFA
+	  if(tfaflag == 1){
+	    hptr_array[ge_adc_wt_id + seg]->Fill(adc);
+	  }
+	}
+      }
+#if 0
+      // Debug, dump data relating this detector
+      gUnpacker.dump_data_device(k_device);
+#endif
+    }//Ge
 
 
     // TF_TF  -----------------------------------------------------------

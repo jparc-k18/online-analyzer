@@ -2069,25 +2069,19 @@ TCanvas*
 GeADC()
 {
   auto c1 = new TCanvas(__func__, __func__);
-  c1->Divide(4, 5);
+  c1->Divide(4, 6);
   const auto base_id = HistMaker::getUniqueID(kGe, 0, kADC);
+  const auto awt_base_id = HistMaker::getUniqueID(kGe, 0, kADCwTDC);
   for(Int_t i=0; i<NumOfSegGe; ++i){
     c1->cd(i+1);
     auto h1 = GHist::get(base_id + i);
     if(!h1) continue;
+    h1->GetXaxis()->SetRangeUser(0, 3000);
     h1->Draw();
-  }
-  std::vector<Int_t> hist_id = {
-    HistMaker::getUniqueID(kGe, 0, kADC, NumOfSegGe+1),
-    HistMaker::getUniqueID(kGe, 0, kADC, NumOfSegGe+2),
-    HistMaker::getUniqueID(kGe, 0, kADC2D),
-    HistMaker::getUniqueID(kGe, 0, kHitPat),
-  };
-  for(Int_t i=0, n=hist_id.size(); i<n; ++i){
-    c1->cd(i+1+NumOfSegGe);
-    auto h1 = GHist::get(hist_id[i]);
-    if(!h1) continue;
-    h1->Draw("colz");
+    auto h2 = GHist::get(awt_base_id + i);
+    if(!h2) continue;
+    h2->SetLineColor(kRed);
+    h2->Draw("same");
   }
   return c1;
 }

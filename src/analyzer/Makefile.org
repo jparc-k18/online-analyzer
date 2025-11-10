@@ -84,6 +84,9 @@ my_tgt_rawhist_e70	:= $(bin_dir)/raw_hist_e70
 my_obj_rawhist_aft	:= $(core_obj) user_rawhist_aft.o $(gui_obj)
 my_tgt_rawhist_aft	:= $(bin_dir)/raw_hist_aft
 
+my_obj_rawhist_rc	:= $(core_obj) user_rawhist_rc.o $(gui_obj)
+my_tgt_rawhist_rc	:= $(bin_dir)/raw_hist_rc
+
 my_obj_rawhist_hbx	:= $(core_obj) user_rawhist_hbx.o $(gui_obj)
 my_tgt_rawhist_hbx	:= $(bin_dir)/raw_hist_hbx
 
@@ -223,6 +226,7 @@ all::	$(my_tgt_skeleton) $(my_tgt_udebug) $(my_tgt_tag) \
 	$(my_tgt_event_display) \
 	$(my_tgt_rawhist_e63) \
 	$(my_tgt_rawhist_hbx) \
+	$(my_tgt_rawhist_rc) \
 	$(my_tgt_rawhist_hbxx) \
 	$(my_tgt_rawhist_vmeeasiroc) \
 	$(my_tgt_beammonitor) \
@@ -396,6 +400,14 @@ my_obj_rawhist_aft	:= $(my_obj_rawhist_aft) \
 my_lib_rawhist_aft	:= libmyrawhist_aft.so
 $(eval $(call make-lib,$(my_lib_rawhist_aft),$(my_obj_rawhist_aft)))
 $(eval $(call make-gui-target,$(my_tgt_rawhist_aft),$(my_lib_rawhist_aft)))
+
+#______________________________________________________________________________
+my_obj_rawhist_rc	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_rc))
+my_obj_rawhist_rc	:= $(my_obj_rawhist_rc) \
+		$(my_dir)/dict/GuiPs_Dict.o
+my_lib_rawhist_rc	:= libmyrawhist_rc.so
+$(eval $(call make-lib,$(my_lib_rawhist_rc),$(my_obj_rawhist_rc)))
+$(eval $(call make-gui-target,$(my_tgt_rawhist_rc),$(my_lib_rawhist_rc)))
 
 #______________________________________________________________________________
 my_obj_rawhist_hbx	:= $(addprefix $(my_dir)/src/,$(my_obj_rawhist_hbx))

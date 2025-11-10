@@ -223,6 +223,9 @@ public:
   TList* createTF_GN1( Bool_t flag_ps=true );
   TList* createTF_GN2( Bool_t flag_ps=true );
 
+  // E63 RC
+  TList* createRC( Bool_t flag_ps=true );
+
   // Beam Profile
   TList* createBeamProfile( Bool_t flag_ps=true );
   TList* createBeamProfileE42( Bool_t flag_ps=true );

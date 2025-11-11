@@ -1903,7 +1903,7 @@ TList *HistMaker::createE75BAC(Bool_t flag_ps)
 // -------------------------------------------------------------------------
 TList *HistMaker::createE75LFBAC(Bool_t flag_ps)
 {
-  TString strDet = CONV_STRING(kE75LFBAC);     // Determine the detector name
+  TString strDet = CONV_STRING(kE75LFBAC);   // Determine the detector name
   name_created_detectors_.push_back(strDet); // name list of crearted detector
   if (flag_ps)
     name_ps_files_.push_back(strDet); // name list which are displayed in Ps tab
@@ -10973,19 +10973,12 @@ TList *HistMaker::createRC(Bool_t flag_ps)
     // Add to the top directory
     for (Int_t i = 0; i < NumOfPlaneRC; ++i)
     {
-      for (Int_t ud = 0; ud < NumOfUorDRC[i]; ud++)
-      {
-        const char *title = NULL;
-        const TString layer_name = NameOfPlaneRC[i];
-        if (ud == 0)
-          title = Form("%s%s_%sU", nameDetector, layer_name.Data(), sub_name);
-        else
-          title = Form("%s%s_%sD", nameDetector, layer_name.Data(), sub_name);
-        Int_t rc_nseg = NumOfSegRC[i];
-        sub_dir->Add(createTH1(++target_id, title, // 1 origin
-                               rc_nseg, 0, rc_nseg,
-                               "Seg", ""));
-      }
+      const TString layer_name = NameOfPlaneRC[i];
+      const char *title = Form("%s%s_%s", nameDetector, layer_name.Data(), sub_name);
+      Int_t rc_nseg = NumOfSegRC[i];
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+                             rc_nseg, 0, rc_nseg,
+                             "Seg", ""));
     }
 
     // Hit parttern (after cut) -----------------------------------
@@ -10994,19 +10987,12 @@ TList *HistMaker::createRC(Bool_t flag_ps)
     // Add to the top directory
     for (Int_t i = 0; i < NumOfPlaneRC; ++i)
     {
-      for (Int_t ud = 0; ud < NumOfUorDRC[i]; ud++)
-      {
-        const char *title = NULL;
-        const TString layer_name = NameOfPlaneRC[i];
-        if (ud == 0)
-          title = Form("%s%s_%sU", nameDetector, layer_name.Data(), sub_name);
-        else
-          title = Form("%s%s_%sD", nameDetector, layer_name.Data(), sub_name);
-        Int_t rc_nseg = NumOfSegRC[i];
-        sub_dir->Add(createTH1(++target_id, title, // 1 origin
-                               rc_nseg, 0, rc_nseg,
-                               "Seg", ""));
-      }
+      const TString layer_name = NameOfPlaneRC[i];
+      const char *title = Form("%s%s_%s", nameDetector, layer_name.Data(), sub_name);
+      Int_t rc_nseg = NumOfSegRC[i];
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+                             rc_nseg, 0, rc_nseg,
+                             "Seg", ""));
     }
 
     // with adc
@@ -11015,19 +11001,12 @@ TList *HistMaker::createRC(Bool_t flag_ps)
     // Add to the top directory
     for (Int_t i = 0; i < NumOfPlaneRC; ++i)
     {
-      for (Int_t ud = 0; ud < NumOfUorDRC[i]; ud++)
-      {
-        const char *title = NULL;
-        const TString layer_name = NameOfPlaneRC[i];
-        if (ud == 0)
-          title = Form("%s%s_%sU", nameDetector, layer_name.Data(), sub_name);
-        else
-          title = Form("%s%s_%sD", nameDetector, layer_name.Data(), sub_name);
-        Int_t rc_nseg = NumOfSegRC[i];
-        sub_dir->Add(createTH1(++target_id, title, // 1 origin
-                               rc_nseg, 0, rc_nseg,
-                               "Seg", ""));
-      }
+      const TString layer_name = NameOfPlaneRC[i];
+      const char *title = Form("%s%s_%s", nameDetector, layer_name.Data(), sub_name);
+      Int_t rc_nseg = NumOfSegRC[i];
+      sub_dir->Add(createTH1(++target_id, title, // 1 origin
+                             rc_nseg, 0, rc_nseg,
+                             "Seg", ""));
     }
     // insert sub directory
     top_dir->Add(sub_dir);

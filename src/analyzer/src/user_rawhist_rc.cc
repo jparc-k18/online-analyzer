@@ -45,12 +45,14 @@
 #define DEBUG 0
 #define FLAG_DAQ 1
 
-struct LUIndexer {
-  int prefix[NumOfPlaneRC+1];
-  constexpr LUIndexer() : prefix{} {
+struct LUIndexer
+{
+  int prefix[NumOfPlaneRC + 1];
+  constexpr LUIndexer() : prefix{}
+  {
     prefix[0] = 0;
     for (int i = 0; i < NumOfPlaneRC; ++i)
-      prefix[i+1] = prefix[i] + NumOfUorDRC[i];
+      prefix[i + 1] = prefix[i] + NumOfUorDRC[i];
   }
   // (l,ud) -> 0-originの連番
   inline int idx(int l, int ud) const { return prefix[l] + ud; }
@@ -275,7 +277,15 @@ namespace analyzer
               bool flag_hit_wt = false;
               if (nhit_l != 0)
               { // Hitpat
-                hptr_array[rc_hitpat_id + idx]->Fill(seg);
+                if (l == 0 || l == 1 || l == 5 || l == 6)
+                  hptr_array[rc_hitpat_id + l]->Fill(seg);
+                else
+                {
+                  int nhit_l_u = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading);
+                  int nhit_l_d = gUnpacker.get_entries(k_device, plane, seg, 1, k_leading);
+                  if (nhit_l_u != 0 && nhit_l_d != 0)
+                    hptr_array[rc_hitpat_id + l]->Fill(seg);
+                }
                 // std::cout << "debug: RC hitpat" << l << " seg=" << seg << " ud=" << ud << std::endl;
               }
               for (int m = 0; m < nhit_l; ++m)
@@ -303,7 +313,15 @@ namespace analyzer
                     // Highgain w/ TDC cut
                     if (adc_hg > 1000)
                     {
-                      hptr_array[rc_chitpat_wa_id + idx]->Fill(seg);
+                      if (l == 0 || l == 1 || l == 5 || l == 6)
+                        hptr_array[rc_chitpat_wa_id + l]->Fill(seg);
+                      else
+                      {
+                        int nhit_l_u = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading);
+                        int nhit_l_d = gUnpacker.get_entries(k_device, plane, seg, 1, k_leading);
+                        if (nhit_l_u != 0 && nhit_l_d != 0)
+                          hptr_array[rc_chitpat_wa_id + l]->Fill(seg);
+                      }
                     }
                   }
                 }
@@ -319,7 +337,15 @@ namespace analyzer
                   }
                 }
                 // Hitpat w/ TDC cut
-                hptr_array[rc_chitpat_id + idx]->Fill(seg);
+                if (l == 0 || l == 1 || l == 5 || l == 6)
+                  hptr_array[rc_chitpat_id + l]->Fill(seg);
+                else
+                {
+                  int nhit_l_u = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading);
+                  int nhit_l_d = gUnpacker.get_entries(k_device, plane, seg, 1, k_leading);
+                  if (nhit_l_u != 0 && nhit_l_d != 0)
+                    hptr_array[rc_chitpat_id + l]->Fill(seg);
+                }
               }
             }
 

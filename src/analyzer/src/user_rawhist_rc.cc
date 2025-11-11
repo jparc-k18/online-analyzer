@@ -54,9 +54,8 @@ struct LUIndexer
     for (int i = 0; i < NumOfPlaneRC; ++i)
       prefix[i + 1] = prefix[i] + NumOfUorDRC[i];
   }
-  // (l,ud) -> 0-originの連番
+  // (l,ud) -> 0-origin
   inline int idx(int l, int ud) const { return prefix[l] + ud; }
-  // 総要素数（必要なら）
   inline int size() const { return prefix[NumOfPlaneRC]; }
 };
 
@@ -100,18 +99,13 @@ namespace analyzer
 
     // Add macros to the Macro tab
     // tab_macro->Add(hoge());
-    // tab_macro->Add(macro::Get("clear_all_canvas"));
-    // tab_macro->Add(macro::Get("clear_canvas"));
-    // tab_macro->Add(macro::Get("split22"));
-    // tab_macro->Add(macro::Get("split32"));
-    // tab_macro->Add(macro::Get("split33"));
-    // tab_macro->Add(macro::Get("disprc1D"));
-    // tab_macro->Add(macro::Get("disprc2D"));
-    // tab_macro->Add(macro::Get("disprc_AwT"));
-    // tab_macro->Add(macro::Get("dispDAQ"));
-    // tab_macro->Add(macro::Get("disprc_2DHG"));
-    // tab_macro->Add(macro::Get("dispRC"));
-    // tab_macro->Add(macro::Get("auto_monitor_all"));
+    tab_macro->Add(macro::Get("clear_all_canvas"));
+    tab_macro->Add(macro::Get("clear_canvas"));
+    tab_macro->Add(macro::Get("split22"));
+    tab_macro->Add(macro::Get("split32"));
+    tab_macro->Add(macro::Get("split33"));
+    tab_macro->Add(macro::Get("dispRcRaw"));
+    tab_macro->Add(macro::Get("dispRcHitpat"));
 
     // Add histograms to the Hist tab
     HistMaker &gHist = HistMaker::getInstance();

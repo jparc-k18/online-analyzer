@@ -202,5 +202,118 @@ dispRcRaw( void )
     c4->Update();
   }
 
+  { // TDC1D
+    auto c5 = dynamic_cast<TCanvas*>(gROOT->FindObject("c5"));
+    c5->Clear();
+    c5->Divide(4, 3);
+    auto tdc_hid = HistMaker::getUniqueID(kRC, 0, kTDC, 1);
+
+    for (int i=0; i<5; ++i)
+    {
+      c5->cd(i+1);
+      auto ht1m = dynamic_cast<TH1*>(GHist::get(tdc_hid + i));
+      ht1m->Draw();
+
+      c5->cd(i+7);
+      auto h1tp = dynamic_cast<TH1*>(GHist::get(tdc_hid + i + 5));
+      h1tp->Draw();
+    }
+    c5->Update();
+  }
+
+  { // TOT1D, CTOT1D
+    auto c6 = dynamic_cast<TCanvas*>(gROOT->FindObject("c6"));
+    c6->Clear();
+    c6->Divide(4, 3);
+    auto tot_hid = HistMaker::getUniqueID(kRC, 0, kTOT, 1);
+    auto ctot_hid= HistMaker::getUniqueID(kRC, 0, kTOT, 201);
+
+    for (int i=0; i<5; ++i)
+    {
+      c6->cd(i+1);
+      auto ht1m = dynamic_cast<TH1*>(GHist::get(tot_hid + i));
+      auto cht1m= dynamic_cast<TH1*>(GHist::get(ctot_hid + i));
+
+      cht1m->SetLineColor(kRed);
+
+      ht1m->Draw();
+      cht1m->Draw("same");
+
+      c6->cd(i+7);
+      auto h1tp = dynamic_cast<TH1*>(GHist::get(tot_hid + i + 5));
+      auto cht1p = dynamic_cast<TH1*>(GHist::get(ctot_hid + i + 5));
+
+      cht1p->SetLineColor(kRed);
+
+      h1tp->Draw();
+      cht1p->Draw("same");
+    }
+    c6->Update();
+  }
+
+  { // HighGain1D, CHighGain1D
+    auto c7 = dynamic_cast<TCanvas*>(gROOT->FindObject("c7"));
+    c7->Clear();
+    c7->Divide(4, 3);
+    auto highgain_hid = HistMaker::getUniqueID(kRC, 0, kHighGain, 1);
+    auto chighgain_hid= HistMaker::getUniqueID(kRC, 0, kHighGain, 201);
+
+    for (int i=0; i<5; ++i)
+    {
+      c7->cd(i+1);
+      auto ht1m = dynamic_cast<TH1*>(GHist::get(highgain_hid + i));
+      auto cht1m= dynamic_cast<TH1*>(GHist::get(chighgain_hid + i));
+
+      cht1m->SetLineColor(kRed);
+
+      ht1m->Draw();
+      cht1m->Draw("same");
+      gPad->SetLogy();
+
+      c7->cd(i+7);
+      auto h1tp = dynamic_cast<TH1*>(GHist::get(highgain_hid + i + 5));
+      auto cht1p = dynamic_cast<TH1*>(GHist::get(chighgain_hid + i + 5));
+
+      cht1p->SetLineColor(kRed);
+
+      h1tp->Draw();
+      cht1p->Draw("same");
+      gPad->SetLogy();
+    }
+    c7->Update();
+  }
+
+  { // LowGain1D, CLowGain1D
+    auto c8 = dynamic_cast<TCanvas*>(gROOT->FindObject("c8"));
+    c8->Clear();
+    c8->Divide(4, 3);
+    auto lowgain_hid = HistMaker::getUniqueID(kRC, 0, kLowGain, 1);
+    auto clowgain_hid= HistMaker::getUniqueID(kRC, 0, kLowGain, 201);
+
+    for (int i=0; i<5; ++i)
+    {
+      c8->cd(i+1);
+      auto ht1m = dynamic_cast<TH1*>(GHist::get(lowgain_hid + i));
+      auto cht1m= dynamic_cast<TH1*>(GHist::get(clowgain_hid + i));
+
+      cht1m->SetLineColor(kRed);
+
+      ht1m->Draw();
+      cht1m->Draw("same");
+      gPad->SetLogy();
+
+      c8->cd(i+7);
+      auto h1tp = dynamic_cast<TH1*>(GHist::get(lowgain_hid + i + 5));
+      auto cht1p = dynamic_cast<TH1*>(GHist::get(clowgain_hid + i + 5));
+
+      cht1p->SetLineColor(kRed);
+
+      h1tp->Draw();
+      cht1p->Draw("same");
+      gPad->SetLogy();
+    }
+    c8->Update();
+  }
+
   Updater::setUpdating(false);
 }

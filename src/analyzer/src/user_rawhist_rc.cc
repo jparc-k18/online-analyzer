@@ -220,13 +220,13 @@ namespace analyzer
       static const int k_lowgain = gUnpacker.get_data_id("RC", "lowgain");
 
       // SequentialID
-      // int rc_t_id = gHist.getSequentialID(kRC, 0, kTDC, 1);
-      // int rc_tot_id = gHist.getSequentialID(kRC, 0, kTOT, 1);
-      // int rc_ctot_id = gHist.getSequentialID(kRC, 0, kTOT, 201);
-      // int rc_hg_id = gHist.getSequentialID(kRC, 0, kHighGain, 1);
-      // int rc_lg_id = gHist.getSequentialID(kRC, 0, kLowGain, 1);
-      // int rc_chg_id = gHist.getSequentialID(kRC, 0, kHighGain, 201);
-      // int rc_clg_id = gHist.getSequentialID(kRC, 0, kLowGain, 201);
+      int rc_t_id = gHist.getSequentialID(kRC, 0, kTDC, 1);
+      int rc_tot_id = gHist.getSequentialID(kRC, 0, kTOT, 1);
+      int rc_ctot_id = gHist.getSequentialID(kRC, 0, kTOT, 201);
+      int rc_hg_id = gHist.getSequentialID(kRC, 0, kHighGain, 1);
+      int rc_lg_id = gHist.getSequentialID(kRC, 0, kLowGain, 1);
+      int rc_chg_id = gHist.getSequentialID(kRC, 0, kHighGain, 201);
+      int rc_clg_id = gHist.getSequentialID(kRC, 0, kLowGain, 201);
 
       int rc_t_2d_id = gHist.getSequentialID(kRC, 0, kTDC2D, 1);
       int rc_tot_2d_id = gHist.getSequentialID(kRC, 0, kTOT2D, 1);
@@ -267,8 +267,8 @@ namespace analyzer
             const int idx = luindex.idx(plane, ud);
             { // tdc
               int nhit_l = gUnpacker.get_entries(k_device, plane, seg, ud, k_leading);
-              // std::cout << "debug: nhit_l=" << nhit_l << " plane=" << l << " seg=" << seg << " ud=" << ud << std::endl;
               bool flag_hit_wt = false;
+
               if (nhit_l != 0)
               { // Hitpat
                 if (l == 0 || l == 1 || l == 5 || l == 6)
@@ -280,17 +280,16 @@ namespace analyzer
                   if (nhit_l_u != 0 && nhit_l_d != 0)
                     hptr_array[rc_hitpat_id + l]->Fill(seg);
                 }
-                // std::cout << "debug: RC hitpat" << l << " seg=" << seg << " ud=" << ud << std::endl;
               }
+
               for (int m = 0; m < nhit_l; ++m)
               {
                 int tdc = gUnpacker.get(k_device, plane, seg, ud, k_leading, m);
                 hptr_array[rc_t_2d_id + idx]->Fill(seg, tdc);
-                // hptr_array[rc_t_id + l + seg]->Fill(tdc);
+                hptr_array[rc_t_id + l]->Fill(tdc);
                 if (tdc_min < tdc && tdc < tdc_max)
                 { // w/ TDC cut
                   flag_hit_wt = true;
-                  // std::cout << "debug: RC hit plane=" << l << " seg=" << seg << " ud=" << ud << " tdc=" << tdc << std::endl;
                 }
               }
               if (flag_hit_wt)
@@ -303,8 +302,8 @@ namespace analyzer
                   {
                     int adc_hg = gUnpacker.get(k_device, plane, seg, ud, k_highgain, m);
                     hptr_array[rc_chg_2d_id + idx]->Fill(seg, adc_hg);
-                    // hptr_array[rc_chg_id + l + seg]->Fill(adc_hg);
-                    // Highgain w/ TDC cut
+                    hptr_array[rc_chg_id + l]->Fill(adc_hg);
+                    // CHitpat w/ ADC cut
                     if (adc_hg > 1000)
                     {
                       if (l == 0 || l == 1 || l == 5 || l == 6)
@@ -319,6 +318,7 @@ namespace analyzer
                     }
                   }
                 }
+
                 // lowgain w/ TDC cut
                 int nhit_lg = gUnpacker.get_entries(k_device, plane, seg, ud, k_lowgain);
                 if (nhit_lg != 0)
@@ -327,10 +327,11 @@ namespace analyzer
                   {
                     int adc_lg = gUnpacker.get(k_device, plane, seg, ud, k_lowgain, m);
                     hptr_array[rc_clg_2d_id + idx]->Fill(seg, adc_lg);
-                    // hptr_array[rc_clg_id + l + seg]->Fill(adc_lg);
+                    hptr_array[rc_clg_id + l]->Fill(adc_lg);
                   }
                 }
-                // Hitpat w/ TDC cut
+
+                // Hitpat w/ TDC cut (CHitpat)
                 if (l == 0 || l == 1 || l == 5 || l == 6)
                   hptr_array[rc_chitpat_id + l]->Fill(seg);
                 else
@@ -361,7 +362,7 @@ namespace analyzer
                   int tdc_t = gUnpacker.get(k_device, plane, seg, ud, k_trailing, m);
                   int tot = tdc - tdc_t;
                   hptr_array[rc_tot_2d_id + idx]->Fill(seg, tot);
-                  // hptr_array[rc_tot_id + l + seg]->Fill(tot);
+                  hptr_array[rc_tot_id + l]->Fill(tot);
 
                   if (tdc_min < tdc && tdc < tdc_max)
                   { // TOT w/ TDC cut
@@ -378,7 +379,7 @@ namespace analyzer
               {
                 int adc_hg = gUnpacker.get(k_device, plane, seg, ud, k_highgain, m);
                 hptr_array[rc_hg_2d_id + idx]->Fill(seg, adc_hg);
-                // hptr_array[rc_hg_id + l + seg]->Fill(adc_hg);
+                hptr_array[rc_hg_id + l]->Fill(adc_hg);
               }
             }
 
@@ -388,7 +389,7 @@ namespace analyzer
               {
                 int adc_lg = gUnpacker.get(k_device, plane, seg, ud, k_lowgain, m);
                 hptr_array[rc_lg_2d_id + idx]->Fill(seg, adc_lg);
-                // hptr_array[rc_lg_id + l + seg]->Fill(adc_lg);
+                hptr_array[rc_lg_id + l]->Fill(adc_lg);
               }
             }
 

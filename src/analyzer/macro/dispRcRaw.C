@@ -25,6 +25,7 @@ dispRcRaw( void )
       c1->cd(i+1);
       auto ha = dynamic_cast<TH2*>(GHist::get(adc_hid+i));
       ha->Draw();
+      gPad->SetLogz();
     }
 
     for (int i=2; i<5; ++i)
@@ -32,10 +33,12 @@ dispRcRaw( void )
       c1->cd(i+1);
       auto ha_u = dynamic_cast<TH2*>(GHist::get(adc_hid+2*i-2)); // Up
       ha_u->Draw();
+      gPad->SetLogz();
 
       c1->cd(i+6);
       auto ha_d = dynamic_cast<TH2*>(GHist::get(adc_hid+2*i-1)); // Down
       ha_d->Draw();
+      gPad->SetLogz();
     }
 
     for (int i=10; i<12; ++i)
@@ -43,6 +46,7 @@ dispRcRaw( void )
       c1->cd(i+1);
       auto ha = dynamic_cast<TH2*>(GHist::get(adc_hid+i-2));
       ha->Draw();
+      gPad->SetLogz();
     }
 
     for (int i=12; i<15; ++i)
@@ -50,10 +54,12 @@ dispRcRaw( void )
       c1->cd(i+1);
       auto ha_u = dynamic_cast<TH2*>(GHist::get(adc_hid + 2*(i - 13) + 12)); // Up
       ha_u->Draw();
+      gPad->SetLogz();
 
       c1->cd(i+6);
       auto ha_d = dynamic_cast<TH2*>(GHist::get(adc_hid + 2*(i - 13) + 13)); // Down
       ha_d->Draw();
+      gPad->SetLogz();
     }
     c1->Update();
   }
@@ -69,6 +75,7 @@ dispRcRaw( void )
       c2->cd(i+1);
       auto ha = dynamic_cast<TH2*>(GHist::get(adc_hid+i));
       ha->Draw();
+      gPad->SetLogz();
     }
 
     for (int i=2; i<5; ++i)
@@ -76,10 +83,12 @@ dispRcRaw( void )
       c2->cd(i+1);
       auto ha_u = dynamic_cast<TH2*>(GHist::get(adc_hid+2*i-2)); // Up
       ha_u->Draw();
+      gPad->SetLogz();
 
       c2->cd(i+6);
       auto ha_d = dynamic_cast<TH2*>(GHist::get(adc_hid+2*i-1)); // Down
       ha_d->Draw();
+      gPad->SetLogz();
     }
 
     for (int i=10; i<12; ++i)
@@ -87,6 +96,7 @@ dispRcRaw( void )
       c2->cd(i+1);
       auto ha = dynamic_cast<TH2*>(GHist::get(adc_hid+i-2));
       ha->Draw();
+      gPad->SetLogz();
     }
 
     for (int i=12; i<15; ++i)
@@ -94,10 +104,12 @@ dispRcRaw( void )
       c2->cd(i+1);
       auto ha_u = dynamic_cast<TH2*>(GHist::get(adc_hid + 2*(i - 13) + 12)); // Up
       ha_u->Draw();
+      gPad->SetLogz();
 
       c2->cd(i+6);
       auto ha_d = dynamic_cast<TH2*>(GHist::get(adc_hid + 2*(i - 13) + 13)); // Down
       ha_d->Draw();
+      gPad->SetLogz();
     }
     c2->Update();
   }
@@ -146,7 +158,7 @@ dispRcRaw( void )
     c3->Update();
   }
 
-  {
+  { // TOT2D
     auto c4 = dynamic_cast<TCanvas*>(gROOT->FindObject("c4"));
     c4->Clear();
     c4->Divide(5, 4);

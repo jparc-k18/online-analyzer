@@ -57,6 +57,20 @@
 #define DEBUG    0
 #define FLAG_DAQ 1
 
+struct LUIndexer
+{
+  int prefix[NumOfPlaneRC + 1];
+  constexpr LUIndexer() : prefix{}
+  {
+    prefix[0] = 0;
+    for (int i = 0; i < NumOfPlaneRC; ++i)
+      prefix[i + 1] = prefix[i] + NumOfUorDRC[i];
+  }
+  // (l,ud) -> 0-origin
+  inline int idx(int l, int ud) const { return prefix[l] + ud; }
+  inline int size() const { return prefix[NumOfPlaneRC]; }
+};
+
 namespace
 {
 using hddaq::unpacker::GConfig;
@@ -146,6 +160,7 @@ process_begin(const std::vector<std::string>& argv)
   gHttp.Register(gHist.createDCEff());
   gHttp.Register(gHist.createBTOF());
   gHttp.Register(gHist.createGe());
+  gHttp.Register(gHist.createRC());
 
   if(0 != gHist.setHistPtr(hptr_array)){ return -1; }
 
@@ -197,6 +212,11 @@ process_begin(const std::vector<std::string>& argv)
   gHttp.Register(http::DAQ());
   gHttp.Register(http::BcOutSdcInMultiHit());
   gHttp.Register(http::GeADC());
+  gHttp.Register(http::RCTDC());
+  gHttp.Register(http::RCHG());
+  gHttp.Register(http::PDHitpat());
+  gHttp.Register(http::RCHitpat());
+  gHttp.Register(http::RCMulti());
 
   for(Int_t i=0, n=hptr_array.size(); i<n; ++i){
     hptr_array[i]->SetDirectory(0);
@@ -3120,6 +3140,255 @@ process_event(void)
       gUnpacker.dump_data_device(k_device);
 #endif
     }//Ge
+
+    //------------------------------------------------------------------
+    // RC
+    //------------------------------------------------------------------
+    {
+      // data type
+      static const int k_device = gUnpacker.get_device_id("RC");
+      static const int k_leading = gUnpacker.get_data_id("RC", "leading");
+      static const int k_trailing = gUnpacker.get_data_id("RC", "trailing");
+      static const int k_highgain = gUnpacker.get_data_id("RC", "highgain");
+      static const int k_lowgain = gUnpacker.get_data_id("RC", "lowgain");
+
+      // SequentialID
+      int rc_t_id = gHist.getSequentialID(kRC, 0, kTDC, 1);
+      int rc_tot_id = gHist.getSequentialID(kRC, 0, kTOT, 1);
+      int rc_ctot_id = gHist.getSequentialID(kRC, 0, kTOT, 201);
+      int rc_hg_id = gHist.getSequentialID(kRC, 0, kHighGain, 1);
+      int rc_lg_id = gHist.getSequentialID(kRC, 0, kLowGain, 1);
+      int rc_chg_id = gHist.getSequentialID(kRC, 0, kHighGain, 201);
+      int rc_clg_id = gHist.getSequentialID(kRC, 0, kLowGain, 201);
+
+      int rc_t_2d_id = gHist.getSequentialID(kRC, 0, kTDC2D, 1);
+      int rc_tot_2d_id = gHist.getSequentialID(kRC, 0, kTOT2D, 1);
+      int rc_ctot_2d_id = gHist.getSequentialID(kRC, 0, kTOT2D, 101);
+      int rc_hg_2d_id = gHist.getSequentialID(kRC, 0, kHighGain2D, 1);
+      int rc_chg_2d_id = gHist.getSequentialID(kRC, 0, kHighGain2D, 101);
+      int rc_lg_2d_id = gHist.getSequentialID(kRC, 0, kLowGain2D, 1);
+      int rc_clg_2d_id = gHist.getSequentialID(kRC, 0, kLowGain2D, 101);
+
+      int rc_hitpat_id = gHist.getSequentialID(kRC, 0, kHitPat, 1);
+      int rc_chitpat_id = gHist.getSequentialID(kRC, 0, kHitPat, 101);
+      int rc_chitpat_wa_id = gHist.getSequentialID(kRC, 0, kHitPat, 201);
+      int rc_multihit_id = gHist.getSequentialID(kRC, 0, kMulti, 1);
+
+      // int rc_HgXTDC_id = gHist.getSequentialID(kRC, 0, kHighGainXTDC, 1);
+
+      // TDC gate range
+      static const int tdc_min = gUser.GetParameter("TdcRC", 0);
+      static const int tdc_max = gUser.GetParameter("TdcRC", 1);
+
+      // std::cout << "debug: RC TDC cut min=" << tdc_min << " max=" << tdc_max << std::endl;
+
+      static const LUIndexer luindex;
+
+      for (int l = 0; l < NumOfPlaneRC; ++l)
+	{
+	  Int_t plane = l; // 0 origin
+	  // Int_t tdc1st               = 0;
+	  // Int_t multiplicity         = 0;
+	  // Int_t multiplicity_wt      = 0;
+	  // Int_t multiplicity_ctot    = 0;
+	  // Int_t multiplicity_wt_ctot = 0;
+
+	  for (int seg = 0; seg < NumOfSegRC[plane]; ++seg)
+	    {
+	      for (int ud = 0; ud < NumOfUorDRC[plane]; ++ud)
+		{
+		  const int idx = luindex.idx(plane, ud);
+		  { // tdc
+		    int nhit_l = gUnpacker.get_entries(k_device, plane, seg, ud, k_leading);
+		    bool flag_hit_wt = false;
+
+		    if (nhit_l != 0)
+		      { // Hitpat
+			if (l == 0 || l == 1 || l == 5 || l == 6)
+			  hptr_array[rc_hitpat_id + l]->Fill(seg);
+			else
+			  {
+			    int nhit_l_u = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading);
+			    int nhit_l_d = gUnpacker.get_entries(k_device, plane, seg, 1, k_leading);
+			    if (nhit_l_u != 0 && nhit_l_d != 0)
+			      hptr_array[rc_hitpat_id + l]->Fill(seg);
+			  }
+		      }
+
+		    for (int m = 0; m < nhit_l; ++m)
+		      {
+			int tdc = gUnpacker.get(k_device, plane, seg, ud, k_leading, m);
+			hptr_array[rc_t_2d_id + idx]->Fill(seg, tdc);
+			hptr_array[rc_t_id + l]->Fill(tdc);
+			if (tdc_min < tdc && tdc < tdc_max)
+			  { // w/ TDC cut
+			    flag_hit_wt = true;
+			  }
+		      }
+		    if (flag_hit_wt)
+		      {
+			// highgain w/ TDC cut
+			int nhit_hg = gUnpacker.get_entries(k_device, plane, seg, ud, k_highgain);
+			if (nhit_hg != 0)
+			  {
+			    for (int m = 0; m < nhit_hg; ++m)
+			      {
+				int adc_hg = gUnpacker.get(k_device, plane, seg, ud, k_highgain, m);
+				hptr_array[rc_chg_2d_id + idx]->Fill(seg, adc_hg);
+				hptr_array[rc_chg_id + l]->Fill(adc_hg);
+				// CHitpat w/ ADC cut
+				if (adc_hg > 1000)
+				  {
+				    if (l == 0 || l == 1 || l == 5 || l == 6)
+				      hptr_array[rc_chitpat_wa_id + l]->Fill(seg);
+				    else
+				      {
+					int nhit_l_u = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading);
+					int nhit_l_d = gUnpacker.get_entries(k_device, plane, seg, 1, k_leading);
+					if (nhit_l_u != 0 && nhit_l_d != 0)
+					  hptr_array[rc_chitpat_wa_id + l]->Fill(seg);
+				      }
+				  }
+			      }
+			  }
+
+			// lowgain w/ TDC cut
+int nhit_lg = gUnpacker.get_entries(k_device, plane, seg, ud, k_lowgain);
+                if (nhit_lg != 0)
+                {
+                  for (int m = 0; m < nhit_lg; ++m)
+                  {
+                    int adc_lg = gUnpacker.get(k_device, plane, seg, ud, k_lowgain, m);
+                    hptr_array[rc_clg_2d_id + idx]->Fill(seg, adc_lg);
+                    hptr_array[rc_clg_id + l]->Fill(adc_lg);
+                  }
+                }
+
+                // Hitpat w/ TDC cut (CHitpat)
+                if (l == 0 || l == 1 || l == 5 || l == 6)
+                  hptr_array[rc_chitpat_id + l]->Fill(seg);
+                else
+                {
+                  int nhit_l_u = gUnpacker.get_entries(k_device, plane, seg, 0, k_leading);
+                  int nhit_l_d = gUnpacker.get_entries(k_device, plane, seg, 1, k_leading);
+                  if (nhit_l_u != 0 && nhit_l_d != 0)
+                    hptr_array[rc_chitpat_id + l]->Fill(seg);
+                }
+              }
+            }
+
+            { // tot
+              int nhit_l = gUnpacker.get_entries(k_device, plane, seg, ud, k_leading);
+              int nhit_t = gUnpacker.get_entries(k_device, plane, seg, ud, k_trailing);
+              Int_t hit_l_max = 0;
+              Int_t hit_t_max = 0;
+              if (nhit_l != 0)
+                hit_l_max = gUnpacker.get(k_device, plane, seg, ud, k_leading, nhit_l - 1);
+              if (nhit_t != 0)
+                hit_t_max = gUnpacker.get(k_device, plane, seg, ud, k_trailing, nhit_t - 1);
+              // tdc1st = 0;
+              if (nhit_l == nhit_t && hit_l_max > hit_t_max)
+              {
+                for (Int_t m = 0; m < nhit_l; ++m)
+                {
+                  int tdc = gUnpacker.get(k_device, plane, seg, ud, k_leading, m);
+                  int tdc_t = gUnpacker.get(k_device, plane, seg, ud, k_trailing, m);
+                  int tot = tdc - tdc_t;
+                  hptr_array[rc_tot_2d_id + idx]->Fill(seg, tot);
+                  hptr_array[rc_tot_id + l]->Fill(tot);
+
+                  if (tdc_min < tdc && tdc < tdc_max)
+                  { // TOT w/ TDC cut
+                    hptr_array[rc_ctot_2d_id + idx]->Fill(seg, tot);
+                    // hptr_array[rc_ctot_id + l + seg]->Fill(tot);
+                  }
+                }
+              }
+            }
+
+            { // High gain
+              int nhit_hg = gUnpacker.get_entries(k_device, plane, seg, ud, k_highgain);
+              for (int m = 0; m < nhit_hg; ++m)
+              {
+                int adc_hg = gUnpacker.get(k_device, plane, seg, ud, k_highgain, m);
+                hptr_array[rc_hg_2d_id + idx]->Fill(seg, adc_hg);
+                hptr_array[rc_hg_id + l]->Fill(adc_hg);
+              }
+            }
+
+            { // Low gain
+              int nhit_lg = gUnpacker.get_entries(k_device, plane, seg, ud, k_lowgain);
+              for (int m = 0; m < nhit_lg; ++m)
+              {
+                int adc_lg = gUnpacker.get(k_device, plane, seg, ud, k_lowgain, m);
+                hptr_array[rc_lg_2d_id + idx]->Fill(seg, adc_lg);
+                hptr_array[rc_lg_id + l]->Fill(adc_lg);
+              }
+            }
+
+            // { // Hg x TDC
+            //   int nhit_hg = gUnpacker.get_entries(k_device, plane, seg, ud, k_highgain);
+            //   int nhit_l = gUnpacker.get_entries(k_device, plane, seg, ud, k_leading);
+            //   if (nhit_hg != 0 && nhit_l != 0)
+            //   {
+            //     int adc_hg = gUnpacker.get(k_device, plane, seg, ud, k_highgain, 0);
+            //     for (int m = 0; m < nhit_l; ++m)
+            //     {
+            //       int tdc = gUnpacker.get(k_device, plane, seg, ud, k_leading, m);
+            //       hptr_array[rc_HgXTDC_id + l + seg + ud]->Fill(tdc, adc_hg);
+            //     }
+            //   }
+            // }
+          }
+        }
+      }
+      { // Multiplicity of RC
+        Int_t multiplicity_m = 0;
+        Int_t multiplicity_p = 0;
+
+        for (int l = 0; l < 3; ++l)
+        {
+          // RC-X
+          Int_t plane_m = l + 2;
+          Int_t plane_p = l + 7;
+          for (int seg = 0; seg < NumOfSegRC[plane_m]; ++seg)
+          {
+            int nhit_l_u = gUnpacker.get_entries(k_device, plane_m, seg, 0, k_leading);
+            int nhit_l_d = gUnpacker.get_entries(k_device, plane_m, seg, 1, k_leading);
+            if (nhit_l_u != 0 && nhit_l_d != 0)
+            {
+              int tdc_u = gUnpacker.get(k_device, plane_m, seg, 0, k_leading, 0);
+              int tdc_d = gUnpacker.get(k_device, plane_m, seg, 1, k_leading, 0);
+              if (tdc_min < tdc_u && tdc_u < tdc_max &&
+                  tdc_min < tdc_d && tdc_d < tdc_max)
+                ++multiplicity_m;
+            }
+          }
+          // RC+X
+          for (int seg = 0; seg < NumOfSegRC[plane_p]; ++seg)
+          {
+            int nhit_l_u = gUnpacker.get_entries(k_device, plane_p, seg, 0, k_leading);
+            int nhit_l_d = gUnpacker.get_entries(k_device, plane_p, seg, 1, k_leading);
+            if (nhit_l_u != 0 && nhit_l_d != 0)
+            {
+              int tdc_u = gUnpacker.get(k_device, plane_p, seg, 0, k_leading, 0);
+              int tdc_d = gUnpacker.get(k_device, plane_p, seg, 1, k_leading, 0);
+              if (tdc_min < tdc_u && tdc_u < tdc_max &&
+                  tdc_min < tdc_d && tdc_d < tdc_max)
+                ++multiplicity_p;
+            }
+          }
+        }
+        hptr_array[rc_multihit_id]->Fill(multiplicity_m);
+        hptr_array[rc_multihit_id + 1]->Fill(multiplicity_p);
+      }
+
+#if 0
+    // Debug, dump data relating this detector
+    gUnpacker.dump_data_device(k_device);
+#endif
+    } // rc
+
 
 
     // TF_TF  -----------------------------------------------------------

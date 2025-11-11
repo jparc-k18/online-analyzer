@@ -2088,6 +2088,154 @@ GeADC()
 
 //_____________________________________________________________________________
 TCanvas*
+RCTDC()
+{
+  auto c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 3);
+  auto tdc_hid = HistMaker::getUniqueID(kRC, 0, kTDC, 1);
+
+  for (int i=0; i<5; ++i)
+    {
+      c1->cd(i+1);
+      auto ht1m = dynamic_cast<TH1*>(GHist::get(tdc_hid + i));
+      ht1m->Draw();
+
+      c1->cd(i+7);
+      auto h1tp = dynamic_cast<TH1*>(GHist::get(tdc_hid + i + 5));
+      h1tp->Draw();
+    }
+
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+RCHG()
+{
+  auto c1 = new TCanvas(__func__, __func__);
+  c1->Divide(4, 3);
+  auto highgain_hid = HistMaker::getUniqueID(kRC, 0, kHighGain, 1);
+  auto chighgain_hid= HistMaker::getUniqueID(kRC, 0, kHighGain, 201);
+
+  for (int i=0; i<5; ++i)
+    {
+      c1->cd(i+1);
+      auto ht1m = dynamic_cast<TH1*>(GHist::get(highgain_hid + i));
+      auto cht1m= dynamic_cast<TH1*>(GHist::get(chighgain_hid + i));
+
+      cht1m->SetLineColor(kRed);
+
+      ht1m->Draw();
+      cht1m->Draw("same");
+      gPad->SetLogy();
+
+      c1->cd(i+7);
+      auto h1tp = dynamic_cast<TH1*>(GHist::get(highgain_hid + i + 5));
+      auto cht1p = dynamic_cast<TH1*>(GHist::get(chighgain_hid + i + 5));
+
+      cht1p->SetLineColor(kRed);
+
+      h1tp->Draw();
+      cht1p->Draw("same");
+      gPad->SetLogy();
+    }
+
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+PDHitpat()
+{
+  auto c1 = new TCanvas(__func__, __func__);
+  c1->Divide(2, 2);
+  auto chitpat_hid      = HistMaker::getUniqueID(kRC, 0, kHitPat, 101);
+  auto chitpat_wa_hid   = HistMaker::getUniqueID(kRC, 0, kHitPat, 201);
+
+  for (int i = 0; i<2; ++i){
+    // RC-X
+    c1->cd(1+i);
+    auto hwtm = dynamic_cast<TH1*>(GHist::get(chitpat_hid+i));
+    auto hwam = dynamic_cast<TH1*>(GHist::get(chitpat_wa_hid+i));
+
+    hwtm->SetLineColor(kRed);
+    hwam->SetLineColor(kBlue);
+    hwtm->SetMinimum(0);
+
+    hwtm->Draw();
+    hwam->Draw("same");
+
+    c1->cd(3+i);
+    auto hwtp = dynamic_cast<TH1*>(GHist::get(chitpat_hid+i+5));
+    auto hwap = dynamic_cast<TH1*>(GHist::get(chitpat_wa_hid+i+5));
+
+    hwtp->SetLineColor(kRed);
+    hwap->SetLineColor(kBlue);
+    hwtp->SetMinimum(0);
+
+    hwtp->Draw();
+    hwap->Draw("same");
+  }
+
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+RCHitpat()
+{
+  auto c1 = new TCanvas(__func__, __func__);
+  c1->Divide(3, 2);
+  auto chitpat_hid      = HistMaker::getUniqueID(kRC, 0, kHitPat, 101);
+  auto chitpat_wa_hid   = HistMaker::getUniqueID(kRC, 0, kHitPat, 201);
+
+  for (int i = 0; i<3; ++i){
+    // RC-X
+    c1->cd(1+i);
+    auto hwtm = dynamic_cast<TH1*>(GHist::get(chitpat_hid+i+2));
+    auto hwam = dynamic_cast<TH1*>(GHist::get(chitpat_wa_hid+i+2));
+
+    hwtm->SetLineColor(kRed);
+    hwam->SetLineColor(kBlue);
+    hwtm->SetMinimum(0);
+
+    hwtm->Draw();
+    hwam->Draw("same");
+
+    c1->cd(4+i);
+    auto hwtp = dynamic_cast<TH1*>(GHist::get(chitpat_hid+i+7));
+    auto hwap = dynamic_cast<TH1*>(GHist::get(chitpat_wa_hid+i+7));
+
+    hwtp->SetLineColor(kRed);
+    hwap->SetLineColor(kBlue);
+    hwtp->SetMinimum(0);
+
+    hwtp->Draw();
+    hwap->Draw("same");
+  }
+
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
+RCMulti()
+{
+  auto c1 = new TCanvas(__func__, __func__);
+  c1->Divide(1, 2);
+  auto multi_hid = HistMaker::getUniqueID(kRC, 0, kMulti, 1);
+  for (int i =0; i<2;++i){
+    c1->cd(1+i);
+    auto hmul = dynamic_cast<TH1*>(GHist::get(multi_hid+i));
+    hmul->Draw();
+    gPad->SetLogy();
+  }
+
+  return c1;
+}
+
+//_____________________________________________________________________________
+TCanvas*
 GeCRM()
 {
   auto c1 = new TCanvas(__func__, __func__);

@@ -18,7 +18,7 @@ conf=/param/conf/analyzer.conf
 if [ -z "$1" ]; then
     data=${ebhost}:8901
 else
-    data=$top_dir/data/run$1.dat.gz
+    data=$top_dir/data/run$1.dat
 fi
 
 # if [ -z "$1" ]; then

@@ -228,6 +228,14 @@ void     UpdateSSDEfficiency();
 void     UpdateT0PeakFitting();
 void     UpdateTOTPeakFittingE40();
 void     UpdateBeamProfile(ParticleType p);
+
+//E63
+TCanvas* RCTDC();
+TCanvas* RCHG();
+TCanvas* PDHitpat();
+TCanvas* RCHitpat();
+TCanvas* RCMulti();
+
 }
 
 };

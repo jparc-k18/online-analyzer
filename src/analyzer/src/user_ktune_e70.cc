@@ -514,6 +514,7 @@ process_begin( const std::vector<std::string>& argv )
   tab_hist->Add(gHist.createBH2());
   tab_hist->Add(gHist.createBAC());
   tab_hist->Add(gHist.createE75BAC());
+  tab_hist->Add(gHist.createE75LFBAC());
   //tab_hist->Add(gHist.createPVAC());
   //tab_hist->Add(gHist.createFAC());
   int btof_id = gHist.getUniqueID(kMisc, 0, kTDC);
@@ -723,7 +724,7 @@ process_begin( const std::vector<std::string>& argv )
                                ));
 
 // misc
-
+#if 1
   tab_hist->Add(gHist.createTH1(btof_id+30+16+1, "BH1 chitpat kaon",
                                11, 0, 11,
                                "segment", ""
@@ -748,50 +749,52 @@ process_begin( const std::vector<std::string>& argv )
                                8, 0, 8,
                                "segment", ""
                                ));
-
+#endif
 
 // LF BAC (Nadeshiko Ohmuro )
 
-  tab_hist->Add(gHist.createTH1(btof_id+23+32, "E75LFBACeff [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+53, "E75LFBACeff [pi]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+24+32, "E75LFBACeff [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+54, "E75LFBACeff [k]",
                                6, 0, 6,
                                "Pattern", ""
                                ));
 
-  tab_hist->Add(gHist.createTH1(btof_id+25+32, "E75LFBACeff [p]",
-                               6, 0, 6,
-                               "Pattern", ""
-                               ));
-  tab_hist->Add(gHist.createTH1(btof_id+26+32, "E75LFBAC ADC",
+//  tab_hist->Add(gHist.createTH1(btof_id+25+32, "E75LFBACeff [p]",
+//                               6, 0, 6,
+//                               "Pattern", ""
+//                              ));
+//
+  tab_hist->Add(gHist.createTH1(btof_id+55, "E75LFBAC ADC",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+27+32, "E75LFBAC ADC wTDC",
+  tab_hist->Add(gHist.createTH1(btof_id+56, "E75LFBAC ADC wTDC",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+28+32, "E75LFBAC ADC [pi]",
+  tab_hist->Add(gHist.createTH1(btof_id+57, "E75LFBAC ADC [pi]",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+29+32, "E75LFBAC ADC [k]",
+  tab_hist->Add(gHist.createTH1(btof_id+58, "E75LFBAC ADC [k]",
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  tab_hist->Add(gHist.createTH1(btof_id+30+32, "E75LFBAC ADC [p]",
-                               200, 0, 2000,
-                               "ADC [ch]", ""
-                               ));
+  
+ // tab_hist->Add(gHist.createTH1(btof_id+30+32, "E75LFBAC ADC [p]",
+ //                              200, 0, 2000,
+ //                              "ADC [ch]", ""
+ //                              ));
 
 
   // Set histogram pointers to the vector sequentially.
   // This vector contains both TH1 and TH2.
   // Then you need to do down cast when you use TH2.
   if(0 != gHist.setHistPtr(hptr_array)){return -1;}
-
+  std::cout<<__LINE__<<std::endl; //20251110 Iwmaoto
   gStyle->SetOptStat(1110);
   gStyle->SetTitleW(.4);
   gStyle->SetTitleH(.1);
@@ -986,7 +989,7 @@ process_event( void )
       hptr_array[btof_id+23]->Fill(0); //BAC2eff
       hptr_array[btof_id+8+23]->Fill(0); //E75FMBAC1eff
       hptr_array[btof_id+16+23]->Fill(0); //E75FMBAC2eff
-      hptr_array[btof_id+32+23]->Fill(0); //E75LFBACeff
+      hptr_array[btof_id+53]->Fill(0); //E75LFBACeff
     }
 
     if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.3<btof && btof<-1.0 ){  // 1.8GeV/c
@@ -996,7 +999,7 @@ process_event( void )
       hptr_array[btof_id+24]->Fill(0); //BAC2eff
       hptr_array[btof_id+8+24]->Fill(0); //E75FMBAC1eff
       hptr_array[btof_id+16+24]->Fill(0); //E75FMBAC2eff
-      hptr_array[btof_id+32+24]->Fill(0); //E75LFBACeff
+      hptr_array[btof_id+54]->Fill(0); //E75LFBACeff
     }
 
     if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -4.7<btof && btof<-3.7 ){ // 1.8GeV/c
@@ -1007,8 +1010,6 @@ process_event( void )
       hptr_array[btof_id+3]->Fill(btof);
       hptr_array[btof_id+6]->Fill(0); //BAC1eff
       hptr_array[btof_id+6+19]->Fill(0); //BAC2eff
-      hptr_array[btof_id+6+19+8]->Fill(0); //PVACeff
-      hptr_array[btof_id+6+19+8]->Fill(0); //FACeff
     }
 
   } // btof
@@ -1415,7 +1416,8 @@ process_event( void )
   	}
 
   	if( tdc1st!=0 ) hptr_array[bc4t1st_id +l]->Fill( tdc1st );
-  	if( flag_hit_wt ){
+  	if( flag_hit_wt ){//ram/conf/analyzer.conf
+
   	  ++multiplicity_wt;
   	  hptr_array[bc4hit_id + l]->Fill( w );
 	  if( k_flag==1 && l==4 ){
@@ -1800,7 +1802,6 @@ process_event( void )
   //---------------------------------------------------------------
 
 
-
   // E75FMBAC1 -----------------------------------------------------------
   // ------- Sakurako Ohmuro ----------------------------------------------------
   {
@@ -1979,51 +1980,65 @@ process_event( void )
   // ------- Nadeshiko Ohmuro ----------------------------------------------------
   {
     // data type
-    static const int k_device = gUnpacker.get_device_id("E75BAC");
-    static const int k_adc    = gUnpacker.get_data_id("E75BAC","adc");
-    static const int k_tdc    = gUnpacker.get_data_id("E75BAC","tdc");
+    static const int k_device = gUnpacker.get_device_id("E75LFBAC");
+    static const int k_adc    = gUnpacker.get_data_id("E75LFBAC","adc");
+    static const int k_tdc    = gUnpacker.get_data_id("E75LFBAC","tdc");
 
     // sequential id
-    static const int baca_id   = gHist.getSequentialID(kE75BAC, 0, kADC,     1);
-    static const int bact_id   = gHist.getSequentialID(kE75BAC, 0, kTDC,     1);
-    static const int bacawt_id = gHist.getSequentialID(kE75BAC, 0, kADCwTDC, 1);
-    static const int bach_id   = gHist.getSequentialID(kE75BAC, 0, kHitPat,  1);
-    static const int bacm_id   = gHist.getSequentialID(kE75BAC, 0, kMulti,   1);
+    static const int baca_id   = gHist.getSequentialID(kE75LFBAC, 0, kADC,     1);
+    static const int bact_id   = gHist.getSequentialID(kE75LFBAC, 0, kTDC,     1);
+    static const int bacawt_id = gHist.getSequentialID(kE75LFBAC, 0, kADCwTDC, 1);
+    static const int bach_id   = gHist.getSequentialID(kE75LFBAC, 0, kHitPat,  1);
+    static const int bacm_id   = gHist.getSequentialID(kE75LFBAC, 0, kMulti,   1);
     static const int btof_id  = gHist.getSequentialID(kMisc, 0, kTDC);
     // TDC gate range
     //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
     //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
-    static const int tdc_min = 1130;
-    static const int tdc_max = 1170;
+    static const int tdc_min = 200;
+    static const int tdc_max = 1200;
 
     int multiplicity = 0;
     //for(int seg = 0; seg<NumOfSegBAC; ++seg){
-    for(int seg = 2; seg<3; ++seg){
+    for(int seg = 0; seg<1; ++seg){
       // ADC
       int nhit_a = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
+      std::cout << "get entries ADC OK " << std::endl;
+      std::cout << "btofId "<< btof_id << std::endl;
       if( nhit_a!=0 ){
   	int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
+        std::cout << "get ADC OK " << std::endl;
   	hptr_array[baca_id + seg]->Fill( adc );
+        std::cout << "histFill ADC OK " << std::endl;
   	if(nhbh1_flag==1&&nhbh2_flag==1){
-  	  hptr_array[btof_id+7+19+32]->Fill(adc);
+  	  hptr_array[btof_id+55]->Fill(adc);
+          std::cout << "histFill ADCwnoFlag OK " << std::endl;
+#if 1
   	  if(pi_flag){
-  	    hptr_array[btof_id+9+19+32]->Fill(adc);
+  	    hptr_array[btof_id+57]->Fill(adc);
+            std::cout << "histFill ADCwpiFlag OK " << std::endl;
   	  }
   	  if(k_flag){
-  	    hptr_array[btof_id+10+19+32]->Fill(adc);
+  	    hptr_array[btof_id+58]->Fill(adc);
+            std::cout << "histFill ADCwKFlag OK " << std::endl;
   	  }
-  	  if(p_flag){
-  	    hptr_array[btof_id+11+19+32]->Fill(adc);
-  	  }
+//  	  if(p_flag){
+//  	    hptr_array[btof_id+11+19+32]->Fill(adc);
+//            std::cout << "histFill ADCwpFlag OK " << std::endl;
+//  	  }
+#endif
   	}
+        std::cout << "histFill ADCwFlag OK " << std::endl;
       }
       // TDC
       int nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
       bool flag_t = false;
+      std::cout << "get entries TDC OK " << std::endl;
 
       for(int m = 0; m<nhit_t; ++m){
       	int tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
+        std::cout << "get TDC OK " << std::endl;
       	hptr_array[bact_id + seg]->Fill( tdc );
+        std::cout << "histFill TDC OK " << std::endl;
 
       	if(tdc_min < tdc && tdc < tdc_max){
       	  flag_t = true;
@@ -2036,21 +2051,21 @@ process_event( void )
       	  int adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
       	  hptr_array[bacawt_id + seg]->Fill( adc );
       	  if(nhbh1_flag==1&&nhbh2_flag==1){
-      	    hptr_array[btof_id+8+19+32]->Fill(adc);
+      	    hptr_array[btof_id+56]->Fill(adc);
       	  }
       	}
       	hptr_array[bach_id]->Fill(seg);
       	++multiplicity;
 
       	if( pi_flag==1 ){
-      	  hptr_array[btof_id+4+19+32]->Fill(1); //BACeff
+      	  hptr_array[btof_id+53]->Fill(1); //BACeff
       	}
       	if( k_flag==1 ){
-      	  hptr_array[btof_id+5+19+32]->Fill(1); //BACeff
+      	  hptr_array[btof_id+54]->Fill(1); //BACeff
       	}
-      	if( p_flag==1 ){
-      	  hptr_array[btof_id+6+19+32]->Fill(1); //BACeff
-      	}
+//      	if( p_flag==1 ){
+//      	  hptr_array[btof_id+6+19+32]->Fill(1); //BACeff
+//      	}
 
       }// flag is OK
     }
@@ -2059,7 +2074,6 @@ process_event( void )
 
   }// E75LFBAC
   //---------------------------------------------------------------
-
 
 
 

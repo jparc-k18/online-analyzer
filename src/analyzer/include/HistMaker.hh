@@ -27,7 +27,7 @@ enum DetectorType {
   //E70
   kAFT,
   //E75 BAC test
-  kE75BAC,
+  kE75BAC,kE75LFBAC,
   // E72E90
   kE72BAC,  kE72KVC, kE42BH2, kE72Parasite, kE90SAC,
   // TF
@@ -190,6 +190,7 @@ public:
   TList* createAFT( Bool_t flag_ps=true );
   TList* createBAC( Bool_t flag_ps=true );
   TList* createE75BAC( Bool_t flag_ps=true );
+  TList* createE75LFBAC( Bool_t flag_ps=true );
   TList* createSAC( Bool_t flag_ps=true );
   TList* createFAC( Bool_t flag_ps=true );
   TList* createPVAC( Bool_t flag_ps=true );

@@ -579,10 +579,10 @@ void dispBAC1_y2020()
   c5->cd(1);
   gPad->SetLogy();
   {
-    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+32+26);
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+55);
     h->GetXaxis()->SetRangeUser(0,2000);
     h->Draw();
-    TH1 *hh = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+32+27);
+    TH1 *hh = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+56);
     hh->SetLineColor( kRed );
     hh->Draw("same");
     TText *t1 = new TText(0.65,0.85,"Red: w/TDC");
@@ -595,18 +595,18 @@ void dispBAC1_y2020()
   c5->cd(2);
   gPad->SetLogy();
   {
-    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+32+26);
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+55);
     h->GetXaxis()->SetRangeUser(0,2000);
     h->Draw();
-    TH1 *hpi = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+32+28);
+    TH1 *hpi = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+57);
     hpi->SetLineColor( kBlue );
     hpi->Draw("same");
-    TH1 *hk = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+32+29);
+    TH1 *hk = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+58);
     hk->SetLineColor( kGreen );
     hk->Draw("same");
-    TH1 *hp = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+32+30);
-    hp->SetLineColor( kRed );
-    hp->Draw("same");
+    //TH1 *hp = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc, 0, kTDC)+32+30);
+    //hp->SetLineColor( kRed );
+    //hp->Draw("same");
     TText *t1 = new TText(0.65,0.85,"Blue: pion");
     t1->SetNDC(1);
     t1->SetTextColor(kBlue);
@@ -626,7 +626,7 @@ void dispBAC1_y2020()
 
   c5->cd(3);
   {
-    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kE75BAC,  0, kTDC, 1)+2);
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kE75LFBAC,  0, kTDC, 1));
     h->GetXaxis()->SetRangeUser(250e3,350e3);
     h->Draw();
   }
@@ -667,7 +667,7 @@ void dispBAC1_y2020()
 
   c5->cd(5);
   {
-    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+32+23);
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+53);
     h->GetXaxis()->SetRangeUser(0,5);
     h->Draw();
     int bin0 = h->GetBinContent(1);
@@ -684,7 +684,7 @@ void dispBAC1_y2020()
 
   c5->cd(6);
   {
-    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+32+24);
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kMisc,  0, kTDC)+54);
     h->GetXaxis()->SetRangeUser(0,5);
     h->Draw();
     int bin0 = h->GetBinContent(1);
@@ -743,11 +743,11 @@ void dispBAC1_y2020()
   gPad->SetLogy();
   {
     // raw ADC 
-    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kE75BAC,  0, kADC, 1)+2);
+    TH1 *h = (TH1*)GHist::get(HistMaker::getUniqueID(kE75LFBAC,  0, kADC, 1));
     h->GetXaxis()->SetRangeUser(0,2000);
     h->Draw();
     // ADC w TDC
-    TH1 *hh = (TH1*)GHist::get(HistMaker::getUniqueID(kE75BAC,  0, kADCwTDC, 1)+2);
+    TH1 *hh = (TH1*)GHist::get(HistMaker::getUniqueID(kE75LFBAC,  0, kADCwTDC, 1));
     hh->SetLineColor( kRed );
     hh->Draw("same");
   }

@@ -783,7 +783,7 @@ process_begin( const std::vector<std::string>& argv )
                                200, 0, 2000,
                                "ADC [ch]", ""
                                ));
-  
+
  // tab_hist->Add(gHist.createTH1(btof_id+30+32, "E75LFBAC ADC [p]",
  //                              200, 0, 2000,
  //                              "ADC [ch]", ""
@@ -1907,8 +1907,8 @@ process_event( void )
     // TDC gate range
     //static const int tdc_min = gUser.GetParameter("BAC_TDC", 0);
     //static const int tdc_max = gUser.GetParameter("BAC_TDC", 1);
-    static const int tdc_min = 1130;
-    static const int tdc_max = 1170;
+    static const int tdc_min = 200;
+    static const int tdc_max = 1200;
 
     int multiplicity = 0;
     //for(int seg = 0; seg<NumOfSegBAC; ++seg){

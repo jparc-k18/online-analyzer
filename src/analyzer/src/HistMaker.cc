@@ -6944,294 +6944,6 @@ TList *HistMaker::createLC(Bool_t flag_ps)
   return top_dir;
 }
 
-// -------------------------------------------------------------------------
-// createParaLC
-// -------------------------------------------------------------------------
-TList *HistMaker::createParaLC(Bool_t flag_ps)
-{
-  // Determine the detector name
-  TString strDet = CONV_STRING(kParaLC);
-  // name list of crearted detector
-  name_created_detectors_.push_back(strDet);
-  if (flag_ps)
-  {
-    // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet);
-  }
-
-  // Declaration of the directory
-  // Just type conversion from TString to char*
-  const char *nameDetector = strDet.Data();
-  TList *top_dir = new TList;
-  top_dir->SetName(nameDetector);
-
-  // ADC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    TString strSubDir = CONV_STRING(kADC);
-    const char *nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    // Make histogram and add it
-    Int_t target_id = getUniqueID(kParaLC, 0, kADC, 0);
-    for (Int_t i = 0; i < NumOfSegParaLC * 2; ++i)
-    {
-      const char *title = NULL;
-      if (i < NumOfSegParaLC)
-      {
-        Int_t seg = i + 1; // 1 origin
-        title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-      }
-      else
-      {
-        Int_t seg = i + 1 - NumOfSegParaLC; // 1 origin
-        title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
-      }
-
-      sub_dir->Add(createTH1(target_id + i + 1, title, // 1 origin
-                             0x1000, 0, 0x1000,
-                             "ADC [ch]", ""));
-    }
-
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
-
-  // ADCwTDC ---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    TString strSubDir = CONV_STRING(kADCwTDC);
-    const char *nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    // Make histogram and add it
-    Int_t target_id = getUniqueID(kParaLC, 0, kADCwTDC, 0);
-    for (Int_t i = 0; i < NumOfSegParaLC * 2; ++i)
-    {
-      const char *title = NULL;
-      if (i < NumOfSegParaLC)
-      {
-        Int_t seg = i + 1; // 1 origin
-        title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-      }
-      else
-      {
-        Int_t seg = i + 1 - NumOfSegParaLC; // 1 origin
-        title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
-      }
-
-      sub_dir->Add(createTH1(target_id + i + 1, title, // 1 origin
-                             0x1000, 0, 0x1000,
-                             "ADC [ch]", ""));
-    }
-
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
-
-  // TDC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    TString strSubDir = CONV_STRING(kTDC);
-    const char *nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    // Make histogram and add it
-    Int_t target_id = getUniqueID(kParaLC, 0, kTDC, 0);
-    for (Int_t i = 0; i < NumOfSegParaLC * 2; ++i)
-    {
-      const char *title = NULL;
-      if (i < NumOfSegParaLC)
-      {
-        Int_t seg = i + 1; // 1 origin
-        title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-      }
-      else
-      {
-        Int_t seg = i + 1 - NumOfSegParaLC; // 1 origin
-        title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-      }
-
-      sub_dir->Add(createTH1(target_id + i + 1, title, // 1 origin
-                             0x1000, 0, 0x1000,
-                             "TDC [ch]", ""));
-    }
-
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  } // TDC
-  /*
-    // Hit parttern -----------------------------------------------
-    {
-      const char* title = "ParaLC_hit_pattern";
-      Int_t target_id = getUniqueID(kParaLC, 0, kHitPat, 0);
-      // Add to the top directory
-      top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-           NumOfSegParaLC, 0, NumOfSegParaLC,
-           "Segment", ""));
-    }
-  */
-  /*  // Multiplicity -----------------------------------------------
-    {
-      const char* title = "ParaLC_multiplicity";
-      Int_t target_id = getUniqueID(kParaLC, 0, kMulti, 0);
-      // Add to the top directory
-      top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-           NumOfSegParaLC, 0, NumOfSegParaLC,
-           "Multiplicity", ""));
-    }//Multi
-  */
-  // Return the TList pointer which is added into TGFileBrowser
-  return top_dir;
-}
-
-// -------------------------------------------------------------------------
-// createParaLCRef
-// -------------------------------------------------------------------------
-TList *HistMaker::createParaLCRef(Bool_t flag_ps)
-{
-  // Determine the detector name
-  TString strDet = CONV_STRING(kParaLCRef);
-  // name list of crearted detector
-  name_created_detectors_.push_back(strDet);
-  if (flag_ps)
-  {
-    // name list which are displayed in Ps tab
-    name_ps_files_.push_back(strDet);
-  }
-
-  // Declaration of the directory
-  // Just type conversion from TString to char*
-  const char *nameDetector = strDet.Data();
-  TList *top_dir = new TList;
-  top_dir->SetName(nameDetector);
-
-  // ADC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    TString strSubDir = CONV_STRING(kADC);
-    const char *nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    // Make histogram and add it
-    Int_t target_id = getUniqueID(kParaLCRef, 0, kADC, 0);
-    for (Int_t i = 0; i < NumOfSegParaLCRef * 2; ++i)
-    {
-      const char *title = NULL;
-      if (i < NumOfSegParaLCRef)
-      {
-        Int_t seg = i + 1; // 1 origin
-        title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-      }
-      else
-      {
-        Int_t seg = i + 1 - NumOfSegParaLCRef; // 1 origin
-        title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
-      }
-
-      sub_dir->Add(createTH1(target_id + i + 1, title, // 1 origin
-                             0x1000, 0, 0x1000,
-                             "ADC [ch]", ""));
-    }
-
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
-
-  // ADCwTDC ---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    TString strSubDir = CONV_STRING(kADCwTDC);
-    const char *nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    // Make histogram and add it
-    Int_t target_id = getUniqueID(kParaLCRef, 0, kADCwTDC, 0);
-    for (Int_t i = 0; i < NumOfSegParaLCRef * 2; ++i)
-    {
-      const char *title = NULL;
-      if (i < NumOfSegParaLCRef)
-      {
-        Int_t seg = i + 1; // 1 origin
-        title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-      }
-      else
-      {
-        Int_t seg = i + 1 - NumOfSegParaLCRef; // 1 origin
-        title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
-      }
-      sub_dir->Add(createTH1(target_id + i + 1, title, // 1 origin
-                             0x1000, 0, 0x1000,
-                             "ADC [ch]", ""));
-    }
-
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  }
-
-  // TDC---------------------------------------------------------
-  {
-    // Declaration of the sub-directory
-    TString strSubDir = CONV_STRING(kTDC);
-    const char *nameSubDir = strSubDir.Data();
-    TList *sub_dir = new TList;
-    sub_dir->SetName(nameSubDir);
-
-    // Make histogram and add it
-    Int_t target_id = getUniqueID(kParaLCRef, 0, kTDC, 0);
-    for (Int_t i = 0; i < NumOfSegParaLCRef * 2; ++i)
-    {
-      // for(Int_t i = 0; i<NumOfSegParaLCRef; ++i){
-      const char *title = NULL;
-      if (i < NumOfSegParaLCRef)
-      {
-        Int_t seg = i + 1; // 1 origin
-        title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-      }
-      else
-      {
-        Int_t seg = i + 1 - NumOfSegParaLCRef; // 1 origin
-        title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-      }
-
-      sub_dir->Add(createTH1(target_id + i + 1, title, // 1 origin
-                             0x1000, 0, 0x1000,
-                             "TDC [ch]", ""));
-    }
-
-    // insert sub directory
-    top_dir->Add(sub_dir);
-  } // TDC
-  /*
-    // Hit parttern -----------------------------------------------
-    {
-      const char* title = "ParaLCRef_hit_pattern";
-      Int_t target_id = getUniqueID(kParaLCRef, 0, kHitPat, 0);
-      // Add to the top directory
-      top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-           NumOfSegParaLCRef, 0, NumOfSegParaLCRef,
-           "Segment", ""));
-    }
-  */
-  /*
-    // Multiplicity -----------------------------------------------
-    {
-      const char* title = "ParaLCRef_multiplicity";
-      Int_t target_id = getUniqueID(kParaLCRef, 0, kMulti, 0);
-      // Add to the top directory
-      top_dir->Add(createTH1(target_id + 1, title, // 1 origin
-           NumOfSegParaLCRef, 0, NumOfSegParaLCRef,
-           "Multiplicity", ""));
-    }
-  */
-  // Return the TList pointer which is added into TGFileBrowser
-  return top_dir;
-}
 
 // -------------------------------------------------------------------------
 // createWC
@@ -13735,3 +13447,256 @@ TList *HistMaker::createParaVC(Bool_t flag_ps)
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
+
+// -------------------------------------------------------------------------
+// createParaLC
+// -------------------------------------------------------------------------
+TList* HistMaker::createParaLC( Bool_t flag_ps )
+{
+  // Determine the detector name
+  TString strDet = CONV_STRING(kParaLC);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
+
+  // Declaration of the directory
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+  // ADC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kADC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kParaLC, 0, kADC, 0);
+    for(Int_t i = 0; i < NumOfSegParaLC*2; ++i){
+      const char* title = NULL;
+      if(i < NumOfSegParaLC){
+        Int_t seg = i+1; // 1 origin
+        title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+      }else{
+        Int_t seg = i+1-NumOfSegParaLC; // 1 origin
+        title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }
+
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+                             0x1000, 0, 0x1000,
+                             "ADC [ch]", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+  // ADCwTDC ---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kADCwTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kParaLC, 0, kADCwTDC, 0);
+    for( Int_t i=0; i < NumOfSegParaLC*2; ++i ){
+      const char* title = NULL;
+      if( i < NumOfSegParaLC ){
+        Int_t seg = i+1; // 1 origin
+        title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+      }else{
+        Int_t seg = i+1-NumOfSegParaLC; // 1 origin
+        title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+      }
+
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+                             0x1000, 0, 0x1000,
+                             "ADC [ch]", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }
+
+  // TDC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kParaLC, 0, kTDC, 0);
+    for(Int_t i = 0; i < NumOfSegParaLC*2; ++i){
+      const char* title = NULL;
+      if(i < NumOfSegParaLC){
+        Int_t seg = i+1; // 1 origin
+        title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+       }else{
+         Int_t seg = i+1-NumOfSegParaLC; // 1 origin
+         title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
+       }
+
+       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+                             0x1000, 0, 0x1000,
+                             "TDC [ch]", ""));
+     }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }//TDC
+
+  // Multiplicity -----------------------------------------------
+  {
+    const char* title = "ParaLC_multiplicity";
+    Int_t target_id = getUniqueID(kParaLC, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+                           NumOfSegParaLC, 0, NumOfSegParaLC,
+                           "Multiplicity", ""));
+  }//Multi
+
+  // Return the TList pointer which is added into TGFileBrowser
+  return top_dir;
+}
+// -------------------------------------------------------------------------
+// createParaLCRef
+// -------------------------------------------------------------------------
+TList* HistMaker::createParaLCRef( Bool_t flag_ps )
+{
+  // Determine the detector name
+  TString strDet = CONV_STRING(kParaLCRef);
+  // name list of crearted detector
+  name_created_detectors_.push_back(strDet);
+  if(flag_ps){
+    // name list which are displayed in Ps tab
+    name_ps_files_.push_back(strDet);
+  }
+
+  // Declaration of the directory
+  // Just type conversion from TString to char*
+  const char* nameDetector = strDet.Data();
+  TList *top_dir = new TList;
+  top_dir->SetName(nameDetector);
+
+ // ADC---------------------------------------------------------
+ {
+   // Declaration of the sub-directory
+   TString strSubDir  = CONV_STRING(kADC);
+   const char* nameSubDir = strSubDir.Data();
+   TList *sub_dir = new TList;
+   sub_dir->SetName(nameSubDir);
+
+   // Make histogram and add it
+   Int_t target_id = getUniqueID(kParaLCRef, 0, kADC, 0);
+   for(Int_t i = 0; i<NumOfSegParaLCRef*2; ++i){
+     const char* title = NULL;
+     if(i < NumOfSegParaLCRef){
+       Int_t seg = i+1; // 1 origin
+       title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+     }else{
+       Int_t seg = i+1-NumOfSegParaLCRef; // 1 origin
+       title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+     }
+
+     sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+                     0x1000, 0, 0x1000,
+                     "ADC [ch]", ""));
+   }
+
+   // insert sub directory
+   top_dir->Add(sub_dir);
+ }
+ // ADCwTDC ---------------------------------------------------------
+ {
+   // Declaration of the sub-directory
+   TString strSubDir  = CONV_STRING(kADCwTDC);
+   const char* nameSubDir = strSubDir.Data();
+   TList *sub_dir = new TList;
+   sub_dir->SetName(nameSubDir);
+
+   // Make histogram and add it
+   Int_t target_id = getUniqueID(kParaLCRef, 0, kADCwTDC, 0);
+   for( Int_t i=0; i<NumOfSegParaLCRef*2; ++i ){
+     const char* title = NULL;
+     if( i<NumOfSegParaLCRef ){
+       Int_t seg = i+1; // 1 origin
+       title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+     }else{
+       Int_t seg = i+1-NumOfSegParaLCRef; // 1 origin
+       title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+     }
+     sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+                     0x1000, 0, 0x1000,
+                     "ADC [ch]", ""));
+   }
+
+   // insert sub directory
+   top_dir->Add(sub_dir);
+ }
+
+  // TDC---------------------------------------------------------
+  {
+    // Declaration of the sub-directory
+    TString strSubDir  = CONV_STRING(kTDC);
+    const char* nameSubDir = strSubDir.Data();
+    TList *sub_dir = new TList;
+    sub_dir->SetName(nameSubDir);
+
+    // Make histogram and add it
+    Int_t target_id = getUniqueID(kParaLCRef, 0, kTDC, 0);
+     for(Int_t i = 0; i<NumOfSegParaLCRef*3; ++i){
+      const char* title = NULL;
+      if(i < NumOfSegParaLCRef){
+        Int_t seg = i+1; // 1 origin
+        title = Form("%s_%s_%dR", nameDetector, nameSubDir, seg);
+      }else if(i < NumOfSegParaLCRef*2){
+        Int_t seg = i+1-NumOfSegParaLCRef; // 1 origin
+        title = Form("%s_%s_%dL", nameDetector, nameSubDir, seg);
+      }else{
+        Int_t seg = i+1-NumOfSegParaLCRef*2; // 1 origin
+        title = Form("%s_%s_%dOR", nameDetector, nameSubDir, seg);
+      }
+
+      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
+                             0x1000, 0, 0x1000,
+                             "TDC [ch]", ""));
+    }
+
+    // insert sub directory
+    top_dir->Add(sub_dir);
+  }//TDC
+/*
+  // Hit parttern -----------------------------------------------
+  {
+    const char* title = "ParaLCRef_hit_pattern";
+    Int_t target_id = getUniqueID(kParaLCRef, 0, kHitPat, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+                           NumOfSegParaLCRef, 0, NumOfSegParaLCRef,
+                           "Segment", ""));
+  }
+
+*/
+  // Multiplicity -----------------------------------------------
+  {
+    const char* title = "ParaLCRef_multiplicity";
+    Int_t target_id = getUniqueID(kParaLCRef, 0, kMulti, 0);
+    // Add to the top directory
+    top_dir->Add(createTH1(target_id + 1, title, // 1 origin
+                           NumOfSegParaLCRef, 0, NumOfSegParaLCRef,
+                           "Multiplicity", ""));
+  }
+
+  // Return the TList pointer which is added into TGFileBrowser
+  return top_dir;
+}
+

@@ -105,7 +105,7 @@ namespace analyzer
     tab_macro->Add(macro::Get("dispBC3"));
     tab_macro->Add(macro::Get("dispBC4"));
     tab_macro->Add(macro::Get("dispBAC"));
-	tab_macro->Add(macro::Get("dispSAC"));
+    tab_macro->Add(macro::Get("dispSAC"));
     tab_macro->Add(macro::Get("dispBH2"));
     tab_macro->Add(macro::Get("dispSDC1"));
     tab_macro->Add(macro::Get("dispSDC2"));
@@ -181,6 +181,8 @@ namespace analyzer
     tab_misc->Add(gHist.createParaTMC());
     tab_misc->Add(gHist.createParaTC());
     tab_misc->Add(gHist.createParaVC());
+    tab_misc->Add(gHist.createParaLC());
+    tab_misc->Add(gHist.createParaLCRef());
     // tab_misc->Add(macro::Get("dispE72E90"));
     // tab_misc->Add(macro::Get("dispE72E90Eff"));
     tab_misc->Add(macro::Get("dispSAC3"));
@@ -4297,91 +4299,113 @@ namespace analyzer
       // }
     }
 
-/*
-    // ParaLC -----------------------------------------------------------
-    {
-      // data type
-      static const Int_t k_device = gUnpacker.get_device_id("ParaLC");
-      static const Int_t k_adc    = gUnpacker.get_data_id("ParaLC", "adc");
-      static const Int_t k_tdc    = gUnpacker.get_data_id("ParaLC", "tdc");
-
-      // TDC gate range
-      static const UInt_t tdc_min = gUser.GetParameter("TdcParaLC", 0);
-      static const UInt_t tdc_max = gUser.GetParameter("TdcParaLC", 1);
-
-      static const Int_t a_id   = gHist.getSequentialID(kParaLC, 0, kADC);
-      static const Int_t t_id   = gHist.getSequentialID(kParaLC, 0, kTDC);
-      static const Int_t awt_id = gHist.getSequentialID(kParaLC, 0, kADCwTDC);
-
-      for(Int_t seg=0; seg < NumOfSegParaLC*2; ++seg) {
-        // ADC
-        Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
-        if (nhit != 0) {
-	  Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-          hptr_array[a_id + seg]->Fill(adc);
-        }//ADC
-        // TDC
- 	Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-	Bool_t is_in_gate = false;
- 	for(Int_t m = 0; m < nhit_t; ++m) {
- 	  Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
-	  hptr_array[t_id + seg]->Fill(tdc);
-	  if (tdc_min < tdc && tdc < tdc_max) {
-            is_in_gate = true;
-	  }//tdc range is ok
-        }//TDC
-	if (is_in_gate) {
-          // ADC w/TDC
-	  if (gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0) {
-	    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-            hptr_array[awt_id + seg]->Fill(adc);
-	  }//ADC w/TDC
-	}//flag is OK
-      }//for seg
-    }//ParaLC
-
-     // ParaLCRef
+         // ParaLC -----------------------------------------------------------
      {
-        // data type
-        static const Int_t k_device = gUnpacker.get_device_id("ParaLCRef");
-        static const Int_t k_adc    = gUnpacker.get_data_id("ParaLCRef", "adc");
-        static const Int_t k_tdc    = gUnpacker.get_data_id("ParaLCRef", "tdc");
+       // data type
+       static const Int_t k_device = gUnpacker.get_device_id("ParaLC");
+       static const Int_t k_adc    = gUnpacker.get_data_id("ParaLC", "adc");
+       static const Int_t k_tdc    = gUnpacker.get_data_id("ParaLC", "tdc");
 
-        // TDC gate range
-        static const UInt_t tdc_min = gUser.GetParameter("TdcParaLCRef", 0);
-        static const UInt_t tdc_max = gUser.GetParameter("TdcParaLCRef", 1);
+       // TDC gate range
+       static const Int_t tdc_min = gUser.GetParameter("TdcParaLC", 0);
+       static const Int_t tdc_max = gUser.GetParameter("TdcParaLC", 1);
 
-        static const Int_t a_id   = gHist.getSequentialID(kParaLCRef, 0, kADC);
-        static const Int_t t_id   = gHist.getSequentialID(kParaLCRef, 0, kTDC);
-        static const Int_t awt_id = gHist.getSequentialID(kParaLCRef, 0, kADCwTDC);
+       static const Int_t a_id   = gHist.getSequentialID(kParaLC, 0, kADC);
+       static const Int_t t_id   = gHist.getSequentialID(kParaLC, 0, kTDC);
+       static const Int_t awt_id = gHist.getSequentialID(kParaLC, 0, kADCwTDC);
 
-        for(Int_t seg=0; seg < NumOfSegParaLCRef*2; ++seg) {
-  	  // ADC
- 	  Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, 0, k_adc);
- 	  if (nhit != 0) {
- 	    Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
- 	    hptr_array[a_id + seg]->Fill(adc);
-  	  }//ADC
-          // TDC
- 	  Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, 0, k_tdc);
-	  Bool_t is_in_gate = false;
- 	  for(Int_t m = 0; m < nhit_t; ++m) {
- 	    Int_t tdc = gUnpacker.get(k_device, 0, seg, 0, k_tdc, m);
-	    hptr_array[t_id + seg]->Fill(tdc);
-	    if (tdc_min < tdc && tdc < tdc_max) {
-	      is_in_gate = true;
-	    }//tdc range is ok
-          }//TDC
-	  if (is_in_gate) {
-            // ADC w/TDC
-	    if (gUnpacker.get_entries(k_device, 0, seg, 0, k_adc)>0) {
-	      Int_t adc = gUnpacker.get(k_device, 0, seg, 0, k_adc);
-              hptr_array[awt_id + seg]->Fill(adc);
-	    }//ADC w/TDC
-	  }//flag is OK
-        }//for seg
-      }//ParaLCRef
-*/
+       Int_t multiplicity = 0;
+       Bool_t is_in_gate = false;
+
+       for(Int_t seg=0; seg < NumOfSegParaLC; ++seg) {
+         for(Int_t ud = 0; ud < 2; ++ud) {
+           // ADC
+           UInt_t adc = 0;
+           Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, ud, k_adc);
+           if (nhit != 0) {
+             adc = gUnpacker.get(k_device, 0, seg, ud, k_adc);
+             hptr_array[a_id + ud*NumOfSegParaLC + seg]->Fill(adc);
+           }//ADC
+           // TDC
+           Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, ud, k_tdc);
+           for(Int_t m = 0; m < nhit_t; ++m) {
+             Int_t tdc = gUnpacker.get(k_device, 0, seg, ud, k_tdc, m);
+             if (tdc != 0) {
+               hptr_array[t_id + ud*NumOfSegParaLC + seg]->Fill(tdc);
+               if (tdc_min<tdc && tdc<tdc_max && adc > 0) {
+                 is_in_gate =  true;
+               }//TDCcut
+             }//each TDC
+           }//TDC
+           if (is_in_gate) {
+             hptr_array[awt_id + ud*NumOfSegParaLC + seg]->Fill(adc);
+           }//ADCwTDC
+         }//UorD
+       }//for seg
+#if 0
+      // Debug, dump data relating this detector
+      gUnpacker.dump_data_device(k_device);
+#endif
+     }//ParaLC
+
+     // ParaLCRef -----------------------------------------------------------
+     {
+       // data type
+       static const Int_t k_device = gUnpacker.get_device_id("ParaLCRef");
+       static const Int_t k_adc    = gUnpacker.get_data_id("ParaLCRef", "adc");
+       static const Int_t k_tdc    = gUnpacker.get_data_id("ParaLCRef", "tdc");
+
+       // TDC gate range
+       static const Int_t tdc_min = gUser.GetParameter("TdcParaLCRef", 0);
+       static const Int_t tdc_max = gUser.GetParameter("TdcParaLCRef", 1);
+
+       static const Int_t a_id   = gHist.getSequentialID(kParaLCRef, 0, kADC);
+       static const Int_t t_id   = gHist.getSequentialID(kParaLCRef, 0, kTDC);
+       static const Int_t awt_id = gHist.getSequentialID(kParaLCRef, 0, kADCwTDC);
+
+       Int_t multiplicity = 0;
+       Bool_t is_in_gate = false;
+
+       for(Int_t seg=0; seg < NumOfSegParaLCRef; ++seg) {
+         for(Int_t ud = 0; ud < 3; ++ud) {
+           // ADC
+           UInt_t adc = 0;
+           Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, ud, k_adc);
+           if (nhit != 0) {
+             adc = gUnpacker.get(k_device, 0, seg, ud, k_adc);
+             hptr_array[a_id + ud*NumOfSegParaLCRef + seg]->Fill(adc);
+           }//ADC
+           // TDC
+           Int_t nhit_t = gUnpacker.get_entries(k_device, 0, seg, ud, k_tdc);
+           for(Int_t m = 0; m < nhit_t; ++m) {
+             Int_t tdc = gUnpacker.get(k_device, 0, seg, ud, k_tdc, m);
+             if (tdc != 0) {
+               hptr_array[t_id + ud*NumOfSegParaLCRef + seg]->Fill(tdc);
+               if (tdc_min<tdc && tdc<tdc_max && adc > 0) {
+                 is_in_gate =  true;
+               }//TDCcut
+             }//each TDC
+           }//TDC
+           if (is_in_gate) {
+             hptr_array[awt_id + ud*NumOfSegParaLCRef + seg]->Fill(adc);
+           }//ADCwTDC
+         }//UorD
+       }//for seg
+/*
+       // OR TDC
+       Int_t nhit_t = gUnpacker.get_entries(k_device, 0, 0, 2, k_tdc);
+       for(Int_t m = 0; m < nhit_t; ++m) {
+         Int_t tdc = gUnpacker.get(k_device, 0, 0, 2, k_tdc, m);
+         if (tdc != 0) {
+           hptr_array[t_id + 2]->Fill(tdc);
+         }//Fill TDC
+       }//OR TDC
+       */
+#if 0
+      // Debug, dump data relating this detector
+      gUnpacker.dump_data_device(k_device);
+#endif
+     }//ParaLCRef
 
 // #if 0
 //       // Debug, dump data relating this detector

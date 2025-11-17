@@ -1,7 +1,7 @@
 // Updater belongs to the namespace hddaq::gui
 using namespace hddaq::gui;
 
-void dispBcOutSdcInTracking( void )
+void dispBcOutTracking( void )
 {
   // You must write these lines for the thread safe
   // ----------------------------------
@@ -10,7 +10,7 @@ void dispBcOutSdcInTracking( void )
   // ----------------------------------
 
   gStyle->SetOptStat(1111110);
-  int n_layer = 22;
+  int n_layer = 12;
   static const std::vector<TString> VPs =
     {
       "VP1", "VP2", "VP3", "VP4"
@@ -22,8 +22,8 @@ void dispBcOutSdcInTracking( void )
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
     c->Divide(4,3);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 300);
-    for( int i=0; i<12; ++i ){ // Residual BcOut
+    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 100);
+    for( int i=0; i<n_layer; ++i ){ // Residual
       c->cd(i+1);
       TH1 *h = GHist::get(base_id + i);
       if( h ) h->Draw();
@@ -34,21 +34,8 @@ void dispBcOutSdcInTracking( void )
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
     c->Clear();
-    c->Divide(4,3);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 300);
-    for( int i=0; i<10; ++i ){ // Residual SdcIn
-      c->cd(i+1);
-      TH1 *h = GHist::get(base_id + i + 12);
-      if( h ) h->Draw();
-    }
-    c->Update();
-  }
-
-  {
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
-    c->Clear();
     c->Divide(4,2);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 250);
+    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 50);
     for( int i=0; i<2; ++i ){ // X, Y profile
       for( int j=0; j<VPs.size(); j++ ){
 	Int_t hid = i*VPs.size()+j;
@@ -61,11 +48,11 @@ void dispBcOutSdcInTracking( void )
     c->Update();
   }
 
-  { // XY profile
-    TCanvas *c = (TCanvas*)gROOT->FindObject("c4");
+  {
+    TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
     c->Clear();
     c->Divide(2,2);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 250)+2*VPs.size();
+    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 50)+2*VPs.size();
     for( int i=0; i<VPs.size(); i++ ){
       c->cd(i+1);
       TH1 *h = GHist::get(base_id + i);

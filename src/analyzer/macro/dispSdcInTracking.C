@@ -22,7 +22,7 @@ void dispSdcInTracking( void )
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
     c->Divide(4,3);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 150);
+    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 200);
     for( int i=0; i<n_layer; ++i ){ // Residual
       c->cd(i+1);
       TH1 *h = GHist::get(base_id + i);
@@ -35,7 +35,7 @@ void dispSdcInTracking( void )
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
     c->Clear();
     c->Divide(4,2);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 100);
+    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 150);
     for( int i=0; i<2; ++i ){ // X, Y profile
       for( int j=0; j<VPs.size(); j++ ){
 	Int_t hid = i*VPs.size()+j;
@@ -52,7 +52,7 @@ void dispSdcInTracking( void )
     TCanvas *c = (TCanvas*)gROOT->FindObject("c3");
     c->Clear();
     c->Divide(2,2);
-    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 100)+2*VPs.size();
+    int base_id = HistMaker::getUniqueID(kMisc, 0, kHitPat, 150)+2*VPs.size();
     for( int i=0; i<VPs.size(); i++ ){
       c->cd(i+1);
       TH1 *h = GHist::get(base_id + i);

@@ -1040,7 +1040,7 @@ process_event( void )
     if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 ){
       hptr_array[btof_id]->Fill(btof);
     }
-    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -0.3<btof && btof<0.6 ){
+    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && 0.0<btof && btof<0.9 ){ //1.8GeV/c for E63(0.9GeV/c param) shifted +0.3ns 20251112
       pi_flag=1;
       hptr_array[btof_id+1]->Fill(btof);
       hptr_array[btof_id+4]->Fill(0); //BAC1eff
@@ -1050,7 +1050,7 @@ process_event( void )
       hptr_array[btof_id+53]->Fill(0); //E75LFBACeff
     }
 
-    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.3<btof && btof<-1.0 ){  // 1.8GeV/c
+    if( nhbh1_flag>0 && nhbh2_flag>0 && nhbh1_flag<3 && nhbh2_flag<3 && -2.0<btof && btof<-0.7 ){  //1.8GeV/c for E63(0.9GeV/c param) shifted +0.3ns 20251112
       k_flag=1;
       hptr_array[btof_id+2]->Fill(btof);
       hptr_array[btof_id+5]->Fill(0); //BAC1eff

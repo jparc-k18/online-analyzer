@@ -367,7 +367,7 @@ namespace analyzer
                   if (tdc_min < tdc && tdc < tdc_max)
                   { // TOT w/ TDC cut
                     hptr_array[rc_ctot_2d_id + idx]->Fill(seg, tot);
-                    // hptr_array[rc_ctot_id + l + seg]->Fill(tot);
+                    hptr_array[rc_ctot_id + l]->Fill(tot);
                   }
                 }
               }

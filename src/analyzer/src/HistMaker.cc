@@ -9423,6 +9423,13 @@ HistMaker::createGe(Bool_t flag_ps)
     sub_dir->Add(createTH1(++target_id, "Ge_HitPat (using ADC)", // 1 origin
                            NumOfSegGe, 0, NumOfSegGe,
                            "Ge segment", ""));
+
+    // HitPat
+    target_id = getUniqueID(kGe, 0, kHitPat, 1);
+    sub_dir->Add(createTH2(++target_id, "Ge_BGO_HitPat (using ADC)", // 1 origin
+			   NumOfSegGe, 0, NumOfSegGe, NumOfSegBGO, 0, NumOfSegBGO,
+                           "Ge segment", "BGO segment"));
+
     // insert sub directory
     top_dir->Add(sub_dir);
   }
@@ -13699,4 +13706,3 @@ TList* HistMaker::createParaLCRef( Bool_t flag_ps )
   // Return the TList pointer which is added into TGFileBrowser
   return top_dir;
 }
-

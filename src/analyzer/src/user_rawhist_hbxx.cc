@@ -94,6 +94,7 @@ process_begin(const std::vector<std::string>& argv)
   tab_macro->Add(macro::Get("dispGeAdc_LSO"));
   tab_macro->Add(macro::Get("dispGeAdc_LSO_off"));
   tab_macro->Add(macro::Get("dispBGO"));
+  tab_macro->Add(macro::Get("dispGeBGO_2D"));
 
 
   // Add histograms to the Hist tab
@@ -347,6 +348,8 @@ process_event()
     // data typep
     static const Int_t k_device = gUnpacker.get_device_id("BGO");
     static const Int_t k_tdc    = gUnpacker.get_data_id("BGO","leading");
+    static const Int_t k_device_ge = gUnpacker.get_device_id("Ge");
+    static const Int_t k_adc    = gUnpacker.get_data_id("Ge","adc");
 
     // sequential id
     // sequential hist
@@ -354,6 +357,7 @@ process_event()
     static const Int_t bgo_tdc2d_id  = gHist.getSequentialID(kBGO, 0, kTDC2D);
     static const Int_t bgo_hit_id    = gHist.getSequentialID(kBGO, 0, kHitPat);
     static const Int_t bgo_nhit_id    = gHist.getSequentialID(kBGO, 0, kMultiHitTdc);
+    static const Int_t ge_bgo_hitpat_id    = gHist.getSequentialID(kGe, 0, kHitPat, 1+1);
 
     for(Int_t seg = 0; seg<NumOfSegBGO; ++seg){
 
@@ -371,8 +375,22 @@ process_event()
       // HitPat
       if(nhit_tdc != 0){
 	hptr_array[bgo_hit_id]->Fill(seg);
+	// BGO and Ge HitPat
+        for(int seg_ge = 0; seg_ge<NumOfSegGe; seg_ge++){
+#if 1
+          Int_t nhit_adc = gUnpacker.get_entries(k_device_ge, 0, seg_ge, 0, k_adc);
+	  Int_t adc = -9999;
+          if(nhit_adc!=0){
+	    adc = gUnpacker.get(k_device_ge, 0, seg_ge, 0, k_adc);
+	    if(115 < adc && adc < 7500){
+	      //hptr_array[ge_hitpat_id3]->Fill(seg,seg_ge);
+	      //std::cout<<"hit seg bgo ge "<<std::endl;
+	      hptr_array[ge_bgo_hitpat_id]->Fill(seg_ge,seg);
+	    }
+          }
+#endif
+        }
       }
-
     }
 
 #if 0

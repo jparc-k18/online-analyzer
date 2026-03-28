@@ -2591,7 +2591,19 @@ namespace analyzer
 	  hcor_bc3bc4->Fill(wire1, wire2);
 	}
       }
-
+      // BC4 vs BH2
+      TH2* hcor_bc4bh2 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
+      for(Int_t seg = 0; seg<NumOfSegBH2; ++seg) {
+	for(Int_t wire = 0; wire<NumOfWireBC4; ++wire) {
+	  Int_t hitBH2 = gUnpacker.get_entries(k_device_bh2, 0, seg, 0, 1);
+	  Int_t hitBC4 = gUnpacker.get_entries(k_device_bc4, 5, 0, wire, 0);
+	  if (hitBC4 == 0 || hitBH2 == 0)continue;
+	  Int_t tdcBH2 = gUnpacker.get(k_device_bh2, 0, seg, 0, 1);
+	  if (tdcBH2 != 0) {
+	    hcor_bc4bh2->Fill(wire, seg);
+	  }
+	}
+      }
       // SDC3 vs SDC1
       TH2* hcor_sdc1sdc3 = dynamic_cast<TH2*>(hptr_array[cor_id++]);
       for(Int_t wire1 = 0; wire1<NumOfWireSDC1; ++wire1) {

@@ -8123,6 +8123,11 @@ TList *HistMaker::createCorrelation(Bool_t flag_ps)
                            NumOfWireBC3, 0, NumOfWireBC3,
                            NumOfWireBC4, 0, NumOfWireBC4,
                            "BC3 wire", "BC4 wire"));
+    // BH2 vs BC4 ----------------------------------------------
+    top_dir->Add(createTH2(++target_id, "BH2_BC4x1", // 1 origin
+                           NumOfWireBC4, 0, NumOfWireBC4,
+			   NumOfSegBH2, 0, NumOfSegBH2,
+                           "BC4 wire", "BH2 seg"));
 
     // SDC3 vs SDC1 --------------------------------------------
     top_dir->Add(createTH2(++target_id, "SDC3x1_SDC1x0", // 1 origin

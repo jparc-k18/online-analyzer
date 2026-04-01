@@ -4330,7 +4330,7 @@ namespace analyzer
        Bool_t is_in_gate = false;
 
        for(Int_t seg=0; seg < NumOfSegParaLC; ++seg) {
-         for(Int_t ud = 0; ud < 2; ++ud) {
+         for(Int_t ud = 0; ud < 3; ++ud) {
            // ADC
            UInt_t adc = 0;
            Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, ud, k_adc);

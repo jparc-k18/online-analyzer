@@ -21,7 +21,7 @@ void dispParaLC( )
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c1");
     c->Clear();
-    c->Divide(4,2);
+    c->Divide(4,3);
     int adc_id     = HistMaker::getUniqueID( kParaLC, 0, kADC );
     int adcwtdc_id = HistMaker::getUniqueID( kParaLC, 0, kADCwTDC );
     int adcref_id     = HistMaker::getUniqueID( kParaLCRef, 0, kADC );
@@ -41,7 +41,8 @@ void dispParaLC( )
       hhu->SetLineColor( kRed );
       hhu->Draw("same");
       // DOWN
-      c->cd(i+1+NumOfSegParaLC+1);
+      c->cd(i+5);
+     // c->cd(i+1+NumOfSegParaLC+1);
       gPad->SetLogy();
       TH1 *hd = (TH1*)GHist::get( adc_id + i + NumOfSegParaLC );
       if( !hd ) continue;
@@ -52,6 +53,19 @@ void dispParaLC( )
       hhd->GetXaxis()->SetRangeUser( 0, 4096 );
       hhd->SetLineColor( kRed );
       hhd->Draw("same");
+      // SUM
+      c->cd(i+9);
+     // c->cd(i+1+NumOfSegParaLC*2+2);
+      gPad->SetLogy();
+      TH1 *hs = (TH1*)GHist::get( adc_id + i + NumOfSegParaLC*2 );
+      if( !hs ) continue;
+      hs->GetXaxis()->SetRangeUser( xmin, xmax );
+      hs->Draw();
+      TH1 *hhs = (TH1*)GHist::get( adcwtdc_id + i+ NumOfSegParaLC*2 );
+      if( !hhs ) continue;
+      hhs->GetXaxis()->SetRangeUser( 0, 4096 );
+      hhs->SetLineColor( kRed );
+      hhs->Draw("same");
     }//LC
     c->Update();
     //Ref
@@ -89,7 +103,7 @@ void dispParaLC( )
   {
     TCanvas *c = (TCanvas*)gROOT->FindObject("c2");
     c->Clear();
-    c->Divide(5,2);
+    c->Divide(4,3);
     int tdc_id = HistMaker::getUniqueID( kParaLC, 0, kTDC );
     int tdcref_id = HistMaker::getUniqueID( kParaLCRef, 0, kTDC );
     for( int i=0; i < NumOfSegParaLC; ++i ){
@@ -99,10 +113,17 @@ void dispParaLC( )
       hu->GetXaxis()->SetRangeUser( tdc_min, tdc_max );
       if( hu ) hu->Draw();
       // DOWN
-      c->cd(i+1+2+NumOfSegParaLC);
+      c->cd(i+5);
+     // c->cd(i+1+NumOfSegParaLC+1);
       TH1 *hd = (TH1*)GHist::get( tdc_id + i + NumOfSegParaLC);
       hd->GetXaxis()->SetRangeUser( tdc_min, tdc_max );
       if( hd ) hd->Draw();
+      // SUM
+      c->cd(i+9);
+     // c->cd(i+1+NumOfSegParaLC*2+2);
+      TH1 *hs = (TH1*)GHist::get( tdc_id + i + NumOfSegParaLC*2);
+      hs->GetXaxis()->SetRangeUser( tdc_min, tdc_max );
+      if( hs ) hs->Draw();
     }
     c->Update();
 
@@ -114,16 +135,16 @@ void dispParaLC( )
     if( hu ) hu->Draw();
     c->Update();
     // DOWN
-    c->cd(9);
+    c->cd(8);
     TH1 *hd = (TH1*)GHist::get( tdcref_id + NumOfSegParaLCRef );
     hd->GetXaxis()->SetRangeUser( tdcref_min, tdcref_max );
     if( hd ) hd->Draw();
     c->Update();
     // OR
-    c->cd(10);
-    TH1 *h = (TH1*)GHist::get( tdcref_id + NumOfSegParaLCRef + 1);
-    hd->GetXaxis()->SetRangeUser( tdcref_min, tdcref_max );
-    if( h ) h->Draw();
+    c->cd(12);
+    TH1 *hs = (TH1*)GHist::get( tdcref_id + NumOfSegParaLCRef*2);
+    hs->GetXaxis()->SetRangeUser( tdcref_min, tdcref_max );
+    if( hs ) hs->Draw();
     c->Update();
   }
 

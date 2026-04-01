@@ -13490,14 +13490,17 @@ TList* HistMaker::createParaLC( Bool_t flag_ps )
 
     // Make histogram and add it
     Int_t target_id = getUniqueID(kParaLC, 0, kADC, 0);
-    for(Int_t i = 0; i < NumOfSegParaLC*2; ++i){
+    for(Int_t i = 0; i < NumOfSegParaLC*3; ++i){
       const char* title = NULL;
       if(i < NumOfSegParaLC){
         Int_t seg = i+1; // 1 origin
-        title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-      }else{
+        title = Form("%s_%s_%dR", nameDetector, nameSubDir, seg);
+      }else if(i >= NumOfSegParaLC && i < NumOfSegParaLC*2){
         Int_t seg = i+1-NumOfSegParaLC; // 1 origin
-        title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+        title = Form("%s_%s_%dL", nameDetector, nameSubDir, seg);
+      }else{
+        Int_t seg = i+1-NumOfSegParaLC*2; // 1 origin
+        title = Form("%s_%s_%dSUM", nameDetector, nameSubDir, seg);
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -13518,14 +13521,17 @@ TList* HistMaker::createParaLC( Bool_t flag_ps )
 
     // Make histogram and add it
     Int_t target_id = getUniqueID(kParaLC, 0, kADCwTDC, 0);
-    for( Int_t i=0; i < NumOfSegParaLC*2; ++i ){
+    for( Int_t i=0; i < NumOfSegParaLC*3; ++i ){
       const char* title = NULL;
       if( i < NumOfSegParaLC ){
         Int_t seg = i+1; // 1 origin
-        title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
-      }else{
+        title = Form("%s_%s_%dR", nameDetector, nameSubDir, seg);
+      }else if(i >= NumOfSegParaLC && i < NumOfSegParaLC*2){
         Int_t seg = i+1-NumOfSegParaLC; // 1 origin
-        title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+        title = Form("%s_%s_%dL", nameDetector, nameSubDir, seg);
+      }else{
+        Int_t seg = i+1-NumOfSegParaLC*2; // 1 origin
+        title = Form("%s_%s_%dSUM", nameDetector, nameSubDir, seg);
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -13547,15 +13553,18 @@ TList* HistMaker::createParaLC( Bool_t flag_ps )
 
     // Make histogram and add it
     Int_t target_id = getUniqueID(kParaLC, 0, kTDC, 0);
-    for(Int_t i = 0; i < NumOfSegParaLC*2; ++i){
+    for(Int_t i = 0; i < NumOfSegParaLC*3; ++i){
       const char* title = NULL;
       if(i < NumOfSegParaLC){
         Int_t seg = i+1; // 1 origin
-        title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-       }else{
-         Int_t seg = i+1-NumOfSegParaLC; // 1 origin
-         title = Form("%s_%s_%d", nameDetector, nameSubDir, seg);
-       }
+        title = Form("%s_%s_%dR", nameDetector, nameSubDir, seg);
+      }else if(i >= NumOfSegParaLC && i < NumOfSegParaLC*2){
+        Int_t seg = i+1-NumOfSegParaLC; // 1 origin
+        title = Form("%s_%s_%dL", nameDetector, nameSubDir, seg);
+      }else{
+        Int_t seg = i+1-NumOfSegParaLC*2; // 1 origin
+        title = Form("%s_%s_%dSUM", nameDetector, nameSubDir, seg);
+      }
 
        sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
                              0x1000, 0, 0x1000,
@@ -13613,10 +13622,10 @@ TList* HistMaker::createParaLCRef( Bool_t flag_ps )
      const char* title = NULL;
      if(i < NumOfSegParaLCRef){
        Int_t seg = i+1; // 1 origin
-       title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+       title = Form("%s_%s_%dR", nameDetector, nameSubDir, seg);
      }else{
        Int_t seg = i+1-NumOfSegParaLCRef; // 1 origin
-       title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+       title = Form("%s_%s_%dL", nameDetector, nameSubDir, seg);
      }
 
      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
@@ -13641,10 +13650,10 @@ TList* HistMaker::createParaLCRef( Bool_t flag_ps )
      const char* title = NULL;
      if( i<NumOfSegParaLCRef ){
        Int_t seg = i+1; // 1 origin
-       title = Form("%s_%s_%dU", nameDetector, nameSubDir, seg);
+       title = Form("%s_%s_%dR", nameDetector, nameSubDir, seg);
      }else{
        Int_t seg = i+1-NumOfSegParaLCRef; // 1 origin
-       title = Form("%s_%s_%dD", nameDetector, nameSubDir, seg);
+       title = Form("%s_%s_%dL", nameDetector, nameSubDir, seg);
      }
      sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin
                      0x1000, 0, 0x1000,
@@ -13675,7 +13684,7 @@ TList* HistMaker::createParaLCRef( Bool_t flag_ps )
         title = Form("%s_%s_%dL", nameDetector, nameSubDir, seg);
       }else{
         Int_t seg = i+1-NumOfSegParaLCRef*2; // 1 origin
-        title = Form("%s_%s_%dOR", nameDetector, nameSubDir, seg);
+        title = Form("%s_%s_%dAND", nameDetector, nameSubDir, seg);
       }
 
       sub_dir->Add(createTH1(target_id + i+1, title, // 1 origin

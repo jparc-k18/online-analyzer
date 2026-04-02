@@ -4327,10 +4327,10 @@ namespace analyzer
        static const Int_t awt_id = gHist.getSequentialID(kParaLC, 0, kADCwTDC);
 
        Int_t multiplicity = 0;
-       Bool_t is_in_gate = false;
 
        for(Int_t seg=0; seg < NumOfSegParaLC; ++seg) {
          for(Int_t ud = 0; ud < 3; ++ud) {
+         Bool_t is_in_gate = false;
            // ADC
            UInt_t adc = 0;
            Int_t nhit = gUnpacker.get_entries(k_device, 0, seg, ud, k_adc);

@@ -299,6 +299,7 @@ dispRcRaw( void )
       cht1m->SetLineColor(kRed);
 
       ht1m->Draw();
+      ht1m->GetXaxis()->SetRangeUser(0,2000);
       cht1m->Draw("same");
       gPad->SetLogy();
 
@@ -309,6 +310,7 @@ dispRcRaw( void )
       cht1p->SetLineColor(kRed);
 
       h1tp->Draw();
+      h1tp->GetXaxis()->SetRangeUser(0,2000);
       cht1p->Draw("same");
       gPad->SetLogy();
     }
